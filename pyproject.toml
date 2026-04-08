@@ -96,8 +96,9 @@ select = [
     "TRY", # tryceratops (exception handling)
 ]
 ignore = [
-    "D203",  # conflicts with D211
-    "D213",  # conflicts with D212
+    "D203",   # conflicts with D211
+    "D213",   # conflicts with D212
+    "TRY003", # Cairntir ethos: exceptions must carry meaningful, surfaced messages
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -147,6 +148,13 @@ asyncio_mode = "auto"
 [tool.coverage.run]
 source = ["src/cairntir"]
 branch = true
+omit = [
+    # Phase 2+ surfaces — covered by their own phase tests.
+    "src/cairntir/__main__.py",
+    "src/cairntir/cli.py",
+    "src/cairntir/mcp/*",
+    "src/cairntir/daemon/*",
+]
 
 [tool.coverage.report]
 exclude_lines = [

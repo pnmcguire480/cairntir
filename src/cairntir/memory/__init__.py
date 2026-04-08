@@ -1,4 +1,28 @@
 """Memory subsystem: sqlite-vec store, wing/room/drawer taxonomy, 4-layer retrieval.
 
-Phase 1 target. See docs/concept.md for the model.
+See :mod:`cairntir.memory.taxonomy` for the data model, :mod:`cairntir.memory.store`
+for persistence, :mod:`cairntir.memory.embeddings` for embedding providers, and
+:mod:`cairntir.memory.retrieval` for the 4-layer loader.
 """
+
+from __future__ import annotations
+
+from cairntir.memory.embeddings import (
+    EmbeddingProvider,
+    HashEmbeddingProvider,
+    SentenceTransformerProvider,
+)
+from cairntir.memory.retrieval import RetrievalResult, Retriever
+from cairntir.memory.store import DrawerStore
+from cairntir.memory.taxonomy import Drawer, Layer
+
+__all__ = [
+    "Drawer",
+    "DrawerStore",
+    "EmbeddingProvider",
+    "HashEmbeddingProvider",
+    "Layer",
+    "RetrievalResult",
+    "Retriever",
+    "SentenceTransformerProvider",
+]

@@ -21,7 +21,7 @@ def test_error_hierarchy() -> None:
     """All Cairntir errors inherit from the base exception."""
     for exc_cls in (
         errors.ConfigError,
-        errors.MemoryError_,
+        errors.MemoryStoreError,
         errors.TaxonomyError,
         errors.RetrievalError,
         errors.EmbeddingError,

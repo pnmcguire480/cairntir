@@ -16,11 +16,8 @@ class ConfigError(CairntirError):
     """Raised when configuration is missing or invalid."""
 
 
-class MemoryError_(CairntirError):
-    """Raised when the memory layer fails to read or write a drawer.
-
-    Named with a trailing underscore to avoid shadowing the Python builtin.
-    """
+class MemoryStoreError(CairntirError):
+    """Raised when the memory layer fails to read or write a drawer."""
 
 
 class TaxonomyError(CairntirError):
