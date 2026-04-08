@@ -125,6 +125,12 @@ pretty = true
 module = ["sqlite_vec.*", "sentence_transformers.*"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+# The mcp SDK's decorator API is untyped; the server.py adapter is a thin
+# wrapper whose behavior is exercised via cairntir.mcp.backend tests.
+module = ["cairntir.mcp.server"]
+disable_error_code = ["no-untyped-call", "untyped-decorator", "misc"]
+
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]
@@ -152,7 +158,7 @@ omit = [
     # Phase 2+ surfaces — covered by their own phase tests.
     "src/cairntir/__main__.py",
     "src/cairntir/cli.py",
-    "src/cairntir/mcp/*",
+    "src/cairntir/mcp/server.py",
     "src/cairntir/daemon/*",
 ]
 
