@@ -75,16 +75,31 @@ def test_timeline_empty_entity_errors(backend: CairntirBackend) -> None:
         backend.timeline(wing="cairntir", entity="")
 
 
-def test_audit_stub_reports_essential_count(backend: CairntirBackend) -> None:
-    backend.remember(wing="cairntir", room="state", content="a", layer=Layer.ESSENTIAL.value)
+def test_audit_emits_quality_skill_with_essentials(backend: CairntirBackend) -> None:
+    backend.remember(
+        wing="cairntir",
+        room="state",
+        content="phase 3 in progress",
+        layer=Layer.ESSENTIAL.value,
+    )
     out = backend.audit(wing="cairntir")
-    assert "Phase-2 stub" in out
+    assert "name: quality" in out
+    assert "QUALITY — The Ship Gate" in out
     assert "essential drawers=1" in out
+    assert "phase 3 in progress" in out
 
 
-def test_crucible_stub_echoes_claim(backend: CairntirBackend) -> None:
+def test_audit_reports_empty_essential_layer(backend: CairntirBackend) -> None:
+    out = backend.audit(wing="cairntir")
+    assert "essential drawers=0" in out
+    assert "the essential layer is empty" in out
+
+
+def test_crucible_emits_skill_with_claim(backend: CairntirBackend) -> None:
     out = backend.crucible(claim="cairntir will kill amnesia")
-    assert "Phase-2 stub" in out
+    assert "name: crucible" in out
+    assert "CRUCIBLE — The Epistemic Forge" in out
+    assert "## Claim under crucible" in out
     assert "cairntir will kill amnesia" in out
 
 

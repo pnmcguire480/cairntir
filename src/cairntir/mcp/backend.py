@@ -18,6 +18,7 @@ from typing import TYPE_CHECKING, Any
 from cairntir.errors import MCPError
 from cairntir.memory.retrieval import RetrievalResult, Retriever
 from cairntir.memory.taxonomy import Drawer, Layer
+from cairntir.skills import load_skill
 
 if TYPE_CHECKING:
     from cairntir.memory.store import DrawerStore
@@ -110,24 +111,29 @@ class CairntirBackend:
         return "\n".join(lines)
 
     def audit(self, *, wing: str) -> str:
-        """Phase-2 stub for the Quality skill. Real invocation lands in Phase 3."""
+        """Return the Quality skill prompt plus the wing's essential drawers.
+
+        The caller (the LLM) runs the skill using the returned text as the
+        system-level instructions and the drawer dump as the evidence base.
+        """
         essentials = self._store.list_by(wing=wing, layer=Layer.ESSENTIAL, limit=100)
-        return (
-            f"[cairntir.audit] Phase-2 stub — Quality skill runs in Phase 3.\n"
-            f"Wing={wing!r}, essential drawers={len(essentials)}. "
-            f"Invoke the `quality` skill against these drawers to produce a full audit."
-        )
+        skill = load_skill("quality")
+        context = [
+            f"## Context — wing={wing!r}, essential drawers={len(essentials)}",
+        ]
+        if essentials:
+            for d in essentials:
+                context.append(f"- #{d.id}  {d.room}  — {_snippet(d.content)}")
+        else:
+            context.append("- (none — the essential layer is empty)")
+        return f"{skill}\n\n---\n\n" + "\n".join(context) + "\n"
 
     def crucible(self, *, claim: str) -> str:
-        """Phase-2 stub for the Crucible skill. Real invocation lands in Phase 3."""
+        """Return the Crucible skill prompt wrapped around ``claim``."""
         if not claim.strip():
             raise MCPError("crucible requires a non-empty claim")
-        return (
-            f"[cairntir.crucible] Phase-2 stub — Crucible skill runs in Phase 3.\n"
-            f"Claim: {claim}\n"
-            f"Next: invoke the `crucible` skill to stress-test this claim "
-            f"against stored memory."
-        )
+        skill = load_skill("crucible")
+        return f"{skill}\n\n---\n\n## Claim under crucible\n\n{claim.strip()}\n"
 
 
 # ------------------------------------------------------------------ helpers
