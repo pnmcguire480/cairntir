@@ -164,7 +164,7 @@ omit = [
     "src/cairntir/__main__.py",
     "src/cairntir/cli.py",
     "src/cairntir/mcp/server.py",
-    "src/cairntir/daemon/*",
+    "src/cairntir/daemon/__main__.py",
 ]
 
 [tool.coverage.report]
