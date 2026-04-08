@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` (local — GitHub push pending)
-- **Stage:** [x] Bootstrap [ ] Phase 1 Memory [ ] Phase 2 MCP [ ] Phase 3 Skills [ ] Phase 4 Daemon [ ] v0.1.0
+- **Stage:** [x] Bootstrap [x] Phase 1 Memory [x] Phase 2 MCP [x] Phase 3 Skills [x] Phase 4 Daemon [x] v0.1.0
 
 ---
 
@@ -76,35 +76,48 @@ Cairntir is the distillation of two predecessors:
 ### Last Session
 
 - **Date:** 2026-04-08
-- **What was accomplished:**
-  - Project born. Name chosen (Cairntir), decisions locked (sqlite-vec, uv, ruff, mypy strict, pip + Claude Code plugin)
-  - Plan written to `plans/purrfect-drifting-sparrow.md`
-  - Full professional repo tree created at `c:\Dev\Cairntir\`
-  - 10 lineage files copied from BrainStormer into `lineage/brainstormer/` (read-only from here on)
-  - Core recognition files authored: this `CLAUDE.md`, `README.md`, `docs/manifesto.md`, `docs/concept.md`, `docs/lineage/brainstormer.md`, `docs/lineage/mempalace.md`, `docs/roadmap.md`
-  - Professional scaffolding: `pyproject.toml`, `LICENSE`, `.gitignore`, `.editorconfig`, `.pre-commit-config.yaml`, `.github/workflows/ci.yml`, CODEOWNERS, issue templates
-  - `ETHOS.md` and `HARNESS_AUDIT.md` imported from BrainStormer
-- **Next session starts Phase 1 — Memory Spike:**
-  - `src/cairntir/memory/store.py` — sqlite-vec backend (add_drawer, search, get)
-  - `src/cairntir/memory/taxonomy.py` — Wing/Room/Drawer dataclasses
-  - `src/cairntir/memory/retrieval.py` — 4-layer loader
-  - `src/cairntir/memory/embeddings.py` — sentence-transformers provider
-  - Unit tests for each
-  - First LongMemEval subset eval skeleton (target: 80% R@5)
+- **What was accomplished:** v0.1.0 shipped. All five phases landed in
+  one arc — the memory layer, the MCP server, the three skills, and the
+  one-loop daemon. The sniff test (a fresh chat in `c:\Dev\Cairntir\`
+  understanding the project without re-briefing) passed manually before
+  Cairntir's own memory was even built.
+  - **Phase 1 — Memory Spike (`54fc5a2`):** `Drawer` / `Layer` taxonomy,
+    sqlite-vec `DrawerStore`, `HashEmbeddingProvider` +
+    `SentenceTransformerProvider`, 4-layer `Retriever`, LongMemEval eval
+    skeleton. 29 tests, 81% coverage.
+  - **Phase 2 — MCP Server (`8ba751a`):** six-tool `CairntirBackend`
+    (transport-free) plus stdio `cairntir.mcp.server`. 39 tests, 82%.
+  - **Phase 3 — Skills (`b36db98`):** distilled Crucible + Quality from
+    the BrainStormer lineage, wrote the new Reason memory-backed
+    thinking loop, bundled the `.md` files via `importlib.resources`,
+    wired `backend.audit` / `backend.crucible` to the real skill text.
+    45 tests, 83%.
+  - **Phase 4 — Daemon (`b47e79b`):** spool-backed `CaptureDaemon` with
+    atomic writes, quarantine-on-failure, and an asyncio poll loop.
+    Retires init/wrapup ceremony. 54 tests, 85%.
+  - **Phase 5 — v0.1.0:** version bump, changelog, Last Session, tag.
+- **Next session:** open work for v0.2.0 is in `docs/roadmap.md`.
+  Candidate first targets:
+  - Real LongMemEval subset + sentence-transformers eval run (80% R@5 bar)
+  - GitHub remote creation + initial push (still pending per Phase 0)
+  - `cairntir` CLI surface (2 commands) on top of the backend
+  - Claude Code plugin packaging
 
 ### What Works Right Now
 
-- Repo skeleton ready to clone
-- Lineage material preserved
-- Plan file is the source of truth for execution
+- Memory layer: wing/room/drawer taxonomy over sqlite-vec with 4-layer retrieval
+- MCP server: six tools exposed over stdio (`python -m cairntir.mcp.server`)
+- Three skills: Crucible, Quality, Reason — bundled and loadable
+- Daemon: `python -m cairntir.daemon` polls a spool dir and persists drawers
+- 54 tests, 85% coverage, ruff clean, mypy --strict clean
 
 ### What's Not Built Yet
 
-- Everything in `src/cairntir/` except the directory tree
-- MCP server
-- Slash commands
-- Tests
-- GitHub remote
+- GitHub remote (local repo only so far)
+- CLI wrapper (`cairntir` + `cairntir recall`)
+- Claude Code plugin bundle
+- Real LongMemEval benchmark run
+- Published PyPI release
 
 ---
 

@@ -29,10 +29,10 @@ import uuid
 from pathlib import Path
 from typing import Any, Final
 
-_seq = itertools.count()
-
 from cairntir.errors import MCPError
 from cairntir.memory.taxonomy import Drawer, Layer
+
+_seq = itertools.count()
 
 SPOOL_SUBDIR: Final[str] = "spool"
 FAILED_SUBDIR: Final[str] = "failed"
