@@ -1,0 +1,41 @@
+# Normalize line endings for text files
+* text=auto eol=lf
+
+# Python
+*.py text diff=python
+*.pyi text diff=python
+
+# Config
+*.toml text
+*.yaml text
+*.yml text
+*.json text
+*.md text
+*.txt text
+*.cfg text
+*.ini text
+
+# Shell
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Windows scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+*.zip binary
+*.gz binary
+*.tar binary
+
+# Jupyter notebooks — diff as JSON
+*.ipynb text

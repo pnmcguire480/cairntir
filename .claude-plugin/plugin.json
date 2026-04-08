@@ -1,0 +1,36 @@
+{
+  "$schema": "https://claude.com/schemas/plugin.json",
+  "name": "cairntir",
+  "version": "0.1.0-dev",
+  "description": "Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia.",
+  "author": {
+    "name": "Patrick McGuire",
+    "url": "https://github.com/pnmcguire480"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/pnmcguire480/cairntir",
+  "repository": "https://github.com/pnmcguire480/cairntir",
+  "commands": [
+    {
+      "name": "remember",
+      "description": "Store a verbatim memory drawer in the current wing.",
+      "file": "commands/remember.md"
+    },
+    {
+      "name": "recall",
+      "description": "Semantic + metadata search across stored drawers.",
+      "file": "commands/recall.md"
+    },
+    {
+      "name": "reason",
+      "description": "Think through a question using memory-backed retrieval.",
+      "file": "commands/reason.md"
+    }
+  ],
+  "mcpServers": {
+    "cairntir": {
+      "command": "python",
+      "args": ["-m", "cairntir.mcp.server"]
+    }
+  }
+}

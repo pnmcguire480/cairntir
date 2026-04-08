@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "charliermarsh.ruff",
+    "ms-python.python",
+    "ms-python.mypy-type-checker",
+    "tamasfe.even-better-toml",
+    "editorconfig.editorconfig",
+    "yzhang.markdown-all-in-one"
+  ]
+}

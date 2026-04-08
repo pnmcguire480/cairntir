@@ -1,0 +1,33 @@
+name: Feature Request
+description: Suggest an idea for Cairntir
+title: "[feat] "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before proposing a feature, please re-read `docs/concept.md`. Cairntir is deliberately minimal — we say no to most features. Please argue for *why* this one serves the north star (killing cross-chat amnesia).
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the pain point. Not the feature yet — the pain.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: north-star
+    attributes:
+      label: How does this serve the north star?
+      description: The north star is killing cross-chat amnesia. How does this feature advance it?
+    validations:
+      required: true

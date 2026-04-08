@@ -1,0 +1,58 @@
+site_name: Cairntir
+site_description: Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia.
+site_url: https://pnmcguire480.github.io/cairntir/
+repo_url: https://github.com/pnmcguire480/cairntir
+repo_name: pnmcguire480/cairntir
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - toc.follow
+
+nav:
+  - Home: index.md
+  - Manifesto: manifesto.md
+  - Concept: concept.md
+  - Roadmap: roadmap.md
+  - Lineage:
+      - BrainStormer: lineage/brainstormer.md
+      - MemPalace: lineage/mempalace.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - search

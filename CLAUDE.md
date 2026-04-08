@@ -1,0 +1,160 @@
+# CLAUDE.md — Cairntir
+
+> 🔄 **UPDATE EVERY SESSION**
+> This is the first file any AI agent reads. Out-of-date info here cascades into bad decisions everywhere.
+
+---
+
+## Project Identity
+
+- **Name:** Cairntir
+- **Pronunciation:** *CAIRN-teer*
+- **Etymology:** Cairn (stacked waypoint stones marking a path) + Palantir (seeing-stone across time and distance). A stack of stones that sees across time.
+- **One-liner:** Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia.
+- **Owner:** Patrick McGuire (@pnmcguire480)
+- **License:** MIT
+- **Repo:** `c:\Dev\Cairntir\` (local — GitHub push pending)
+- **Stage:** [x] Bootstrap [ ] Phase 1 Memory [ ] Phase 2 MCP [ ] Phase 3 Skills [ ] Phase 4 Daemon [ ] v0.1.0
+
+---
+
+## The North Star
+
+> **Cross-chat AI amnesia is the problem. Everything Cairntir does serves killing it.**
+
+A fresh Claude Code chat opened in `c:\Dev\Cairntir\` on day 30 should feel like walking into a lit room. No re-briefing. No lost decisions. No "what were we doing?"
+
+This is the one test that matters. If a feature doesn't serve it, we don't build it.
+
+---
+
+## The Mythos
+
+Cairntir is **step one** on a longer road. The road leads to:
+
+**AI + grand-scale 3D printing + post-scarcity tooling.**
+
+If we can model it, we can make it. If we can remember it, we can build it again. Cairntir is the memory layer for that future. Today it remembers code decisions. Tomorrow it remembers which printed structure worked, which failed, what the temperature was, what the grain direction was, what the next iteration should try. The memory of a civilization that prints its own thingamajigs and gives them away for free.
+
+That's the destination. Today we build the foundation.
+
+---
+
+## What Cairntir Is
+
+A **memory-first reasoning layer** with three ingredients:
+
+1. **Verbatim persistent memory** — `sqlite-vec` backend, nothing summarized away, queryable by semantic + metadata.
+2. **Minimal skill dispatch** — 3 skills total: `crucible` (epistemic stress-test), `quality` (audit), `reason` (memory-backed thinking loop). Everything else was cargo cult.
+3. **One loop, not two commands** — a daemon + MCP server auto-captures and auto-restores. No init/wrapup ceremony.
+
+**Taxonomy:** Wings (projects) → Rooms (topics) → Drawers (verbatim entries). Four retrieval layers: identity / essential / on-demand / deep.
+
+## What Cairntir Is NOT
+
+- Not BrainStormer v2 — it's a distillation, not a port
+- Not a MemPalace fork — it borrows concepts, not code
+- Not a chatbot, not a code-completion tool, not an agent runtime
+- Not a SaaS — MIT, open source, local-first
+- Not configurable — opinionated, one way to do things
+
+---
+
+## Lineage
+
+Cairntir is the distillation of two predecessors:
+
+- **BrainStormer** (`c:\Dev\SKILLS\BrainStormer\`) — Patrick's prior attempt. Great vocabulary (Crucible, Quality/PALADIN, agent species, ETHOS) but Frankenstein runtime: 224 silent `except: pass` blocks, dead license code, "architecture of a learning system but runtime of a static scaffolder." See `lineage/brainstormer/` and `docs/lineage/brainstormer.md`.
+- **MemPalace** (https://github.com/milla-jovovich/mempalace) — 96.6% LongMemEval R@5. Brilliant memory taxonomy (wings/rooms/drawers, 4-layer retrieval) but no reasoning layer. We borrow concepts, not code. See `docs/lineage/mempalace.md`.
+
+**The merge:** MemPalace gives us memory. BrainStormer gives us reasoning vocabulary. Cairntir is both, simplified, opinionated, and shipped.
+
+---
+
+## Current State
+
+### Last Session
+
+- **Date:** 2026-04-08
+- **What was accomplished:**
+  - Project born. Name chosen (Cairntir), decisions locked (sqlite-vec, uv, ruff, mypy strict, pip + Claude Code plugin)
+  - Plan written to `plans/purrfect-drifting-sparrow.md`
+  - Full professional repo tree created at `c:\Dev\Cairntir\`
+  - 10 lineage files copied from BrainStormer into `lineage/brainstormer/` (read-only from here on)
+  - Core recognition files authored: this `CLAUDE.md`, `README.md`, `docs/manifesto.md`, `docs/concept.md`, `docs/lineage/brainstormer.md`, `docs/lineage/mempalace.md`, `docs/roadmap.md`
+  - Professional scaffolding: `pyproject.toml`, `LICENSE`, `.gitignore`, `.editorconfig`, `.pre-commit-config.yaml`, `.github/workflows/ci.yml`, CODEOWNERS, issue templates
+  - `ETHOS.md` and `HARNESS_AUDIT.md` imported from BrainStormer
+- **Next session starts Phase 1 — Memory Spike:**
+  - `src/cairntir/memory/store.py` — sqlite-vec backend (add_drawer, search, get)
+  - `src/cairntir/memory/taxonomy.py` — Wing/Room/Drawer dataclasses
+  - `src/cairntir/memory/retrieval.py` — 4-layer loader
+  - `src/cairntir/memory/embeddings.py` — sentence-transformers provider
+  - Unit tests for each
+  - First LongMemEval subset eval skeleton (target: 80% R@5)
+
+### What Works Right Now
+
+- Repo skeleton ready to clone
+- Lineage material preserved
+- Plan file is the source of truth for execution
+
+### What's Not Built Yet
+
+- Everything in `src/cairntir/` except the directory tree
+- MCP server
+- Slash commands
+- Tests
+- GitHub remote
+
+---
+
+## AI Agent Rules
+
+### Must Do
+1. **Read this file first.** Every session.
+2. **Read `docs/manifesto.md` and `docs/concept.md`** before proposing any feature.
+3. **Read `plans/purrfect-drifting-sparrow.md`** — it is the execution plan, not decoration.
+4. **Match the ethos.** See `ETHOS.md`. Comprehension before code. Quality has no shortcuts.
+5. **Small commits, conventional format.** `feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`.
+6. **Every exception is typed and surfaced.** No silent `except: pass`. Ever. CI will fail you.
+7. **Update "Last Session" below** at the end of every working session.
+
+### Must Not
+1. **Never import code from BrainStormer or MemPalace.** Lineage is reference material, not source. We reimplement.
+2. **Never add a feature not in the plan** without updating the plan first.
+3. **Never hardcode paths.** Use `Path.home()`, `platformdirs`, or config.
+4. **Never add dependencies** not listed in `pyproject.toml` without discussion.
+5. **Never modify `lineage/`** — it's read-only history.
+
+### When Uncertain
+- Stop and ask. A question is cheaper than a wrong assumption.
+- Default to the simpler option. Cairntir's whole identity is distillation.
+
+---
+
+## Skill Routing
+
+| Intent | Skill | Future MCP tool |
+|---|---|---|
+| "stress test this assumption", "what could be wrong" | Crucible | `cairntir_crucible` |
+| "audit this", "is it ready", "quality check" | Quality | `cairntir_audit` |
+| "think about this with what we already know" | Reason | (invoked automatically) |
+| "what did we decide about X" | — | `cairntir_recall` |
+| "remember this" | — | `cairntir_remember` |
+| "where are we" (session start) | — | `cairntir_session_start` |
+
+---
+
+## Key Files Every AI Agent Should Read
+
+1. **This file** (`CLAUDE.md`)
+2. `docs/manifesto.md` — WHY Cairntir exists
+3. `docs/concept.md` — WHAT Cairntir is (three ingredients)
+4. `docs/lineage/brainstormer.md` — what we kept/dropped from BrainStormer
+5. `docs/lineage/mempalace.md` — same for MemPalace
+6. `ETHOS.md` — the 5 principles
+7. `HARNESS_AUDIT.md` — 12-primitive gap analysis (the rebuild justification)
+8. `plans/purrfect-drifting-sparrow.md` — execution plan
+9. `lineage/brainstormer/project_v1_realization.md` — "The Big Realization"
+
+Reading all 9 in a fresh chat should produce full context awareness. That's the sniff test.
