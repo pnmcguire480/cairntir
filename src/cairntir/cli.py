@@ -73,7 +73,6 @@ def status() -> None:
     typer.echo(f"wings: {len(counts)}  drawers: {len(drawers)}")
     for wing, count in sorted(counts.items()):
         typer.echo(f"  {wing}  ({count} drawers)")
-        typer.echo(f"  {wing}  ({count} drawers)")
 
 
 @app.command()

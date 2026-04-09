@@ -63,8 +63,9 @@ def test_status_and_recall_with_drawers(tmp_path: Path, monkeypatch: object) -> 
 
     status = runner.invoke(app, ["status"])
     assert status.exit_code == 0
-    assert "demo" in status.stdout
     assert "2 drawers" in status.stdout
+    # Regression: each wing must be printed exactly once.
+    assert status.stdout.count("  demo  (") == 1
 
     recall = runner.invoke(app, ["recall", "cairn stones mark the path", "--limit", "5"])
     assert recall.exit_code == 0
