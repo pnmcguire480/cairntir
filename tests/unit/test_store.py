@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sqlite3
 from collections.abc import Iterator
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -187,6 +187,26 @@ def test_migration_from_v1_database_preserves_old_rows(tmp_path: Path) -> None:
     # Reopening the same DB is a no-op for migration (idempotency check).
     with DrawerStore(db_path, HashEmbeddingProvider(dimension=32)) as s2:
         assert len(s2.list_by(wing="cairntir", room="legacy")) == 2
+
+
+def test_touch_and_stale_ids_drive_forgetting_curve(store: DrawerStore) -> None:
+    old = datetime.now(UTC) - timedelta(days=10)
+    saved = store.add(Drawer(wing="cairntir", room="room-x", content="x", created_at=old))
+    assert saved.id is not None
+    cutoff = datetime.now(UTC) - timedelta(days=7)
+    assert store.stale_ids(older_than=cutoff, layer=Layer.ON_DEMAND) == [saved.id]
+    # A get() bumps last_accessed_at, so the drawer is no longer stale.
+    store.get(saved.id)
+    assert store.stale_ids(older_than=cutoff, layer=Layer.ON_DEMAND) == []
+
+
+def test_update_layer_moves_drawer(store: DrawerStore) -> None:
+    saved = store.add(_drawer("demote me", layer=Layer.ON_DEMAND))
+    assert saved.id is not None
+    store.update_layer(saved.id, Layer.DEEP)
+    fetched = store.get(saved.id)
+    assert fetched is not None
+    assert fetched.layer == Layer.DEEP
 
 
 def test_metadata_is_preserved(store: DrawerStore) -> None:

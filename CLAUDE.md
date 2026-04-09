@@ -75,7 +75,41 @@ Cairntir is the distillation of two predecessors:
 
 ### Last Session
 
-- **Date:** 2026-04-08 (v0.2 kickoff — prediction-bound drawers landed)
+- **Date:** 2026-04-08 (v0.3 — consolidation, forgetting, contradiction)
+- **What was accomplished:** v0.3 landed in one pass. The store gained a
+  v3 schema migration that adds `last_accessed_at` (backfilled from
+  `created_at` for pre-v3 rows) and `access_count`, plus three new
+  methods: `update_layer`, `stale_ids`, and a private `_touch` bumped by
+  every `get()` and `search()` hit. That gives the forgetting curve its
+  replay signal without touching the Drawer dataclass. A new module
+  `cairntir.memory.consolidate` exposes three pure functions over the
+  store:
+  - `demote_stale(store, cold_after_days=...)` — drifts ON_DEMAND
+    drawers untouched for N days to the DEEP layer. Idempotent.
+    Demotion only, never deletion. Returns the demoted ids so the
+    daemon can audit every pass.
+  - `detect_contradictions(store, wing=...)` — groups drawers by
+    normalized `claim`, flags pairs whose `predicted_outcome` or
+    `observed_outcome` diverge. Never averages, never picks a winner,
+    never mutates. Returns a list of `Contradiction` records.
+  - `consolidate_room(store, wing, room, min_cluster=3)` — emits a
+    derived ESSENTIAL drawer whose content is a verbatim concatenation
+    with `[#id]` citations and `metadata.derived_from=[ids]`. Source
+    drawers stay put. Idempotent for the same source set.
+  - **Tests added:** 14 new tests across `test_consolidate.py` and
+    `test_store.py` covering each function, idempotency, edge cases
+    (missing outcomes, below-threshold clusters), and the touch/stale
+    round trip.
+  - **Status:** 78 tests passing, 89% coverage, ruff + mypy --strict
+    clean, silent-except scanner clean.
+- **Next session:** v0.4 — surprise and belief-as-distribution. Make
+  `delta` a first-class retrieval signal (Room Prior residual).
+  Retrieval distribution itself becomes the belief: successful uses
+  raise drawer mass for a context, dead retrievals lower it. Bayesian
+  bookkeeping over the verbatim corpus, no training pipeline. Roadmap
+  is the plan; do not re-litigate it.
+
+- **Prior session — 2026-04-08 (v0.2 kickoff):**
 - **What was accomplished:** First cut of v0.2 shipped. Drawer schema
   gained five optional prediction-bound fields (`claim`,
   `predicted_outcome`, `observed_outcome`, `delta`, `supersedes_id`) as

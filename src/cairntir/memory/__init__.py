@@ -7,6 +7,12 @@ for persistence, :mod:`cairntir.memory.embeddings` for embedding providers, and
 
 from __future__ import annotations
 
+from cairntir.memory.consolidate import (
+    Contradiction,
+    consolidate_room,
+    demote_stale,
+    detect_contradictions,
+)
 from cairntir.memory.embeddings import (
     EmbeddingProvider,
     HashEmbeddingProvider,
@@ -17,6 +23,7 @@ from cairntir.memory.store import DrawerStore
 from cairntir.memory.taxonomy import Drawer, Layer
 
 __all__ = [
+    "Contradiction",
     "Drawer",
     "DrawerStore",
     "EmbeddingProvider",
@@ -25,4 +32,7 @@ __all__ = [
     "RetrievalResult",
     "Retriever",
     "SentenceTransformerProvider",
+    "consolidate_room",
+    "demote_stale",
+    "detect_contradictions",
 ]

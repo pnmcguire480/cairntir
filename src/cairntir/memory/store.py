@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 import sqlite3
 import struct
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -31,12 +31,15 @@ def _pack(vec: list[float]) -> bytes:
     return struct.pack(f"{len(vec)}f", *vec)
 
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 """Current drawer schema version.
 
 v1 — initial: wing, room, content, layer, metadata, created_at.
 v2 — prediction-bound drawers: claim, predicted_outcome, observed_outcome,
      delta, supersedes_id (all nullable). Forward-only ALTER TABLE migration.
+v3 — consolidation substrate: last_accessed_at, access_count. Powers the
+     replay-weighted forgetting curve and the consolidate pass. Backfilled
+     from created_at / 0 for pre-v3 rows.
 """
 
 _V2_COLUMNS: tuple[str, ...] = (
@@ -88,7 +91,9 @@ class DrawerStore:
                         predicted_outcome TEXT,
                         observed_outcome  TEXT,
                         delta             TEXT,
-                        supersedes_id     INTEGER
+                        supersedes_id     INTEGER,
+                        last_accessed_at  TEXT,
+                        access_count      INTEGER NOT NULL DEFAULT 0
                     )
                     """
                 )
@@ -123,12 +128,19 @@ class DrawerStore:
             "observed_outcome": "TEXT",
             "delta": "TEXT",
             "supersedes_id": "INTEGER",
+            "last_accessed_at": "TEXT",
+            "access_count": "INTEGER NOT NULL DEFAULT 0",
         }
         for name, decl in column_defs.items():
             if name not in existing:
                 # ALTER TABLE identifiers are trusted literals defined above;
                 # no user input flows into this statement.
                 self._conn.execute(f"ALTER TABLE drawers ADD COLUMN {name} {decl}")
+        # Backfill last_accessed_at from created_at for pre-v3 rows. One-shot,
+        # idempotent (WHERE last_accessed_at IS NULL).
+        self._conn.execute(
+            "UPDATE drawers SET last_accessed_at = created_at WHERE last_accessed_at IS NULL"
+        )
 
     def close(self) -> None:
         """Close the underlying SQLite connection."""
@@ -155,9 +167,10 @@ class DrawerStore:
                     """
                     INSERT INTO drawers (
                         wing, room, content, layer, metadata, created_at,
-                        claim, predicted_outcome, observed_outcome, delta, supersedes_id
+                        claim, predicted_outcome, observed_outcome, delta, supersedes_id,
+                        last_accessed_at, access_count
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
                     """,
                     (
                         drawer.wing,
@@ -171,6 +184,7 @@ class DrawerStore:
                         drawer.observed_outcome,
                         drawer.delta,
                         drawer.supersedes_id,
+                        drawer.created_at.isoformat(),
                     ),
                 )
                 drawer_id = int(cur.lastrowid or 0)
@@ -183,12 +197,74 @@ class DrawerStore:
         return drawer.model_copy(update={"id": drawer_id})
 
     def get(self, drawer_id: int) -> Drawer | None:
-        """Return a drawer by id, or ``None`` if missing."""
+        """Return a drawer by id, or ``None`` if missing.
+
+        A successful fetch bumps ``access_count`` and refreshes
+        ``last_accessed_at``. This is the replay signal the v0.3 forgetting
+        curve reads from; drawers that are never retrieved grow stale and
+        drift to a cold layer.
+        """
         try:
             row = self._conn.execute("SELECT * FROM drawers WHERE id = ?", (drawer_id,)).fetchone()
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"failed to fetch drawer {drawer_id}: {exc}") from exc
-        return None if row is None else _row_to_drawer(row)
+        if row is None:
+            return None
+        self._touch(int(row["id"]))
+        return _row_to_drawer(row)
+
+    def _touch(self, drawer_id: int, *, now: datetime | None = None) -> None:
+        """Bump access_count and stamp last_accessed_at for one drawer."""
+        stamp = (now or datetime.now(UTC)).isoformat()
+        try:
+            with self._conn:
+                self._conn.execute(
+                    "UPDATE drawers SET access_count = access_count + 1,"
+                    " last_accessed_at = ? WHERE id = ?",
+                    (stamp, drawer_id),
+                )
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"failed to touch drawer {drawer_id}: {exc}") from exc
+
+    def update_layer(self, drawer_id: int, layer: Layer) -> None:
+        """Move a drawer to a new retrieval layer. Never deletes."""
+        try:
+            with self._conn:
+                cur = self._conn.execute(
+                    "UPDATE drawers SET layer = ? WHERE id = ?",
+                    (layer.value, drawer_id),
+                )
+                if cur.rowcount == 0:
+                    raise MemoryStoreError(f"no drawer with id {drawer_id} to update_layer")
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"failed to update layer for drawer {drawer_id}: {exc}") from exc
+
+    def stale_ids(
+        self,
+        *,
+        older_than: datetime,
+        layer: Layer,
+        wing: str | None = None,
+    ) -> list[int]:
+        """Return ids of drawers in ``layer`` untouched since ``older_than``.
+
+        The forgetting curve reads this to decide which drawers to demote.
+        Never includes drawers that have been accessed since the cutoff.
+        """
+        sql = (
+            "SELECT id FROM drawers"
+            " WHERE layer = ? AND last_accessed_at IS NOT NULL"
+            " AND last_accessed_at < ?"
+        )
+        params: list[Any] = [layer.value, older_than.isoformat()]
+        if wing is not None:
+            sql += " AND wing = ?"
+            params.append(wing)
+        try:
+            rows = self._conn.execute(sql, params).fetchall()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"stale_ids failed: {exc}") from exc
+        return [int(r["id"]) for r in rows]
 
     def list_by(
         self,
@@ -253,6 +329,11 @@ class DrawerStore:
             results.append((_row_to_drawer(row), float(row["distance"])))
             if len(results) >= limit:
                 break
+        # Touch hits so the forgetting curve treats them as fresh. Done
+        # after scoring so the update doesn't perturb the ranking read.
+        for drawer, _ in results:
+            if drawer.id is not None:
+                self._touch(drawer.id)
         return results
 
 
