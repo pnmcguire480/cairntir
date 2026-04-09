@@ -305,6 +305,85 @@ def _register_user_via_claude_cli(*, force: bool) -> tuple[bool, str]:
     return False, f"`claude mcp add` exited {code}: {stderr or stdout}"
 
 
+GREETING_BEGIN_MARKER: str = "<!-- cairntir:begin -->"
+GREETING_END_MARKER: str = "<!-- cairntir:end -->"
+
+GREETING_BODY: str = """# Cairntir — memory-first reasoning layer
+
+You have access to a persistent memory system via the `cairntir_*` MCP tools.
+At the start of every conversation:
+
+1. Call `cairntir_session_start` with the wing matching the current project.
+   Use the lowercase folder name in cwd as the wing (e.g. `stars-2026`,
+   `cairntir`). If unsure, ask the user.
+2. Read the identity and essential drawers it returns *before* answering
+   anything substantive.
+3. When a decision is made or a fact is learned that future sessions will
+   need, call `cairntir_remember` to persist it verbatim.
+4. When the user asks about past decisions, call `cairntir_recall` first
+   before reasoning from scratch. Cite drawer ids inline.
+5. For load-bearing assumptions, invoke `cairntir_crucible` before committing
+   to them. For ship-readiness checks, invoke `cairntir_audit`.
+
+If `cairntir_session_start` returns empty for a wing, either the wing is new
+(write the first drawer) or the MCP server is misconfigured (tell the user so
+they can run `cairntir init --user --force`).
+
+This is not optional. A Claude Code session that does not check Cairntir
+memory at the start of a chat is hallucinating by default.
+"""
+"""The user-level CLAUDE.md preamble Cairntir installs on `init --user`."""
+
+
+def _render_greeting_block() -> str:
+    return f"{GREETING_BEGIN_MARKER}\n{GREETING_BODY}{GREETING_END_MARKER}\n"
+
+
+def _upsert_greeting(path: Path, *, body: str = GREETING_BODY) -> str:
+    """Idempotently install the Cairntir greeting into a user CLAUDE.md.
+
+    Returns one of ``"created"``, ``"appended"``, ``"updated"``, or
+    ``"unchanged"`` so the CLI can report what happened. Never clobbers
+    existing non-Cairntir content: the greeting is delimited by HTML
+    comment markers and everything outside the markers is preserved
+    byte-for-byte.
+    """
+    block = f"{GREETING_BEGIN_MARKER}\n{body}{GREETING_END_MARKER}\n"
+
+    if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(block, encoding="utf-8")
+        return "created"
+
+    existing = path.read_text(encoding="utf-8")
+    begin = existing.find(GREETING_BEGIN_MARKER)
+    end = existing.find(GREETING_END_MARKER)
+
+    if begin == -1 or end == -1 or end < begin:
+        # No markers — append the block, preserving everything that was
+        # already in the file. A blank line separates prior content from
+        # the new block if the file didn't end with one.
+        if existing.endswith("\n\n"):
+            separator = ""
+        elif existing.endswith("\n"):
+            separator = "\n"
+        else:
+            separator = "\n\n"
+        path.write_text(existing + separator + block, encoding="utf-8")
+        return "appended"
+
+    # Markers found — replace the delimited block only.
+    end_of_end = end + len(GREETING_END_MARKER)
+    # Include the trailing newline after the end marker if present.
+    if end_of_end < len(existing) and existing[end_of_end] == "\n":
+        end_of_end += 1
+    new_contents = existing[:begin] + block + existing[end_of_end:]
+    if new_contents == existing:
+        return "unchanged"
+    path.write_text(new_contents, encoding="utf-8")
+    return "updated"
+
+
 @app.command("init")
 def init_cmd(
     user: bool = typer.Option(
@@ -320,6 +399,13 @@ def init_cmd(
         help="Re-register even if Cairntir is already present. In --user mode,"
         " removes the existing user-scope entry and re-adds it — use this to"
         " fix a registration pointing at the wrong Python interpreter.",
+    ),
+    no_greeting: bool = typer.Option(
+        False,
+        "--no-greeting",
+        help="Skip installing the user-level CLAUDE.md preamble that tells"
+        " every Claude Code session to call cairntir_session_start on the"
+        " first turn. Only meaningful with --user.",
     ),
 ) -> None:
     """Register Cairntir's MCP server with Claude Code.
@@ -346,6 +432,12 @@ def init_cmd(
             raise typer.Exit(code=1)
         typer.echo("registered cairntir MCP server at user scope")
         typer.echo(message)
+
+        if not no_greeting:
+            greeting_path = Path.home() / ".claude" / "CLAUDE.md"
+            action = _upsert_greeting(greeting_path)
+            typer.echo(f"greeting preamble {action} at {greeting_path}")
+
         typer.echo("restart Claude Code (fully quit, not just close the window) to pick it up.")
         return
 

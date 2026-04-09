@@ -233,6 +233,124 @@ def test_init_user_force_runs_remove_then_add(monkeypatch: object) -> None:
     assert calls[1][1:5] == ["mcp", "add", "-s", "user"]
 
 
+def test_upsert_greeting_creates_file_when_missing(tmp_path: Path) -> None:
+    from cairntir.cli import (
+        GREETING_BEGIN_MARKER,
+        GREETING_END_MARKER,
+        _upsert_greeting,
+    )
+
+    target = tmp_path / ".claude" / "CLAUDE.md"
+    action = _upsert_greeting(target)
+    assert action == "created"
+    text = target.read_text(encoding="utf-8")
+    assert GREETING_BEGIN_MARKER in text
+    assert GREETING_END_MARKER in text
+    assert "cairntir_session_start" in text
+
+
+def test_upsert_greeting_appends_to_existing_file(tmp_path: Path) -> None:
+    from cairntir.cli import GREETING_BEGIN_MARKER, _upsert_greeting
+
+    target = tmp_path / "CLAUDE.md"
+    target.write_text("# my existing notes\n\nkeep me safe\n", encoding="utf-8")
+    action = _upsert_greeting(target)
+    assert action == "appended"
+    text = target.read_text(encoding="utf-8")
+    assert "keep me safe" in text  # user content preserved byte-for-byte
+    assert GREETING_BEGIN_MARKER in text
+
+
+def test_upsert_greeting_updates_existing_markers(tmp_path: Path) -> None:
+    from cairntir.cli import (
+        GREETING_BEGIN_MARKER,
+        GREETING_END_MARKER,
+        _upsert_greeting,
+    )
+
+    target = tmp_path / "CLAUDE.md"
+    old_body = "STALE OLD GREETING\n"
+    target.write_text(
+        f"prologue\n\n{GREETING_BEGIN_MARKER}\n{old_body}{GREETING_END_MARKER}\nepilogue\n",
+        encoding="utf-8",
+    )
+    action = _upsert_greeting(target)
+    assert action == "updated"
+    text = target.read_text(encoding="utf-8")
+    assert "STALE OLD GREETING" not in text
+    assert "cairntir_session_start" in text
+    assert "prologue" in text
+    assert "epilogue" in text
+
+
+def test_upsert_greeting_is_idempotent(tmp_path: Path) -> None:
+    from cairntir.cli import _upsert_greeting
+
+    target = tmp_path / "CLAUDE.md"
+    _upsert_greeting(target)
+    second = _upsert_greeting(target)
+    assert second == "unchanged"
+
+
+def test_init_user_installs_greeting_by_default(monkeypatch: object, tmp_path: Path) -> None:
+    import shutil
+    import subprocess
+    from typing import Any
+
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))  # type: ignore[attr-defined]
+    monkeypatch.setenv("HOME", str(tmp_path))  # type: ignore[attr-defined]
+
+    class _Ok:
+        returncode = 0
+        stdout = "ok"
+        stderr = ""
+
+    def _fake_which(name: str) -> str | None:
+        return "/fake/claude" if name == "claude" else None
+
+    def _fake_run(_cmd: list[str], **_: Any) -> _Ok:
+        return _Ok()
+
+    monkeypatch.setattr(shutil, "which", _fake_which)  # type: ignore[attr-defined]
+    monkeypatch.setattr(subprocess, "run", _fake_run)  # type: ignore[attr-defined]
+
+    result = runner.invoke(app, ["init", "--user"])
+    assert result.exit_code == 0
+    assert "greeting preamble" in result.stdout
+    claude_md = tmp_path / ".claude" / "CLAUDE.md"
+    assert claude_md.exists()
+    assert "cairntir_session_start" in claude_md.read_text(encoding="utf-8")
+
+
+def test_init_user_no_greeting_flag_skips_install(monkeypatch: object, tmp_path: Path) -> None:
+    import shutil
+    import subprocess
+    from typing import Any
+
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))  # type: ignore[attr-defined]
+    monkeypatch.setenv("HOME", str(tmp_path))  # type: ignore[attr-defined]
+
+    class _Ok:
+        returncode = 0
+        stdout = "ok"
+        stderr = ""
+
+    def _fake_which(name: str) -> str | None:
+        return "/fake/claude" if name == "claude" else None
+
+    def _fake_run(_cmd: list[str], **_: Any) -> _Ok:
+        return _Ok()
+
+    monkeypatch.setattr(shutil, "which", _fake_which)  # type: ignore[attr-defined]
+    monkeypatch.setattr(subprocess, "run", _fake_run)  # type: ignore[attr-defined]
+
+    result = runner.invoke(app, ["init", "--user", "--no-greeting"])
+    assert result.exit_code == 0
+    assert "greeting preamble" not in result.stdout
+    claude_md = tmp_path / ".claude" / "CLAUDE.md"
+    assert not claude_md.exists()
+
+
 def test_init_user_errors_when_claude_cli_missing(monkeypatch: object) -> None:
     import shutil
 
