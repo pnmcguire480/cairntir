@@ -33,6 +33,7 @@ theme:
 
 nav:
   - Home: index.md
+  - How to Use: how-to-use.md
   - Manifesto: manifesto.md
   - Concept: concept.md
   - Roadmap: roadmap.md
