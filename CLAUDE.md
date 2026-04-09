@@ -75,7 +75,39 @@ Cairntir is the distillation of two predecessors:
 
 ### Last Session
 
-- **Date:** 2026-04-08 (v0.3 — consolidation, forgetting, contradiction)
+- **Date:** 2026-04-08 (v0.4 — surprise + belief-as-distribution)
+- **What was accomplished:** v0.4 landed. `Drawer` gained a
+  `belief_mass: float = 1.0` field and the store migrated to schema v4
+  (forward-only ALTER TABLE, `REAL NOT NULL DEFAULT 1.0`, backfilled
+  for pre-v4 rows). Two new store methods — `reinforce(id, amount=1.0)`
+  and `weaken(id, amount=1.0)` — adjust mass in-place and clamp at
+  zero so a weakened drawer is punished, never deleted. New module
+  `cairntir.memory.belief` exposes two pure functions:
+  - `effective_distance(drawer, raw_distance)` folds the raw vector
+    distance through `mass * (1 + delta_boost_if_surprise)` with a
+    mass floor of 0.1 so zero-mass drawers stay retrievable at
+    degraded rank.
+  - `rerank_results([(drawer, distance), ...])` returns a new list
+    sorted by effective distance, stable on ties, raw distance kept
+    for caller inspection.
+  `DrawerStore.search()` now takes `rerank_by_belief: bool = True` and
+  calls the reranker by default. Opt out for pure vector order. The
+  math is deliberately blunt — belief is a steering wheel, not an
+  engine, and semantic closeness still dominates in doubt.
+  - **Tests added:** 10 new tests in `test_belief.py` covering the
+    scorer, the reranker's stable tie-breaking, reinforce/weaken mass
+    clamping, missing-drawer errors, and an end-to-end store.search
+    rerank that flips the top hit on identical-embedder queries.
+  - **Status:** 88 tests passing, 90% coverage, ruff + mypy --strict
+    clean.
+- **Next session:** v0.5 — Portable Signed Format (anti-capture lock).
+  Versioned, human-readable, signed interchange format for drawers.
+  Content-addressed hashes; provenance as a first-class field.
+  `cairntir export` / `cairntir import` over any substrate (USB, IPFS,
+  git, mailing list). Structural prohibition: no drawer may reference
+  a non-drawer URL. Do not re-litigate the roadmap.
+
+- **Prior session — 2026-04-08 (v0.3):**
 - **What was accomplished:** v0.3 landed in one pass. The store gained a
   v3 schema migration that adds `last_accessed_at` (backfilled from
   `created_at` for pre-v3 rows) and `access_count`, plus three new

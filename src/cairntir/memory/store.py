@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING, Any
 import sqlite_vec
 
 from cairntir.errors import MemoryStoreError
+from cairntir.memory.belief import rerank_results
 from cairntir.memory.taxonomy import Drawer, Layer
 
 if TYPE_CHECKING:
@@ -31,7 +32,7 @@ def _pack(vec: list[float]) -> bytes:
     return struct.pack(f"{len(vec)}f", *vec)
 
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 """Current drawer schema version.
 
 v1 — initial: wing, room, content, layer, metadata, created_at.
@@ -40,6 +41,10 @@ v2 — prediction-bound drawers: claim, predicted_outcome, observed_outcome,
 v3 — consolidation substrate: last_accessed_at, access_count. Powers the
      replay-weighted forgetting curve and the consolidate pass. Backfilled
      from created_at / 0 for pre-v3 rows.
+v4 — belief-as-distribution: belief_mass scalar (default 1.0). Raised by
+     reinforce(), lowered by weaken(), clamped at 0. Combines with the
+     optional ``delta`` field to steer search ranking without a training
+     pipeline.
 """
 
 _V2_COLUMNS: tuple[str, ...] = (
@@ -93,7 +98,8 @@ class DrawerStore:
                         delta             TEXT,
                         supersedes_id     INTEGER,
                         last_accessed_at  TEXT,
-                        access_count      INTEGER NOT NULL DEFAULT 0
+                        access_count      INTEGER NOT NULL DEFAULT 0,
+                        belief_mass       REAL NOT NULL DEFAULT 1.0
                     )
                     """
                 )
@@ -130,6 +136,7 @@ class DrawerStore:
             "supersedes_id": "INTEGER",
             "last_accessed_at": "TEXT",
             "access_count": "INTEGER NOT NULL DEFAULT 0",
+            "belief_mass": "REAL NOT NULL DEFAULT 1.0",
         }
         for name, decl in column_defs.items():
             if name not in existing:
@@ -168,9 +175,9 @@ class DrawerStore:
                     INSERT INTO drawers (
                         wing, room, content, layer, metadata, created_at,
                         claim, predicted_outcome, observed_outcome, delta, supersedes_id,
-                        last_accessed_at, access_count
+                        last_accessed_at, access_count, belief_mass
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)
                     """,
                     (
                         drawer.wing,
@@ -185,6 +192,7 @@ class DrawerStore:
                         drawer.delta,
                         drawer.supersedes_id,
                         drawer.created_at.isoformat(),
+                        max(drawer.belief_mass, 0.0),
                     ),
                 )
                 drawer_id = int(cur.lastrowid or 0)
@@ -238,6 +246,41 @@ class DrawerStore:
                     raise MemoryStoreError(f"no drawer with id {drawer_id} to update_layer")
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"failed to update layer for drawer {drawer_id}: {exc}") from exc
+
+    def reinforce(self, drawer_id: int, *, amount: float = 1.0) -> float:
+        """Raise a drawer's ``belief_mass`` by ``amount``. Returns the new mass.
+
+        Belief mass is a scalar, neutral at 1.0. Reinforcement is how the
+        system records that a retrieval was actually useful in context.
+        The retrieval distribution itself is the belief: no training loop,
+        no loss function, just replay-weighted mass.
+        """
+        return self._adjust_mass(drawer_id, amount)
+
+    def weaken(self, drawer_id: int, *, amount: float = 1.0) -> float:
+        """Lower a drawer's ``belief_mass`` by ``amount``. Clamped at 0.
+
+        Used when a retrieval was dead weight — irrelevant to the query
+        the user actually cared about. Never deletes the drawer; the
+        verbatim content is the floor.
+        """
+        return self._adjust_mass(drawer_id, -amount)
+
+    def _adjust_mass(self, drawer_id: int, delta: float) -> float:
+        try:
+            with self._conn:
+                cur = self._conn.execute(
+                    "UPDATE drawers SET belief_mass = MAX(0.0, belief_mass + ?) WHERE id = ?",
+                    (delta, drawer_id),
+                )
+                if cur.rowcount == 0:
+                    raise MemoryStoreError(f"no drawer with id {drawer_id} to adjust mass")
+                row = self._conn.execute(
+                    "SELECT belief_mass FROM drawers WHERE id = ?", (drawer_id,)
+                ).fetchone()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"failed to adjust belief_mass for {drawer_id}: {exc}") from exc
+        return float(row["belief_mass"])
 
     def stale_ids(
         self,
@@ -303,8 +346,18 @@ class DrawerStore:
         wing: str | None = None,
         room: str | None = None,
         limit: int = 10,
+        rerank_by_belief: bool = True,
     ) -> list[tuple[Drawer, float]]:
-        """Semantic-search drawers. Returns ``(drawer, distance)`` pairs, closest first."""
+        """Semantic-search drawers. Returns ``(drawer, distance)`` pairs, closest first.
+
+        When ``rerank_by_belief`` is ``True`` (the default) the results are
+        reordered by :mod:`cairntir.memory.belief`'s effective-distance
+        scorer, which folds in each drawer's ``belief_mass`` and a boost
+        for any recorded surprise in its ``delta`` field. The raw vector
+        distance is still returned in the tuple so callers can inspect
+        semantic closeness; only the ordering changes. Set
+        ``rerank_by_belief=False`` to get pure vector order.
+        """
         vector = self._embedder.embed([query])[0]
         try:
             rows = self._conn.execute(
@@ -334,6 +387,8 @@ class DrawerStore:
         for drawer, _ in results:
             if drawer.id is not None:
                 self._touch(drawer.id)
+        if rerank_by_belief:
+            results = rerank_results(results)
         return results
 
 
@@ -344,6 +399,7 @@ def _row_to_drawer(row: sqlite3.Row) -> Drawer:
         return row[name] if name in keys else None
 
     supersedes = _opt("supersedes_id")
+    mass = _opt("belief_mass")
     return Drawer(
         id=int(row["id"]),
         wing=str(row["wing"]),
@@ -357,4 +413,5 @@ def _row_to_drawer(row: sqlite3.Row) -> Drawer:
         observed_outcome=_opt("observed_outcome"),
         delta=_opt("delta"),
         supersedes_id=int(supersedes) if supersedes is not None else None,
+        belief_mass=float(mass) if mass is not None else 1.0,
     )

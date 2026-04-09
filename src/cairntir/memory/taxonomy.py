@@ -85,6 +85,11 @@ class Drawer(BaseModel):
     delta: str | None = None
     supersedes_id: int | None = None
 
+    # v0.4 — belief-as-distribution: scalar mass adjusted by reinforce/weaken.
+    # Default 1.0 = neutral prior. Successful retrievals raise it, dead
+    # retrievals lower it. Never goes below zero.
+    belief_mass: float = 1.0
+
     @field_validator("wing")
     @classmethod
     def _check_wing(cls, v: str) -> str:

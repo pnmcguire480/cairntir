@@ -7,6 +7,7 @@ for persistence, :mod:`cairntir.memory.embeddings` for embedding providers, and
 
 from __future__ import annotations
 
+from cairntir.memory.belief import effective_distance, rerank_results
 from cairntir.memory.consolidate import (
     Contradiction,
     consolidate_room,
@@ -35,4 +36,6 @@ __all__ = [
     "consolidate_room",
     "demote_stale",
     "detect_contradictions",
+    "effective_distance",
+    "rerank_results",
 ]
