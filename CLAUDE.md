@@ -75,8 +75,46 @@ Cairntir is the distillation of two predecessors:
 
 ### Last Session
 
-- **Date:** 2026-04-08
-- **What was accomplished:** v0.1.0 shipped. All five phases landed in
+- **Date:** 2026-04-08 (round table session, post-v0.1)
+- **What was accomplished:** Locked in the v0.1→v1.0 path. Eight-thinker
+  round table (Karpathy, LeCun, Sutskever, Hinton, Fuller, Peter Joseph,
+  Watts, Uncle Bob) reviewed the original Long Road. They converged hard
+  on five themes that are now committed in `docs/roadmap.md` under "The
+  Road to 1.0 — Round Table Edition":
+  1. **Prediction-bound drawers** — `claim`, `predicted_outcome`,
+     `observed_outcome`, `delta`, `supersedes_id` as the AutoResearch
+     loop's substrate
+  2. **Consolidation + forgetting curve** — sleep-cycle pass, demote
+     unused, contradiction detector
+  3. **Surprise as the load-bearing field** — delta is the gradient
+     when there are no weights
+  4. **Portable signed format** — anti-capture lock; format is the
+     product
+  5. **Cut Team Memory** — replicable beats shared
+  Five new thinker subagents created in `c:\Dev\agents\agents\thinkers-named\science\`
+  (ai-researchers/{karpathy, lecun, sutskever, hinton} +
+  computing-pioneers/uncle-bob). Need `c:\Dev\agents\deploy.sh` to
+  register them. The new roadmap shape: v0.2 prediction-bound drawers +
+  eval-on-PR → v0.3 consolidation/forgetting/contradiction → v0.4
+  surprise/belief-as-distribution → v0.5 portable signed format → v0.6
+  Reason loop through clean ports → v1.0 library extraction
+  (protocols-only public surface, split CLI/MCP/daemon into separate
+  distributions, contract+property tests, public-API snapshot test,
+  written deprecation policy, versioned migrations).
+- **Next session — start here for the full auto run:**
+  1. Read `docs/roadmap.md` "Road to 1.0 — Round Table Edition"
+  2. Begin **v0.2**: prediction-bound drawer schema migration (add the
+     five optional fields, version the schema, write forward-only
+     migration with round-trip fixture test) + eval-on-PR (wire the
+     LongMemEval subset into CI as a fail-on-regression gate)
+  3. After v0.2 lands, march straight through v0.3 → v0.4 → v0.5 → v0.6
+     → v1.0. The roadmap is the plan; do not re-litigate it.
+  4. Each phase: small commits, conventional format, tests stay green,
+     ruff + mypy --strict clean, no silent except.
+  5. At v1.0: tag, GitHub release, blog post, update this Last Session.
+
+- **Original v0.1.0 ship summary preserved below for posterity:**
+  v0.1.0 shipped. All five phases landed in
   one arc — the memory layer, the MCP server, the three skills, and the
   one-loop daemon. The sniff test (a fresh chat in `c:\Dev\Cairntir\`
   understanding the project without re-briefing) passed manually before

@@ -31,8 +31,8 @@
 - Conversation watcher
 - Retire init/wrapup ceremony fully
 
-## v0.1.0 — First Public Release
-- PyPI publish
+## v0.1.0 — First Public Release ✅
+- ~~PyPI publish~~ **intentionally skipped** — install from source / Claude Code plugin; local-first
 - GitHub Release with notes
 - Docs site live at `pnmcguire480.github.io/cairntir/`
 - Discord or GitHub Discussions for community
@@ -40,7 +40,90 @@
 
 ---
 
-## Beyond v0.1.0 — The Long Road
+## The Road to 1.0 — Round Table Edition
+
+This section is **committed**, not directional. It is the path from v0.1.0 to
+v1.0.0, locked in 2026-04-08 after a round table of eight thinkers
+(Karpathy, LeCun, Sutskever, Hinton, Fuller, Peter Joseph, Alan Watts, Uncle
+Bob) reviewed the original "Long Road" plan and converged on five themes:
+
+1. **Prediction-bound drawers** — every drawer can carry `claim`,
+   `predicted_outcome`, `observed_outcome`, `delta`, `supersedes_id`. The
+   AutoResearch Loop's substrate. Karpathy, LeCun, Hinton, Sutskever,
+   Fuller, and Uncle Bob all flagged this independently.
+2. **Consolidation + forgetting** — verbatim is the floor, not the ceiling.
+   Sleep-cycle pass that promotes derived drawers and demotes unused ones.
+   Hinton, Watts, LeCun.
+3. **Surprise as the load-bearing field** — store what the system did not
+   expect, not just what happened. Reconstruction-error / delta is the
+   gradient when there are no weights. LeCun, Fuller, Hinton, Karpathy.
+4. **Portable signed format = anti-capture** — format is the product, not
+   the implementation. Content-addressed, signed, gossip-importable.
+   Peter Joseph, Fuller.
+5. **Cut Team Memory** — replicable beats shared. Team capability falls out
+   of the portable format for free. Karpathy, Fuller.
+
+### v0.2 — Prediction-Bound Drawers + Eval-on-Every-PR
+- Drawer schema migration: add `claim`, `predicted_outcome`,
+  `observed_outcome`, `delta`, `supersedes_id` (all optional, append-only)
+- Versioned schema with forward-only migrations + round-trip fixture tests
+- LongMemEval subset wired into CI; PR fails on regression
+- Reason skill must emit a prediction drawer before acting
+
+### v0.3 — Consolidation, Forgetting, Contradiction
+- Nightly `consolidate` pass: cluster recent drawers, write derived
+  abstractions one layer up, keep verbatim underneath
+- Replay-weighted forgetting curve: drawers untouched in N days drift
+  to a cold layer (demotion, not deletion)
+- Contradiction detector during consolidation — flag, never average
+
+### v0.4 — Surprise & Belief-as-Distribution
+- `delta` becomes a first-class retrieval signal (Room Prior residual)
+- Retrieval distribution itself is the belief: successful uses raise
+  drawer mass for that context, dead retrievals lower it
+- Bayesian bookkeeping over a verbatim corpus, no training pipeline
+
+### v0.5 — Portable Signed Format (Anti-Capture Lock)
+- Versioned, human-readable, signed interchange format for drawers
+- Content-addressed hashes; provenance as a first-class field
+- `cairntir export` / `cairntir import` over any substrate (USB, IPFS,
+  git, mailing list) — gossip + torrents, no server, ever
+- Structural prohibition: no drawer may reference a non-drawer URL
+
+### v0.6 — Reason Loop Through Clean Ports
+- `cairntir.reason.model`: Hypothesis / Experiment / Outcome / BeliefUpdate
+- `cairntir.reason.ports`: HypothesisProposer / ExperimentRunner /
+  BeliefStore / MemoryGateway protocols
+- `ReasonLoop.step()` — testable without LLMs, networks, or sqlite
+- Production wiring lives outside the library
+
+### v1.0.0 — Library Extraction
+- `cairntir.__init__` exposes ONLY protocols + dataclasses + exceptions:
+  `Drawer`, `Layer`, `Wing`, `Room`, `Store`, `Retriever`,
+  `EmbeddingProvider`, typed errors. That is the entire contract.
+- Concrete impls move to `cairntir.impl.*` (importable, but reservedright-to-change)
+- CLI / MCP server / daemon split into separate distributions
+  (`cairntir-cli`, `cairntir-mcp`, `cairntir-daemon`) that import `cairntir`
+- Written deprecation policy: 2 minor versions warning minimum;
+  `CairntirDeprecationWarning` subclass; no silent removals
+- Contract test suite that every `Store` impl must pass
+- Property-based tests (Hypothesis) on taxonomy invariants and retrieval
+  monotonicity
+- Public-API snapshot test that fails on `dir(cairntir)` drift
+- Migration tool with fixtures from every prior schema version, kept
+  forever
+- Integration guide: *"How to put Cairntir behind your own tool"*
+
+**Cut from the original v0.2-v1.0 plan:**
+- v0.4 Team Memory — deferred indefinitely; replicable format makes it
+  unnecessary
+- v0.2 Temporal Knowledge Graph as a *standalone* feature — falls out of
+  prediction-bound drawers + supersedes edges naturally; do not force
+  triples up front
+
+---
+
+## Beyond v1.0.0 — The Long Road
 
 The following are *directional*, not committed. They exist to clarify that Cairntir is not a finished artifact — it is the first layer of something much larger.
 
