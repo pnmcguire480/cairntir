@@ -44,7 +44,7 @@ def test_recall_no_store(tmp_path: Path, monkeypatch: object) -> None:
 
 def test_status_and_recall_with_drawers(tmp_path: Path, monkeypatch: object) -> None:
     monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
-    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider())
+    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
     store.add(
         Drawer(
             wing="demo",

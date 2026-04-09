@@ -28,15 +28,26 @@ app = typer.Typer(
 )
 
 
+_PRODUCTION_DIM = 384
+"""Embedding dimension the MCP server's ``all-MiniLM-L6-v2`` model produces.
+
+The CLI uses :class:`HashEmbeddingProvider` at the same dimension so the
+``vec_drawers`` virtual table shape matches regardless of which code path
+touched the database first. The hash embedder is deterministic and
+dimension-independent, so the only cost of 384 vs 64 is a few extra
+floats per insert — negligible.
+"""
+
+
 def _backend() -> CairntirBackend:
     """Open the on-disk drawer store and wrap it in a backend.
 
-    Uses :class:`HashEmbeddingProvider` to keep the CLI startup free of the
-    ~90 MB sentence-transformers model. Semantic quality comes from the daemon
-    and MCP paths that use the production embedder; the CLI's ``recall`` is a
-    metadata/keyword-aware passthrough suitable for quick human lookups.
+    Uses :class:`HashEmbeddingProvider` at the production dimension
+    (384) to keep the CLI startup free of the ~90 MB
+    sentence-transformers model while staying shape-compatible with
+    the MCP server's ``SentenceTransformerProvider``.
     """
-    store = DrawerStore(db_path(), HashEmbeddingProvider())
+    store = DrawerStore(db_path(), HashEmbeddingProvider(dimension=_PRODUCTION_DIM))
     return CairntirBackend(store)
 
 
