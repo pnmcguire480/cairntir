@@ -162,7 +162,6 @@ branch = true
 omit = [
     # Phase 2+ surfaces — covered by their own phase tests.
     "src/cairntir/__main__.py",
-    "src/cairntir/cli.py",
     "src/cairntir/mcp/server.py",
     "src/cairntir/daemon/__main__.py",
 ]
