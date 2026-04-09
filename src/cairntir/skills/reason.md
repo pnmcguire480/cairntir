@@ -25,7 +25,7 @@ Reason is not a new tool — it is a loop that composes the tools Cairntir
 already has:
 
 ```
-session_start → recall → think → crucible? → remember → answer
+session_start → recall → think → crucible? → predict → remember → answer
 ```
 
 Every step is mandatory for non-trivial questions. For trivial ones
@@ -85,6 +85,33 @@ If the answer depends on a load-bearing assumption, invoke
 `cairntir_crucible(claim=<the assumption>)` before committing to it. A
 load-bearing assumption is any claim where being wrong would undo the
 plan. If Reason can't tell whether it's load-bearing, it is.
+
+### Step 4.5 — predict (mandatory before acting)
+
+**Reason must commit to a falsifiable prediction before any action lands.**
+This is the v0.2 prediction-bound drawer contract: no decision leaves the
+loop without a claim the future can contradict.
+
+Write a prediction drawer *before* the answer executes anything:
+
+```
+cairntir_remember(
+  wing=<current>,
+  room=<topic>,
+  content=<the claim, verbatim>,
+  layer="on_demand",
+  metadata={"source": "reason.predict"},
+  claim=<the load-bearing claim, one sentence>,
+  predicted_outcome=<what you expect to observe if the claim holds>,
+)
+```
+
+`observed_outcome` and `delta` are filled in later, in a follow-up drawer
+that `supersedes_id`s this one. If the prediction would be trivial
+(tautology, pure restatement) the claim is not actually load-bearing —
+go back to Step 3 and find the real one. If you cannot articulate a
+falsifiable prediction, you are not reasoning, you are asserting; stop
+and ask the user.
 
 ### Step 5 — remember
 

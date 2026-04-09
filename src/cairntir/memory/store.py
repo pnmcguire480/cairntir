@@ -31,6 +31,23 @@ def _pack(vec: list[float]) -> bytes:
     return struct.pack(f"{len(vec)}f", *vec)
 
 
+SCHEMA_VERSION = 2
+"""Current drawer schema version.
+
+v1 — initial: wing, room, content, layer, metadata, created_at.
+v2 — prediction-bound drawers: claim, predicted_outcome, observed_outcome,
+     delta, supersedes_id (all nullable). Forward-only ALTER TABLE migration.
+"""
+
+_V2_COLUMNS: tuple[str, ...] = (
+    "claim",
+    "predicted_outcome",
+    "observed_outcome",
+    "delta",
+    "supersedes_id",
+)
+
+
 class DrawerStore:
     """Persistent verbatim drawer store with semantic search."""
 
@@ -60,13 +77,18 @@ class DrawerStore:
                 self._conn.execute(
                     """
                     CREATE TABLE IF NOT EXISTS drawers (
-                        id         INTEGER PRIMARY KEY AUTOINCREMENT,
-                        wing       TEXT NOT NULL,
-                        room       TEXT NOT NULL,
-                        content    TEXT NOT NULL,
-                        layer      TEXT NOT NULL,
-                        metadata   TEXT NOT NULL,
-                        created_at TEXT NOT NULL
+                        id                INTEGER PRIMARY KEY AUTOINCREMENT,
+                        wing              TEXT NOT NULL,
+                        room              TEXT NOT NULL,
+                        content           TEXT NOT NULL,
+                        layer             TEXT NOT NULL,
+                        metadata          TEXT NOT NULL,
+                        created_at        TEXT NOT NULL,
+                        claim             TEXT,
+                        predicted_outcome TEXT,
+                        observed_outcome  TEXT,
+                        delta             TEXT,
+                        supersedes_id     INTEGER
                     )
                     """
                 )
@@ -82,8 +104,31 @@ class DrawerStore:
                     )
                     """
                 )
+                self._migrate()
+                self._conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"failed to initialize schema: {exc}") from exc
+
+    def _migrate(self) -> None:
+        """Forward-only schema migrations. Idempotent.
+
+        Upgrades pre-v2 databases in place by adding the prediction-bound
+        columns. Old rows keep ``NULL`` for every new field, so existing
+        drawers continue to deserialize unchanged.
+        """
+        existing = {row[1] for row in self._conn.execute("PRAGMA table_info(drawers)").fetchall()}
+        column_defs = {
+            "claim": "TEXT",
+            "predicted_outcome": "TEXT",
+            "observed_outcome": "TEXT",
+            "delta": "TEXT",
+            "supersedes_id": "INTEGER",
+        }
+        for name, decl in column_defs.items():
+            if name not in existing:
+                # ALTER TABLE identifiers are trusted literals defined above;
+                # no user input flows into this statement.
+                self._conn.execute(f"ALTER TABLE drawers ADD COLUMN {name} {decl}")
 
     def close(self) -> None:
         """Close the underlying SQLite connection."""
@@ -108,8 +153,11 @@ class DrawerStore:
             with self._conn:
                 cur = self._conn.execute(
                     """
-                    INSERT INTO drawers (wing, room, content, layer, metadata, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?)
+                    INSERT INTO drawers (
+                        wing, room, content, layer, metadata, created_at,
+                        claim, predicted_outcome, observed_outcome, delta, supersedes_id
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         drawer.wing,
@@ -118,6 +166,11 @@ class DrawerStore:
                         drawer.layer.value,
                         json.dumps(drawer.metadata, sort_keys=True),
                         drawer.created_at.isoformat(),
+                        drawer.claim,
+                        drawer.predicted_outcome,
+                        drawer.observed_outcome,
+                        drawer.delta,
+                        drawer.supersedes_id,
                     ),
                 )
                 drawer_id = int(cur.lastrowid or 0)
@@ -204,6 +257,12 @@ class DrawerStore:
 
 
 def _row_to_drawer(row: sqlite3.Row) -> Drawer:
+    keys = row.keys()
+
+    def _opt(name: str) -> Any:
+        return row[name] if name in keys else None
+
+    supersedes = _opt("supersedes_id")
     return Drawer(
         id=int(row["id"]),
         wing=str(row["wing"]),
@@ -212,4 +271,9 @@ def _row_to_drawer(row: sqlite3.Row) -> Drawer:
         layer=Layer(row["layer"]),
         metadata=json.loads(row["metadata"]),
         created_at=datetime.fromisoformat(row["created_at"]),
+        claim=_opt("claim"),
+        predicted_outcome=_opt("predicted_outcome"),
+        observed_outcome=_opt("observed_outcome"),
+        delta=_opt("delta"),
+        supersedes_id=int(supersedes) if supersedes is not None else None,
     )

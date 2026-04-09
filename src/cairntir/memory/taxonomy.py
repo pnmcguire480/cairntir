@@ -58,6 +58,14 @@ class Drawer(BaseModel):
         layer: Retrieval layer.
         metadata: Arbitrary JSON-serializable metadata.
         created_at: UTC timestamp of creation.
+        claim: Optional falsifiable claim this drawer makes.
+        predicted_outcome: Optional prediction the claim commits to, before
+            evidence arrives.
+        observed_outcome: Optional observation recorded after the fact.
+        delta: Optional free-form surprise signal — how the observation
+            diverged from the prediction. Load-bearing in v0.4.
+        supersedes_id: Optional drawer id this entry replaces. Append-only
+            history; nothing is mutated in place.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -69,6 +77,13 @@ class Drawer(BaseModel):
     layer: Layer = Layer.ON_DEMAND
     metadata: dict[str, Any] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    # v0.2 — prediction-bound drawer fields (all optional, append-only).
+    claim: str | None = None
+    predicted_outcome: str | None = None
+    observed_outcome: str | None = None
+    delta: str | None = None
+    supersedes_id: int | None = None
 
     @field_validator("wing")
     @classmethod

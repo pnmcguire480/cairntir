@@ -75,7 +75,32 @@ Cairntir is the distillation of two predecessors:
 
 ### Last Session
 
-- **Date:** 2026-04-08 (round table session, post-v0.1)
+- **Date:** 2026-04-08 (v0.2 kickoff — prediction-bound drawers landed)
+- **What was accomplished:** First cut of v0.2 shipped. Drawer schema
+  gained five optional prediction-bound fields (`claim`,
+  `predicted_outcome`, `observed_outcome`, `delta`, `supersedes_id`) as
+  the AutoResearch Loop substrate. `DrawerStore` now carries a
+  `SCHEMA_VERSION = 2` constant and a forward-only `_migrate()` pass
+  that ALTERs pre-v2 tables in place and stamps `PRAGMA user_version`.
+  Old rows deserialize with `None` for every new field; new inserts
+  round-trip all five. Reason skill gained a mandatory Step 4.5
+  ("predict") — no decision leaves the loop without a falsifiable
+  claim + predicted outcome drawer. CI now runs the LongMemEval R@5
+  subset as a separate `eval` job that fails on regression.
+  - **Tests added:** `test_prediction_fields_round_trip`,
+    `test_supersedes_chain_round_trips`,
+    `test_migration_from_v1_database_preserves_old_rows` (hand-builds a
+    v1-shaped DB, reopens through DrawerStore, checks idempotent
+    re-migration).
+  - **Status:** 65 tests passing, 89% coverage, ruff + mypy --strict
+    clean, silent-except scanner clean.
+- **Next session:** v0.3 — consolidation, forgetting curve,
+  contradiction detector. Nightly consolidate pass clusters recent
+  drawers and writes derived abstractions one layer up; replay-weighted
+  demotion drifts stale drawers to a cold layer; contradiction detector
+  flags, never averages. Do not re-litigate the roadmap.
+
+- **Prior session — 2026-04-08 (round table, post-v0.1):**
 - **What was accomplished:** Locked in the v0.1→v1.0 path. Eight-thinker
   round table (Karpathy, LeCun, Sutskever, Hinton, Fuller, Peter Joseph,
   Watts, Uncle Bob) reviewed the original Long Road. They converged hard

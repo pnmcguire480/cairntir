@@ -56,6 +56,23 @@ jobs:
       - name: Run tests
         run: uv run pytest -m "not slow" --cov-fail-under=80
 
+  eval:
+    name: LongMemEval R@5 Gate
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install 3.12
+      - name: Install dependencies
+        run: uv sync --all-extras --dev
+      - name: Run LongMemEval subset (R@5 >= 0.80 or fail)
+        run: uv run pytest -m eval --no-cov -q
+
   build:
     name: Build Package
     needs: test
