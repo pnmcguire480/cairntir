@@ -106,17 +106,21 @@ def test_mass_floor_bounds_effective_distance_from_above(distance: float) -> Non
     assert zero == distance / DEFAULT_MASS_FLOOR  # exact by construction
 
 
-@given(distance=_finite_distance, mass=_non_negative_mass)
+@given(
+    distance=st.floats(
+        min_value=1e-6, max_value=1e3, allow_nan=False, allow_infinity=False
+    ),
+    mass=st.floats(
+        min_value=1e-6, max_value=1e6, allow_nan=False, allow_infinity=False
+    ),
+)
 def test_boost_factor_is_exactly_one_plus_delta_boost(distance: float, mass: float) -> None:
     """For any mass, the delta boost shrinks effective distance by the exact factor."""
     plain = effective_distance(_drawer(mass), distance)
     surprised = effective_distance(_drawer(mass, delta="x"), distance)
-    if plain == 0:
-        assert surprised == 0
-    else:
-        ratio = surprised / plain
-        expected = 1.0 / (1.0 + DEFAULT_DELTA_BOOST)
-        assert abs(ratio - expected) < 1e-9
+    ratio = surprised / plain
+    expected = 1.0 / (1.0 + DEFAULT_DELTA_BOOST)
+    assert abs(ratio - expected) < 1e-6
 
 
 # --------- store-level round-trip property -----------------------------

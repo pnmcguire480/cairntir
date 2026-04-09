@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from typer.testing import CliRunner
@@ -89,6 +90,66 @@ def test_migrate_check_reports_version(tmp_path: Path, monkeypatch: object) -> N
 def test_migrate_missing_db_exits_nonzero(tmp_path: Path) -> None:
     result = runner.invoke(app, ["migrate", str(tmp_path / "nope.db")])
     assert result.exit_code == 1
+
+
+def test_init_writes_project_mcp_json(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.chdir(tmp_path)  # type: ignore[attr-defined]
+    result = runner.invoke(app, ["init"])
+    assert result.exit_code == 0
+    target = tmp_path / ".mcp.json"
+    assert target.exists()
+    data = json.loads(target.read_text(encoding="utf-8"))
+    assert data["mcpServers"]["cairntir"]["command"] == "python"
+    assert data["mcpServers"]["cairntir"]["args"] == ["-m", "cairntir.mcp.server"]
+    assert "registered cairntir" in result.stdout
+
+
+def test_init_is_idempotent(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.chdir(tmp_path)  # type: ignore[attr-defined]
+    runner.invoke(app, ["init"])
+    second = runner.invoke(app, ["init"])
+    assert second.exit_code == 0
+    assert "already registered" in second.stdout
+
+
+def test_init_preserves_other_mcp_servers(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.chdir(tmp_path)  # type: ignore[attr-defined]
+    target = tmp_path / ".mcp.json"
+    target.write_text(
+        json.dumps(
+            {
+                "mcpServers": {
+                    "other": {"command": "node", "args": ["server.js"]},
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    result = runner.invoke(app, ["init"])
+    assert result.exit_code == 0
+    data = json.loads(target.read_text(encoding="utf-8"))
+    assert "other" in data["mcpServers"]
+    assert data["mcpServers"]["other"]["command"] == "node"
+    assert "cairntir" in data["mcpServers"]
+
+
+def test_init_user_writes_to_home(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("HOME", str(tmp_path))  # type: ignore[attr-defined]
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))  # type: ignore[attr-defined]
+    result = runner.invoke(app, ["init", "--user"])
+    assert result.exit_code == 0
+    target = tmp_path / ".claude.json"
+    assert target.exists()
+    data = json.loads(target.read_text(encoding="utf-8"))
+    assert "cairntir" in data["mcpServers"]
+
+
+def test_init_rejects_malformed_config(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.chdir(tmp_path)  # type: ignore[attr-defined]
+    target = tmp_path / ".mcp.json"
+    target.write_text("not json at all", encoding="utf-8")
+    result = runner.invoke(app, ["init"])
+    assert result.exit_code != 0
 
 
 def test_migrate_already_up_to_date(tmp_path: Path, monkeypatch: object) -> None:

@@ -7,7 +7,9 @@ daemon and MCP.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
+from typing import Any
 
 import typer
 
@@ -183,6 +185,83 @@ def migrate_cmd(
     with DrawerStore(target, HashEmbeddingProvider()) as store:
         after = store._conn.execute("PRAGMA user_version").fetchone()[0]
     typer.echo(f"migrated to:      {after}")
+
+
+CAIRNTIR_MCP_SPEC: dict[str, Any] = {
+    "command": "python",
+    "args": ["-m", "cairntir.mcp.server"],
+}
+"""The canonical MCP-server stanza Cairntir writes into Claude Code configs."""
+
+
+def _merge_mcp_spec(config: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+    """Merge the Cairntir MCP stanza into ``config``. Return (config, changed)."""
+    servers = config.setdefault("mcpServers", {})
+    if not isinstance(servers, dict):
+        raise typer.BadParameter("mcpServers in target config is not a JSON object")
+    existing = servers.get("cairntir")
+    if existing == CAIRNTIR_MCP_SPEC:
+        return config, False
+    servers["cairntir"] = dict(CAIRNTIR_MCP_SPEC)
+    return config, True
+
+
+def _write_json(path: Path, data: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(data, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _load_or_init_json(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        loaded = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise typer.BadParameter(f"{path} is not valid JSON: {exc}") from exc
+    if not isinstance(loaded, dict):
+        raise typer.BadParameter(f"{path} is not a JSON object")
+    return loaded
+
+
+@app.command("init")
+def init_cmd(
+    user: bool = typer.Option(
+        False,
+        "--user",
+        help="Register Cairntir at user level (~/.claude.json) instead of the"
+        " current project's .mcp.json. User-level registration makes Cairntir"
+        " available to every Claude Code session regardless of cwd.",
+    ),
+    force: bool = typer.Option(
+        False,
+        "--force",
+        help="Rewrite the target even if Cairntir is already registered.",
+    ),
+) -> None:
+    """Register Cairntir's MCP server with Claude Code.
+
+    Without ``--user``, writes ``.mcp.json`` in the current directory so
+    Claude Code spawns the Cairntir MCP server for sessions opened in
+    that project. Idempotent: an already-registered project is a no-op
+    unless ``--force`` is passed.
+
+    With ``--user``, merges the same stanza into ``~/.claude.json`` so
+    every Claude Code session sees Cairntir. Other entries in the file
+    are preserved.
+    """
+    target = Path.home() / ".claude.json" if user else Path.cwd() / ".mcp.json"
+    config = _load_or_init_json(target)
+    config, changed = _merge_mcp_spec(config)
+    if not changed and not force:
+        typer.echo(f"cairntir already registered in {target}")
+        return
+    _write_json(target, config)
+    scope = "user" if user else "project"
+    typer.echo(f"registered cairntir MCP server ({scope}) in {target}")
+    typer.echo("restart Claude Code (or reload the window) to pick up the new MCP server.")
 
 
 def main() -> None:
