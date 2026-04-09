@@ -187,11 +187,28 @@ def migrate_cmd(
     typer.echo(f"migrated to:      {after}")
 
 
-CAIRNTIR_MCP_SPEC: dict[str, Any] = {
-    "command": "python",
-    "args": ["-m", "cairntir.mcp.server"],
-}
-"""The canonical MCP-server stanza Cairntir writes into Claude Code configs."""
+def _mcp_spec() -> dict[str, Any]:
+    """Return the canonical Cairntir MCP stanza pinned to the *current* Python.
+
+    Pinning to ``sys.executable`` at registration time is the fix for
+    the Windows venv trap: Claude Code spawns MCP servers outside any
+    activated venv, so bare ``python`` resolves to whatever happens to
+    be first on PATH — usually the system interpreter, which does not
+    have Cairntir installed. The spawned process dies silently and the
+    user sees an empty tool list in every folder except the one where
+    they originally activated the venv.
+
+    ``sys.executable`` always points at the interpreter currently
+    running this command, which by definition has Cairntir installed
+    (it is the one running the CLI right now). That path is stable
+    across cwd changes and survives fresh shells.
+    """
+    import sys
+
+    return {
+        "command": sys.executable,
+        "args": ["-m", "cairntir.mcp.server"],
+    }
 
 
 def _merge_mcp_spec(config: dict[str, Any]) -> tuple[dict[str, Any], bool]:
@@ -199,10 +216,11 @@ def _merge_mcp_spec(config: dict[str, Any]) -> tuple[dict[str, Any], bool]:
     servers = config.setdefault("mcpServers", {})
     if not isinstance(servers, dict):
         raise typer.BadParameter("mcpServers in target config is not a JSON object")
+    spec = _mcp_spec()
     existing = servers.get("cairntir")
-    if existing == CAIRNTIR_MCP_SPEC:
+    if existing == spec:
         return config, False
-    servers["cairntir"] = dict(CAIRNTIR_MCP_SPEC)
+    servers["cairntir"] = spec
     return config, True
 
 
@@ -226,50 +244,65 @@ def _load_or_init_json(path: Path) -> dict[str, Any]:
     return loaded
 
 
-def _register_user_via_claude_cli() -> tuple[bool, str]:
+def _run_claude(claude: str, *args: str) -> tuple[int, str, str]:
+    """Invoke the claude CLI. Returns ``(returncode, stdout, stderr)``."""
+    import subprocess
+
+    try:
+        result = subprocess.run(  # noqa: S603 — argv is fully constructed, no shell
+            [claude, *args],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except OSError as exc:
+        return 1, "", f"failed to invoke `claude`: {exc}"
+    return result.returncode, (result.stdout or "").strip(), (result.stderr or "").strip()
+
+
+def _register_user_via_claude_cli(*, force: bool) -> tuple[bool, str]:
     """Call ``claude mcp add -s user ...`` to register Cairntir user-level.
 
-    Returns ``(ok, message)``. Shelling out to the real Claude Code CLI
-    is the only authoritative way to touch the user-level MCP list —
-    writing ``~/.claude.json`` directly does not work because Claude
-    Code manages its own schema/location for that registry.
+    Returns ``(ok, message)``. If ``force`` is true and a prior
+    registration already exists, runs ``claude mcp remove -s user
+    cairntir`` first so the new ``sys.executable``-pinned spec replaces
+    the old one. Idempotent on "already exists" when ``force`` is
+    false.
     """
     import shutil
-    import subprocess
+    import sys
 
     claude = shutil.which("claude")
     if claude is None:
         return (
             False,
             "could not find the `claude` CLI on PATH. Install Claude Code or "
-            "register manually:\n  claude mcp add -s user cairntir -- python -m "
-            "cairntir.mcp.server",
+            "register manually:\n  claude mcp add -s user cairntir -- "
+            f"{sys.executable} -m cairntir.mcp.server",
         )
-    cmd = [
-        claude,
-        "mcp",
-        "add",
-        "-s",
-        "user",
-        "cairntir",
-        "--",
-        "python",
-        "-m",
-        "cairntir.mcp.server",
-    ]
-    try:
-        result = subprocess.run(  # noqa: S603 — argv is fully constructed, no shell
-            cmd,
-            capture_output=True,
-            text=True,
-            check=False,
+
+    python = sys.executable
+    add_args = ("mcp", "add", "-s", "user", "cairntir", "--", python, "-m", "cairntir.mcp.server")
+
+    if force:
+        # Best-effort remove. Failure here is not fatal — the add below
+        # will either succeed or report the real reason.
+        _run_claude(claude, "mcp", "remove", "-s", "user", "cairntir")
+
+    code, stdout, stderr = _run_claude(claude, *add_args)
+    if code == 0:
+        return True, stdout or "registered"
+
+    combined = (stderr or stdout).lower()
+    if "already exists" in combined and not force:
+        return (
+            True,
+            "cairntir is already registered at user scope. "
+            "If it is pointing at the wrong Python, re-register with:\n"
+            "  cairntir init --user --force",
         )
-    except OSError as exc:
-        return False, f"failed to invoke `claude mcp add`: {exc}"
-    if result.returncode != 0:
-        stderr = (result.stderr or result.stdout or "").strip()
-        return False, f"`claude mcp add` exited {result.returncode}: {stderr}"
-    return True, (result.stdout or "").strip() or "registered"
+
+    return False, f"`claude mcp add` exited {code}: {stderr or stdout}"
 
 
 @app.command("init")
@@ -284,7 +317,9 @@ def init_cmd(
     force: bool = typer.Option(
         False,
         "--force",
-        help="Rewrite the project target even if Cairntir is already registered.",
+        help="Re-register even if Cairntir is already present. In --user mode,"
+        " removes the existing user-scope entry and re-adds it — use this to"
+        " fix a registration pointing at the wrong Python interpreter.",
     ),
 ) -> None:
     """Register Cairntir's MCP server with Claude Code.
@@ -297,9 +332,15 @@ def init_cmd(
     User mode (``--user``): shells out to ``claude mcp add -s user``,
     which is the only authoritative way to touch Claude Code's
     user-level MCP registry. Requires the ``claude`` CLI on PATH.
+
+    Both modes pin the server command to ``sys.executable`` — the
+    absolute path of the Python interpreter running this CLI — so
+    Claude Code spawns the server against the interpreter that
+    actually has Cairntir installed, regardless of cwd or which venv
+    (if any) is active in the session that reads the registration.
     """
     if user:
-        ok, message = _register_user_via_claude_cli()
+        ok, message = _register_user_via_claude_cli(force=force)
         if not ok:
             typer.echo(f"cairntir: {message}", err=True)
             raise typer.Exit(code=1)

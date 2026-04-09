@@ -98,8 +98,12 @@ def test_init_writes_project_mcp_json(tmp_path: Path, monkeypatch: object) -> No
     assert result.exit_code == 0
     target = tmp_path / ".mcp.json"
     assert target.exists()
+    import sys
+
     data = json.loads(target.read_text(encoding="utf-8"))
-    assert data["mcpServers"]["cairntir"]["command"] == "python"
+    # Pinned to the current interpreter so Claude Code spawns the
+    # Python that actually has Cairntir installed, not bare `python`.
+    assert data["mcpServers"]["cairntir"]["command"] == sys.executable
     assert data["mcpServers"]["cairntir"]["args"] == ["-m", "cairntir.mcp.server"]
     assert "registered cairntir" in result.stdout
 
@@ -159,6 +163,8 @@ def test_init_user_shells_out_to_claude_cli(monkeypatch: object) -> None:
     assert result.exit_code == 0, result.stdout
     assert "user scope" in result.stdout
     assert calls, "claude CLI was never invoked"
+    import sys
+
     assert calls[0][1:] == [
         "mcp",
         "add",
@@ -166,10 +172,65 @@ def test_init_user_shells_out_to_claude_cli(monkeypatch: object) -> None:
         "user",
         "cairntir",
         "--",
-        "python",
+        sys.executable,
         "-m",
         "cairntir.mcp.server",
     ]
+
+
+def test_init_user_is_idempotent_on_already_exists(monkeypatch: object) -> None:
+    import shutil
+    import subprocess
+    from typing import Any
+
+    class _AlreadyExists:
+        returncode = 1
+        stdout = ""
+        stderr = "MCP server cairntir already exists in user config"
+
+    def _fake_which(name: str) -> str | None:
+        return "/fake/claude" if name == "claude" else None
+
+    def _fake_run(_cmd: list[str], **_: Any) -> _AlreadyExists:
+        return _AlreadyExists()
+
+    monkeypatch.setattr(shutil, "which", _fake_which)  # type: ignore[attr-defined]
+    monkeypatch.setattr(subprocess, "run", _fake_run)  # type: ignore[attr-defined]
+
+    result = runner.invoke(app, ["init", "--user"])
+    assert result.exit_code == 0
+    assert "already registered" in result.stdout
+    assert "--user --force" in result.stdout
+
+
+def test_init_user_force_runs_remove_then_add(monkeypatch: object) -> None:
+    import shutil
+    import subprocess
+    from typing import Any
+
+    calls: list[list[str]] = []
+
+    class _Result:
+        returncode = 0
+        stdout = "ok"
+        stderr = ""
+
+    def _fake_which(name: str) -> str | None:
+        return "/fake/claude" if name == "claude" else None
+
+    def _fake_run(cmd: list[str], **_: Any) -> _Result:
+        calls.append(cmd)
+        return _Result()
+
+    monkeypatch.setattr(shutil, "which", _fake_which)  # type: ignore[attr-defined]
+    monkeypatch.setattr(subprocess, "run", _fake_run)  # type: ignore[attr-defined]
+
+    result = runner.invoke(app, ["init", "--user", "--force"])
+    assert result.exit_code == 0
+    # First call is remove, second is add.
+    assert len(calls) == 2
+    assert calls[0][1:5] == ["mcp", "remove", "-s", "user"]
+    assert calls[1][1:5] == ["mcp", "add", "-s", "user"]
 
 
 def test_init_user_errors_when_claude_cli_missing(monkeypatch: object) -> None:
