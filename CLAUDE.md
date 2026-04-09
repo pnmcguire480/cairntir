@@ -75,7 +75,48 @@ Cairntir is the distillation of two predecessors:
 
 ### Last Session
 
-- **Date:** 2026-04-08 (v0.5 — portable signed format, anti-capture lock)
+- **Date:** 2026-04-08 (v0.6 — Reason loop through clean ports)
+- **What was accomplished:** v0.6 landed. New `cairntir.reason` package
+  exposes the Reason skill as a *library*: four runtime-checkable
+  Protocol ports (`HypothesisProposer`, `ExperimentRunner`,
+  `BeliefStore`, `MemoryGateway`) and a pure `ReasonLoop.step()` that
+  orchestrates one predict→observe→update cycle without importing
+  sqlite, networks, or LLMs. Production wiring lives outside the
+  library; the Reason skill's prose still drives the human contract.
+  - **Model:** frozen dataclasses `Hypothesis`, `Experiment`, `Outcome`,
+    `BeliefUpdate` in `cairntir.reason.model`. Stdlib-only.
+  - **Ports:** four protocols in `cairntir.reason.ports`, all
+    `@runtime_checkable` so fakes pass isinstance without inheritance.
+  - **Loop:** `ReasonLoop.step(question, wing, room)` writes a
+    prediction drawer (v0.2 contract: claim + predicted_outcome), asks
+    the runner for an outcome, writes an observation drawer that
+    supersedes the prediction with observed_outcome and a non-empty
+    `delta` iff the prediction failed, then nudges the belief store
+    (+1 on success, -1 on failure). Returns a `BeliefUpdate`. Two
+    drawers per step, always, even when the runner fails. Verbatim
+    is the floor; a failed step is not a skipped step.
+  - **Contract enforcement:** empty `predicted_outcome` raises
+    `ValueError` with "falsifiable prediction" message. Runner errors
+    are never swallowed.
+  - **Tests added:** 6 in `test_reason_loop.py` with dict-backed /
+    counter-backed fakes: protocol conformance, successful step,
+    failing step with delta + weaken, empty-prediction rejection,
+    runner errors bubbling up, two-step mass accumulation.
+  - **Status:** 115 tests passing, 88% coverage, ruff + mypy --strict
+    clean.
+- **Next session:** v1.0.0 — Library extraction. `cairntir.__init__`
+  exposes ONLY protocols + dataclasses + exceptions (`Drawer`, `Layer`,
+  `Wing`, `Room`, `Store`, `Retriever`, `EmbeddingProvider`, typed
+  errors). Concrete impls move to `cairntir.impl.*`. CLI / MCP server /
+  daemon split into separate distributions that import `cairntir`.
+  Written deprecation policy with `CairntirDeprecationWarning`. Contract
+  test suite every `Store` impl must pass. Property-based tests
+  (Hypothesis) on taxonomy invariants and retrieval monotonicity.
+  Public-API snapshot test that fails on `dir(cairntir)` drift.
+  Migration tool with fixtures from every prior schema version. Tag,
+  GitHub release, blog post. Do not re-litigate the roadmap.
+
+- **Prior session — 2026-04-08 (v0.5):**
 - **What was accomplished:** v0.5 landed. New `cairntir.portable` module
   speaks a versioned envelope format with sha256 content-addressing and
   optional HMAC-SHA256 signatures. Envelope shape: `format_version`,
