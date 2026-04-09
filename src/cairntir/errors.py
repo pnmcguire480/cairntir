@@ -38,3 +38,18 @@ class SkillError(CairntirError):
 
 class MCPError(CairntirError):
     """Raised when an MCP tool receives invalid arguments or fails to dispatch."""
+
+
+class PortableFormatError(CairntirError):
+    """Raised when a portable drawer envelope is malformed, stale, or unverifiable."""
+
+
+class ExternalUrlError(PortableFormatError):
+    """Raised when a drawer references a non-cairntir URL.
+
+    The v0.5 portable format enforces a structural prohibition: memories
+    point to other memories, never to rot-prone external systems. Export
+    fails closed if a drawer's content or metadata smuggles in an
+    ``http://``, ``https://``, ``ftp://``, ``file://``, or ``ssh://`` URL.
+    Only ``cairntir://<content_hash>`` references are permitted.
+    """

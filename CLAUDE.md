@@ -75,7 +75,46 @@ Cairntir is the distillation of two predecessors:
 
 ### Last Session
 
-- **Date:** 2026-04-08 (v0.4 — surprise + belief-as-distribution)
+- **Date:** 2026-04-08 (v0.5 — portable signed format, anti-capture lock)
+- **What was accomplished:** v0.5 landed. New `cairntir.portable` module
+  speaks a versioned envelope format with sha256 content-addressing and
+  optional HMAC-SHA256 signatures. Envelope shape: `format_version`,
+  `content_hash`, `signature`, `provenance` (origin / exported_at /
+  schema_version), and a `drawer` payload that strips local-only state
+  (`id`, `access_count`, `last_accessed_at`) so portable drawers are
+  born clean. `canonical_bytes()` produces sorted-keys UTF-8 JSON so the
+  hash is deterministic across platforms and Python versions.
+  - **Structural prohibition:** `ensure_no_external_urls(drawer)` scans
+    content + metadata for `http://`, `https://`, `ftp://`, `file://`,
+    `ssh://` and raises `ExternalUrlError` (subclass of
+    `PortableFormatError`). Only `cairntir://` references are allowed.
+    Export fails closed — a single violating drawer aborts the whole
+    bundle before the file is written, so partial exports never happen.
+  - **Transport-free:** `write_jsonl` / `read_jsonl` and
+    `export_drawers` / `import_drawers` only speak the format. The
+    module deliberately does not touch `DrawerStore` — gossip /
+    torrent / git / USB / mailing list all work the same way.
+  - **CLI:** `cairntir export <path> [--wing --room]` and `cairntir
+    import <path>` wired on top of the existing store, verifying the
+    content hash of every envelope before insertion.
+  - **Tests added:** 21 in `test_portable.py` covering round-trip,
+    deterministic hashing, hash-on-tamper, HMAC sign/verify, wrong-key
+    rejection, unsigned-when-verified-fail-closed, format_version
+    gating, every external scheme rejected by parametrize, JSONL
+    reader/writer, and a full cross-store export→import that preserves
+    claim/predicted_outcome/belief_mass across two separate sqlite
+    files.
+  - **Status:** 109 tests passing, 88% coverage, ruff + mypy --strict
+    clean, silent-except scanner clean.
+- **Next session:** v0.6 — Reason loop through clean ports.
+  `cairntir.reason.model` (Hypothesis / Experiment / Outcome /
+  BeliefUpdate) and `cairntir.reason.ports`
+  (HypothesisProposer / ExperimentRunner / BeliefStore / MemoryGateway
+  protocols). `ReasonLoop.step()` must be testable without LLMs,
+  networks, or sqlite — production wiring lives outside the library.
+  Do not re-litigate the roadmap.
+
+- **Prior session — 2026-04-08 (v0.4):**
 - **What was accomplished:** v0.4 landed. `Drawer` gained a
   `belief_mass: float = 1.0` field and the store migrated to schema v4
   (forward-only ALTER TABLE, `REAL NOT NULL DEFAULT 1.0`, backfilled

@@ -7,6 +7,8 @@ daemon and MCP.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import typer
 
 from cairntir import __version__
@@ -14,6 +16,7 @@ from cairntir.config import cairntir_home, db_path
 from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import HashEmbeddingProvider
 from cairntir.memory.store import DrawerStore
+from cairntir.portable import export_drawers, import_drawers
 
 app = typer.Typer(
     name="cairntir",
@@ -88,6 +91,44 @@ def recall(
         raise typer.Exit(code=1)
     backend = _backend()
     typer.echo(backend.recall(query=query, wing=wing, room=room, limit=limit))
+
+
+@app.command("export")
+def export_cmd(
+    path: Path,
+    wing: str | None = typer.Option(None, "--wing", "-w", help="Scope to a wing."),
+    room: str | None = typer.Option(None, "--room", "-r", help="Scope to a room."),
+) -> None:
+    """Export drawers to a portable JSONL envelope file.
+
+    Fails closed if any drawer references a non-cairntir URL. The
+    format is content-addressed (sha256) and optionally HMAC-signed.
+    """
+    if not db_path().exists():
+        typer.echo("cairntir: no store yet — nothing to export.", err=True)
+        raise typer.Exit(code=1)
+    backend = _backend()
+    drawers = backend._store.list_by(wing=wing, room=room, limit=100_000)
+    count = export_drawers(drawers, path)
+    typer.echo(f"exported {count} drawers to {path}")
+
+
+@app.command("import")
+def import_cmd(path: Path) -> None:
+    """Import drawers from a portable JSONL envelope file into the local store.
+
+    Verifies each envelope's content hash before inserting. Signatures
+    are not checked by default; add signature verification when the
+    signed-key distribution story lands.
+    """
+    if not path.exists():
+        typer.echo(f"cairntir: {path} does not exist.", err=True)
+        raise typer.Exit(code=1)
+    drawers = import_drawers(path)
+    backend = _backend()
+    for drawer in drawers:
+        backend._store.add(drawer)
+    typer.echo(f"imported {len(drawers)} drawers from {path}")
 
 
 def main() -> None:
