@@ -189,6 +189,113 @@ def test_migration_from_v1_database_preserves_old_rows(tmp_path: Path) -> None:
         assert len(s2.list_by(wing="cairntir", room="legacy")) == 2
 
 
+def test_migration_from_v2_database_preserves_old_rows(tmp_path: Path) -> None:
+    """A v2-shaped database must upgrade to v4 without losing prediction fields."""
+    db_path = tmp_path / "v2.db"
+
+    conn = sqlite3.connect(db_path)
+    conn.enable_load_extension(True)
+    sqlite_vec.load(conn)
+    conn.enable_load_extension(False)
+    with conn:
+        conn.execute(
+            """
+            CREATE TABLE drawers (
+                id                INTEGER PRIMARY KEY AUTOINCREMENT,
+                wing              TEXT NOT NULL,
+                room              TEXT NOT NULL,
+                content           TEXT NOT NULL,
+                layer             TEXT NOT NULL,
+                metadata          TEXT NOT NULL,
+                created_at        TEXT NOT NULL,
+                claim             TEXT,
+                predicted_outcome TEXT,
+                observed_outcome  TEXT,
+                delta             TEXT,
+                supersedes_id     INTEGER
+            )
+            """
+        )
+        conn.execute(
+            "CREATE VIRTUAL TABLE vec_drawers USING vec0("
+            "drawer_id INTEGER PRIMARY KEY, embedding FLOAT[32])"
+        )
+        conn.execute(
+            "INSERT INTO drawers (wing, room, content, layer, metadata, created_at,"
+            " claim, predicted_outcome) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                "cairntir",
+                "legacy",
+                "v2 row",
+                "on_demand",
+                "{}",
+                datetime.now(UTC).isoformat(),
+                "v2 claim",
+                "held",
+            ),
+        )
+    conn.close()
+
+    with DrawerStore(db_path, HashEmbeddingProvider(dimension=32)) as s:
+        rows = s.list_by(wing="cairntir", room="legacy")
+        assert len(rows) == 1
+        row = rows[0]
+        assert row.claim == "v2 claim"
+        assert row.predicted_outcome == "held"
+        assert row.belief_mass == pytest.approx(1.0)  # default backfilled by migration
+        version = s._conn.execute("PRAGMA user_version").fetchone()[0]
+        assert version == SCHEMA_VERSION
+
+
+def test_migration_from_v3_database_preserves_access_counters(tmp_path: Path) -> None:
+    """A v3-shaped database must upgrade to v4 without losing access counters."""
+    db_path = tmp_path / "v3.db"
+
+    conn = sqlite3.connect(db_path)
+    conn.enable_load_extension(True)
+    sqlite_vec.load(conn)
+    conn.enable_load_extension(False)
+    now = datetime.now(UTC).isoformat()
+    with conn:
+        conn.execute(
+            """
+            CREATE TABLE drawers (
+                id                INTEGER PRIMARY KEY AUTOINCREMENT,
+                wing              TEXT NOT NULL,
+                room              TEXT NOT NULL,
+                content           TEXT NOT NULL,
+                layer             TEXT NOT NULL,
+                metadata          TEXT NOT NULL,
+                created_at        TEXT NOT NULL,
+                claim             TEXT,
+                predicted_outcome TEXT,
+                observed_outcome  TEXT,
+                delta             TEXT,
+                supersedes_id     INTEGER,
+                last_accessed_at  TEXT,
+                access_count      INTEGER NOT NULL DEFAULT 0
+            )
+            """
+        )
+        conn.execute(
+            "CREATE VIRTUAL TABLE vec_drawers USING vec0("
+            "drawer_id INTEGER PRIMARY KEY, embedding FLOAT[32])"
+        )
+        conn.execute(
+            "INSERT INTO drawers (wing, room, content, layer, metadata, created_at,"
+            " last_accessed_at, access_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            ("cairntir", "legacy", "v3 row", "on_demand", "{}", now, now, 5),
+        )
+    conn.close()
+
+    with DrawerStore(db_path, HashEmbeddingProvider(dimension=32)) as s:
+        rows = s.list_by(wing="cairntir", room="legacy")
+        assert len(rows) == 1
+        assert rows[0].belief_mass == pytest.approx(1.0)
+        version = s._conn.execute("PRAGMA user_version").fetchone()[0]
+        assert version == SCHEMA_VERSION
+
+
 def test_touch_and_stale_ids_drive_forgetting_curve(store: DrawerStore) -> None:
     old = datetime.now(UTC) - timedelta(days=10)
     saved = store.add(Drawer(wing="cairntir", room="room-x", content="x", created_at=old))

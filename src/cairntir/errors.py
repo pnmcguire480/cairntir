@@ -44,6 +44,17 @@ class PortableFormatError(CairntirError):
     """Raised when a portable drawer envelope is malformed, stale, or unverifiable."""
 
 
+class CairntirDeprecationWarning(DeprecationWarning):
+    """Warning subclass raised when a deprecated Cairntir surface is used.
+
+    Deprecation policy: a deprecated public surface must emit this
+    warning for at least two minor releases before removal. Callers can
+    filter it narrowly (``warnings.filterwarnings("error",
+    category=CairntirDeprecationWarning)``) without swallowing unrelated
+    Python deprecations.
+    """
+
+
 class ExternalUrlError(PortableFormatError):
     """Raised when a drawer references a non-cairntir URL.
 

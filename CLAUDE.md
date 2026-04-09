@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` (local — GitHub push pending)
-- **Stage:** [x] Bootstrap [x] Phase 1 Memory [x] Phase 2 MCP [x] Phase 3 Skills [x] Phase 4 Daemon [x] v0.1.0
+- **Stage:** [x] Bootstrap [x] v0.1.0 [x] v0.2 [x] v0.3 [x] v0.4 [x] v0.5 [x] v0.6 [x] **v1.0.0 — Library Extraction**
 
 ---
 
@@ -75,7 +75,61 @@ Cairntir is the distillation of two predecessors:
 
 ### Last Session
 
-- **Date:** 2026-04-08 (v0.6 — Reason loop through clean ports)
+- **Date:** 2026-04-08 (**v1.0.0 — Library Extraction, shipped**)
+- **What was accomplished:** v1.0.0 locked the seam. The full round-table
+  committed arc from v0.2 through v0.6 is now the pre-v1.0 history,
+  and today's session graduated Cairntir from "a tool" to "the thing
+  other tools store their memory in."
+  - **Curated public surface:** `cairntir.__init__` now re-exports
+    *only* protocols (`Store`, `EmbeddingProvider`, the four
+    reason-loop ports), frozen value types (`Drawer`, `Layer`,
+    `Hypothesis`, `Experiment`, `Outcome`, `BeliefUpdate`), typed
+    exceptions (including new `CairntirDeprecationWarning`), and
+    `__version__`. 24 names total, sorted, snapshot-tested.
+  - **`cairntir.contracts` module:** new `Store` Protocol captures
+    the full mutation + query surface DrawerStore has grown over six
+    phases. Runtime-checkable so duck-typed impls pass isinstance.
+  - **`cairntir.impl` namespace:** `DrawerStore`,
+    `HashEmbeddingProvider`, `SentenceTransformerProvider`,
+    `Retriever`, `RetrievalResult`, `ReasonLoop`, `SCHEMA_VERSION` —
+    all reserved-right-to-change.
+  - **Deprecation policy:** `CairntirDeprecationWarning` subclass of
+    `DeprecationWarning`. Public surfaces must emit it for two minor
+    releases before removal. No silent removals, ever.
+  - **Contract suite:** `tests/contract/test_store_contract.py` runs
+    14 protocol-level invariants against DrawerStore via a
+    parametrized factory fixture. Every future Store impl drops into
+    the list and inherits the whole battery.
+  - **Property tests:** `tests/property/test_taxonomy_properties.py`
+    uses Hypothesis to check that valid identifiers always round
+    trip, whitespace content is always rejected, belief_mass always
+    survives construction, and every Layer enum value is preserved.
+    `hypothesis` added to dev deps.
+  - **Public-API snapshot:** `tests/unit/test_public_api.py` fails
+    fast on any `dir(cairntir)` drift (filtering submodules and the
+    `from __future__` `annotations` sentinel). Also asserts
+    `__all__` matches and `__version__.startswith("1.")`.
+  - **Migration fixtures:** `test_migration_from_v2_database_*` and
+    `test_migration_from_v3_database_*` hand-build pre-v4 databases
+    with raw SQL and verify the forward-only ALTER TABLE chain
+    upgrades them losslessly. With the existing v1→v4 test, every
+    prior schema version now has a fixture kept in tree forever.
+  - **Version bump:** `pyproject.toml` and `.claude-plugin/plugin.json`
+    to `1.0.0`; CHANGELOG entry written.
+  - **Deferred past v1.0:** splitting the CLI / MCP server / daemon
+    into separate distributions is noted as follow-on work. Their
+    modules still ride in the main package today; the protocol seam
+    is the stable thing, and the concrete packaging story can shift
+    without a breaking change.
+  - **Status:** 138 tests passing, 88% coverage, ruff + mypy --strict
+    clean, silent-except scanner clean, public-API snapshot green.
+- **Next session:** tag `v1.0.0` on GitHub, publish release notes,
+  blog post ("The Amnesia Problem and What It Cost Me" from the v0.1
+  docs site plan now graduates to a v1.0 retrospective). Optional:
+  start the post-v1.0 distribution split (`cairntir-cli`,
+  `cairntir-mcp`, `cairntir-daemon`) or open a `v1.1` milestone.
+
+- **Prior session — 2026-04-08 (v0.6):**
 - **What was accomplished:** v0.6 landed. New `cairntir.reason` package
   exposes the Reason skill as a *library*: four runtime-checkable
   Protocol ports (`HypothesisProposer`, `ExperimentRunner`,

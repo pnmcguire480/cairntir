@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cairntir"
-version = "0.1.0"
+version = "1.0.0"
 description = "Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -53,6 +53,7 @@ dev = [
     "pytest-cov>=5.0.0",
     "pytest-asyncio>=0.23.0",
     "pre-commit>=3.8.0",
+    "hypothesis>=6.100.0",
 ]
 docs = [
     "mkdocs-material>=9.5.0",
