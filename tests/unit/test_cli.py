@@ -70,3 +70,33 @@ def test_status_and_recall_with_drawers(tmp_path: Path, monkeypatch: object) -> 
     recall = runner.invoke(app, ["recall", "cairn stones mark the path", "--limit", "5"])
     assert recall.exit_code == 0
     assert "hit" in recall.stdout
+
+
+def test_migrate_check_reports_version(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    # Force the store into existence at the current schema version.
+    from cairntir.config import db_path
+    from cairntir.memory.store import SCHEMA_VERSION
+
+    DrawerStore(db_path(), HashEmbeddingProvider()).close()
+
+    result = runner.invoke(app, ["migrate", "--check"])
+    assert result.exit_code == 0
+    assert f"library version:  {SCHEMA_VERSION}" in result.stdout
+    assert f"current version:  {SCHEMA_VERSION}" in result.stdout
+
+
+def test_migrate_missing_db_exits_nonzero(tmp_path: Path) -> None:
+    result = runner.invoke(app, ["migrate", str(tmp_path / "nope.db")])
+    assert result.exit_code == 1
+
+
+def test_migrate_already_up_to_date(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    from cairntir.config import db_path
+
+    DrawerStore(db_path(), HashEmbeddingProvider()).close()
+
+    result = runner.invoke(app, ["migrate"])
+    assert result.exit_code == 0
+    assert "already up to date" in result.stdout

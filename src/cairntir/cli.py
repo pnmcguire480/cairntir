@@ -15,7 +15,7 @@ from cairntir import __version__
 from cairntir.config import cairntir_home, db_path
 from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import HashEmbeddingProvider
-from cairntir.memory.store import DrawerStore
+from cairntir.memory.store import SCHEMA_VERSION, DrawerStore
 from cairntir.portable import export_drawers, import_drawers
 
 app = typer.Typer(
@@ -129,6 +129,60 @@ def import_cmd(path: Path) -> None:
     for drawer in drawers:
         backend._store.add(drawer)
     typer.echo(f"imported {len(drawers)} drawers from {path}")
+
+
+@app.command("migrate")
+def migrate_cmd(
+    db: Path | None = typer.Argument(None, help="Database file."),  # noqa: B008
+    check: bool = typer.Option(
+        False,
+        "--check",
+        help="Report the current schema version without applying migrations.",
+    ),
+) -> None:
+    """Apply forward-only schema migrations to a Cairntir drawer database.
+
+    Opening a database through :class:`DrawerStore` already runs the
+    migration chain, so this command is mostly a user-facing receipt
+    that reports the before/after ``PRAGMA user_version`` and fails
+    fast if the database is unreadable.
+    """
+    import sqlite3
+
+    import sqlite_vec
+
+    target = db if db is not None else db_path()
+    if not target.exists():
+        typer.echo(f"cairntir: {target} does not exist.", err=True)
+        raise typer.Exit(code=1)
+
+    # Peek at the current schema version without going through DrawerStore
+    # (which would migrate as a side effect).
+    peek = sqlite3.connect(target)
+    try:
+        peek.enable_load_extension(True)
+        sqlite_vec.load(peek)
+        peek.enable_load_extension(False)
+        before = peek.execute("PRAGMA user_version").fetchone()[0]
+    finally:
+        peek.close()
+
+    typer.echo(f"db:               {target}")
+    typer.echo(f"current version:  {before}")
+    typer.echo(f"library version:  {SCHEMA_VERSION}")
+
+    if check:
+        return
+
+    if before == SCHEMA_VERSION:
+        typer.echo("already up to date — no migration needed")
+        return
+
+    # Opening through DrawerStore applies the forward-only ALTER TABLE
+    # chain and stamps user_version to SCHEMA_VERSION.
+    with DrawerStore(target, HashEmbeddingProvider()) as store:
+        after = store._conn.execute("PRAGMA user_version").fetchone()[0]
+    typer.echo(f"migrated to:      {after}")
 
 
 def main() -> None:
