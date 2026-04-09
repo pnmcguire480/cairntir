@@ -133,15 +133,54 @@ def test_init_preserves_other_mcp_servers(tmp_path: Path, monkeypatch: object) -
     assert "cairntir" in data["mcpServers"]
 
 
-def test_init_user_writes_to_home(tmp_path: Path, monkeypatch: object) -> None:
-    monkeypatch.setenv("HOME", str(tmp_path))  # type: ignore[attr-defined]
-    monkeypatch.setenv("USERPROFILE", str(tmp_path))  # type: ignore[attr-defined]
+def test_init_user_shells_out_to_claude_cli(monkeypatch: object) -> None:
+    import shutil
+    import subprocess
+    from typing import Any
+
+    calls: list[list[str]] = []
+
+    class _Result:
+        returncode = 0
+        stdout = "Added stdio MCP server cairntir to user config"
+        stderr = ""
+
+    def _fake_which(name: str) -> str | None:
+        return "/fake/claude" if name == "claude" else None
+
+    def _fake_run(cmd: list[str], **_: Any) -> _Result:
+        calls.append(cmd)
+        return _Result()
+
+    monkeypatch.setattr(shutil, "which", _fake_which)  # type: ignore[attr-defined]
+    monkeypatch.setattr(subprocess, "run", _fake_run)  # type: ignore[attr-defined]
+
     result = runner.invoke(app, ["init", "--user"])
-    assert result.exit_code == 0
-    target = tmp_path / ".claude.json"
-    assert target.exists()
-    data = json.loads(target.read_text(encoding="utf-8"))
-    assert "cairntir" in data["mcpServers"]
+    assert result.exit_code == 0, result.stdout
+    assert "user scope" in result.stdout
+    assert calls, "claude CLI was never invoked"
+    assert calls[0][1:] == [
+        "mcp",
+        "add",
+        "-s",
+        "user",
+        "cairntir",
+        "--",
+        "python",
+        "-m",
+        "cairntir.mcp.server",
+    ]
+
+
+def test_init_user_errors_when_claude_cli_missing(monkeypatch: object) -> None:
+    import shutil
+
+    def _no_claude(_name: str) -> str | None:
+        return None
+
+    monkeypatch.setattr(shutil, "which", _no_claude)  # type: ignore[attr-defined]
+    result = runner.invoke(app, ["init", "--user"])
+    assert result.exit_code != 0
 
 
 def test_init_rejects_malformed_config(tmp_path: Path, monkeypatch: object) -> None:

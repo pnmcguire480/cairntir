@@ -226,42 +226,97 @@ def _load_or_init_json(path: Path) -> dict[str, Any]:
     return loaded
 
 
+def _register_user_via_claude_cli() -> tuple[bool, str]:
+    """Call ``claude mcp add -s user ...`` to register Cairntir user-level.
+
+    Returns ``(ok, message)``. Shelling out to the real Claude Code CLI
+    is the only authoritative way to touch the user-level MCP list —
+    writing ``~/.claude.json`` directly does not work because Claude
+    Code manages its own schema/location for that registry.
+    """
+    import shutil
+    import subprocess
+
+    claude = shutil.which("claude")
+    if claude is None:
+        return (
+            False,
+            "could not find the `claude` CLI on PATH. Install Claude Code or "
+            "register manually:\n  claude mcp add -s user cairntir -- python -m "
+            "cairntir.mcp.server",
+        )
+    cmd = [
+        claude,
+        "mcp",
+        "add",
+        "-s",
+        "user",
+        "cairntir",
+        "--",
+        "python",
+        "-m",
+        "cairntir.mcp.server",
+    ]
+    try:
+        result = subprocess.run(  # noqa: S603 — argv is fully constructed, no shell
+            cmd,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except OSError as exc:
+        return False, f"failed to invoke `claude mcp add`: {exc}"
+    if result.returncode != 0:
+        stderr = (result.stderr or result.stdout or "").strip()
+        return False, f"`claude mcp add` exited {result.returncode}: {stderr}"
+    return True, (result.stdout or "").strip() or "registered"
+
+
 @app.command("init")
 def init_cmd(
     user: bool = typer.Option(
         False,
         "--user",
-        help="Register Cairntir at user level (~/.claude.json) instead of the"
-        " current project's .mcp.json. User-level registration makes Cairntir"
-        " available to every Claude Code session regardless of cwd.",
+        help="Register Cairntir at user level via `claude mcp add -s user`, so"
+        " every Claude Code session sees it regardless of cwd. Without this"
+        " flag, writes .mcp.json in the current directory.",
     ),
     force: bool = typer.Option(
         False,
         "--force",
-        help="Rewrite the target even if Cairntir is already registered.",
+        help="Rewrite the project target even if Cairntir is already registered.",
     ),
 ) -> None:
     """Register Cairntir's MCP server with Claude Code.
 
-    Without ``--user``, writes ``.mcp.json`` in the current directory so
-    Claude Code spawns the Cairntir MCP server for sessions opened in
-    that project. Idempotent: an already-registered project is a no-op
-    unless ``--force`` is passed.
+    Project mode (default): writes ``.mcp.json`` in the current
+    directory. Idempotent — an already-registered project is a no-op
+    unless ``--force`` is passed. Other ``mcpServers`` entries are
+    preserved.
 
-    With ``--user``, merges the same stanza into ``~/.claude.json`` so
-    every Claude Code session sees Cairntir. Other entries in the file
-    are preserved.
+    User mode (``--user``): shells out to ``claude mcp add -s user``,
+    which is the only authoritative way to touch Claude Code's
+    user-level MCP registry. Requires the ``claude`` CLI on PATH.
     """
-    target = Path.home() / ".claude.json" if user else Path.cwd() / ".mcp.json"
+    if user:
+        ok, message = _register_user_via_claude_cli()
+        if not ok:
+            typer.echo(f"cairntir: {message}", err=True)
+            raise typer.Exit(code=1)
+        typer.echo("registered cairntir MCP server at user scope")
+        typer.echo(message)
+        typer.echo("restart Claude Code (fully quit, not just close the window) to pick it up.")
+        return
+
+    target = Path.cwd() / ".mcp.json"
     config = _load_or_init_json(target)
     config, changed = _merge_mcp_spec(config)
     if not changed and not force:
         typer.echo(f"cairntir already registered in {target}")
         return
     _write_json(target, config)
-    scope = "user" if user else "project"
-    typer.echo(f"registered cairntir MCP server ({scope}) in {target}")
-    typer.echo("restart Claude Code (or reload the window) to pick up the new MCP server.")
+    typer.echo(f"registered cairntir MCP server (project) in {target}")
+    typer.echo("restart Claude Code (fully quit, not just close the window) to pick it up.")
 
 
 def main() -> None:
