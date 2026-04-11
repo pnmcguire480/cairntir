@@ -351,6 +351,87 @@ def test_init_user_no_greeting_flag_skips_install(monkeypatch: object, tmp_path:
     assert not claude_md.exists()
 
 
+def test_setup_wizard_happy_path(tmp_path: Path, monkeypatch: object) -> None:
+    """--yes runs every step non-interactively and reports success."""
+    import shutil
+    import subprocess
+    from typing import Any
+
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path / "home"))  # type: ignore[attr-defined]
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))  # type: ignore[attr-defined]
+    monkeypatch.setenv("HOME", str(tmp_path))  # type: ignore[attr-defined]
+
+    class _Ok:
+        returncode = 0
+        stdout = "2.1.84 (Claude Code)"
+        stderr = ""
+
+    def _fake_which(name: str) -> str | None:
+        return "/fake/claude" if name == "claude" else None
+
+    def _fake_run(_cmd: list[str], **_: Any) -> _Ok:
+        return _Ok()
+
+    monkeypatch.setattr(shutil, "which", _fake_which)  # type: ignore[attr-defined]
+    monkeypatch.setattr(subprocess, "run", _fake_run)  # type: ignore[attr-defined]
+
+    result = runner.invoke(app, ["setup", "--yes"])
+    assert result.exit_code == 0, result.stdout
+    # Header lines for every step.
+    for i in range(1, 8):
+        assert f"[{i}/7]" in result.stdout
+    assert "Cairntir is ready." in result.stdout
+    assert "smoke test" in result.stdout.lower()
+    # Greeting preamble landed.
+    claude_md = tmp_path / ".claude" / "CLAUDE.md"
+    assert claude_md.exists()
+    assert "cairntir_session_start" in claude_md.read_text(encoding="utf-8")
+    # Store exists with one drawer from the smoke test.
+    db = tmp_path / "home" / "cairntir.db"
+    assert db.exists()
+
+
+def test_setup_fails_when_claude_cli_missing(monkeypatch: object) -> None:
+    import shutil
+
+    def _no_claude(_name: str) -> str | None:
+        return None
+
+    monkeypatch.setattr(shutil, "which", _no_claude)  # type: ignore[attr-defined]
+    result = runner.invoke(app, ["setup", "--yes"])
+    assert result.exit_code != 0
+    assert "claude" in result.stdout.lower()
+
+
+def test_setup_home_override_sets_env(tmp_path: Path, monkeypatch: object) -> None:
+    import shutil
+    import subprocess
+    from typing import Any
+
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))  # type: ignore[attr-defined]
+    monkeypatch.setenv("HOME", str(tmp_path))  # type: ignore[attr-defined]
+
+    class _Ok:
+        returncode = 0
+        stdout = "ok"
+        stderr = ""
+
+    def _fake_which(name: str) -> str | None:
+        return "/fake/claude" if name == "claude" else None
+
+    def _fake_run(_cmd: list[str], **_: Any) -> _Ok:
+        return _Ok()
+
+    monkeypatch.setattr(shutil, "which", _fake_which)  # type: ignore[attr-defined]
+    monkeypatch.setattr(subprocess, "run", _fake_run)  # type: ignore[attr-defined]
+
+    custom_home = tmp_path / "my-own-cairntir-home"
+    result = runner.invoke(app, ["setup", "--yes", "--home", str(custom_home)])
+    assert result.exit_code == 0
+    assert str(custom_home) in result.stdout
+    assert (custom_home / "cairntir.db").exists()
+
+
 def test_init_user_errors_when_claude_cli_missing(monkeypatch: object) -> None:
     import shutil
 

@@ -15,6 +15,7 @@ import typer
 
 from cairntir import __version__
 from cairntir.config import cairntir_home, db_path
+from cairntir.errors import MemoryStoreError
 from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import HashEmbeddingProvider
 from cairntir.memory.store import SCHEMA_VERSION, DrawerStore
@@ -346,10 +347,6 @@ memory at the start of a chat is hallucinating by default.
 """The user-level CLAUDE.md preamble Cairntir installs on `init --user`."""
 
 
-def _render_greeting_block() -> str:
-    return f"{GREETING_BEGIN_MARKER}\n{GREETING_BODY}{GREETING_END_MARKER}\n"
-
-
 def _upsert_greeting(path: Path, *, body: str = GREETING_BODY) -> str:
     """Idempotently install the Cairntir greeting into a user CLAUDE.md.
 
@@ -461,6 +458,198 @@ def init_cmd(
     _write_json(target, config)
     typer.echo(f"registered cairntir MCP server (project) in {target}")
     typer.echo("restart Claude Code (fully quit, not just close the window) to pick it up.")
+
+
+def _setup_smoke_test() -> None:
+    """Write a drawer, read it back, fail loudly if anything is off."""
+    from cairntir.memory.taxonomy import Drawer, Layer
+
+    with DrawerStore(db_path(), HashEmbeddingProvider(dimension=_PRODUCTION_DIM)) as store:
+        saved = store.add(
+            Drawer(
+                wing="cairntir",
+                room="setup",
+                content="cairntir setup smoke test — if you can read this, it works",
+                layer=Layer.ESSENTIAL,
+                metadata={"source": "setup"},
+            )
+        )
+        if saved.id is None:
+            raise RuntimeError("store.add returned no id")
+        fetched = store.get(saved.id)
+        if fetched is None or "smoke test" not in fetched.content:
+            raise RuntimeError("smoke test drawer did not round-trip")
+
+
+def _emoji_step(num: int, total: int, title: str) -> None:
+    """Print a numbered step header (plain ASCII for terminal compatibility)."""
+    typer.echo()
+    typer.echo(typer.style(f"[{num}/{total}] {title}", fg=typer.colors.CYAN, bold=True))
+
+
+def _emoji_ok(message: str) -> None:
+    typer.echo(typer.style(f"  ok   {message}", fg=typer.colors.GREEN))
+
+
+def _emoji_warn(message: str) -> None:
+    typer.echo(typer.style(f"  warn {message}", fg=typer.colors.YELLOW))
+
+
+def _emoji_fail(message: str) -> None:
+    typer.echo(typer.style(f"  fail {message}", fg=typer.colors.RED))
+
+
+def _emoji_tip(message: str) -> None:
+    typer.echo(typer.style(f"  tip  {message}", fg=typer.colors.BLUE))
+
+
+@app.command("setup")
+def setup_cmd(
+    yes: bool = typer.Option(
+        False,
+        "--yes",
+        "-y",
+        help="Accept every default without prompting. Use in scripts and CI.",
+    ),
+    home: Path | None = typer.Option(None, "--home", help="Override the Cairntir home directory."),  # noqa: B008
+) -> None:
+    """Interactive setup wizard. The one command a new user ever types.
+
+    Walks you through: checking Claude Code is installed, confirming which
+    Python interpreter will be pinned, choosing where Cairntir's memory
+    lives, registering the MCP server at user scope, installing the
+    greeting preamble so every session actually uses the memory, running
+    a smoke test, and telling you exactly what to do next.
+
+    This is the command the docs and the README both point at. If you
+    only ever run one Cairntir command in your life, this is it.
+    """
+    import os
+    import shutil
+    import subprocess
+    import sys
+
+    total = 7
+
+    # ---- Step 1: claude CLI ------------------------------------------------
+    _emoji_step(1, total, "Checking Claude Code is installed")
+    claude = shutil.which("claude")
+    if claude is None:
+        _emoji_fail("the `claude` CLI is not on your PATH")
+        _emoji_tip("install Claude Code from https://claude.com/claude-code")
+        _emoji_tip("then run `cairntir setup` again")
+        raise typer.Exit(code=1)
+    try:
+        version = subprocess.run(  # noqa: S603
+            [claude, "--version"],
+            capture_output=True,
+            text=True,
+            check=False,
+        ).stdout.strip()
+    except OSError as exc:
+        _emoji_fail(f"could not run `claude --version`: {exc}")
+        raise typer.Exit(code=1) from exc
+    _emoji_ok(f"found {version or 'claude CLI'}")
+
+    # ---- Step 2: Python interpreter ---------------------------------------
+    _emoji_step(2, total, "Confirming Python interpreter")
+    python = sys.executable
+    _emoji_ok(f"pinning to {python}")
+    in_venv = hasattr(sys, "real_prefix") or sys.prefix != sys.base_prefix
+    if in_venv:
+        _emoji_warn("this Python lives inside a virtual environment")
+        _emoji_tip(
+            "Cairntir will register this exact absolute path, so Claude Code "
+            "will find it regardless of which venv is active. If you delete or "
+            "move this venv, re-run `cairntir setup`."
+        )
+
+    # ---- Step 3: cairntir_home --------------------------------------------
+    _emoji_step(3, total, "Choosing where Cairntir's memory lives")
+    if home is not None:
+        os.environ["CAIRNTIR_HOME"] = str(home)
+    resolved_home = cairntir_home()
+    _emoji_ok(f"memory directory: {resolved_home}")
+    if home is not None:
+        _emoji_tip(
+            "to make this override permanent, set the CAIRNTIR_HOME environment "
+            "variable in your shell profile."
+        )
+    else:
+        _emoji_tip(
+            "to move this later, set the CAIRNTIR_HOME environment variable "
+            "before launching Claude Code."
+        )
+
+    # ---- Step 4: register MCP server user-level ---------------------------
+    _emoji_step(4, total, "Registering the MCP server at user scope")
+    if not yes:
+        confirm = typer.confirm(
+            "This will run `claude mcp add -s user cairntir` (replacing any "
+            "existing entry). Proceed?",
+            default=True,
+        )
+        if not confirm:
+            _emoji_warn("skipped MCP registration — you can run `cairntir init --user` later.")
+        else:
+            ok, message = _register_user_via_claude_cli(force=True)
+            if not ok:
+                _emoji_fail(message)
+                raise typer.Exit(code=1)
+            _emoji_ok("registered")
+            for line in message.splitlines():
+                typer.echo(f"       {line}")
+    else:
+        ok, message = _register_user_via_claude_cli(force=True)
+        if not ok:
+            _emoji_fail(message)
+            raise typer.Exit(code=1)
+        _emoji_ok("registered")
+
+    # ---- Step 5: greeting preamble ----------------------------------------
+    _emoji_step(5, total, "Installing the greeting preamble")
+    greeting_path = Path.home() / ".claude" / "CLAUDE.md"
+    action = _upsert_greeting(greeting_path)
+    _emoji_ok(f"{action} at {greeting_path}")
+    _emoji_tip(
+        "this file tells every Claude Code session to check Cairntir memory "
+        "before answering — without it, the MCP server is wired but silent."
+    )
+
+    # ---- Step 6: initialize / migrate the store --------------------------
+    _emoji_step(6, total, "Initializing the memory store")
+    try:
+        DrawerStore(db_path(), HashEmbeddingProvider(dimension=_PRODUCTION_DIM)).close()
+    except MemoryStoreError as exc:
+        _emoji_fail(f"could not initialize store: {exc}")
+        raise typer.Exit(code=1) from exc
+    _emoji_ok(f"store ready at {db_path()}")
+
+    # ---- Step 7: smoke test -----------------------------------------------
+    _emoji_step(7, total, "Smoke test: remember + recall")
+    try:
+        _setup_smoke_test()
+    except (MemoryStoreError, RuntimeError) as exc:
+        _emoji_fail(f"smoke test failed: {exc}")
+        raise typer.Exit(code=1) from exc
+    _emoji_ok("write + read round-trip passed")
+
+    # ---- Done -------------------------------------------------------------
+    typer.echo()
+    typer.echo(typer.style("Cairntir is ready.", fg=typer.colors.GREEN, bold=True))
+    typer.echo()
+    typer.echo("Next:")
+    typer.echo("  1. Fully quit Claude Code — not just close the window.")
+    typer.echo("  2. Reopen it in any folder.")
+    typer.echo('  3. Ask the fresh chat: "what is cairntir?"')
+    typer.echo()
+    typer.echo(
+        "  If Claude answers with real knowledge and offers to call "
+        "cairntir_session_start, you're done."
+    )
+    typer.echo()
+    typer.echo("Learn more:  docs/cairntir-for-dummies.md")
+    typer.echo("Troubleshoot: cairntir status     # shows wings + drawer counts")
 
 
 def main() -> None:
