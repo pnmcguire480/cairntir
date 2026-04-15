@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` (local — GitHub push pending)
-- **Stage:** [x] Bootstrap [x] v0.1.0 [x] v0.2 [x] v0.3 [x] v0.4 [x] v0.5 [x] v0.6 [x] **v1.0.0 — Library Extraction**
+- **Stage:** [x] v0.1 [x] v0.2 [x] v0.3 [x] v0.4 [x] v0.5 [x] v0.6 [x] **v1.0.0 shipped + public on GitHub** → next: **v1.1 (Reach)** on the Road to 2.0
 
 ---
 
@@ -141,11 +141,16 @@ under `docs/recipes/` and earn their place by use, not by governance.
     without a breaking change.
   - **Status:** 138 tests passing, 88% coverage, ruff + mypy --strict
     clean, silent-except scanner clean, public-API snapshot green.
-- **Next session:** tag `v1.0.0` on GitHub, publish release notes,
-  blog post ("The Amnesia Problem and What It Cost Me" from the v0.1
-  docs site plan now graduates to a v1.0 retrospective). Optional:
-  start the post-v1.0 distribution split (`cairntir-cli`,
-  `cairntir-mcp`, `cairntir-daemon`) or open a `v1.1` milestone.
+- **Next session:** v1.1 — Reach. Published to GitHub 2026-04-14 at
+  https://github.com/pnmcguire480/cairntir with 19 topics and the
+  v1.0.0 release cut. Next work is the Road to 2.0 committed in
+  `docs/roadmap.md`: (1) PyPI publish so `pip install cairntir` works,
+  (2) the amnesia blog post, (3) a reference Blender MCP plugin to
+  prove the horizon thesis, (4) Awesome-MCP + LongMemEval submissions,
+  (5) fix whatever the first external users break. v1.2 then lands
+  the production Reason loop (ClaudeProposer + SandboxRunner) so
+  recipes like Signal Reader become one-command instead of
+  seven-step-walkthrough. Do not re-litigate the roadmap.
 
 - **Prior session — 2026-04-08 (v0.6):**
 - **What was accomplished:** v0.6 landed. New `cairntir.reason` package

@@ -123,6 +123,155 @@ Bob) reviewed the original "Long Road" plan and converged on five themes:
 
 ---
 
+## The Road to 2.0 — Memory That Thinks Back
+
+This section is **committed**, not directional. It is the path from v1.0.0
+(shipped 2026-04-14) to v2.0.0, written 2026-04-14 in full awareness of
+what the v0.2 → v1.0 arc actually taught us.
+
+### The v2 North Star
+
+> *A cairn is useful to a traveler. A cairntir is useful to a civilization.*
+
+v1.0 killed cross-chat amnesia for **one developer's sessions**. v2 kills
+cross-chat amnesia for **every agent, every project, every collaborator
+the memory touches**. The fundamental shift: at v1.0 Cairntir is a
+passive store that humans query through Claude. At v2 Cairntir is an
+active participant — it runs recipes, it drives the Reason loop against
+real LLMs, it syncs across machines over files, and it grows structural
+memory whether or not any particular human is looking.
+
+Five themes, shipped as six versioned phases.
+
+1. **Real production reasoning.** The v0.6 Reason loop has clean
+   Protocol ports but no concrete adapters. v2 ships reference adapters
+   against Claude so the loop actually runs, the calibration numbers
+   actually compound, and the Signal Reader recipe can be invoked
+   autonomously instead of hand-walked through each step.
+2. **Cross-wing and temporal.** The deferred MemPalace v3 feature
+   finally lands — but falls out of existing `supersedes_id` chains, not
+   a new triple store. Answers "what did we decide about X across every
+   project?" and "what did I believe about X as-of date Y?"
+3. **File-based team sync, no server ever.** The portable signed format
+   (v0.5) made this inevitable; v2 wires the watcher. One folder shared
+   via git / iCloud / Dropbox / Syncthing becomes a team memory
+   substrate. Content hashes deduplicate; signatures authenticate.
+4. **Recipe runtime.** Recipes become executable. A "signal-read this
+   URL" command that actually invokes the protocol, writes the drawers,
+   runs Crucible, commits predictions — all without a human driving each
+   step.
+5. **Agent Memory.** Per-agent wings. Crucible remembers which
+   assumptions it has stress-tested before. Quality remembers which
+   patterns lead to ship-it verdicts. Reason remembers the rabbit holes
+   it's fallen down. The three skills get their own memory of their own
+   work.
+
+### v1.1 — Reach *(the post-launch phase)*
+
+- PyPI publish: `pip install cairntir` goes live
+- Blog post: *"The Amnesia Problem and What It Cost Me"*
+- Reference Blender MCP plugin: the horizon → product bridge, proves
+  the "Cairntir doesn't care what kind of thing is being remembered"
+  thesis by actually remembering something that isn't code
+- Fix whatever the first wave of external users breaks
+- Submit to Awesome MCP lists + LongMemEval leaderboard
+
+### v1.2 — Production Reason Loop
+
+- `cairntir.production` sub-package with concrete adapters:
+  - `ClaudeProposer` (Anthropic API-backed HypothesisProposer)
+  - `SandboxRunner` (ExperimentRunner that executes code or shells out)
+  - `StoreBackedBeliefs` / `StoreBackedMemory` (already sketched in the
+    integration guide — ship them as canonical)
+- CLI: `cairntir reason <question> --wing <name>` runs one real
+  predict→observe→update cycle end-to-end
+- Wire the production loop to the Signal Reader recipe so structural
+  reads become one-command instead of seven-step-walkthrough
+- Calibration dashboard: `cairntir calibration --wing signals` shows
+  prediction hit rate, belief-mass distribution, surprise log
+
+### v1.3 — Cross-Wing Queries + Temporal View
+
+- `store.search(wing=None)` already works but is unscoped
+- New: `cairntir_cross_recall` MCP tool — semantic search across every
+  wing with wing-of-origin metadata
+- Temporal view: walk `supersedes_id` chains to answer "what was the
+  state of belief X as-of date Y?" — no new schema, no triple store,
+  just a query over the existing chain
+- `cairntir timeline --entity X` extended to cross-wing mode
+- A recipe: **Decision Replay** — given a past decision drawer, replay
+  it against today's context and flag contradictions
+
+### v1.4 — File-Based Team Sync
+
+- `cairntir sync <directory>` — watches a folder, auto-imports new
+  envelopes as they appear, auto-exports on drawer commit
+- Content-hash deduplication means syncing the same folder via two
+  different transports is idempotent and conflict-free
+- Signatures gate imports — set a `--trust <keyfile>` flag and
+  unsigned or wrong-key envelopes land in a quarantine wing, not the
+  main store
+- Documentation: *"Syncing Cairntir with git"*, *"Syncing with
+  Syncthing"*, *"Syncing with a USB stick"* — all three work the same
+  way because the substrate is irrelevant to the format
+
+### v1.5 — Recipe Runtime
+
+- Recipes become executable artifacts, not just markdown walkthroughs
+- `cairntir recipe run signal-reader --input <url>` invokes the full
+  protocol: reads the input, runs all five steps, stress-tests through
+  Crucible, writes the prediction-bound drawers, reports the verdict
+- Recipe discovery: `cairntir recipe list` finds everything under
+  `docs/recipes/` plus user-level `~/.claude/recipes/`
+- User-level recipes — you can write your own and Cairntir picks them
+  up without a code change
+- Recipe contract: every runnable recipe declares input schema,
+  output wing, and the skills it chains; violations fail loudly
+
+### v1.6 — Agent Memory
+
+- Per-agent wings: every skill gets its own wing under a reserved
+  `agent:` prefix (e.g. `agent:crucible`, `agent:reason`)
+- Crucible learns: at the end of a stress-test, writes what the
+  assumption was, what the stress pattern revealed, and whether the
+  user accepted or rejected the verdict. Next time a similar
+  assumption comes in, Crucible recalls the prior pass
+- Quality learns: which code shapes consistently earn ship-it vs
+  block verdicts, per user and per wing
+- Reason learns: which rabbit holes yielded useful structural
+  insights and which produced nothing — so the cost of future
+  exploration drops
+- No new primitives — this is Cairntir eating its own dog food
+  using only the memory + recipe surface v1.0 already shipped
+
+### v2.0.0 — Distribution Split + Breaking Changes
+
+- The deferred v1.0 commitment finally lands: split into three
+  packages that depend on `cairntir`:
+  - `cairntir-cli` — the human-facing commands (setup, recall,
+    status, export, import, migrate, sync, recipe, reason)
+  - `cairntir-mcp` — the stdio MCP server + tool specs
+  - `cairntir-daemon` — the auto-capture spool watcher
+- `cairntir` itself becomes a small library: Protocol surface, value
+  types, exceptions, `impl/`. Everything else lives in the satellites.
+- Any deprecations accumulated across v1.1–v1.6 land and their
+  two-minor-release windows close
+- The public API snapshot test gets a new baseline
+- Tag, GitHub release, blog post: *"v2 — Memory That Thinks Back"*
+
+**Cut from v2:**
+- Team-memory-as-a-feature (CRDTs, conflict resolution): file-based
+  sync makes this a non-problem; if it turns out to be wrong we'll
+  rebuild it in v3
+- Triple store / entity-resolution pipeline: the temporal view over
+  supersedes chains answers 90% of the questions a triple store
+  would; don't build the infrastructure for the remaining 10%
+- Hosted SaaS / team sync service: **never**. The horizon does not
+  route through a centralized service. Every feature must survive
+  the "this could live on a USB stick" test.
+
+---
+
 ## Recipes — post-v1.0 protocols on the stable surface
 
 A **recipe** is a repeatable protocol that chains existing primitives
