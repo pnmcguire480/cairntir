@@ -54,18 +54,21 @@ instruction sheets.
   something)
 - A shell (PowerShell on Windows, Terminal on macOS/Linux)
 
-**Step 1 — Clone and install Cairntir.** Pick a folder to keep it in.
-This is the folder where Cairntir's own source code lives, not the
-folder where you'll use it.
+**Step 1 — Install Cairntir.** One command.
 
 ```
-git clone https://github.com/pnmcguire480/cairntir.git
-cd cairntir
-pip install -e .
+pip install cairntir
 ```
 
-The `-e .` means "install this folder as an editable package." You
-should now be able to run `cairntir` from any folder and it will work.
+That's it. You should now be able to run `cairntir` from any folder.
+
+> *Prefer `uv` or `pipx`?* `uv tool install cairntir` and
+> `pipx install cairntir` both work identically. Installing into an
+> isolated tool environment is the cleanest option on a shared
+> machine.
+
+> *Want to hack on Cairntir itself?* Clone the repo and
+> `pip install -e .` instead. That path is for contributors.
 
 **Step 2 — Wire Cairntir into Claude Code.** One command. Run it from
 anywhere.

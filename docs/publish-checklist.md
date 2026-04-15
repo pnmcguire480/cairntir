@@ -137,13 +137,21 @@ speaks for itself.
 Do not post to all five on the same day. Space them out so you can
 respond to each audience without burning out.
 
-## Phase 4 — Publish to PyPI (optional, low urgency)
+## Phase 4 — Publish to PyPI ✅ *(completed 2026-04-15)*
 
-PyPI release is a one-way door in one sense: once the name is taken,
-it's yours forever. So only do this when you're ready to commit to
-the name and maintain the package. The README already promises
-`pip install cairntir`, so if you delay this, there's a gap between
-the README and reality — worth closing soon.
+**Live at https://pypi.org/project/cairntir/1.0.0/** —
+`pip install cairntir` works worldwide. The process that actually
+shipped it, kept below for anyone repeating this on a future project:
+
+> **Gotcha we hit:** a PowerShell token prompt looks like it's
+> waiting for input even when it has already accepted the paste.
+> Trust the "100% ━━━━" lines — if the upload shows bytes going
+> through, the token worked even if the shell looks frozen.
+>
+> **Gotcha we also hit:** don't post your API token in any shared
+> context, ever. A single leaked pypi- prefix is enough to compromise
+> the project. Rotate immediately via https://pypi.org/manage/account/token/
+> if it ever happens.
 
 ```bash
 # 1. Confirm pyproject.toml is ready

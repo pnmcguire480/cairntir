@@ -16,11 +16,13 @@ Cairntir is a local-first, open-source memory system for [Claude Code](https://c
 >
 > Cairntir = **cairn** (stacked waypoint stones marking a path) + **palantír** (seeing-stone across time and distance). Pronounced *CAIRN-teer*.
 
+[![PyPI version](https://img.shields.io/pypi/v/cairntir.svg)](https://pypi.org/project/cairntir/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/cairntir.svg)](https://pypi.org/project/cairntir/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![mypy: strict](https://img.shields.io/badge/mypy-strict-blueviolet.svg)](https://mypy.readthedocs.io/)
 [![ruff](https://img.shields.io/badge/ruff-clean-green.svg)](https://github.com/astral-sh/ruff)
-[![Tests: 162](https://img.shields.io/badge/tests-162_passing-brightgreen.svg)](tests/)
+[![Tests: 165](https://img.shields.io/badge/tests-165_passing-brightgreen.svg)](tests/)
 [![MCP compatible](https://img.shields.io/badge/MCP-compatible-purple.svg)](https://modelcontextprotocol.io/)
 
 ---
@@ -38,7 +40,7 @@ It ships as an [MCP server](https://modelcontextprotocol.io/), so it works with 
 ## Install
 
 ```bash
-pip install cairntir           # or: git clone + pip install -e .
+pip install cairntir           # live on PyPI
 cairntir setup                 # interactive wizard — one command, seven steps
 ```
 

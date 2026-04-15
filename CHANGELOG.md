@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **PyPI release (2026-04-15):** `pip install cairntir` now works
+  worldwide at https://pypi.org/project/cairntir/1.0.0/. First public
+  install path; the git-clone + editable-install route is now the
+  contributor path, not the user path.
+- README badges for PyPI version and monthly downloads.
+- `docs/cairntir-for-dummies.md` Step 1 rewritten around `pip install
+  cairntir`; uv / pipx alternatives called out; editable-install path
+  moved to a "for contributors" aside.
+- `docs/publish-checklist.md` Phase 4 marked complete with the two
+  gotchas we hit (PowerShell hiding token prompts, never paste a
+  token in a shared context).
+
 ## [1.0.0] — 2026-04-08
 
 Library extraction. Cairntir graduates from "a tool" to "the thing other
