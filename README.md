@@ -125,6 +125,36 @@ Pairs naturally with:
 
 ---
 
+## Recipes — protocols built on the three skills
+
+Cairntir's core surface is three skills (crucible / quality / reason) and a
+memory layer. **Recipes** chain those primitives into repeatable protocols
+for specific use cases without expanding the skill set. They live under
+[docs/recipes/](docs/recipes/).
+
+### Signal Reader — structural analysis of AI news
+
+Read *under* the news cycle. Split the headline story from the structural
+story, name the constraint that actually moved, project gains and losses,
+stress-test through Crucible, write the result as a **prediction-bound
+drawer** in a `signals` wing. Every committed read carries a falsifiable
+claim; the belief-as-distribution scorer tracks your calibration across
+months.
+
+Nate-style one-shot structural reads produce analysis. Cairntir's version
+produces *compounding* analysis — three months of committed reads tell
+you which constraint categories you read well and which you consistently
+miss.
+
+> **Recipe:** [docs/recipes/signal-reader/](docs/recipes/signal-reader/)
+> **Worked example:** [march-2026.md](docs/recipes/signal-reader/examples/march-2026.md) — five structural reads run through the full protocol, formatted as prediction-bound drawers ready for `cairntir_remember`.
+> **Trigger:** *"signal-read this"*, *"what's the structural story?"*, *"run the fog protocol"*.
+
+More recipes will land as patterns prove themselves. The governance rule
+is firm: three skills, unbounded recipes, never a fourth core primitive.
+
+---
+
 ## Example: what lives in a Cairntir database
 
 ```

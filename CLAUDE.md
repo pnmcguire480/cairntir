@@ -71,6 +71,24 @@ Cairntir is the distillation of two predecessors:
 
 ---
 
+## Recipes (post-v1.0)
+
+Recipes are repeatable protocols that chain the existing skills + memory
+layer into named disciplines. **The three-skill core is locked.** Anything
+that would have been a fourth skill becomes a recipe instead. Recipes live
+under `docs/recipes/` and earn their place by use, not by governance.
+
+**Shipped:**
+- **Signal Reader** — five-step structural analysis of AI news events.
+  Split the headline story from the structural story, name the constraint
+  that moved, project gains/losses, crucible stress-test, commit as a
+  prediction-bound drawer in a `signals` wing. Nate-style one-shot reads
+  become compounding reads because Cairntir's prediction-bound drawers
+  close the loop over months. See `docs/recipes/signal-reader/`.
+  Plan: `plans/signal-reader.md`.
+
+---
+
 ## Current State
 
 ### Last Session

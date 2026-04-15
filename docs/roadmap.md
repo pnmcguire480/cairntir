@@ -123,6 +123,38 @@ Bob) reviewed the original "Long Road" plan and converged on five themes:
 
 ---
 
+## Recipes — post-v1.0 protocols on the stable surface
+
+A **recipe** is a repeatable protocol that chains existing primitives
+(the three skills + the memory layer) into a named discipline. Recipes
+land under `docs/recipes/` and live or die by use, not by governance.
+
+The three-skill core (crucible / quality / reason) is locked by design.
+Recipes are the escape valve: anything that would have been a fourth
+skill becomes a recipe instead. This keeps the protocol surface narrow
+and the pattern surface unbounded.
+
+### Signal Reader *(shipped 2026-04-14)*
+
+Five-step structural-analysis protocol: split the headline story from
+the structural story, name the constraint that moved, project gains and
+losses, stress-test through Crucible, commit as a prediction-bound
+drawer in a `signals` wing. Every read carries a falsifiable claim; the
+belief-as-distribution scorer tracks calibration across months.
+[docs/recipes/signal-reader/](recipes/signal-reader/)
+
+### Candidate recipes *(not committed — surface when demand appears)*
+- **Codebase Autopsy** — read under a PR the same way Signal Reader
+  reads under a news event. Which architectural constraint actually
+  moved? Who on the team gains leverage, who loses it?
+- **Decision Replay** — given a past decision drawer and its supersedes
+  chain, replay it against today's context. Would the decision hold?
+- **Vendor Drift** — sustained structural watch on a third-party tool
+  or API you depend on. Belief mass tracks whether your read of the
+  vendor's trajectory is calibrated.
+
+---
+
 ## Beyond v1.0.0 — The Long Road
 
 The following are *directional*, not committed. They exist to clarify that Cairntir is not a finished artifact — it is the first layer of something much larger.
