@@ -225,13 +225,43 @@ Cairntir-managed.
 ### "I want to uninstall it"
 
 ```
+pip uninstall cairntir
 claude mcp remove -s user cairntir
 ```
 
-Then manually delete the block between `<!-- cairntir:begin -->` and
-`<!-- cairntir:end -->` in `~/.claude/CLAUDE.md`. Your memory database
-stays on disk until you delete it yourself — Cairntir will never
-delete your drawers for any reason.
+The first command removes the package and the `cairntir-mcp` launcher
+from your PATH — once that launcher is gone, Claude Code surfaces a
+"command not found" error on the next session, which is the
+loud, visible signal that Cairntir is off. The second command tidies
+the registration entry. Then manually delete the block between
+`<!-- cairntir:begin -->` and `<!-- cairntir:end -->` in
+`~/.claude/CLAUDE.md`. Your memory database stays on disk until you
+delete it yourself — Cairntir will never delete your drawers for any
+reason.
+
+### "I'm in CI / on an air-gapped machine and don't want network calls or auto-changes"
+
+Set either or both of these environment variables in your shell or CI
+config:
+
+```
+CAIRNTIR_DISABLE_AUTOREGISTER=1   # skip the silent self-heal MCP registration
+CAIRNTIR_DISABLE_UPDATE_CHECK=1   # skip the background PyPI version check
+```
+
+`AUTOREGISTER` is the helper that runs on every `cairntir` CLI
+invocation, looks at `claude mcp list`, and quietly re-registers the
+user-scope entry if it's missing. Useful if you manage your MCP
+registry by hand and don't want Cairntir to touch it.
+
+`UPDATE_CHECK` is the daemon-thread that hits PyPI once a day to see
+if a newer Cairntir is out. When disabled, the update banner never
+appears, no network call is made, and no cache is written. Useful in
+sealed environments and CI runs that should be hermetic.
+
+Both default to enabled because the whole point of Cairntir is "TRUE
+until you uninstall." The opt-outs exist for the contexts where
+silent side effects are the wrong default.
 
 ## What Cairntir is not
 

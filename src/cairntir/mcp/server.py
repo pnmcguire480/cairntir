@@ -19,6 +19,7 @@ from cairntir.errors import CairntirError
 from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import SentenceTransformerProvider
 from cairntir.memory.store import DrawerStore
+from cairntir.update import maybe_check_in_background, pending_update_banner
 
 _SERVER_NAME = "cairntir"
 
@@ -85,7 +86,7 @@ def _tool_specs() -> list[types.Tool]:
         ),
         types.Tool(
             name="cairntir_audit",
-            description="Run the Quality skill over a wing (Phase-2 stub).",
+            description="Run the Quality skill over a wing.",
             inputSchema={
                 "type": "object",
                 "required": ["wing"],
@@ -94,7 +95,7 @@ def _tool_specs() -> list[types.Tool]:
         ),
         types.Tool(
             name="cairntir_crucible",
-            description="Stress-test a claim with the Crucible skill (Phase-2 stub).",
+            description="Stress-test a claim with the Crucible skill.",
             inputSchema={
                 "type": "object",
                 "required": ["claim"],
@@ -123,8 +124,16 @@ def _dispatch(backend: CairntirBackend, name: str, args: dict[str, Any]) -> str:
 
 
 def build_server(backend: CairntirBackend) -> Server[Any, Any]:
-    """Build a :class:`Server` wired to ``backend``."""
+    """Build a :class:`Server` wired to ``backend``.
+
+    The first tool call per process appends a one-line update banner if
+    a newer Cairntir is on PyPI. The banner is opt-out via the
+    ``CAIRNTIR_DISABLE_UPDATE_CHECK`` environment variable. Subsequent
+    calls in the same session do not repeat the banner — repetition is
+    noise, not signal.
+    """
     server: Server[Any, Any] = Server(_SERVER_NAME)
+    update_banner_shown = False
 
     @server.list_tools()
     async def _list() -> list[types.Tool]:
@@ -132,16 +141,29 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
 
     @server.call_tool()
     async def _call(name: str, arguments: dict[str, Any]) -> list[types.TextContent]:
+        nonlocal update_banner_shown
         try:
             text = _dispatch(backend, name, arguments)
         except CairntirError as exc:
             text = f"[cairntir error] {exc}"
+
+        if not update_banner_shown:
+            banner = pending_update_banner()
+            if banner is not None:
+                text = f"{banner}\n\n{text}"
+            update_banner_shown = True
+
         return [types.TextContent(type="text", text=text)]
 
     return server
 
 
 async def _amain() -> None:
+    # Kick off the background PyPI check so the *next* tool call (or
+    # the one after) sees the latest-version cache. The check runs in
+    # a daemon thread, fail-silent on network or permission errors.
+    maybe_check_in_background()
+
     store = DrawerStore(db_path(), SentenceTransformerProvider())
     backend = CairntirBackend(store)
     server = build_server(backend)
@@ -150,7 +172,12 @@ async def _amain() -> None:
 
 
 def main() -> None:
-    """Entry point for ``python -m cairntir.mcp.server``."""
+    """Entry point for the ``cairntir-mcp`` console script.
+
+    Also reachable as ``python -m cairntir.mcp.server``. The console
+    script is the registered command — see ``cairntir.cli._mcp_spec``
+    and the ``[project.scripts]`` entry in ``pyproject.toml``.
+    """
     asyncio.run(_amain())
 
 

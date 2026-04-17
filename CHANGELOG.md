@@ -7,7 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.0.1] — 2026-04-17
+
+Install hardening. The 1.0.0 install model pinned the MCP registration
+to `sys.executable`, which silently broke whenever a venv moved, was
+recreated, or got upgraded. This release switches the registration to
+a stable console-script shim, adds silent self-heal on every CLI run,
+and surfaces a one-line update banner when a newer Cairntir is on
+PyPI. Once installed, Cairntir stays on until the user uninstalls — no
+re-running setup, no "tools not loaded" surprises.
+
+### Added — Stable install seam
+- **`cairntir-mcp` console script.** New entry point declared in
+  `[project.scripts]`. Pip's launcher hard-pins the right interpreter
+  on install, so the registered MCP command is one stable name that
+  survives venv changes, shell restarts, cwd shifts, and Python
+  upgrades. `pip uninstall cairntir` removes the launcher; that
+  vanish is the user-visible signal that Cairntir is gone.
+- **`cairntir.register` module.** Silent self-heal that runs on every
+  CLI invocation: checks `claude mcp list` for the cairntir entry,
+  re-registers via `claude mcp add -s user cairntir -- cairntir-mcp`
+  if missing, writes a checkpoint to `cairntir_home() / .registered`
+  for fast-path no-ops on subsequent runs. Opt-out via the
+  `CAIRNTIR_DISABLE_AUTOREGISTER` environment variable.
+- **`cairntir.update` module.** Non-blocking update notifier. Hits
+  `https://pypi.org/pypi/cairntir/json` once per 24 hours in a daemon
+  thread (2s timeout, fail-silent on network errors). When a newer
+  release exists, the next CLI command and the next MCP tool response
+  prepend a one-line banner: `[cairntir update available: X → Y —
+  run \`pip install -U cairntir\`]`. Banner appears at most once per
+  process. Opt-out via `CAIRNTIR_DISABLE_UPDATE_CHECK`.
+- 22 new tests covering the self-heal helper and the update notifier.
+
+### Changed
+- `cairntir.cli._mcp_spec` now returns `{"command": "cairntir-mcp",
+  "args": []}` — no more `sys.executable` pinning. Both `cairntir
+  init` (project scope) and `cairntir init --user` (user scope) use
+  the new shim.
+- `.claude-plugin/plugin.json` updated to register the same shim.
+- The CLI root callback now triggers the silent self-heal and the
+  background PyPI check on every invocation. Both side effects are
+  fail-silent and opt-out by env var.
+- The MCP server kicks off the PyPI check on startup and prepends
+  the update banner to the first tool response per process.
+
+### Fixed
+- `cairntir_audit` and `cairntir_crucible` MCP tool descriptions no
+  longer claim "(Phase-2 stub)" — both tools fully shipped in 1.0.0
+  and the label was a documentation bug.
+- Tests: `tests/conftest.py` autouse fixture sets both opt-out env
+  vars during test runs so the self-heal and PyPI check never touch
+  the developer's real home directory or the network.
+
+### Added — Pre-1.0.1 (the prior "Unreleased" block, now historical)
 - **PyPI release (2026-04-15):** `pip install cairntir` now works
   worldwide at https://pypi.org/project/cairntir/1.0.0/. First public
   install path; the git-clone + editable-install route is now the
@@ -129,5 +181,7 @@ six-tool MCP surface that Claude Code can talk to directly.
 - `ruff check`, `ruff format`, `mypy --strict` clean
 - Every exception typed; no silent `except: pass`
 
-[Unreleased]: https://github.com/pnmcguire480/cairntir/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/pnmcguire480/cairntir/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/pnmcguire480/cairntir/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/pnmcguire480/cairntir/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/pnmcguire480/cairntir/releases/tag/v0.1.0

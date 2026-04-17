@@ -98,13 +98,13 @@ def test_init_writes_project_mcp_json(tmp_path: Path, monkeypatch: object) -> No
     assert result.exit_code == 0
     target = tmp_path / ".mcp.json"
     assert target.exists()
-    import sys
 
     data = json.loads(target.read_text(encoding="utf-8"))
-    # Pinned to the current interpreter so Claude Code spawns the
-    # Python that actually has Cairntir installed, not bare `python`.
-    assert data["mcpServers"]["cairntir"]["command"] == sys.executable
-    assert data["mcpServers"]["cairntir"]["args"] == ["-m", "cairntir.mcp.server"]
+    # Registers the stable ``cairntir-mcp`` console script — pip's
+    # launcher hard-pins the right interpreter, so we don't have to
+    # bake an absolute path that breaks on venv changes.
+    assert data["mcpServers"]["cairntir"]["command"] == "cairntir-mcp"
+    assert data["mcpServers"]["cairntir"]["args"] == []
     assert "registered cairntir" in result.stdout
 
 
@@ -163,7 +163,6 @@ def test_init_user_shells_out_to_claude_cli(monkeypatch: object) -> None:
     assert result.exit_code == 0, result.stdout
     assert "user scope" in result.stdout
     assert calls, "claude CLI was never invoked"
-    import sys
 
     assert calls[0][1:] == [
         "mcp",
@@ -172,9 +171,7 @@ def test_init_user_shells_out_to_claude_cli(monkeypatch: object) -> None:
         "user",
         "cairntir",
         "--",
-        sys.executable,
-        "-m",
-        "cairntir.mcp.server",
+        "cairntir-mcp",
     ]
 
 
