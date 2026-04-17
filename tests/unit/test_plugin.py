@@ -35,5 +35,8 @@ def test_plugin_command_files_exist() -> None:
 def test_plugin_declares_mcp_server() -> None:
     data = json.loads(PLUGIN_MANIFEST.read_text(encoding="utf-8"))
     mcp = data["mcpServers"]["cairntir"]
-    assert mcp["command"] == "python"
-    assert mcp["args"] == ["-m", "cairntir.mcp.server"]
+    # Stable shim, not ``python -m`` — see ``[project.scripts]`` in
+    # pyproject.toml. Pip's launcher hard-pins the right interpreter
+    # so the registered command survives venv changes.
+    assert mcp["command"] == "cairntir-mcp"
+    assert mcp["args"] == []

@@ -20,6 +20,8 @@ from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import HashEmbeddingProvider
 from cairntir.memory.store import SCHEMA_VERSION, DrawerStore
 from cairntir.portable import export_drawers, import_drawers
+from cairntir.register import clear_checkpoint, ensure_registered
+from cairntir.update import maybe_check_in_background, pending_update_banner
 
 app = typer.Typer(
     name="cairntir",
@@ -54,12 +56,38 @@ def _backend() -> CairntirBackend:
 
 @app.callback(invoke_without_command=True)
 def _root(ctx: typer.Context) -> None:
-    """Show a one-line status banner when invoked with no subcommand."""
+    """Show a one-line status banner when invoked with no subcommand.
+
+    Side effect: every CLI invocation kicks off the silent self-heal
+    registration check and the background update check. Both are
+    fail-silent — they never block, never raise, and surface only
+    through the optional banner appended at end of command output.
+    """
+    # Best-effort self-heal: TRUE-until-FALSE registration. Once
+    # cairntir is installed, every CLI run guarantees the user-scope
+    # MCP entry exists. Uninstalling the package removes the
+    # ``cairntir-mcp`` console script and Claude Code surfaces the
+    # missing command — the FALSE state is visible by construction.
+    ensure_registered()
+    # Spawn the background PyPI check so the next invocation sees the
+    # latest-version cache. The current process prints whatever the
+    # previous check already wrote.
+    maybe_check_in_background()
+
     if ctx.invoked_subcommand is not None:
+        ctx.call_on_close(_print_update_banner)
         return
     home = cairntir_home()
     typer.echo(f"cairntir {__version__}  home={home}")
     typer.echo("commands: version · status · recall")
+    _print_update_banner()
+
+
+def _print_update_banner() -> None:
+    """Print the pending-update banner, if any. Always safe to call."""
+    banner = pending_update_banner()
+    if banner is not None:
+        typer.echo(banner)
 
 
 @app.command()
@@ -200,26 +228,20 @@ def migrate_cmd(
 
 
 def _mcp_spec() -> dict[str, Any]:
-    """Return the canonical Cairntir MCP stanza pinned to the *current* Python.
+    """Return the canonical Cairntir MCP stanza using the stable shim.
 
-    Pinning to ``sys.executable`` at registration time is the fix for
-    the Windows venv trap: Claude Code spawns MCP servers outside any
-    activated venv, so bare ``python`` resolves to whatever happens to
-    be first on PATH — usually the system interpreter, which does not
-    have Cairntir installed. The spawned process dies silently and the
-    user sees an empty tool list in every folder except the one where
-    they originally activated the venv.
-
-    ``sys.executable`` always points at the interpreter currently
-    running this command, which by definition has Cairntir installed
-    (it is the one running the CLI right now). That path is stable
-    across cwd changes and survives fresh shells.
+    The ``cairntir-mcp`` console script is installed on PATH by pip
+    (see ``[project.scripts]`` in ``pyproject.toml``). Pip writes a
+    launcher that hard-pins the interpreter that installed Cairntir,
+    so registering the *script* — not ``sys.executable`` — gives us
+    one stable pointer that survives venv changes, shell restarts,
+    cwd shifts, and Python upgrades. ``pip uninstall cairntir``
+    removes the launcher; that vanish is the user-visible signal
+    that Cairntir is gone, which is exactly the FALSE we want.
     """
-    import sys
-
     return {
-        "command": sys.executable,
-        "args": ["-m", "cairntir.mcp.server"],
+        "command": "cairntir-mcp",
+        "args": [],
     }
 
 
@@ -275,31 +297,34 @@ def _run_claude(claude: str, *args: str) -> tuple[int, str, str]:
 def _register_user_via_claude_cli(*, force: bool) -> tuple[bool, str]:
     """Call ``claude mcp add -s user ...`` to register Cairntir user-level.
 
-    Returns ``(ok, message)``. If ``force`` is true and a prior
-    registration already exists, runs ``claude mcp remove -s user
-    cairntir`` first so the new ``sys.executable``-pinned spec replaces
-    the old one. Idempotent on "already exists" when ``force`` is
-    false.
+    Returns ``(ok, message)``. The registered command is the stable
+    ``cairntir-mcp`` console script — pip's launcher hard-pins the
+    interpreter that installed Cairntir, so we do not have to. If
+    ``force`` is true and a prior registration already exists, runs
+    ``claude mcp remove -s user cairntir`` first so the new spec
+    replaces the old one cleanly. Idempotent on "already exists" when
+    ``force`` is false.
     """
     import shutil
-    import sys
 
     claude = shutil.which("claude")
     if claude is None:
         return (
             False,
             "could not find the `claude` CLI on PATH. Install Claude Code or "
-            "register manually:\n  claude mcp add -s user cairntir -- "
-            f"{sys.executable} -m cairntir.mcp.server",
+            "register manually:\n  claude mcp add -s user cairntir -- cairntir-mcp",
         )
 
-    python = sys.executable
-    add_args = ("mcp", "add", "-s", "user", "cairntir", "--", python, "-m", "cairntir.mcp.server")
+    add_args = ("mcp", "add", "-s", "user", "cairntir", "--", "cairntir-mcp")
 
     if force:
         # Best-effort remove. Failure here is not fatal — the add below
         # will either succeed or report the real reason.
         _run_claude(claude, "mcp", "remove", "-s", "user", "cairntir")
+        # The checkpoint is bound to the prior registration; clear it
+        # so the next CLI invocation re-verifies through `claude mcp
+        # list` rather than trusting a stale flag.
+        clear_checkpoint()
 
     code, stdout, stderr = _run_claude(claude, *add_args)
     if code == 0:
@@ -310,7 +335,7 @@ def _register_user_via_claude_cli(*, force: bool) -> tuple[bool, str]:
         return (
             True,
             "cairntir is already registered at user scope. "
-            "If it is pointing at the wrong Python, re-register with:\n"
+            "If it is pointing at the wrong launcher, re-register with:\n"
             "  cairntir init --user --force",
         )
 

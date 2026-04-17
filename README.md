@@ -46,6 +46,13 @@ cairntir setup                 # interactive wizard — one command, seven steps
 
 Then fully quit Claude Code (check the system tray), reopen it in any folder, and ask *"what is cairntir?"* in a fresh chat. If it answers with real knowledge and offers to check memory, you're done.
 
+**Once installed, Cairntir stays on.** Every `cairntir` CLI invocation silently re-verifies the user-scope MCP registration and re-registers the stable `cairntir-mcp` launcher if Claude Code can't find it. Moving venvs, upgrading Python, or reinstalling no longer breaks the wiring — `pip install cairntir` is TRUE, `pip uninstall cairntir` is FALSE, nothing in between. When a newer release lands on PyPI, the next CLI run and the next MCP tool response prepend a one-line update banner; nothing is interrupted.
+
+Both side effects are opt-out for CI / air-gapped use:
+
+- `CAIRNTIR_DISABLE_AUTOREGISTER=1` — skip the silent self-heal MCP registration.
+- `CAIRNTIR_DISABLE_UPDATE_CHECK=1` — skip the background PyPI version check and never print the update banner.
+
 Not sure about any of those steps? Read **[docs/cairntir-for-dummies.md](docs/cairntir-for-dummies.md)** — zero-prior-knowledge getting-started guide.
 
 ---

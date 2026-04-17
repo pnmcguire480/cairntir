@@ -1,7 +1,7 @@
 {
   "$schema": "https://claude.com/schemas/plugin.json",
   "name": "cairntir",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia.",
   "author": {
     "name": "Patrick McGuire",
@@ -29,8 +29,8 @@
   ],
   "mcpServers": {
     "cairntir": {
-      "command": "python",
-      "args": ["-m", "cairntir.mcp.server"]
+      "command": "cairntir-mcp",
+      "args": []
     }
   }
 }

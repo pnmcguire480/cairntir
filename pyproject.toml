@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cairntir"
-version = "1.0.0"
+version = "1.0.1"
 description = "Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -69,6 +69,7 @@ Changelog = "https://github.com/pnmcguire480/cairntir/blob/main/CHANGELOG.md"
 
 [project.scripts]
 cairntir = "cairntir.cli:app"
+cairntir-mcp = "cairntir.mcp.server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/cairntir"]
