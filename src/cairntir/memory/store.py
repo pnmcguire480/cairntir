@@ -60,10 +60,18 @@ class DrawerStore:
     """Persistent verbatim drawer store with semantic search."""
 
     def __init__(self, db_path: Path, embedder: EmbeddingProvider) -> None:
-        """Open (or create) the store at ``db_path`` using ``embedder``."""
+        """Open (or create) the store at ``db_path`` using ``embedder``.
+
+        Does not touch ``embedder.dimension`` unless the ``vec_drawers``
+        virtual table must be created. Opening an existing database skips
+        the embedder entirely, so an MCP server using
+        ``SentenceTransformerProvider`` answers the ``initialize`` handshake
+        without first loading a 90 MB model — Claude Code's MCP connection
+        timeout fires in ~10 s while the model takes ~25 s on cold cache.
+        """
         self._path = db_path
         self._embedder = embedder
-        self._dim = embedder.dimension
+        self._dim: int | None = None  # lazy; populated by _init_schema or first add
         self._conn = self._connect(db_path)
         self._init_schema()
 
@@ -107,14 +115,25 @@ class DrawerStore:
                     "CREATE INDEX IF NOT EXISTS idx_drawers_wing_room ON drawers(wing, room)"
                 )
                 self._conn.execute("CREATE INDEX IF NOT EXISTS idx_drawers_layer ON drawers(layer)")
-                self._conn.execute(
-                    f"""
-                    CREATE VIRTUAL TABLE IF NOT EXISTS vec_drawers USING vec0(
-                        drawer_id INTEGER PRIMARY KEY,
-                        embedding FLOAT[{self._dim}]
-                    )
-                    """
+                vec_exists = (
+                    self._conn.execute(
+                        "SELECT 1 FROM sqlite_master WHERE type='table' AND name='vec_drawers'"
+                    ).fetchone()
+                    is not None
                 )
+                if not vec_exists:
+                    # First-time DB: creating the virtual table needs a concrete
+                    # dimension, so the embedder loads here. Existing DBs skip
+                    # this branch entirely — see __init__ docstring.
+                    self._dim = self._embedder.dimension
+                    self._conn.execute(
+                        f"""
+                        CREATE VIRTUAL TABLE vec_drawers USING vec0(
+                            drawer_id INTEGER PRIMARY KEY,
+                            embedding FLOAT[{self._dim}]
+                        )
+                        """
+                    )
                 self._migrate()
                 self._conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
         except sqlite3.Error as exc:
@@ -164,6 +183,10 @@ class DrawerStore:
     def add(self, drawer: Drawer) -> Drawer:
         """Insert a drawer and return a copy with its assigned id."""
         vector = self._embedder.embed([drawer.content])[0]
+        if self._dim is None:
+            # Existing DB opened without touching the embedder at init time;
+            # the model is now loaded (embed() just ran) so this is free.
+            self._dim = self._embedder.dimension
         if len(vector) != self._dim:
             raise MemoryStoreError(
                 f"embedding dimension mismatch: expected {self._dim}, got {len(vector)}"
