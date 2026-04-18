@@ -832,8 +832,7 @@ def recipe_run_cmd(
     contract = contracts.get(name)
     if contract is None:
         typer.echo(
-            f"cairntir: recipe {name!r} not found. "
-            f"Known: {sorted(contracts) or '(none)'}",
+            f"cairntir: recipe {name!r} not found. Known: {sorted(contracts) or '(none)'}",
             err=True,
         )
         raise typer.Exit(code=1)
@@ -917,9 +916,7 @@ def _coerce_input(raw: str, type_name: str) -> object:
         try:
             return int(raw)
         except ValueError as exc:
-            raise typer.BadParameter(
-                f"expected integer, got {raw!r}: {exc}"
-            ) from exc
+            raise typer.BadParameter(f"expected integer, got {raw!r}: {exc}") from exc
     if type_name == "boolean":
         truthy = {"1", "true", "yes", "on", "y", "t"}
         falsy = {"0", "false", "no", "off", "n", "f"}

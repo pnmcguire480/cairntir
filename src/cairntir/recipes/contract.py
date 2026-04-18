@@ -92,9 +92,7 @@ def load_recipe(path: Path) -> RecipeContract:
                 f"recipe file {path} [recipe] section is missing required field {field_name!r}"
             )
         if not isinstance(recipe_section[field_name], str):
-            raise RecipeError(
-                f"recipe file {path} [recipe].{field_name} must be a string"
-            )
+            raise RecipeError(f"recipe file {path} [recipe].{field_name} must be a string")
 
     skills = recipe_section.get("skills")
     if not isinstance(skills, list) or not skills:
@@ -114,16 +112,12 @@ def load_recipe(path: Path) -> RecipeContract:
 
     inputs_section = parsed.get("input", {})
     if not isinstance(inputs_section, dict):
-        raise RecipeError(
-            f"recipe file {path} [input] section must be a table of input specs"
-        )
+        raise RecipeError(f"recipe file {path} [input] section must be a table of input specs")
 
     input_specs: list[RecipeInputSpec] = []
     for input_name, spec in inputs_section.items():
         if not isinstance(spec, dict):
-            raise RecipeError(
-                f"recipe file {path} [input].{input_name} must be a table"
-            )
+            raise RecipeError(f"recipe file {path} [input].{input_name} must be a table")
         input_type = spec.get("type", "string")
         if not isinstance(input_type, str) or input_type not in _VALID_INPUT_TYPES:
             raise RecipeError(
@@ -132,9 +126,7 @@ def load_recipe(path: Path) -> RecipeContract:
             )
         required = spec.get("required", False)
         if not isinstance(required, bool):
-            raise RecipeError(
-                f"recipe file {path} [input].{input_name}.required must be a boolean"
-            )
+            raise RecipeError(f"recipe file {path} [input].{input_name}.required must be a boolean")
         description = spec.get("description", "")
         if not isinstance(description, str):
             raise RecipeError(
