@@ -94,14 +94,10 @@ class RecipeRunner:
         skill_drawer_ids: dict[str, list[int]] = {}
         for skill in contract.skills:
             if skill == "reason":
-                skill_drawer_ids[skill] = self._run_reason(
-                    contract, inputs, seed_id=seed_id
-                )
+                skill_drawer_ids[skill] = self._run_reason(contract, inputs, seed_id=seed_id)
             elif skill in ("crucible", "quality"):
                 skill_drawer_ids[skill] = [
-                    self._run_skill_marker(
-                        skill, contract, inputs, seed_id=seed_id
-                    )
+                    self._run_skill_marker(skill, contract, inputs, seed_id=seed_id)
                 ]
             else:  # pragma: no cover — contract.load blocks unknown skills
                 raise CairntirError(
@@ -217,9 +213,7 @@ def _canonical_room(contract: RecipeContract) -> str:
     return cleaned or "recipe"
 
 
-def _format_seed_content(
-    contract: RecipeContract, inputs: dict[str, object]
-) -> str:
+def _format_seed_content(contract: RecipeContract, inputs: dict[str, object]) -> str:
     lines = [
         f"# Recipe invocation: {contract.name} v{contract.version}",
         "",
@@ -238,13 +232,7 @@ def _format_inputs(inputs: dict[str, object]) -> str:
     return "\n".join(f"- **{k}:** {v}" for k, v in sorted(inputs.items()))
 
 
-def _format_reason_question(
-    contract: RecipeContract, inputs: dict[str, object]
-) -> str:
+def _format_reason_question(contract: RecipeContract, inputs: dict[str, object]) -> str:
     """Turn the recipe description + inputs into a question for the proposer."""
     body = _format_inputs(inputs)
-    return (
-        f"Recipe: {contract.name}\n"
-        f"Goal:   {contract.description}\n"
-        f"Inputs:\n{body}"
-    )
+    return f"Recipe: {contract.name}\nGoal:   {contract.description}\nInputs:\n{body}"

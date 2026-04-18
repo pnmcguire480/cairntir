@@ -48,9 +48,7 @@ def _store_factory(tmp_path: Path) -> Any:
     return _make
 
 
-def test_warmup_disabled_returns_none(
-    _store_factory: Any, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_warmup_disabled_returns_none(_store_factory: Any, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("CAIRNTIR_DISABLE_EMBEDDER_WARMUP", "1")
     embedder = _CountingEmbedder()
     store = _store_factory(embedder)
@@ -112,9 +110,7 @@ def test_warmup_swallows_embedding_error(
     assert len(embedder.calls) == 1
 
 
-def test_warmup_swallows_oserror(
-    _store_factory: Any, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_warmup_swallows_oserror(_store_factory: Any, monkeypatch: pytest.MonkeyPatch) -> None:
     """OSErrors (e.g. model cache file system issue) must also be swallowed."""
     monkeypatch.delenv("CAIRNTIR_DISABLE_EMBEDDER_WARMUP", raising=False)
     embedder = _CountingEmbedder(raises=OSError("disk full"))

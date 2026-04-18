@@ -42,9 +42,7 @@ def recipe_search_paths() -> list[Path]:
     return paths
 
 
-def discover_recipes(
-    *, search_paths: list[Path] | None = None
-) -> list[RecipeContract]:
+def discover_recipes(*, search_paths: list[Path] | None = None) -> list[RecipeContract]:
     """Find every ``recipe.toml`` under the search paths and return parsed contracts.
 
     Malformed recipe files are skipped silently *from the list* but

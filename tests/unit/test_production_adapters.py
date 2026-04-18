@@ -92,18 +92,14 @@ def test_store_backed_beliefs_reinforce_and_weaken(store: DrawerStore) -> None:
 
 def test_null_runner_without_verdict_raises() -> None:
     runner = NullRunner()
-    hypothesis = Hypothesis(
-        claim="c", predicted_outcome="p", wing="cairntir", room="room-a"
-    )
+    hypothesis = Hypothesis(claim="c", predicted_outcome="p", wing="cairntir", room="room-a")
     with pytest.raises(RuntimeError, match="set_verdict"):
         runner.run(hypothesis)
 
 
 def test_null_runner_returns_outcome_matching_verdict() -> None:
     runner = NullRunner()
-    hypothesis = Hypothesis(
-        claim="c", predicted_outcome="p", wing="cairntir", room="room-a"
-    )
+    hypothesis = Hypothesis(claim="c", predicted_outcome="p", wing="cairntir", room="room-a")
     runner.set_verdict(observed="it happened as predicted", success=True)
     outcome = runner.run(hypothesis)
     assert outcome.success is True
@@ -113,9 +109,7 @@ def test_null_runner_returns_outcome_matching_verdict() -> None:
 
 def test_null_runner_constructor_verdict_is_also_consumed() -> None:
     runner = NullRunner(observed="preset", success=False)
-    hypothesis = Hypothesis(
-        claim="c", predicted_outcome="p", wing="cairntir", room="room-a"
-    )
+    hypothesis = Hypothesis(claim="c", predicted_outcome="p", wing="cairntir", room="room-a")
     outcome = runner.run(hypothesis)
     assert outcome.success is False
     assert outcome.observed == "preset"
@@ -146,9 +140,7 @@ def test_manual_proposer_with_strings_builds_hypothesis_per_call() -> None:
         claim="sqlite-vec is embedded",
         predicted_outcome="no network during search",
     )
-    first = proposer.propose(
-        question="q1", wing="cairntir", room="predictions"
-    )
+    first = proposer.propose(question="q1", wing="cairntir", room="predictions")
     second = proposer.propose(question="q2", wing="stars-2026", room="notes")
     assert first.claim == "sqlite-vec is embedded"
     assert first.wing == "cairntir"

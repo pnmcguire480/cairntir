@@ -42,9 +42,7 @@ def test_cross_recall_with_drawers(tmp_path: Path, monkeypatch: object) -> None:
     assert "[ground-zero]" in result.stdout
 
 
-def test_reason_non_interactive_writes_drawers(
-    tmp_path: Path, monkeypatch: object
-) -> None:
+def test_reason_non_interactive_writes_drawers(tmp_path: Path, monkeypatch: object) -> None:
     """`cairntir reason` with every flag set runs a full loop step without prompts or network."""
     monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
     # Initialize the store so we pass the no-store-yet gate.

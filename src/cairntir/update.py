@@ -201,7 +201,4 @@ def pending_update_banner() -> str | None:
         return None
     if not _is_newer(latest, __version__):
         return None
-    return (
-        f"[cairntir update available: {__version__} → {latest} — "
-        f"run `pip install -U cairntir`]"
-    )
+    return f"[cairntir update available: {__version__} → {latest} — run `pip install -U cairntir`]"

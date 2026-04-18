@@ -107,12 +107,8 @@ def test_mass_floor_bounds_effective_distance_from_above(distance: float) -> Non
 
 
 @given(
-    distance=st.floats(
-        min_value=1e-6, max_value=1e3, allow_nan=False, allow_infinity=False
-    ),
-    mass=st.floats(
-        min_value=1e-6, max_value=1e6, allow_nan=False, allow_infinity=False
-    ),
+    distance=st.floats(min_value=1e-6, max_value=1e3, allow_nan=False, allow_infinity=False),
+    mass=st.floats(min_value=1e-6, max_value=1e6, allow_nan=False, allow_infinity=False),
 )
 def test_boost_factor_is_exactly_one_plus_delta_boost(distance: float, mass: float) -> None:
     """For any mass, the delta boost shrinks effective distance by the exact factor."""

@@ -67,9 +67,7 @@ def write_capture(
         payload["metadata"] = metadata
     # Monotonic timestamp + process-local sequence preserves arrival order even
     # when the clock's resolution is coarser than the call rate (hi, Windows).
-    name = (
-        f"{time.time_ns():020d}-{next(_seq):08d}-{uuid.uuid4().hex[:8]}{_SUFFIX}"
-    )
+    name = f"{time.time_ns():020d}-{next(_seq):08d}-{uuid.uuid4().hex[:8]}{_SUFFIX}"
     tmp = spool / f".{name}.tmp"
     final = spool / name
     tmp.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")

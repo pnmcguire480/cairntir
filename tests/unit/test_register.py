@@ -50,9 +50,7 @@ def test_present_when_listing_already_contains_cairntir(
     assert (register._checkpoint_path()).exists()
 
 
-def test_registered_when_add_succeeds(
-    _tmp_home: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_registered_when_add_succeeds(_tmp_home: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(shutil, "which", lambda _name: "/fake/claude")
 
     calls: list[list[str]] = []
@@ -122,9 +120,7 @@ def test_checkpoint_short_circuits_on_fast_path(
     assert register.ensure_registered() == "checkpoint"
 
 
-def test_force_bypasses_checkpoint(
-    _tmp_home: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_force_bypasses_checkpoint(_tmp_home: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     register._checkpoint_path().write_text("ok\n", encoding="utf-8")
     monkeypatch.setattr(shutil, "which", lambda _name: None)
     assert register.ensure_registered(force=True) == "no-claude"
