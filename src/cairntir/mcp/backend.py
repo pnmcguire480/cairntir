@@ -85,6 +85,30 @@ class CairntirBackend:
             )
         return "\n".join(lines)
 
+    def cross_recall(self, *, query: str, limit: int = 10) -> str:
+        """Semantic search over *every* wing. Returns hits annotated by wing.
+
+        Where :meth:`recall` scopes to a single wing by default, this
+        method intentionally does not — a question asked in one
+        project can find its answer in another. The output groups the
+        wing-of-origin count in the header so the caller sees at a
+        glance how widely the memory reached.
+        """
+        if not query.strip():
+            raise MCPError("cross_recall requires a non-empty query")
+        hits = self._store.search(query, limit=limit)
+        if not hits:
+            return f"No drawers matched {query!r} in any wing."
+        wings_seen = {d.wing for d, _ in hits}
+        lines = [f"{len(hits)} hit(s) across {len(wings_seen)} wing(s) for {query!r}:"]
+        for drawer, distance in hits:
+            snippet = _snippet(drawer.content)
+            lines.append(
+                f"  #{drawer.id}  [{drawer.wing}]  {drawer.room}  "
+                f"[{drawer.layer.value}]  d={distance:.4f}  — {snippet}"
+            )
+        return "\n".join(lines)
+
     def session_start(self, *, wing: str, query: str | None = None) -> str:
         """Load the 4-layer context for ``wing`` and render it as text."""
         result = self._retriever.load(wing=wing, query=query, include_deep=False)

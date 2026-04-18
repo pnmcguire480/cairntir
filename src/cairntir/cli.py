@@ -135,6 +135,93 @@ def recall(
     typer.echo(backend.recall(query=query, wing=wing, room=room, limit=limit))
 
 
+@app.command("cross-recall")
+def cross_recall_cmd(
+    query: str,
+    limit: int = typer.Option(10, "--limit", "-n", help="Max results to return."),
+) -> None:
+    """Search drawers across every wing, annotated by wing-of-origin."""
+    if not db_path().exists():
+        typer.echo("cairntir: no store yet — nothing to recall.", err=True)
+        raise typer.Exit(code=1)
+    backend = _backend()
+    typer.echo(backend.cross_recall(query=query, limit=limit))
+
+
+@app.command("reason")
+def reason_cmd(
+    question: str,
+    wing: str = typer.Option(..., "--wing", "-w", help="Wing the prediction belongs to."),
+    room: str = typer.Option("predictions", "--room", "-r", help="Room inside the wing."),
+    claim: str | None = typer.Option(
+        None,
+        "--claim",
+        help="The falsifiable claim. Prompted if omitted.",
+    ),
+    predicted: str | None = typer.Option(
+        None,
+        "--predicted",
+        help="The predicted outcome. Prompted if omitted.",
+    ),
+    observed: str | None = typer.Option(
+        None,
+        "--observed",
+        help="The observed outcome. Prompted if omitted.",
+    ),
+    success: bool | None = typer.Option(
+        None,
+        "--success/--fail",
+        help="Verdict: did the prediction hold? Prompted if omitted.",
+    ),
+) -> None:
+    """Run one Reason loop step: predict \u2192 observe \u2192 update belief.
+
+    Cairntir does not call LLMs. The claim, predicted outcome,
+    observation, and verdict all come from the caller (you at the
+    terminal, or the Claude Code session driving this CLI). Missing
+    flags are collected via interactive prompts.
+    """
+    if not db_path().exists():
+        typer.echo("cairntir: no store yet \u2014 run `cairntir setup` first.", err=True)
+        raise typer.Exit(code=1)
+
+    from cairntir.production import (
+        ManualProposer,
+        NullRunner,
+        StoreBackedBeliefs,
+        StoreBackedMemory,
+    )
+    from cairntir.reason.loop import ReasonLoop
+
+    if claim is None:
+        claim = typer.prompt(f"claim (for question {question!r})")
+    if predicted is None:
+        predicted = typer.prompt("predicted outcome")
+    if observed is None:
+        observed = typer.prompt("observed outcome")
+    if success is None:
+        success = typer.confirm("did the prediction hold?", default=False)
+
+    store = DrawerStore(db_path(), HashEmbeddingProvider(dimension=_PRODUCTION_DIM))
+    try:
+        loop = ReasonLoop(
+            proposer=ManualProposer(claim=claim, predicted_outcome=predicted),
+            runner=NullRunner(observed=observed, success=success),
+            beliefs=StoreBackedBeliefs(store=store),
+            memory=StoreBackedMemory(store=store),
+        )
+        update = loop.step(question=question, wing=wing, room=room)
+    finally:
+        store.close()
+
+    typer.echo()
+    typer.echo(f"prediction drawer:  #{update.prediction_id}")
+    typer.echo(f"observation drawer: #{update.observation_id}")
+    typer.echo(f"mass_change:        {update.mass_change:+.1f}")
+    if update.delta:
+        typer.echo(f"delta:              {update.delta}")
+
+
 @app.command("export")
 def export_cmd(
     path: Path,
@@ -675,6 +762,174 @@ def setup_cmd(
     typer.echo()
     typer.echo("Learn more:  docs/cairntir-for-dummies.md")
     typer.echo("Troubleshoot: cairntir status     # shows wings + drawer counts")
+
+
+@app.command("recipe-list")
+def recipe_list_cmd() -> None:
+    """List every recipe discovered under docs/recipes/ and ~/.claude/recipes/."""
+    from cairntir.recipes import discover_recipes, recipe_search_paths
+
+    paths = recipe_search_paths()
+    typer.echo(f"search paths ({len(paths)}):")
+    for p in paths:
+        typer.echo(f"  {p}")
+    contracts = discover_recipes()
+    if not contracts:
+        typer.echo("no recipes found.")
+        return
+    typer.echo(f"\n{len(contracts)} recipe(s):")
+    for c in contracts:
+        typer.echo(f"  {c.name} v{c.version}  -> {c.output_wing}")
+        typer.echo(f"    {c.description}")
+        if c.source_path is not None:
+            typer.echo(f"    source: {c.source_path}")
+
+
+@app.command("recipe-run")
+def recipe_run_cmd(
+    name: str,
+    input_args: list[str] = typer.Option(  # noqa: B008
+        [],
+        "--input",
+        "-i",
+        help="Input as KEY=VALUE. Repeat for multiple inputs.",
+    ),
+    claim: str | None = typer.Option(
+        None,
+        "--claim",
+        help="Falsifiable claim for the reason step. Prompted if the recipe"
+        " chains reason and this is omitted.",
+    ),
+    predicted: str | None = typer.Option(
+        None,
+        "--predicted",
+        help="Predicted outcome for the reason step. Prompted if omitted.",
+    ),
+    observed: str | None = typer.Option(
+        None,
+        "--observed",
+        help="Observed outcome for the reason step. Prompted if omitted.",
+    ),
+    success: bool | None = typer.Option(
+        None,
+        "--success/--fail",
+        help="Verdict for the reason step. Prompted if omitted.",
+    ),
+) -> None:
+    """Execute a named recipe with the given inputs.
+
+    Zero network calls. If the recipe chains the ``reason`` skill, the
+    CLI collects the claim / predicted / observed / verdict via flags
+    or interactive prompts \u2014 no LLM runs inside Cairntir.
+    """
+    from cairntir.recipes import RecipeError, RecipeRunner, discover_recipes
+
+    if not db_path().exists():
+        typer.echo("cairntir: no store yet \u2014 run `cairntir setup` first.", err=True)
+        raise typer.Exit(code=1)
+
+    contracts = {c.name: c for c in discover_recipes()}
+    contract = contracts.get(name)
+    if contract is None:
+        typer.echo(
+            f"cairntir: recipe {name!r} not found. "
+            f"Known: {sorted(contracts) or '(none)'}",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    inputs: dict[str, object] = {}
+    for raw in input_args:
+        if "=" not in raw:
+            typer.echo(f"cairntir: --input {raw!r} must be KEY=VALUE", err=True)
+            raise typer.Exit(code=1)
+        key, value = raw.split("=", 1)
+        spec = contract.input_spec(key.strip())
+        if spec is None:
+            typer.echo(
+                f"cairntir: recipe {name!r} has no input named {key!r}",
+                err=True,
+            )
+            raise typer.Exit(code=1)
+        inputs[key.strip()] = _coerce_input(value, spec.type)
+
+    from cairntir.production import (
+        ManualProposer,
+        NullRunner,
+        StoreBackedBeliefs,
+        StoreBackedMemory,
+    )
+
+    needs_reason = "reason" in contract.skills
+    if needs_reason:
+        if claim is None:
+            claim = typer.prompt(f"claim (for recipe {contract.name!r})")
+        if predicted is None:
+            predicted = typer.prompt("predicted outcome")
+        if observed is None:
+            observed = typer.prompt("observed outcome")
+        if success is None:
+            success = typer.confirm("did the prediction hold?", default=False)
+    else:
+        # Crucible / quality-only recipes don't drive the reason loop;
+        # the runner still needs a proposer and runner to satisfy the
+        # constructor, but they are never called. Use placeholders.
+        claim = claim or ""
+        predicted = predicted or ""
+        observed = observed or ""
+        success = success if success is not None else True
+
+    store = DrawerStore(db_path(), HashEmbeddingProvider(dimension=_PRODUCTION_DIM))
+    try:
+        recipe_runner = RecipeRunner(
+            memory=StoreBackedMemory(store=store),
+            beliefs=StoreBackedBeliefs(store=store),
+            proposer=ManualProposer(
+                claim=claim or "(no claim)",
+                predicted_outcome=predicted or "(no predicted outcome)",
+            ),
+            runner=NullRunner(observed=observed, success=success),
+        )
+        try:
+            result = recipe_runner.run(contract, inputs)
+        except (RecipeError, ValueError) as exc:
+            typer.echo(f"cairntir: recipe execution failed: {exc}", err=True)
+            raise typer.Exit(code=1) from exc
+    finally:
+        store.close()
+
+    typer.echo(f"recipe {result.recipe_name} executed.")
+    typer.echo(f"  seed drawer: #{result.seed_drawer_id} in wing {result.output_wing!r}")
+    for skill, drawer_ids in result.skill_drawer_ids.items():
+        ids = ", ".join(f"#{i}" for i in drawer_ids)
+        typer.echo(f"  {skill}: {ids}")
+
+
+def _coerce_input(raw: str, type_name: str) -> object:
+    """Turn a CLI string into the type the recipe declared.
+
+    The recipe contract accepts ``string``, ``url``, ``integer``,
+    ``boolean``. Unknown types would have been rejected at load time.
+    """
+    if type_name in ("string", "url"):
+        return raw
+    if type_name == "integer":
+        try:
+            return int(raw)
+        except ValueError as exc:
+            raise typer.BadParameter(
+                f"expected integer, got {raw!r}: {exc}"
+            ) from exc
+    if type_name == "boolean":
+        truthy = {"1", "true", "yes", "on", "y", "t"}
+        falsy = {"0", "false", "no", "off", "n", "f"}
+        lowered = raw.strip().lower()
+        if lowered in truthy:
+            return True
+        if lowered in falsy:
+            return False
+        raise typer.BadParameter(f"expected boolean, got {raw!r}")
+    raise typer.BadParameter(f"unknown input type {type_name!r}")
 
 
 def main() -> None:
