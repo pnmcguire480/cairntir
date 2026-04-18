@@ -106,3 +106,38 @@ def test_crucible_emits_skill_with_claim(backend: CairntirBackend) -> None:
 def test_crucible_rejects_empty(backend: CairntirBackend) -> None:
     with pytest.raises(MCPError):
         backend.crucible(claim="  ")
+
+
+# ------------------------------------------------------------ v1.1: cross_recall
+
+
+def test_cross_recall_searches_every_wing(backend: CairntirBackend) -> None:
+    backend.remember(wing="stars-2026", room="notes", content="deterministic lockstep was key")
+    backend.remember(wing="ground-zero", room="notes", content="pure engine functions — no react")
+    backend.remember(wing="cairntir", room="notes", content="lazy embedder fixed cold-start")
+
+    out = backend.cross_recall(query="pure engine functions", limit=5)
+    # The query text lands in one wing but the tool reports cross-wing provenance.
+    assert "across" in out and "wing(s)" in out
+    assert "[ground-zero]" in out
+
+
+def test_cross_recall_finds_answer_in_another_wing(backend: CairntirBackend) -> None:
+    backend.remember(
+        wing="stars-2026",
+        room="decisions",
+        content="wasm32 determinism requires f64 rounding discipline",
+    )
+    # Question asked while the active wing is cairntir; answer lives in stars-2026.
+    out = backend.cross_recall(query="wasm32 determinism requires f64 rounding discipline")
+    assert "[stars-2026]" in out
+
+
+def test_cross_recall_empty_query_errors(backend: CairntirBackend) -> None:
+    with pytest.raises(MCPError):
+        backend.cross_recall(query="   ")
+
+
+def test_cross_recall_no_hits_is_friendly(backend: CairntirBackend) -> None:
+    out = backend.cross_recall(query="nothing like this was ever stored")
+    assert "No drawers matched" in out

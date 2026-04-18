@@ -22,6 +22,56 @@ def test_version() -> None:
     assert __version__ in result.stdout
 
 
+def test_cross_recall_no_store(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    result = runner.invoke(app, ["cross-recall", "anything"])
+    assert result.exit_code == 1
+    combined = (result.output + (result.stderr or "")).lower()
+    assert "no store" in combined
+
+
+def test_cross_recall_with_drawers(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
+    store.add(Drawer(wing="stars-2026", room="notes", content="lockstep determinism"))
+    store.add(Drawer(wing="ground-zero", room="notes", content="pure engine functions"))
+
+    result = runner.invoke(app, ["cross-recall", "pure engine functions"])
+    assert result.exit_code == 0
+    assert "across" in result.stdout
+    assert "[ground-zero]" in result.stdout
+
+
+def test_reason_non_interactive_writes_drawers(
+    tmp_path: Path, monkeypatch: object
+) -> None:
+    """`cairntir reason` with every flag set runs a full loop step without prompts or network."""
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    # Initialize the store so we pass the no-store-yet gate.
+    DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384)).close()
+
+    result = runner.invoke(
+        app,
+        [
+            "reason",
+            "did the fix hold?",
+            "--wing",
+            "cairntir",
+            "--claim",
+            "the lazy embedder keeps startup under 2s",
+            "--predicted",
+            "cold-start completes in under 2s",
+            "--observed",
+            "cold-start completes in 1s",
+            "--success",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert "prediction drawer" in result.output
+    assert "observation drawer" in result.output
+    assert "mass_change" in result.output
+
+
 def test_root_banner() -> None:
     result = runner.invoke(app, [])
     assert result.exit_code == 0

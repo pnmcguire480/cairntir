@@ -176,31 +176,46 @@ Five themes, shipped as six versioned phases.
 - Fix whatever the first wave of external users breaks
 - Submit to Awesome MCP lists + LongMemEval leaderboard
 
-### v1.2 — Production Reason Loop
+### v1.2 — Production Reason Loop — **delivered ahead of schedule in v1.1 (2026-04-18), stdlib-only**
 
-- `cairntir.production` sub-package with concrete adapters:
-  - `ClaudeProposer` (Anthropic API-backed HypothesisProposer)
-  - `SandboxRunner` (ExperimentRunner that executes code or shells out)
-  - `StoreBackedBeliefs` / `StoreBackedMemory` (already sketched in the
-    integration guide — ship them as canonical)
-- CLI: `cairntir reason <question> --wing <name>` runs one real
-  predict→observe→update cycle end-to-end
-- Wire the production loop to the Signal Reader recipe so structural
-  reads become one-command instead of seven-step-walkthrough
-- Calibration dashboard: `cairntir calibration --wing signals` shows
-  prediction hit rate, belief-mass distribution, surprise log
+Shipped in `cairntir.production`: `ManualProposer`, `StoreBackedMemory`,
+`StoreBackedBeliefs`, `NullRunner`. CLI `cairntir reason "<q>" --wing X`
+runs a real predict→observe→update cycle with the caller-supplied
+hypothesis. Zero network calls — Cairntir is not a second inference
+provider; the claim and predicted outcome come from wherever the
+caller chooses (human at a terminal, Claude Code session driving the
+CLI, a recipe's declared inputs).
 
-### v1.3 — Cross-Wing Queries + Temporal View
+**Future additions (separate phases, not v1.1):**
 
-- `store.search(wing=None)` already works but is unscoped
-- New: `cairntir_cross_recall` MCP tool — semantic search across every
-  wing with wing-of-origin metadata
-- Temporal view: walk `supersedes_id` chains to answer "what was the
-  state of belief X as-of date Y?" — no new schema, no triple store,
-  just a query over the existing chain
-- `cairntir timeline --entity X` extended to cross-wing mode
-- A recipe: **Decision Replay** — given a past decision drawer, replay
+- **Local-AI proposer — Gemma 4 via llama.cpp or Ollama.** Implements
+  `HypothesisProposer` as a Python process driving a local model,
+  no billed API, no telemetry. Aligns with Cairntir's local-first
+  ethos and matches the pattern already proven in Transcript
+  Capture (Whisper.cpp + Gemma for summarization). Planned once
+  the synergy stack has been exercised in the field and recipe
+  patterns clarify which inference shapes actually pay off.
+- **`SandboxRunner`** — a real `ExperimentRunner` that executes
+  shell commands. Its own security project; `NullRunner` covers
+  the manual-verdict case recipes need today.
+- **Calibration dashboard** (`cairntir calibration --wing signals`)
+  — useful but not load-bearing until there are enough prediction-
+  bound drawers to be worth visualizing.
+
+### v1.3 — Cross-Wing Queries + Temporal View — **v1.3-partial delivered in v1.1 (2026-04-18)**
+
+Shipped: `cairntir_cross_recall` MCP tool + `cairntir cross-recall` CLI;
+`cairntir.memory.temporal.walk_supersedes` / `as_of` as pure query
+functions over the existing `supersedes_id` column. **Still outstanding
+for a follow-up phase:**
+
+- `cairntir timeline --entity X` cross-wing mode (the existing
+  `cairntir_timeline` tool is still per-wing)
+- **Decision Replay** recipe — given a past decision drawer, replay
   it against today's context and flag contradictions
+- Per-wing belief-mass cross-comparison (`cross_recall` returns raw
+  semantic distance for now; cross-wing belief reranking is a
+  research question)
 
 ### v1.4 — File-Based Team Sync
 
@@ -215,18 +230,15 @@ Five themes, shipped as six versioned phases.
   Syncthing"*, *"Syncing with a USB stick"* — all three work the same
   way because the substrate is irrelevant to the format
 
-### v1.5 — Recipe Runtime
+### v1.5 — Recipe Runtime — **delivered ahead of schedule in v1.1 (2026-04-18)**
 
-- Recipes become executable artifacts, not just markdown walkthroughs
-- `cairntir recipe run signal-reader --input <url>` invokes the full
-  protocol: reads the input, runs all five steps, stress-tests through
-  Crucible, writes the prediction-bound drawers, reports the verdict
-- Recipe discovery: `cairntir recipe list` finds everything under
-  `docs/recipes/` plus user-level `~/.claude/recipes/`
-- User-level recipes — you can write your own and Cairntir picks them
-  up without a code change
-- Recipe contract: every runnable recipe declares input schema,
-  output wing, and the skills it chains; violations fail loudly
+Shipped: `cairntir.recipes` package with `RecipeContract`, `load_recipe`,
+`discover_recipes`, `RecipeRunner`. `cairntir recipe-list` and
+`cairntir recipe-run` CLI. `docs/recipes/signal-reader/recipe.toml`
+bundled as the first shipped recipe. Recipe contracts declare input
+schema + output wing + ordered skill chain; malformed recipes fail
+loudly via `RecipeError`. Project recipes shadow user recipes when
+names collide.
 
 ### v1.6 — Agent Memory
 

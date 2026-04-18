@@ -1,0 +1,21 @@
+[recipe]
+name = "signal-reader"
+description = "Structural analysis of AI news events. Splits surface vs structural story, names the constraint that moved, projects gains/losses, stress-tests via Crucible, and commits a prediction-bound drawer."
+version = "0.1"
+output_wing = "signals"
+skills = ["reason", "crucible"]
+
+[input.url]
+type = "string"
+required = false
+description = "Optional source URL or identifier for the event being read."
+
+[input.summary]
+type = "string"
+required = true
+description = "One-to-three paragraph summary of the event and your initial structural read. This is what the reason step operates on."
+
+[input.horizon_months]
+type = "integer"
+required = false
+description = "Prediction horizon in months. Signal Reader defaults to 3-12 — set explicitly when you want a different window."

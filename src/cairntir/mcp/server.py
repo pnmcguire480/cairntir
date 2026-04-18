@@ -76,6 +76,21 @@ def _tool_specs() -> list[types.Tool]:
             },
         ),
         types.Tool(
+            name="cairntir_cross_recall",
+            description=(
+                "Semantic search across EVERY wing. Use when a question might find "
+                "its answer in a different project than the active one."
+            ),
+            inputSchema={
+                "type": "object",
+                "required": ["query"],
+                "properties": {
+                    "query": {"type": "string"},
+                    "limit": {"type": "integer", "default": 10, "minimum": 1},
+                },
+            },
+        ),
+        types.Tool(
             name="cairntir_session_start",
             description="Load the 4-layer context for a wing (the amnesia killer).",
             inputSchema={
@@ -127,6 +142,8 @@ def _dispatch(backend: CairntirBackend, name: str, args: dict[str, Any]) -> str:
             return backend.remember(**args)
         case "cairntir_recall":
             return backend.recall(**args)
+        case "cairntir_cross_recall":
+            return backend.cross_recall(**args)
         case "cairntir_session_start":
             return backend.session_start(**args)
         case "cairntir_timeline":

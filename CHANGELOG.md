@@ -7,6 +7,114 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-04-18
+
+v1.1 Synergy Stack — the three-upgrade bundle. Pulls forward v1.2
+(Production Reason Loop), v1.3-partial (Cross-Wing Recall + Temporal),
+and v1.5 (Recipe Runtime) from the Road to 2.0, and ships them
+together because the value compounds when they land in the same
+release. Plus the cold-start handshake fix and the embedder warmup
+from the unreleased hotfix branch; 1.1.0 is the first PyPI release
+that carries both halves of the install hardening *and* the synergy
+stack.
+
+### Added — Cross-Wing Recall + Temporal Walk
+
+- **`cairntir_cross_recall` MCP tool.** Where `cairntir_recall` scopes
+  to one wing, `cairntir_cross_recall` searches every wing the user
+  has ever written to, annotating each hit with its wing-of-origin.
+  A question asked in one project now finds its answer in another.
+- **`cairntir cross-recall "<query>"` CLI.** Same reach at the
+  terminal.
+- **`cairntir.memory.temporal` module.** Two pure query functions
+  over the existing supersedes chain: `walk_supersedes(store, id)`
+  returns the full chain root→leaf, and `as_of(store, id, when)`
+  returns the chain member that was the live leaf at `when`. No
+  schema change — every relation was already present in v0.2.
+
+### Added — Production Reason Loop (stdlib-only, zero network)
+
+Cairntir does not call LLMs. The Reason loop is a *discipline* for
+committing falsifiable predictions; the hypothesis comes from the
+caller — a human at a terminal, or the Claude Code session already
+driving the CLI. Cairntir stays the memory layer, not a second
+inference provider that would double-bill the user.
+
+- **`cairntir.production` package.** Four stdlib-only adapters:
+  - `StoreBackedMemory(store)` — `MemoryGateway` over any `Store`.
+  - `StoreBackedBeliefs(store)` — `BeliefStore` over any `Store`.
+  - `NullRunner` — `ExperimentRunner` that records a caller-supplied
+    verdict.
+  - `ManualProposer` — `HypothesisProposer` that returns a
+    caller-supplied hypothesis. Accepts either a prebuilt
+    `Hypothesis` or raw `claim` + `predicted_outcome` strings.
+- **`cairntir reason "<question>" --wing X` CLI.** Runs one full
+  Reason loop step. `--claim`, `--predicted`, `--observed`, and
+  `--success`/`--fail` can be supplied as flags for non-interactive
+  use, or collected via `typer.prompt` one by one. Writes the
+  prediction + observation drawer pair, adjusts belief mass. Zero
+  network calls, zero paid tokens.
+- **Future: local-AI proposer.** A Gemma 4 (via llama.cpp or
+  similar) proposer can drop in by implementing
+  `HypothesisProposer` — no API costs, still local-first. Planned
+  as a separate phase once the synergy stack has been exercised in
+  the field.
+
+### Added — Recipe Runtime
+
+- **`cairntir.recipes` package.** Declarative protocols that chain
+  the three core skills into repeatable disciplines. The three
+  skills stay locked — recipes are the escape valve.
+  - `RecipeContract` dataclass loaded from `recipe.toml`: `name`,
+    `description`, `version`, `output_wing`, ordered `skills` list
+    (`crucible` / `quality` / `reason`), typed `input` table.
+  - `load_recipe(path)` validates the TOML and rejects malformed
+    recipes with a typed `RecipeError`.
+  - `discover_recipes()` walks `docs/recipes/**/recipe.toml` in the
+    project and `~/.claude/recipes/**/recipe.toml` for the user;
+    project recipes shadow user recipes when names collide.
+  - `RecipeRunner(memory, beliefs, proposer, runner)` executes a
+    contract end-to-end. Writes a seed drawer capturing the
+    invocation + inputs, then one drawer per skill step. When the
+    chain includes `reason`, runs a full `ReasonLoop.step` with
+    the caller-supplied `ManualProposer` — the prediction-bound
+    drawer pair is the recipe's load-bearing output.
+- **`docs/recipes/signal-reader/recipe.toml`.** Ships the Signal
+  Reader protocol as an executable recipe. Input slots: `summary`
+  (required), `url` (optional), `horizon_months` (optional).
+- **`cairntir recipe-list` + `cairntir recipe-run`.** Discover and
+  execute recipes from the terminal. Recipes that chain `reason`
+  collect claim / predicted / observed / verdict via `--claim` /
+  `--predicted` / `--observed` / `--success`/`--fail` flags or
+  interactive prompts — never via a network call.
+
+### Changed
+
+- `src/cairntir/__init__.py` and `pyproject.toml` bumped to
+  `1.1.0`. `.claude-plugin/plugin.json` matches.
+- `src/cairntir/mcp/server.py` and `src/cairntir/cli.py` gain the
+  new tools and commands above. The stable v1.0 public API
+  (`cairntir.__init__` re-exports) is unchanged — every new surface
+  is under `cairntir.impl` / `cairntir.production` / `cairntir.recipes`
+  or the CLI/MCP adapters.
+
+### Fixed (carried over from the unreleased hotfix branch)
+
+- **Cold-start MCP handshake timeout** — `DrawerStore.__init__` no
+  longer eagerly touches `embedder.dimension`; the model loads only
+  when the `vec_drawers` virtual table must be created (first-time
+  DBs). Brought startup from ~28 s to ~1 s on cold cache, so Claude
+  Code's ~10 s `initialize` timeout stops firing.
+- **Embedder background warmup.** A daemon thread kicks off a
+  throwaway `embed()` call after the handshake returns, so the
+  first `cairntir_remember` / `cairntir_recall` is also instant
+  instead of blocking ~25 s on the model load.
+- **Pydantic `ValidationError` in MCP tool calls.** The stdio
+  server's `_call` adapter now catches `ValidationError` alongside
+  `CairntirError` and surfaces it as a one-line `[cairntir error]
+  <field>: <message>` so an invalid wing/room/content argument
+  doesn't crash the tool response.
+
 ## [1.0.1] — 2026-04-17
 
 Install hardening. The 1.0.0 install model pinned the MCP registration

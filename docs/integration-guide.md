@@ -187,62 +187,69 @@ orchestration. The four ports it takes (`HypothesisProposer`,
 `ExperimentRunner`, `BeliefStore`, `MemoryGateway`) are protocols in
 `cairntir.*`.
 
+### The shipped wiring (stdlib-only, zero network)
+
+Since v1.1 Cairntir ships four concrete adapters in
+`cairntir.production` that cover every port. All stdlib-only — no
+API keys, no paid tokens, no tracked telemetry:
+
 ```python
-from cairntir import (
-    BeliefStore,
-    ExperimentRunner,
-    Hypothesis,
-    HypothesisProposer,
-    MemoryGateway,
-    Outcome,
-)
 from cairntir.impl import ReasonLoop
-
-class ClaudeProposer:
-    """Hypothesis proposer backed by the Claude API."""
-    def propose(self, *, question: str, wing: str, room: str) -> Hypothesis:
-        # ... call Claude, return a Hypothesis ...
-        ...
-
-class ShellRunner:
-    """Experiment runner that executes a bash command."""
-    def run(self, hypothesis: Hypothesis) -> Outcome:
-        # ... run the command, decide success ...
-        ...
-
-class StoreBackedBeliefs:
-    """BeliefStore wrapper around a cairntir.Store."""
-    def __init__(self, store: Store) -> None:
-        self._store = store
-
-    def reinforce(self, drawer_id: int, *, amount: float) -> float:
-        return self._store.reinforce(drawer_id, amount=amount)
-
-    def weaken(self, drawer_id: int, *, amount: float) -> float:
-        return self._store.weaken(drawer_id, amount=amount)
-
-class StoreBackedMemory:
-    """MemoryGateway wrapper around a cairntir.Store."""
-    def __init__(self, store: Store) -> None:
-        self._store = store
-
-    def remember(self, drawer: Drawer) -> int:
-        saved = self._store.add(drawer)
-        assert saved.id is not None
-        return saved.id
-
-    def recall(self, query: str, *, wing: str, room: str | None = None, limit: int = 5):
-        return [d for d, _ in self._store.search(query, wing=wing, room=room, limit=limit)]
-
-loop = ReasonLoop(
-    proposer=ClaudeProposer(),
-    runner=ShellRunner(),
-    beliefs=StoreBackedBeliefs(store),
-    memory=StoreBackedMemory(store),
+from cairntir.production import (
+    ManualProposer,
+    NullRunner,
+    StoreBackedBeliefs,
+    StoreBackedMemory,
 )
-update = loop.step(question="should we rate-limit this endpoint?", wing="my-app", room="decisions")
+
+# ``store`` is any cairntir.Store (DrawerStore is the default impl).
+loop = ReasonLoop(
+    proposer=ManualProposer(
+        claim="rate-limiting reduces the p99 by more than 200ms",
+        predicted_outcome="p99 drops under 400ms after deploy",
+    ),
+    runner=NullRunner(observed="p99 dropped to 380ms", success=True),
+    beliefs=StoreBackedBeliefs(store=store),
+    memory=StoreBackedMemory(store=store),
+)
+update = loop.step(
+    question="should we rate-limit this endpoint?",
+    wing="my-app",
+    room="decisions",
+)
 print(update.mass_change, update.delta)
 ```
+
+### Rolling your own proposer — e.g. a local Gemma
+
+Cairntir does not do inference. If you want a model to propose the
+hypothesis, implement `HypothesisProposer` in your own code. A local
+Gemma 4 (via llama.cpp or Ollama) is the planned path for Cairntir
+itself; here's the shape:
+
+```python
+from cairntir import Hypothesis, HypothesisProposer
+
+
+class LocalGemmaProposer:
+    """Example: talk to a local Gemma 4 instance via Ollama.
+
+    The loop never knows this exists — it just sees the protocol.
+    Zero API spend, zero telemetry, fully local.
+    """
+
+    def __init__(self, *, model: str = "gemma3:4b", host: str = "http://localhost:11434") -> None:
+        self._model = model
+        self._host = host
+
+    def propose(self, *, question: str, wing: str, room: str) -> Hypothesis:
+        # ... POST to {host}/api/chat, parse the response into a claim
+        # and predicted_outcome, return a Hypothesis ...
+        ...
+```
+
+Drop it in as the `proposer=` argument to `ReasonLoop` — nothing
+else changes.
 
 The loop writes two drawers per `step()`: a prediction drawer up
 front and an observation drawer that `supersedes_id`s it after the
