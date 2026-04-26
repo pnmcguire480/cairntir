@@ -1,11 +1,11 @@
 """Tests for the post-handshake embedder warmup helper.
 
-The warmup is the second half of the cold-start fix: ``__init__`` no
-longer loads the embedder, but the *first* ``embed()`` call would
-still pay the ~25s sentence-transformers cold-load. The warmup spawns
-a daemon thread that triggers the load in parallel with the MCP
-handshake, so the user's first ``cairntir_remember`` or
-``cairntir_recall`` returns in ~0s instead of ~25s.
+The warmup is **opt-in** as of 2026-04-25. Setting
+``CAIRNTIR_ENABLE_EMBEDDER_WARMUP=1`` re-enables the daemon thread that
+loads the embedder model in parallel with the MCP handshake. Without
+that env var the helper is a no-op — see the docstring on
+``warm_embedder_in_background`` for the production hang that drove the
+default flip.
 """
 
 from __future__ import annotations
@@ -48,8 +48,18 @@ def _store_factory(tmp_path: Path) -> Any:
     return _make
 
 
-def test_warmup_disabled_returns_none(_store_factory: Any, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("CAIRNTIR_DISABLE_EMBEDDER_WARMUP", "1")
+def test_warmup_default_off_returns_none(
+    _store_factory: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Without the opt-in env var the warmup must NOT spawn a thread.
+
+    Regression: pre-2026-04-25 the warmup was on by default and wedged
+    `cairntir_session_start` for 20+ minutes per session because the
+    daemon thread raced with the synchronous embed() the retriever
+    triggers on a queried session_start. Default-off restores the
+    pre-91a8350 behavior.
+    """
+    monkeypatch.delenv("CAIRNTIR_ENABLE_EMBEDDER_WARMUP", raising=False)
     embedder = _CountingEmbedder()
     store = _store_factory(embedder)
     try:
@@ -60,25 +70,28 @@ def test_warmup_disabled_returns_none(_store_factory: Any, monkeypatch: pytest.M
     assert embedder.calls == []
 
 
-def test_warmup_disable_accepts_truthy_synonyms(
+def test_warmup_enable_accepts_truthy_synonyms(
     _store_factory: Any, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """The off switch matches the same vocabulary as the other env-var opt-outs."""
+    """The on switch matches the same vocabulary as the other env-var opt-ins."""
     embedder = _CountingEmbedder()
     store = _store_factory(embedder)
     try:
         for value in ("1", "true", "TRUE", "yes", "On"):
-            monkeypatch.setenv("CAIRNTIR_DISABLE_EMBEDDER_WARMUP", value)
-            assert mcp_server.warm_embedder_in_background(store) is None
+            monkeypatch.setenv("CAIRNTIR_ENABLE_EMBEDDER_WARMUP", value)
+            thread = mcp_server.warm_embedder_in_background(store)
+            assert thread is not None
+            thread.join(timeout=5)
     finally:
         store.close()
-    assert embedder.calls == []
+    # Five enabled invocations -> five embed calls.
+    assert len(embedder.calls) == 5
 
 
-def test_warmup_spawns_thread_and_calls_embed(
+def test_warmup_when_enabled_spawns_thread_and_calls_embed(
     _store_factory: Any, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.delenv("CAIRNTIR_DISABLE_EMBEDDER_WARMUP", raising=False)
+    monkeypatch.setenv("CAIRNTIR_ENABLE_EMBEDDER_WARMUP", "1")
     embedder = _CountingEmbedder()
     store = _store_factory(embedder)
     try:
@@ -97,7 +110,7 @@ def test_warmup_swallows_embedding_error(
     _store_factory: Any, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """A warmup miss must not crash the daemon thread."""
-    monkeypatch.delenv("CAIRNTIR_DISABLE_EMBEDDER_WARMUP", raising=False)
+    monkeypatch.setenv("CAIRNTIR_ENABLE_EMBEDDER_WARMUP", "1")
     embedder = _CountingEmbedder(raises=EmbeddingError("fake"))
     store = _store_factory(embedder)
     try:
@@ -112,7 +125,7 @@ def test_warmup_swallows_embedding_error(
 
 def test_warmup_swallows_oserror(_store_factory: Any, monkeypatch: pytest.MonkeyPatch) -> None:
     """OSErrors (e.g. model cache file system issue) must also be swallowed."""
-    monkeypatch.delenv("CAIRNTIR_DISABLE_EMBEDDER_WARMUP", raising=False)
+    monkeypatch.setenv("CAIRNTIR_ENABLE_EMBEDDER_WARMUP", "1")
     embedder = _CountingEmbedder(raises=OSError("disk full"))
     store = _store_factory(embedder)
     try:
@@ -127,14 +140,8 @@ def test_warmup_swallows_oserror(_store_factory: Any, monkeypatch: pytest.Monkey
 def test_warmup_runs_against_hash_embedder_too(
     _store_factory: Any, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """HashEmbeddingProvider is instant — the warmup is a no-op cost on it.
-
-    We do not detect the embedder type; the warmup is unconditional when
-    enabled. This test pins that behavior so a future refactor doesn't
-    silently turn the warmup into something that only fires for the
-    SentenceTransformerProvider.
-    """
-    monkeypatch.delenv("CAIRNTIR_DISABLE_EMBEDDER_WARMUP", raising=False)
+    """When opted in, the warmup fires regardless of embedder type."""
+    monkeypatch.setenv("CAIRNTIR_ENABLE_EMBEDDER_WARMUP", "1")
     embedder = HashEmbeddingProvider(dimension=16)
     store = _store_factory(embedder)
     try:
