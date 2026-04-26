@@ -13,14 +13,16 @@ semantic search via ``sqlite-vec``. This module defines a minimal
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
+import io
 import math
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+import os
+import sys
+from collections.abc import Iterator, Sequence
+from typing import Protocol, runtime_checkable
 
 from cairntir.errors import EmbeddingError
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 @runtime_checkable
@@ -74,6 +76,17 @@ class SentenceTransformerProvider:
 
     Lazy-loads the model on first :meth:`embed` call so importing this module
     is free even on machines without the heavy dependency installed.
+
+    All model loading and inference happens with ``stdout``/``stderr``
+    silenced. ``sentence-transformers``, ``transformers``, and ``torch``
+    write progress bars and architecture-mismatch tables directly to
+    ``stdout`` during ``__init__`` (see "BertModel LOAD REPORT" in the
+    upstream code). When this provider runs inside the MCP stdio server,
+    that output corrupts the JSON-RPC stream Claude Code is reading,
+    which wedges every subsequent tool call indefinitely (observed
+    2026-04-25 on a real user box: 20+ minutes per stuck session).
+    Silencing fixes the corruption at the source — production callers
+    never want progress bars in their tool responses anyway.
     """
 
     def __init__(self, model_name: str = "all-MiniLM-L6-v2") -> None:
@@ -89,7 +102,8 @@ class SentenceTransformerProvider:
             raise EmbeddingError(
                 "sentence-transformers is not installed; install cairntir with the default extras"
             ) from exc
-        model = SentenceTransformer(self._model_name)
+        with _silence_io():
+            model = SentenceTransformer(self._model_name)
         dim = model.get_sentence_embedding_dimension()
         if dim is None:
             raise EmbeddingError(f"model {self._model_name} reported no embedding dimension")
@@ -101,20 +115,56 @@ class SentenceTransformerProvider:
         """Return the embedding dimension, loading the model if needed."""
         if self._dim is None:
             self._load()
-        assert self._dim is not None  # noqa: S101 — invariant after _load
+        if self._dim is None:  # pragma: no cover — _load guarantees this
+            raise EmbeddingError("dimension still None after _load — provider is in a broken state")
         return self._dim
 
     def embed(self, texts: Sequence[str]) -> list[list[float]]:
         """Embed texts using the underlying sentence-transformers model."""
         if self._model is None:
             self._load()
-        assert self._model is not None  # noqa: S101
+        if self._model is None:  # pragma: no cover — _load guarantees this
+            raise EmbeddingError("model still None after _load — provider is in a broken state")
         try:
-            vectors = self._model.encode(  # type: ignore[attr-defined]
-                list(texts),
-                normalize_embeddings=True,
-                convert_to_numpy=True,
-            )
+            with _silence_io():
+                vectors = self._model.encode(  # type: ignore[attr-defined]
+                    list(texts),
+                    normalize_embeddings=True,
+                    convert_to_numpy=True,
+                )
         except Exception as exc:
             raise EmbeddingError(f"sentence-transformers encode failed: {exc}") from exc
         return [[float(x) for x in row] for row in vectors]
+
+
+@contextlib.contextmanager
+def _silence_io() -> Iterator[None]:
+    """Redirect stdout and stderr to /dev/null at the OS file-descriptor level.
+
+    ``contextlib.redirect_stdout`` only swaps ``sys.stdout``; it doesn't
+    catch direct writes to fd 1 from C extensions like ``torch`` and
+    ``transformers``. We dup the real fds, point fd 1/2 at devnull,
+    yield, then restore. Failure to restore would silence the rest of
+    the process — guarded with ``try/finally``.
+    """
+    saved_stdout_fd = os.dup(1)
+    saved_stderr_fd = os.dup(2)
+    devnull_fd = os.open(os.devnull, os.O_WRONLY)
+    # Also redirect the Python-level streams so any Python code that
+    # writes via sys.stdout (rather than the raw fd) also goes nowhere.
+    saved_sys_stdout = sys.stdout
+    saved_sys_stderr = sys.stderr
+    try:
+        os.dup2(devnull_fd, 1)
+        os.dup2(devnull_fd, 2)
+        sys.stdout = io.StringIO()
+        sys.stderr = io.StringIO()
+        yield
+    finally:
+        sys.stdout = saved_sys_stdout
+        sys.stderr = saved_sys_stderr
+        os.dup2(saved_stdout_fd, 1)
+        os.dup2(saved_stderr_fd, 2)
+        os.close(saved_stdout_fd)
+        os.close(saved_stderr_fd)
+        os.close(devnull_fd)

@@ -26,13 +26,22 @@ from cairntir.update import maybe_check_in_background, pending_update_banner
 
 _SERVER_NAME = "cairntir"
 
-_WARMUP_DISABLE_ENV_VAR: Final[str] = "CAIRNTIR_DISABLE_EMBEDDER_WARMUP"
-"""Set to a truthy value to skip the post-handshake embedder warmup.
+_WARMUP_ENABLE_ENV_VAR: Final[str] = "CAIRNTIR_ENABLE_EMBEDDER_WARMUP"
+"""Set to a truthy value to opt INTO the post-handshake embedder warmup.
 
-The warmup is cheap-to-skip and only matters for production
-``SentenceTransformerProvider`` users. Setting this off in CI or in
-tests that use the deterministic ``HashEmbeddingProvider`` is harmless
-and quiet.
+The warmup is **disabled by default** as of 2026-04-25 because it caused
+indefinite hangs on ``cairntir_session_start`` in production: the daemon
+thread loading sentence-transformers raced with the main asyncio stdio
+loop and the synchronous embed() the retriever triggers on a
+queried session_start, which together wedged Claude Code's MCP transport
+for 20+ minutes per stuck session. Reverting to lazy first-call loading
+on the main thread (pre-91a8350 behavior) restores reliability; the
+~25s first-write latency is the price.
+
+Future fix would re-enable warmup behind a process-wide model-load
+mutex so the warmup and the synchronous path can never both be running
+through ``SentenceTransformer.__init__`` at the same time. Until that
+ships, leave this opt-in.
 """
 
 _WARMUP_PROBE: Final[str] = "cairntir embedder warmup"
@@ -217,34 +226,33 @@ def _format_validation_error(exc: ValidationError) -> str:
     return f"{location}: {message}"
 
 
-def _warmup_disabled() -> bool:
-    raw = os.environ.get(_WARMUP_DISABLE_ENV_VAR, "").strip().lower()
+def _warmup_enabled() -> bool:
+    raw = os.environ.get(_WARMUP_ENABLE_ENV_VAR, "").strip().lower()
     return raw in {"1", "true", "yes", "on"}
 
 
 def warm_embedder_in_background(store: DrawerStore) -> threading.Thread | None:
-    """Spawn a daemon thread that loads the embedder model.
+    """Spawn a daemon thread that loads the embedder model (opt-in).
 
-    The cold-start fix in ``DrawerStore.__init__`` made the handshake
-    fast by skipping ``embedder.dimension`` on existing databases. But
-    the embedder still cold-loads on the *first* ``embed()`` call —
-    which means the first ``cairntir_remember`` or ``cairntir_recall``
-    after a server start blocks the user for ~25 seconds while
-    sentence-transformers + torch import.
+    Returns ``None`` unless ``CAIRNTIR_ENABLE_EMBEDDER_WARMUP=1`` is set
+    in the environment. Default-off as of 2026-04-25 because the warmup
+    raced with the main asyncio loop and wedged ``cairntir_session_start``
+    for 20+ minutes on real user machines (Issue: warmup vs synchronous
+    embed contention through ``SentenceTransformer.__init__``).
 
-    This helper kicks off a single throwaway ``embed()`` call in a
-    daemon thread. The asyncio event loop runs the MCP handshake in
-    parallel; by the time the user's first tool call arrives the
-    model is partially or fully loaded, so first-write latency drops
-    from ~25s to ~0s in the happy case.
+    When enabled, the helper kicks off a single throwaway ``embed()``
+    call in a daemon thread so the model loads in parallel with the
+    MCP handshake. First-write latency drops from ~25s to ~0s in the
+    happy case — but only enable this once the model-load mutex
+    described in ``_WARMUP_ENABLE_ENV_VAR`` is in place, otherwise you
+    will reproduce the hang.
 
-    Returns the thread (so tests can ``join`` it) or ``None`` if the
-    warmup is disabled by env var. Failures are intentionally
-    swallowed: a warmup miss simply means the next real ``embed()``
-    call surfaces the actual error to the user; crashing a background
-    thread for a best-effort optimization would defeat the point.
+    Failures are intentionally swallowed: a warmup miss simply means
+    the next real ``embed()`` call surfaces the actual error to the
+    user; crashing a background thread for a best-effort optimization
+    would defeat the point.
     """
-    if _warmup_disabled():
+    if not _warmup_enabled():
         return None
 
     def _warm() -> None:

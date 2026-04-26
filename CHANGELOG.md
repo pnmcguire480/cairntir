@@ -7,6 +7,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] — 2026-04-25
+
+**Critical hotfix.** `cairntir_session_start` was wedging Claude Code
+sessions for 20+ minutes (sometimes indefinitely) on real user
+machines. Two independent bugs were stacked on top of each other; both
+are fixed in this release.
+
+### Fixed — MCP stdio stream corruption
+
+`sentence-transformers`, `transformers`, and `torch` write progress
+bars (`Loading weights: ...`) and architecture-mismatch tables
+(`BertModel LOAD REPORT`) directly to **stdout** during model
+construction. When `SentenceTransformerProvider` runs inside the MCP
+stdio server, those bytes interleave with the JSON-RPC responses
+Claude Code is reading. The JSON parse breaks, Claude Code waits
+forever for a valid response that never comes, and the user sees
+"Pontificating..." for hours.
+
+`SentenceTransformerProvider._load()` and `.embed()` now wrap their
+work in a `_silence_io()` context manager that:
+
+- Dups fds 1 and 2 to `/dev/null` at the OS level (so even direct C
+  extension writes vanish).
+- Swaps `sys.stdout` and `sys.stderr` for `io.StringIO()` instances
+  (so Python-level writes also vanish).
+- Restores both via `try/finally` so a load failure can't silence
+  the rest of the process.
+
+### Fixed — Warmup race
+
+The `warm_embedder_in_background` daemon thread (added in 91a8350)
+loaded the sentence-transformers model in parallel with the asyncio
+stdio loop. When a `cairntir_session_start` call arrived with a
+query, the main thread also tried to load the model — both went
+through `SentenceTransformer.__init__` simultaneously, and on real
+user boxes this combination of (race + stdout corruption) is what
+produced the 20-minute hangs.
+
+The warmup is now **opt-in** via `CAIRNTIR_ENABLE_EMBEDDER_WARMUP=1`.
+Default behavior is the pre-91a8350 lazy first-call load on the main
+thread. The ~25s first-write latency is the price; reliability comes
+first. Re-enable the warmup once a process-wide model-load mutex is
+in place to serialize the warmup and synchronous paths.
+
+### Process
+
+- `_WARMUP_DISABLE_ENV_VAR` → `_WARMUP_ENABLE_ENV_VAR`. Same
+  vocabulary (`1`/`true`/`yes`/`on`), inverted semantics.
+- `tests/unit/test_mcp_warmup.py` rewritten for the opt-in shape.
+- 240 tests passing, ruff/mypy/silent-except all clean.
+
+### Diagnostics that surfaced this
+
+Three orphaned Python processes (250 MB each, sentence-transformers
+fully loaded) were sitting in `tasklist` after multiple Claude Code
+sessions had spawned and wedged their MCP servers. The user's
+"Pontificating..." Claude Code session showed `cairntir [cairntir_session_start]`
+at the top of the active tool stack, blocked indefinitely. Reproducing
+the cold load against the real `SentenceTransformerProvider` showed
+`Loading weights: 100%|##########|` and a `BertModel LOAD REPORT`
+table on stdout — the smoking gun.
+
 ## [1.1.0] — 2026-04-18
 
 v1.1 Synergy Stack — the three-upgrade bundle. Pulls forward v1.2
