@@ -96,19 +96,25 @@ class SentenceTransformerProvider:
         self._dim: int | None = None
 
     def _load(self) -> None:
+        _embed_trace(f"_load start model={self._model_name!r}")
         try:
             from sentence_transformers import SentenceTransformer
         except ImportError as exc:
             raise EmbeddingError(
                 "sentence-transformers is not installed; install cairntir with the default extras"
             ) from exc
+        _embed_trace(
+            "_load sentence_transformers imported; entering silence + SentenceTransformer()"
+        )
         with _silence_io():
             model = SentenceTransformer(self._model_name)
+        _embed_trace("_load SentenceTransformer constructed; reading dimension")
         dim = model.get_sentence_embedding_dimension()
         if dim is None:
             raise EmbeddingError(f"model {self._model_name} reported no embedding dimension")
         self._model = model
         self._dim = int(dim)
+        _embed_trace(f"_load complete dim={self._dim}")
 
     @property
     def dimension(self) -> int:
@@ -121,20 +127,40 @@ class SentenceTransformerProvider:
 
     def embed(self, texts: Sequence[str]) -> list[list[float]]:
         """Embed texts using the underlying sentence-transformers model."""
+        _embed_trace(f"embed enter n={len(texts)} model_loaded={self._model is not None}")
         if self._model is None:
             self._load()
         if self._model is None:  # pragma: no cover — _load guarantees this
             raise EmbeddingError("model still None after _load — provider is in a broken state")
         try:
+            _embed_trace("embed entering encode")
             with _silence_io():
                 vectors = self._model.encode(  # type: ignore[attr-defined]
                     list(texts),
                     normalize_embeddings=True,
                     convert_to_numpy=True,
                 )
+            _embed_trace(f"embed encode complete n_vecs={len(vectors)}")
         except Exception as exc:
+            _embed_trace(f"embed encode FAILED {type(exc).__name__}: {exc}")
             raise EmbeddingError(f"sentence-transformers encode failed: {exc}") from exc
         return [[float(x) for x in row] for row in vectors]
+
+
+def _embed_trace(message: str) -> None:
+    """Best-effort diagnostic trace into the MCP server log.
+
+    Embedder code can be reached from many call paths (CLI, MCP server,
+    direct Python). Only the MCP server has a log file; in other
+    contexts, fall through silently. We reuse the MCP server's
+    ``_trace`` helper to keep one timeline across the whole stack.
+    """
+    try:
+        from cairntir.mcp.server import _trace as _mcp_trace
+
+        _mcp_trace(f"embed: {message}")
+    except (ImportError, OSError):
+        return
 
 
 @contextlib.contextmanager

@@ -26,6 +26,28 @@ from cairntir.update import maybe_check_in_background, pending_update_banner
 
 _SERVER_NAME = "cairntir"
 
+
+def _trace(message: str) -> None:
+    """Append a timestamped diagnostic line to ``cairntir_home() / mcp.log``.
+
+    Stderr is captured by Claude Code and not easily inspectable;
+    a log file in the user's Cairntir home is. Best-effort: an OSError
+    here means the home dir isn't writable, in which case we silently
+    skip — diagnostics should never crash the server.
+    """
+    try:
+        from datetime import UTC, datetime
+
+        from cairntir.config import cairntir_home
+
+        log_path = cairntir_home() / "mcp.log"
+        stamp = datetime.now(UTC).isoformat(timespec="milliseconds")
+        with log_path.open("a", encoding="utf-8") as fh:
+            fh.write(f"{stamp} pid={os.getpid()} {message}\n")
+    except (OSError, ImportError):
+        return
+
+
 _WARMUP_ENABLE_ENV_VAR: Final[str] = "CAIRNTIR_ENABLE_EMBEDDER_WARMUP"
 """Set to a truthy value to opt INTO the post-handshake embedder warmup.
 
@@ -101,13 +123,16 @@ def _tool_specs() -> list[types.Tool]:
         ),
         types.Tool(
             name="cairntir_session_start",
-            description="Load the 4-layer context for a wing (the amnesia killer).",
+            description=(
+                "Load the 4-layer context for a wing (the amnesia killer). "
+                "Pure SQL — never triggers the embedder. Use cairntir_recall "
+                "for semantic search after the session is loaded."
+            ),
             inputSchema={
                 "type": "object",
                 "required": ["wing"],
                 "properties": {
                     "wing": {"type": "string"},
-                    "query": {"type": "string"},
                 },
             },
         ),
@@ -184,9 +209,12 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
     @server.call_tool()
     async def _call(name: str, arguments: dict[str, Any]) -> list[types.TextContent]:
         nonlocal update_banner_shown
+        _trace(f"_call enter name={name!r} args_keys={sorted(arguments.keys())}")
         try:
             text = _dispatch(backend, name, arguments)
+            _trace(f"_call dispatch ok name={name!r} text_len={len(text)}")
         except CairntirError as exc:
+            _trace(f"_call CairntirError name={name!r} msg={exc}")
             text = f"[cairntir error] {exc}"
         except ValidationError as exc:
             # Pydantic ValidationError is raised by Drawer construction when
@@ -204,6 +232,7 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
                 text = f"{banner}\n\n{text}"
             update_banner_shown = True
 
+        _trace(f"_call returning name={name!r} final_len={len(text)}")
         return [types.TextContent(type="text", text=text)]
 
     return server
@@ -274,12 +303,25 @@ def warm_embedder_in_background(store: DrawerStore) -> threading.Thread | None:
 
 
 async def _amain() -> None:
+    # Force HuggingFace Hub fully offline so SentenceTransformer never
+    # tries to revalidate the model against the network during load.
+    # The model files are cached locally after first download; phoning
+    # home on every server start adds latency and, on flaky/blocked
+    # networks, can wedge the load indefinitely. Users who genuinely
+    # need to download a new model should run a one-time download
+    # outside the MCP server.
+    os.environ.setdefault("HF_HUB_OFFLINE", "1")
+    os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+
+    _trace("amain start")
     # Kick off the background PyPI check so the *next* tool call (or
     # the one after) sees the latest-version cache. The check runs in
     # a daemon thread, fail-silent on network or permission errors.
     maybe_check_in_background()
+    _trace("update check spawned")
 
     store = DrawerStore(db_path(), SentenceTransformerProvider())
+    _trace("DrawerStore opened")
     backend = CairntirBackend(store)
 
     # Warm the embedder while the asyncio handshake completes. The
@@ -288,9 +330,12 @@ async def _amain() -> None:
     # By the time the user's first tool call arrives, the model is
     # warm and first-write latency is no longer ~25 seconds.
     warm_embedder_in_background(store)
+    _trace("warmup considered")
 
     server = build_server(backend)
+    _trace("server built; entering stdio_server")
     async with stdio_server() as (read, write):
+        _trace("stdio_server entered; starting server.run")
         await server.run(read, write, server.create_initialization_options())
 
 

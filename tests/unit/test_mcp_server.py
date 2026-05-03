@@ -49,6 +49,29 @@ def _invoke_call_tool(server: Any, name: str, arguments: dict[str, Any]) -> str:
     return str(payload[0].text)
 
 
+def test_session_start_tool_spec_does_not_advertise_query() -> None:
+    """`cairntir_session_start` MUST NOT advertise a ``query`` parameter.
+
+    Regression: 1.1.0 advertised it; Claude Code routinely passed a query;
+    the resulting embed() cold load took ~2.5 minutes on real machines and
+    Claude Code's MCP timeout fired well before the response arrived. The
+    fix in 1.1.2 strips ``query`` from the tool spec so session_start is
+    pure SQL — sub-second on cold MCP servers, every time. The backend
+    method still accepts ``query`` for direct library callers.
+    """
+    from cairntir.mcp.server import _tool_specs
+
+    specs = {tool.name: tool for tool in _tool_specs()}
+    session_start = specs["cairntir_session_start"]
+    properties = session_start.inputSchema["properties"]
+    assert "wing" in properties
+    assert "query" not in properties, (
+        "cairntir_session_start MUST NOT advertise a query parameter — "
+        "it triggers the embedder cold load and wedges Claude Code's "
+        "MCP timeout. Use cairntir_recall for semantic search."
+    )
+
+
 def test_remember_invalid_wing_returns_clean_error(_backend: CairntirBackend) -> None:
     """Pydantic ValidationError from Drawer construction must be caught.
 
