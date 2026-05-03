@@ -1,8 +1,6 @@
 # The Amnesia Problem and What It Cost Me
 
-*Draft — v1.1 release post. Section bodies filled by a draft pass; the
-personal-numbers section ("The cost, in hours") is still an editor stub
-waiting on the author's logs.*
+*v1.1 release post. Last revised 2026-05-03.*
 
 ---
 
@@ -47,13 +45,38 @@ instead.
 
 ## The cost, in hours
 
-> *Editor note: this section is a stub waiting on the author's actual
-> time logs. The shape it should take: a week-by-week tally of how
-> much each Monday morning went to re-briefing, how often the re-brief
-> was incomplete, and how many times a hallucinated reason went
-> uncaught for hours or days. The point of the section is to convert
-> the qualitative complaint above into a number an outside reader can
-> compare against their own week.*
+Cairntir was built in 9 working days across April and May 2026. That
+number is misleading without the context around it.
+
+Cairntir is one of several projects I work on. The others — **Stars
+2026** (a browser-native remake of the 1995 game *Stars!*), **Ground
+Zero** (a zombie-apocalypse survival RPG), **SwarmCast** (a free
+beekeeping community app), and **Cort4Congress** — have been built
+in parallel against the same wall. Every one of them has its own
+`CLAUDE.md`. Every one has a hand-written `Last Session` field that
+gets rewritten every chat because nothing else could carry the thread
+across sessions. I was paying the tax in five places at once, before
+any of these memory ideas had even been thought of.
+
+**BrainStormer** was the first attempt to fix it. I've been vibe-coding
+since Opus 4.6 dropped — no point bullshitting anyone — so BrainStormer
+was thrown together from YouTube transcripts I'd turned into Claude
+skills. It had the right vocabulary. It had nothing else. The runtime
+never caught up to the architecture, and the problem kept bleeding
+into every other project.
+
+Cairntir is the second attempt — the first one that actually shipped.
+Nine days of build time, because Cairntir eats its own dog food: every
+Cairntir development session is itself a Cairntir user. The memory
+layer was load-bearing on its own construction.
+
+Fixing Cairntir was hard. It was also the easiest fix yet. The other
+four projects are next.
+
+The full receipt is across every `CLAUDE.md` in every project I work
+on: a `Last Session` field, hand-rewritten every session, read every
+session, because nothing else could carry the thread. The codebase is
+the bill for the tax the codebase was built to refund.
 
 ---
 
