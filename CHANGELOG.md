@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] — 2026-05-03
+
+**Architectural follow-up to 1.1.1.** 1.1.1 silenced the stdout
+corruption that was wedging `cairntir_session_start`; 1.1.2 makes
+sure the call can never trigger the slow path in the first place.
+
+### Fixed — `cairntir_session_start` is now pure SQL
+
+Removed the `query` parameter from the `cairntir_session_start` MCP
+tool spec. The retriever's optional `query` argument was the only
+path through `session_start` that triggered the embedder, and on
+cold MCP servers the sentence-transformers cold load took up to
+~2.5 minutes — long enough that Claude Code's MCP-call timeout
+fired well before the response arrived, even when the server
+ultimately produced a valid 3,625-char answer (observed
+2026-05-03).
+
+With `query` removed from the tool spec, Claude Code stops passing
+it. `session_start` becomes two `list_by` SQL queries plus a string
+format — sub-second on every cold MCP server boot, no embedder
+cold-load on the critical path. Semantic search has its own home:
+`cairntir_recall`.
+
+The backend method `CairntirBackend.session_start(wing, query)`
+still accepts `query` for direct library callers; only the
+MCP-advertised tool surface drops it.
+
+Diagnostic plumbing added during the chase stays in place:
+- `cairntir_home() / mcp.log` — per-process timestamped log of
+  server startup, every tool dispatch, every embedder load step
+- `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1` are set as
+  defaults at MCP startup so the embedder never tries to phone
+  home
+
+### Process
+
+- New regression test pins the `cairntir_session_start` tool spec
+  to never advertise a `query` parameter
+- 240 → 241 tests passing, ruff/format/mypy --strict/silent-except
+  all clean
+- Bumped 1.1.1 → 1.1.2 in pyproject.toml, __init__.py, plugin.json
+
 ## [1.1.1] — 2026-04-25
 
 **Critical hotfix.** `cairntir_session_start` was wedging Claude Code
