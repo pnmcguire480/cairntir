@@ -267,6 +267,7 @@ Either way, we build.
 
 ## Links
 
+- **Why I built this (blog post):** [docs/blog/amnesia-problem.md](docs/blog/amnesia-problem.md)
 - **Getting started (plain English):** [docs/cairntir-for-dummies.md](docs/cairntir-for-dummies.md)
 - **Origin story + ethos:** [docs/conception.md](docs/conception.md)
 - **Integration guide (embedding Cairntir in your tool):** [docs/integration-guide.md](docs/integration-guide.md)

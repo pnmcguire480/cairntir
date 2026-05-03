@@ -1,6 +1,8 @@
 # The Amnesia Problem and What It Cost Me
 
-*Draft — v1.1 release post. Not yet published.*
+*Draft — v1.1 release post. Section bodies filled by a draft pass; the
+personal-numbers section ("The cost, in hours") is still an editor stub
+waiting on the author's logs.*
 
 ---
 
@@ -45,40 +47,72 @@ instead.
 
 ## The cost, in hours
 
-*(To be filled in: a quantified week-by-week tally from personal
-logs — how much of each Monday morning went to re-briefing, how
-many times the re-brief was incomplete, how many times a
-hallucinated reason went uncaught for hours or days.)*
+> *Editor note: this section is a stub waiting on the author's actual
+> time logs. The shape it should take: a week-by-week tally of how
+> much each Monday morning went to re-briefing, how often the re-brief
+> was incomplete, and how many times a hallucinated reason went
+> uncaught for hours or days. The point of the section is to convert
+> the qualitative complaint above into a number an outside reader can
+> compare against their own week.*
 
 ---
 
 ## Why the obvious fixes didn't work
 
-*(To be filled in: the things I tried first and why each one
-failed.)*
+I tried the obvious things first. Each one lasted between three days
+and three weeks before I admitted it wasn't enough.
 
-- `CLAUDE.md` files per project — survives; doesn't scale past the
-  24k-ish character budget; summarization hides the specific
-  decisions you actually needed.
-- Chat transcript dumps — Claude can read them but won't
+- **`CLAUDE.md` files per project** — survives; doesn't scale past the
+  24k-ish character budget; summarization hides the specific decisions
+  you actually needed.
+- **Chat transcript dumps** — Claude can read them but won't
   speculatively search them, and the re-brief is worse than just
   re-explaining.
-- RAG over my repo — indexes code, not decisions. *Why* I picked X
+- **RAG over my repo** — indexes code, not decisions. *Why* I picked X
   is usually not in the code.
-- MemPalace — great memory, no reasoning discipline. Close, but
+- **MemPalace** — great memory, no reasoning discipline. Close, but
   half the product.
-- BrainStormer (my own prior attempt) — great vocabulary, terrible
-  runtime. The architecture of a learning system with the runtime
-  of a static scaffolder.
+- **BrainStormer (my own prior attempt)** — great vocabulary, terrible
+  runtime. The architecture of a learning system with the runtime of a
+  static scaffolder.
+
+The pattern across all five was the same. Each one *stored* something.
+None of them remembered the *reasoning*. A code index will tell you
+what the code does. It will not tell you why the code is the way it
+is and not some other way. A `CLAUDE.md` will tell you the project's
+name and one sentence about its goal. It will not tell you the seven
+trade-offs you made on Tuesday and why each one went the way it did.
+
+The thing I was trying to remember was not facts. It was *structured
+judgment* — claims, predictions, observations, surprises, supersedure.
+None of the obvious fixes had a place to put any of those.
 
 ---
 
 ## The fix that actually worked
 
-*(To be filled in: the core insight. Memory is necessary but not
-sufficient. You need the memory to be queryable, the queries to be
-cited, the decisions to be falsifiable, and the retrieval to weight
-what proved correct over what didn't.)*
+The insight that broke the problem open was that **memory alone is
+not enough.**
+
+A perfect transcript of every chat I'd ever had with Claude would not
+have helped. It would have been a haystack with no index of which
+needles had proved sharp. What I needed wasn't more raw text — it was
+a structure that recorded *which claims survived contact with reality
+and which didn't*. A library, not a journal. A scoreboard for ideas.
+
+That meant the unit of memory could not be a chat log. It had to be a
+**drawer** with five fields:
+
+- `claim` — what we believed at the time
+- `predicted_outcome` — what we expected to happen if the claim was right
+- `observed_outcome` — what actually happened
+- `delta` — non-empty if the prediction failed (the surprise)
+- `supersedes_id` — link to the drawer this one replaces
+
+Every drawer is a tiny experiment. Every retrieval is a re-vote on
+whether the experiment paid off. Memory turns into an *evolving*
+thing, not a static archive — which is the trick that lets a
+six-month-old decision keep mattering on a Monday morning.
 
 ### The three ingredients
 
@@ -103,21 +137,58 @@ narrow enough to reason about and open enough to grow.
 
 ## What day 30 looks like now
 
-*(To be filled in: a real example — walking into a cold codebase
-after a vacation, the first chat's session_start output, the
-specific decision drawers that surfaced, what would have happened
-without them.)*
+The blunt demo is this. I opened Cairntir's own repo for the first
+time in a stretch of days. Fresh chat. I asked: *"where did we leave
+off?"*
+
+The first thing Claude did — before answering — was call
+`cairntir_session_start`. The tool returned the wing's identity
+drawers (who I am, how this project works, the North Star) and the
+single essential drawer #67, which had been written days earlier as
+the previous Claude's last action. It said: *"v1.0.0 shipped — library
+extraction. `cairntir.__init__` exposes only the stable seam: 24
+names, sorted, snapshot-tested. Next session is the Road to 2.0.
+PyPI publish is item #1."*
+
+Claude read it. Then it answered my question with: *"We just shipped
+v1.0.0. The next item on the roadmap is the PyPI publish. Want to
+start there?"*
+
+That's the whole demo. There is no re-explaining. There is no
+hallucinated reason. There is no Monday morning tax. Walk in, read
+the room, pick up where we left off.
+
+The drawer I just described exists in this repo. The session log is
+also in this repo. It is not a marketing screenshot.
 
 ---
 
 ## What I learned that I didn't expect
 
-*(To be filled in: the surprise — that the value wasn't just
-remembering, it was that **falsifiable predictions change how you
-think out loud**. Knowing Claude will commit your claim to a
-drawer with a predicted outcome and hold you to it weeks later
-makes you more careful about what you claim in the first place.
-This was not in the design. It fell out of the constraint.)*
+The amnesia fix was the visible win. The invisible one — the one I
+didn't design for — was that **falsifiable predictions change how
+you think out loud.**
+
+Before Cairntir, when I told Claude *"I think this approach will
+scale"*, the claim went into the chat and out the window. By Friday
+I'd forgotten what I'd claimed. By Monday I was making a contradicting
+claim with the same confidence. There was no register against which
+to rate my own past judgment.
+
+After Cairntir, every load-bearing claim becomes a drawer with a
+`predicted_outcome` field. Three weeks later, when reality arrives,
+the drawer's `observed_outcome` field gets filled in and a `delta` is
+recorded if the prediction missed. The belief-as-distribution scorer
+raises mass on drawers whose predictions held and lowers it on the
+ones that didn't. It runs silently across months.
+
+After the first surprise-weighted demotion of a drawer I'd been sure
+of, I started being more careful about what I claimed. Knowing the
+system would *remember the claim* and *score me on it* made me think
+twice before stating it.
+
+This was not in the design. It fell out of the constraint. The same
+thing that fixed the amnesia ended up training me.
 
 ---
 

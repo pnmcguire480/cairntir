@@ -1,0 +1,14 @@
+title: Cairntir
+description: Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia.
+url: https://pnmcguire480.github.io
+baseurl: /cairntir
+
+theme: jekyll-theme-cayman
+
+show_downloads: false
+
+exclude:
+  - publish-checklist.md
+  - journal/
+  - submissions/
+  - recipes/signal-reader/examples/
