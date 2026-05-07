@@ -422,9 +422,10 @@ def test_setup_wizard_happy_path(tmp_path: Path, monkeypatch: object) -> None:
 
     result = runner.invoke(app, ["setup", "--yes"])
     assert result.exit_code == 0, result.stdout
-    # Header lines for every step.
-    for i in range(1, 8):
-        assert f"[{i}/7]" in result.stdout
+    # Header lines for every step. Step count is 8 since v1.1.3 added the
+    # FastEmbed pre-warm step (step 7 in the new ordering).
+    for i in range(1, 9):
+        assert f"[{i}/8]" in result.stdout
     assert "Cairntir is ready." in result.stdout
     assert "smoke test" in result.stdout.lower()
     # Greeting preamble landed.

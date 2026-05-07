@@ -1,7 +1,7 @@
 """Entry point: ``python -m cairntir.daemon``.
 
-Wires the production store (sentence-transformers + platform db path) and
-the platform-default spool directory, then runs the capture loop forever.
+Wires the production store (fastembed + platform db path) and the
+platform-default spool directory, then runs the capture loop forever.
 """
 
 from __future__ import annotations
@@ -13,13 +13,13 @@ import logging
 from cairntir.config import cairntir_home, db_path
 from cairntir.daemon.capture import CaptureDaemon
 from cairntir.daemon.spool import spool_dir
-from cairntir.memory.embeddings import SentenceTransformerProvider
+from cairntir.memory.embeddings import FastEmbedProvider
 from cairntir.memory.store import DrawerStore
 
 
 async def _amain() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s: %(message)s")
-    store = DrawerStore(db_path(), SentenceTransformerProvider())
+    store = DrawerStore(db_path(), FastEmbedProvider())
     daemon = CaptureDaemon(store, spool_dir(cairntir_home()))
     await daemon.run()
 

@@ -15,6 +15,7 @@ protocols. If you want the concrete default, depend on these.
 from __future__ import annotations
 
 from cairntir.memory.embeddings import (
+    FastEmbedProvider,
     HashEmbeddingProvider,
     SentenceTransformerProvider,
 )
@@ -25,6 +26,7 @@ from cairntir.reason.loop import ReasonLoop
 __all__ = [
     "SCHEMA_VERSION",
     "DrawerStore",
+    "FastEmbedProvider",
     "HashEmbeddingProvider",
     "ReasonLoop",
     "RetrievalResult",

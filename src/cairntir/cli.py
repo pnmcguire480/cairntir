@@ -17,7 +17,7 @@ from cairntir import __version__
 from cairntir.config import cairntir_home, db_path
 from cairntir.errors import MemoryStoreError
 from cairntir.mcp.backend import CairntirBackend
-from cairntir.memory.embeddings import HashEmbeddingProvider
+from cairntir.memory.embeddings import FastEmbedProvider, HashEmbeddingProvider
 from cairntir.memory.store import SCHEMA_VERSION, DrawerStore
 from cairntir.portable import export_drawers, import_drawers
 from cairntir.register import clear_checkpoint, ensure_registered
@@ -641,7 +641,7 @@ def setup_cmd(
     import subprocess
     import sys
 
-    total = 7
+    total = 8
 
     # ---- Step 1: claude CLI ------------------------------------------------
     _emoji_step(1, total, "Checking Claude Code is installed")
@@ -737,8 +737,31 @@ def setup_cmd(
         raise typer.Exit(code=1) from exc
     _emoji_ok(f"store ready at {db_path()}")
 
-    # ---- Step 7: smoke test -----------------------------------------------
-    _emoji_step(7, total, "Smoke test: remember + recall")
+    # ---- Step 7: pre-warm the production embedder ------------------------
+    _emoji_step(7, total, "Pre-warming the embedder model (one-time download)")
+    _emoji_tip(
+        "this downloads the ONNX MiniLM model used for semantic search "
+        "(~25 MB) and caches it under ~/.cache/fastembed/. After this, "
+        "every fresh MCP server boot starts in seconds instead of minutes."
+    )
+    try:
+        provider = FastEmbedProvider()
+        provider.embed(["cairntir setup warmup probe"])
+    except Exception as exc:  # noqa: BLE001 — we want to log + continue, not crash setup
+        _emoji_warn(
+            f"embedder warmup did not complete: {type(exc).__name__}: {exc}"
+        )
+        _emoji_tip(
+            "this is not fatal — Cairntir will still work. The first "
+            "remember/recall in your next chat may be slow (~10-30s) "
+            "while the model downloads on demand. Re-run `cairntir setup` "
+            "later to retry the warmup."
+        )
+    else:
+        _emoji_ok("embedder model cached and ready")
+
+    # ---- Step 8: smoke test -----------------------------------------------
+    _emoji_step(8, total, "Smoke test: remember + recall")
     try:
         _setup_smoke_test()
     except (MemoryStoreError, RuntimeError) as exc:

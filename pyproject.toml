@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cairntir"
-version = "1.1.2"
+version = "1.1.3"
 description = "Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -38,6 +38,7 @@ classifiers = [
 ]
 dependencies = [
     "sqlite-vec>=0.1.6",
+    "fastembed>=0.4.0",
     "sentence-transformers>=3.0.0",
     "typer>=0.12.0",
     "platformdirs>=4.0.0",
@@ -129,7 +130,7 @@ show_error_context = true
 pretty = true
 
 [[tool.mypy.overrides]]
-module = ["sqlite_vec.*", "sentence_transformers.*"]
+module = ["sqlite_vec.*", "sentence_transformers.*", "fastembed.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

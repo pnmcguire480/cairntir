@@ -20,7 +20,7 @@ from pydantic import ValidationError
 from cairntir.config import db_path
 from cairntir.errors import CairntirError, EmbeddingError
 from cairntir.mcp.backend import CairntirBackend
-from cairntir.memory.embeddings import SentenceTransformerProvider
+from cairntir.memory.embeddings import FastEmbedProvider
 from cairntir.memory.store import DrawerStore
 from cairntir.update import maybe_check_in_background, pending_update_banner
 
@@ -320,15 +320,18 @@ async def _amain() -> None:
     maybe_check_in_background()
     _trace("update check spawned")
 
-    store = DrawerStore(db_path(), SentenceTransformerProvider())
+    store = DrawerStore(db_path(), FastEmbedProvider())
     _trace("DrawerStore opened")
     backend = CairntirBackend(store)
 
-    # Warm the embedder while the asyncio handshake completes. The
-    # MCP initialize JSON-RPC is mostly I/O-bound and releases the GIL
-    # often, so torch + sentence-transformers can load in parallel.
-    # By the time the user's first tool call arrives, the model is
-    # warm and first-write latency is no longer ~25 seconds.
+    # Warm the embedder while the asyncio handshake completes. The MCP
+    # initialize JSON-RPC is mostly I/O-bound and releases the GIL often,
+    # so the ONNX session can load in parallel. With fastembed as the
+    # default provider, cold start is already ~5s instead of the 1-12 min
+    # torch took, so this warmup is now an optional polish rather than a
+    # survival mechanism — kept opt-in via CAIRNTIR_ENABLE_EMBEDDER_WARMUP
+    # for the same race-safety reasons documented on
+    # warm_embedder_in_background().
     warm_embedder_in_background(store)
     _trace("warmup considered")
 

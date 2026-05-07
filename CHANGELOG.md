@@ -7,6 +7,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.3] — 2026-05-03
+
+**The cold-start fix that should have happened four commits ago.**
+
+Five prior commits chased variants of the same symptom — the MCP
+server hangs for 1-12 minutes on the first `cairntir_remember`
+or `cairntir_recall` after a fresh boot — by patching around the
+slow path: lazy load, background warmup, stdout silencing,
+default-disable warmup, removing query from session_start.
+Every one was a workaround. None killed the root cause.
+
+### Fixed — root cause: torch is slow to import
+
+`import sentence_transformers` triggers `import torch`, which
+initializes CUDA detection, threading, and a wall of C++
+extensions every Cairntir startup pays for and never uses.
+Measured on a CPU-only Windows desktop on 2026-05-03: 2 minutes 7
+seconds for the import alone, up to 12 minutes wall-clock when
+Hugging Face Hub I/O is slow. Subsequent calls in the same
+process were fast, but every fresh MCP server pid paid the full
+cold start with zero feedback to the user.
+
+### Added — `FastEmbedProvider`
+
+New production embedder backed by `fastembed` (ONNX Runtime).
+Drop-in replacement for `SentenceTransformerProvider`: same
+`all-MiniLM-L6-v2` model under the hood, same 384-dim output,
+same vector space. Import + load + first embed measured
+end-to-end at **1.4 seconds** with the model cached on disk
+(versus 2-12 minutes for sentence-transformers). Existing drawers
+remain searchable across the swap; both backends embed into the
+same model's space.
+
+### Changed — production default flipped
+
+`src/cairntir/mcp/server.py` and `src/cairntir/daemon/__main__.py`
+now construct `FastEmbedProvider()` instead of
+`SentenceTransformerProvider()`. The legacy provider is kept on
+the public surface (`cairntir.impl.SentenceTransformerProvider`)
+for opt-in fallback and the eval suite.
+
+### Added — `cairntir setup` step 7: pre-warm the embedder
+
+Setup now downloads and caches the ONNX model
+(~25 MB to `~/.cache/fastembed/`) during the wizard, so the first
+user-facing `cairntir_remember` after install is never the slow
+one. Failure to warm is logged but non-fatal — the model
+auto-downloads on demand if setup couldn't fetch it.
+
+### Dependencies
+
+- Added: `fastembed >= 0.4.0` (transitively brings `onnxruntime`
+  and `huggingface_hub`)
+- Kept: `sentence-transformers >= 3.0.0` for the legacy provider
+  and the eval suite. Future major version may move it to an
+  optional extras group.
+
 ## [1.1.2] — 2026-05-03
 
 **Architectural follow-up to 1.1.1.** 1.1.1 silenced the stdout

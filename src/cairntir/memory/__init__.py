@@ -16,6 +16,7 @@ from cairntir.memory.consolidate import (
 )
 from cairntir.memory.embeddings import (
     EmbeddingProvider,
+    FastEmbedProvider,
     HashEmbeddingProvider,
     SentenceTransformerProvider,
 )
@@ -28,6 +29,7 @@ __all__ = [
     "Drawer",
     "DrawerStore",
     "EmbeddingProvider",
+    "FastEmbedProvider",
     "HashEmbeddingProvider",
     "Layer",
     "RetrievalResult",
