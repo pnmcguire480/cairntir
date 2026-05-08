@@ -7,6 +7,96 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — Cairntir Blender add-on (horizon thesis demonstrator)
+
+The first non-code Cairntir client. A Blender add-on that captures
+decisions and 3D-print iteration outcomes into Cairntir's memory
+layer, demonstrating that **Cairntir doesn't care what is being
+remembered** — the same machinery that records code decisions in
+the cairntir wing records 3D-print iteration outcomes in a
+blender wing. Same shape, same retrieval, same prediction-bound
+semantics.
+
+This is the first concrete bridge toward the path described in
+the roadmap's Horizon section: AI + grand-scale 3D printing +
+post-scarcity tooling. Today it remembers code decisions.
+Tomorrow it remembers which printed structure worked, what the
+parameters were, what the next iteration should try.
+
+#### Architecture: spool drop, not import
+
+The add-on never imports the `cairntir` Python package. Instead it
+writes drawer-shaped JSON envelopes to `$CAIRNTIR_HOME/spool/` —
+the same format `cairntir.daemon.spool.parse_capture` already
+understands. Cairntir's daemon picks them up on its next poll
+cycle. **Stdlib-only** by design (`json`, `pathlib`, `os`, `time`,
+`uuid`), so installation in Blender's bundled Python is zero-touch.
+
+Atomic writes (`.tmp` then `os.replace`) mean the daemon never
+sees a half-written file.
+
+#### What's in the add-on
+
+`addons/cairntir_blender/`:
+- `spool_writer.py` — pure stdlib writer with `write_capture`
+  (free-form drawer) and `write_print_outcome` (structured 3D-print
+  iteration with parameters + verdict). Auto-lowercases wing/room
+  to satisfy Cairntir's identifier convention so users can naturally
+  type "PLA" in the dialog.
+- `__init__.py` — Blender add-on entry. `bl_info` block, four
+  classes (`CAIRNTIR_PG_settings`, `CAIRNTIR_OT_capture_decision`,
+  `CAIRNTIR_OT_capture_print_outcome`, `CAIRNTIR_PT_panel`), and
+  the standard `register` / `unregister` pair. Lazy-imports `bpy`
+  so the spool_writer module remains importable from pytest
+  without Blender installed.
+- `README.md` — install (zip the directory + Blender preferences),
+  configure (per-scene wing / material / cairntir_home), and use
+  (panel in the 3D Viewport's N-panel).
+
+#### What gets captured
+
+The Blender panel exposes two operators in the 3D Viewport's
+**Cairntir** N-panel tab:
+
+- **Capture Decision** — free-form drawer with content the user
+  types. Use for design choices, mid-iteration notes, anything
+  that isn't strictly a print outcome.
+- **Capture Print Outcome** — structured drawer with nozzle temp,
+  bed temp, infill %, layer height, outcome text, success/fail
+  verdict, and free-form notes. The drawer's content is
+  human-readable markdown; metadata carries the structured fields
+  (`source: "blender"`, `kind: "print_outcome"`, `parameters`,
+  `success`) so future Decision Replay or consolidation can
+  recover the prediction-bound semantics.
+
+#### Tests — 14 new
+
+`tests/unit/test_blender_addon.py` loads `spool_writer.py` directly
+via `importlib.util` (sidestepping the bpy import in `__init__.py`).
+Covers happy paths, validation rejection (empty wing/room,
+whitespace content, unknown layer), the print-outcome helper, the
+lowercase normalization, atomic-write behavior, and — the
+load-bearing test — **round-trip with the actual Cairntir daemon**:
+a file written by the Blender writer parses cleanly through
+`cairntir.daemon.spool.parse_capture` and produces a Drawer with
+the right wing / room / layer / metadata. If that test ever
+breaks, the horizon thesis becomes aspiration instead of fact.
+
+#### Per-file ruff carve-out
+
+Blender's `bpy` API uses `UPPER_PG_thing` class naming and class
+attribute idioms (e.g. `bl_options = {"REGISTER"}`) that conflict
+with PEP-8 / pep8-naming. `pyproject.toml` adds a per-file ignore
+for `addons/cairntir_blender/**` covering N801, N815, RUF012, D102
+— the add-on is opt-in code that runs inside Blender, not in
+Cairntir's main distribution.
+
+### Status
+
+297 tests passing (14 new), 84% coverage, ruff + mypy --strict
+clean, silent-except scanner clean. Zero new runtime dependencies
+in Cairntir's main distribution; the add-on is self-contained.
+
 ### Added — Agent Memory (per-skill self-memory wings)
 
 Cairntir's three skills (crucible, quality, reason) now keep their

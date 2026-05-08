@@ -111,6 +111,12 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["D", "S101"]
+# Blender add-on conforms to Blender's naming conventions and bpy
+# property idioms, which conflict with PEP-8 / pep8-naming. The add-on
+# is opt-in code that runs inside Blender, not in Cairntir's main
+# distribution; relax the linter here rather than mangling Blender API
+# usage.
+"addons/cairntir_blender/**" = ["N801", "N815", "RUF012", "D102"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
