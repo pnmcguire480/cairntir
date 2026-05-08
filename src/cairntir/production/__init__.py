@@ -34,10 +34,22 @@ from cairntir.production.adapters import (
     StoreBackedBeliefs,
     StoreBackedMemory,
 )
+from cairntir.production.llm import (
+    OllamaError,
+    OllamaInvalidResponseError,
+    OllamaModelMissingError,
+    OllamaProposer,
+    OllamaUnavailableError,
+)
 
 __all__ = [
     "ManualProposer",
     "NullRunner",
+    "OllamaError",
+    "OllamaInvalidResponseError",
+    "OllamaModelMissingError",
+    "OllamaProposer",
+    "OllamaUnavailableError",
     "StoreBackedBeliefs",
     "StoreBackedMemory",
 ]

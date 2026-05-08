@@ -7,6 +7,83 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — Local-AI proposer (Ollama)
+
+The Reason loop's `HypothesisProposer` port has shipped only a manual
+adapter (`ManualProposer`, where you type the claim + predicted
+yourself) since v0.6. This release adds the first inference-backed
+implementation: `OllamaProposer`, which calls a locally-running
+[Ollama](https://ollama.com) daemon to draft both fields. Cairntir
+still does not call cloud LLMs — Ollama is local-first by design,
+the daemon runs on the user's machine, and the adapter is stdlib-only
+(`urllib.request` + `json`).
+
+#### `cairntir reason --proposer ollama` and `cairntir replay --proposer ollama`
+
+Both commands accept a new `--proposer {manual,ollama}` flag.
+Defaults to `manual` (existing behavior). With `--proposer ollama`:
+
+- A single round-trip to `http://localhost:11434/api/generate` (configurable
+  via `--ollama-endpoint`) drafts the `claim` + `predicted_outcome`.
+- The draft is **surfaced in the terminal** before the loop commits —
+  every load-bearing piece of generated text gets confirmed by the
+  user. Cairntir is a memory layer, not a black box.
+- Empty input at the prompt accepts the draft; typed input overrides
+  it. The observed outcome and verdict still always come from the
+  user (you saw what happened, not the model).
+
+```
+cairntir reason "did the proposer wiring land?" --wing cairntir \
+  --proposer ollama --ollama-model gemma2:2b
+```
+
+For `cairntir replay`, `--proposer ollama` reframes the original
+chain leaf's claim + predicted given the new evidence — the
+"original framing was off, the replay is also a re-statement" case
+the recipe README anticipated. Without the flag, replay still
+auto-fills from the chain leaf verbatim (the right default for
+closing a prediction window).
+
+#### `cairntir.production.OllamaProposer`
+
+New public class on the `cairntir.production` surface. Implements
+`HypothesisProposer` (runtime-checkable). Constructor takes `model`,
+`endpoint` (default `http://localhost:11434`), and `timeout` (default
+120s). Typed exceptions: `OllamaError` (base), `OllamaUnavailableError`
+(daemon unreachable), `OllamaModelMissingError` (model not pulled),
+`OllamaInvalidResponseError` (malformed body). Every error carries a
+recovery hint in its message — never a silent fallback.
+
+#### What this unlocks
+
+The Reason loop now has a path to autonomous invocation that doesn't
+involve cloud APIs or billed tokens. Recipes like Signal Reader and
+Decision Replay can be invoked with the model drafting the
+prediction-bound fields, surfaced for human review. The "memory that
+thinks back" loop closes — locally.
+
+The Whisper.cpp + Gemma pattern Patrick already proved in Transcript
+Capture is the same shape: local model server, Python client over
+HTTP, no telemetry. Reusing it here means no new architectural
+surprises.
+
+### Tests — 18 new
+
+- `test_ollama_proposer.py` (14 tests): protocol conformance, happy
+  path, custom endpoint, all error paths (unreachable, timeout, model
+  missing, internal error, non-JSON envelope, missing response field,
+  non-JSON inner payload, non-object payload, missing/empty claim,
+  missing predicted_outcome).
+- `test_cli.py` (4 tests): `--proposer ollama` happy path with
+  mocked HTTP, daemon-unavailable error path, unknown-proposer
+  rejection, replay reframe.
+
+### Status
+
+268 tests passing, 84% coverage, ruff + mypy --strict clean,
+silent-except scanner clean. Zero new runtime dependencies — Ollama
+is an external daemon, not a Python package Cairntir installs.
+
 ### Added — Decision Replay recipe (synergy stack completion)
 
 The v1.1 synergy stack — production reason loop, cross-wing recall,

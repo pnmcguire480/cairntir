@@ -592,6 +592,203 @@ def test_replay_errors_on_missing_drawer(tmp_path: Path, monkeypatch: object) ->
     assert "no drawer" in combined or "9999" in combined
 
 
+def test_reason_proposer_ollama_drafts_claim_and_predicted(
+    tmp_path: Path, monkeypatch: object
+) -> None:
+    """`cairntir reason --proposer ollama` drafts both fields locally and
+    surfaces the draft for confirmation before the loop commits."""
+    import io
+    import json
+    import urllib.request
+
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384)).close()
+
+    def _fake_urlopen(req: urllib.request.Request, **_: object) -> io.BytesIO:
+        body = json.loads(req.data.decode("utf-8"))  # type: ignore[union-attr]
+        # Sanity: the CLI is hitting Ollama's /api/generate.
+        assert req.full_url.endswith("/api/generate")
+        assert body["model"] == "gemma2:2b"
+        return io.BytesIO(
+            json.dumps(
+                {
+                    "response": json.dumps(
+                        {
+                            "claim": "ollama wired into cairntir replay path",
+                            "predicted_outcome": "the synergy stack auto-drafts hypotheses cleanly",
+                        }
+                    )
+                }
+            ).encode("utf-8")
+        )
+
+    monkeypatch.setattr(urllib.request, "urlopen", _fake_urlopen)  # type: ignore[attr-defined]
+
+    result = runner.invoke(
+        app,
+        [
+            "reason",
+            "did the proposer wiring land?",
+            "--wing",
+            "cairntir",
+            "--proposer",
+            "ollama",
+            "--ollama-model",
+            "gemma2:2b",
+            "--observed",
+            "yes, drafted text appeared in the CLI",
+            "--success",
+        ],
+        # Two newline-only inputs accept the drafted claim + predicted.
+        input="\n\n",
+    )
+    assert result.exit_code == 0, result.output
+    # The draft block printed.
+    assert "drafted" in result.output.lower()
+    assert "ollama wired" in result.output
+    # The loop committed.
+    assert "prediction drawer" in result.output
+    assert "observation drawer" in result.output
+
+
+def test_reason_proposer_ollama_unavailable_exits_clean(
+    tmp_path: Path, monkeypatch: object
+) -> None:
+    """If the daemon is not reachable, the CLI exits 1 with a clear message."""
+    import urllib.error
+    import urllib.request
+
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384)).close()
+
+    def _refuse(_req: urllib.request.Request, **_: object) -> object:
+        raise urllib.error.URLError("Connection refused")
+
+    monkeypatch.setattr(urllib.request, "urlopen", _refuse)  # type: ignore[attr-defined]
+
+    result = runner.invoke(
+        app,
+        [
+            "reason",
+            "q",
+            "--wing",
+            "cairntir",
+            "--proposer",
+            "ollama",
+            "--observed",
+            "x",
+            "--success",
+        ],
+    )
+    assert result.exit_code == 1
+    combined = (result.output + (result.stderr or "")).lower()
+    assert "could not reach ollama" in combined or "ollama" in combined
+
+
+def test_reason_unknown_proposer_exits_clean(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384)).close()
+    result = runner.invoke(
+        app,
+        [
+            "reason",
+            "q",
+            "--wing",
+            "cairntir",
+            "--proposer",
+            "claude",  # not supported
+            "--claim",
+            "c",
+            "--predicted",
+            "p",
+            "--observed",
+            "o",
+            "--success",
+        ],
+    )
+    assert result.exit_code == 1
+    combined = (result.output + (result.stderr or "")).lower()
+    assert "unknown proposer" in combined
+
+
+def test_replay_proposer_ollama_re_drafts_claim(
+    tmp_path: Path, monkeypatch: object
+) -> None:
+    """`cairntir replay --proposer ollama` overrides the chain-leaf
+    auto-fill with a freshly-drafted claim."""
+    import io
+    import json
+    import urllib.request
+
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
+    original = store.add(
+        Drawer(
+            wing="cairntir",
+            room="journey",
+            content="original prediction",
+            layer=Layer.ESSENTIAL,
+            claim="the original poorly-framed claim",
+            predicted_outcome="the original predicted outcome",
+        )
+    )
+    assert original.id is not None
+    store.close()
+
+    def _fake_urlopen(req: urllib.request.Request, **_: object) -> io.BytesIO:
+        body = json.loads(req.data.decode("utf-8"))  # type: ignore[union-attr]
+        # The replay's prompt should include the original claim as
+        # context — the model is being asked to *reframe*, not start
+        # from scratch.
+        assert "original poorly-framed claim" in body["prompt"]
+        return io.BytesIO(
+            json.dumps(
+                {
+                    "response": json.dumps(
+                        {
+                            "claim": "the sharper reframed claim",
+                            "predicted_outcome": "the sharper predicted outcome",
+                        }
+                    )
+                }
+            ).encode("utf-8")
+        )
+
+    monkeypatch.setattr(urllib.request, "urlopen", _fake_urlopen)  # type: ignore[attr-defined]
+
+    result = runner.invoke(
+        app,
+        [
+            "replay",
+            str(original.id),
+            "--evidence",
+            "the original framing missed something important",
+            "--observed",
+            "the prediction's framing was off",
+            "--success",
+            "--proposer",
+            "ollama",
+        ],
+        input="\n\n",  # accept both drafts
+    )
+    assert result.exit_code == 0, result.output
+    assert "sharper reframed claim" in result.output
+    assert "replay committed" in result.output
+
+    # Reopen the store and confirm the new prediction carries the
+    # reframed claim, not the original.
+    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
+    try:
+        replays = store.list_by(wing="replays", limit=100)
+        new_prediction = next(
+            (d for d in replays if d.supersedes_id == original.id), None
+        )
+        assert new_prediction is not None
+        assert new_prediction.claim == "the sharper reframed claim"
+    finally:
+        store.close()
+
+
 def test_replay_no_store(tmp_path: Path, monkeypatch: object) -> None:
     monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
     result = runner.invoke(

@@ -148,6 +148,86 @@ def cross_recall_cmd(
     typer.echo(backend.cross_recall(query=query, limit=limit))
 
 
+_VALID_PROPOSERS = ("manual", "ollama")
+_DEFAULT_OLLAMA_MODEL = "gemma2:2b"
+_DEFAULT_OLLAMA_ENDPOINT = "http://localhost:11434"
+
+
+def _build_proposer(
+    proposer_kind: str,
+    *,
+    question: str,
+    wing: str,
+    room: str,
+    claim: str | None,
+    predicted: str | None,
+    ollama_model: str,
+    ollama_endpoint: str,
+) -> object:
+    """Construct the configured proposer, possibly invoking it for the draft.
+
+    Returns either a :class:`ManualProposer` (with claim+predicted set,
+    either from CLI flags or from Ollama's draft) or \u2014 when the loop
+    has not yet been instantiated \u2014 raises a typer.Exit with a clear
+    error message.
+
+    The Ollama path runs the proposer *eagerly* here so the user sees
+    the drafted claim + predicted_outcome and can confirm/override
+    before the loop commits a drawer. Cairntir is a memory layer, not
+    a black box; every load-bearing piece of generated text gets
+    surfaced before it lands in the store.
+    """
+    from cairntir.production import (
+        ManualProposer,
+        OllamaError,
+        OllamaProposer,
+    )
+
+    if proposer_kind == "manual":
+        if claim is None:
+            claim = typer.prompt(f"claim (for question {question!r})")
+        if predicted is None:
+            predicted = typer.prompt("predicted outcome")
+        return ManualProposer(claim=claim, predicted_outcome=predicted)
+
+    if proposer_kind == "ollama":
+        ollama = OllamaProposer(model=ollama_model, endpoint=ollama_endpoint)
+        try:
+            drafted = ollama.propose(question=question, wing=wing, room=room)
+        except OllamaError as exc:
+            typer.echo(f"cairntir: local model proposer failed: {exc}", err=True)
+            raise typer.Exit(code=1) from exc
+
+        typer.echo()
+        typer.echo(typer.style(f"--- {ollama_model} drafted ---", fg=typer.colors.CYAN))
+        typer.echo(f"  claim:     {drafted.claim}")
+        typer.echo(f"  predicted: {drafted.predicted_outcome}")
+        typer.echo()
+
+        # Caller may override either field. Defaults preserve the
+        # draft. Empty input keeps the draft (Typer's prompt returns
+        # the typed string; if the user just hits Enter, default is
+        # returned untouched).
+        if claim is None:
+            claim = typer.prompt(
+                "claim (Enter to accept draft)",
+                default=drafted.claim,
+            )
+        if predicted is None:
+            predicted = typer.prompt(
+                "predicted (Enter to accept draft)",
+                default=drafted.predicted_outcome,
+            )
+        return ManualProposer(claim=claim, predicted_outcome=predicted)
+
+    typer.echo(
+        f"cairntir: unknown proposer {proposer_kind!r}. "
+        f"Valid choices: {', '.join(_VALID_PROPOSERS)}",
+        err=True,
+    )
+    raise typer.Exit(code=1)
+
+
 @app.command("reason")
 def reason_cmd(
     question: str,
@@ -156,12 +236,12 @@ def reason_cmd(
     claim: str | None = typer.Option(
         None,
         "--claim",
-        help="The falsifiable claim. Prompted if omitted.",
+        help="The falsifiable claim. Prompted if omitted (or drafted by --proposer ollama).",
     ),
     predicted: str | None = typer.Option(
         None,
         "--predicted",
-        help="The predicted outcome. Prompted if omitted.",
+        help="The predicted outcome. Prompted if omitted (or drafted by --proposer ollama).",
     ),
     observed: str | None = typer.Option(
         None,
@@ -173,30 +253,56 @@ def reason_cmd(
         "--success/--fail",
         help="Verdict: did the prediction hold? Prompted if omitted.",
     ),
+    proposer: str = typer.Option(
+        "manual",
+        "--proposer",
+        case_sensitive=False,
+        help="How to source the claim + predicted_outcome. "
+        "'manual' (default) prompts you or uses --claim/--predicted. "
+        "'ollama' drafts both via a local model (requires `ollama serve`).",
+    ),
+    ollama_model: str = typer.Option(
+        _DEFAULT_OLLAMA_MODEL,
+        "--ollama-model",
+        help="Ollama model tag, e.g. gemma2:2b. Pull with `ollama pull <tag>`.",
+    ),
+    ollama_endpoint: str = typer.Option(
+        _DEFAULT_OLLAMA_ENDPOINT,
+        "--ollama-endpoint",
+        help="Ollama HTTP endpoint. Defaults to localhost:11434.",
+    ),
 ) -> None:
     """Run one Reason loop step: predict \u2192 observe \u2192 update belief.
 
-    Cairntir does not call LLMs. The claim, predicted outcome,
-    observation, and verdict all come from the caller (you at the
-    terminal, or the Claude Code session driving this CLI). Missing
-    flags are collected via interactive prompts.
+    Cairntir does not call cloud LLMs. The observed outcome and
+    verdict always come from the caller (you saw what happened, not
+    the model). With --proposer ollama, the *claim* and
+    *predicted_outcome* are drafted by a locally-running Ollama
+    model \u2014 still no network \u2014 and surfaced for confirmation before
+    the loop commits.
     """
     if not db_path().exists():
         typer.echo("cairntir: no store yet \u2014 run `cairntir setup` first.", err=True)
         raise typer.Exit(code=1)
 
     from cairntir.production import (
-        ManualProposer,
         NullRunner,
         StoreBackedBeliefs,
         StoreBackedMemory,
     )
     from cairntir.reason.loop import ReasonLoop
 
-    if claim is None:
-        claim = typer.prompt(f"claim (for question {question!r})")
-    if predicted is None:
-        predicted = typer.prompt("predicted outcome")
+    proposer_obj = _build_proposer(
+        proposer.lower(),
+        question=question,
+        wing=wing,
+        room=room,
+        claim=claim,
+        predicted=predicted,
+        ollama_model=ollama_model,
+        ollama_endpoint=ollama_endpoint,
+    )
+
     if observed is None:
         observed = typer.prompt("observed outcome")
     if success is None:
@@ -205,7 +311,7 @@ def reason_cmd(
     store = DrawerStore(db_path(), HashEmbeddingProvider(dimension=_PRODUCTION_DIM))
     try:
         loop = ReasonLoop(
-            proposer=ManualProposer(claim=claim, predicted_outcome=predicted),
+            proposer=proposer_obj,  # type: ignore[arg-type]
             runner=NullRunner(observed=observed, success=success),
             beliefs=StoreBackedBeliefs(store=store),
             memory=StoreBackedMemory(store=store),
@@ -250,6 +356,24 @@ def replay_cmd(
         "--success/--fail",
         help="Verdict: did the original prediction hold? Prompted if omitted.",
     ),
+    proposer: str = typer.Option(
+        "manual",
+        "--proposer",
+        case_sensitive=False,
+        help="'manual' (default) re-uses the original chain leaf's claim + predicted. "
+        "'ollama' drafts a refreshed framing via a local model (requires `ollama serve`); "
+        "useful when the original claim was poorly framed and the replay is also a re-statement.",
+    ),
+    ollama_model: str = typer.Option(
+        _DEFAULT_OLLAMA_MODEL,
+        "--ollama-model",
+        help="Ollama model tag, e.g. gemma2:2b. Pull with `ollama pull <tag>`.",
+    ),
+    ollama_endpoint: str = typer.Option(
+        _DEFAULT_OLLAMA_ENDPOINT,
+        "--ollama-endpoint",
+        help="Ollama HTTP endpoint. Defaults to localhost:11434.",
+    ),
 ) -> None:
     """Replay a past decision against today's evidence.
 
@@ -259,13 +383,19 @@ def replay_cmd(
     the leaf — so the new prediction extends the original chain instead
     of starting a new one.
 
-    Cairntir does not call LLMs. The observed outcome and the verdict
-    come from you (or from the Claude Code session driving this CLI).
+    Cairntir does not call cloud LLMs. The observed outcome and the
+    verdict come from you. With --proposer ollama, the *claim* and
+    *predicted_outcome* are re-drafted by a locally-running model
+    (still no network), surfaced for confirmation. The default
+    'manual' proposer re-uses the original chain leaf's claim
+    verbatim — the right call for closing a prediction window.
     """
     from cairntir.memory.temporal import walk_supersedes
     from cairntir.production import (
         ManualProposer,
         NullRunner,
+        OllamaError,
+        OllamaProposer,
         StoreBackedBeliefs,
         StoreBackedMemory,
     )
@@ -335,13 +465,69 @@ def replay_cmd(
         if horizon_months is not None:
             inputs["horizon_months"] = horizon_months
 
+        proposer_kind = proposer.lower()
+        if proposer_kind not in _VALID_PROPOSERS:
+            typer.echo(
+                f"cairntir: unknown proposer {proposer!r}. "
+                f"Valid choices: {', '.join(_VALID_PROPOSERS)}",
+                err=True,
+            )
+            raise typer.Exit(code=1)
+
+        if proposer_kind == "ollama":
+            replay_question = (
+                f"Replay decision: should the prediction "
+                f"{leaf.claim!r} -> {leaf.predicted_outcome!r} still hold "
+                f"given the new evidence: {evidence!r}? "
+                "Restate the claim and predicted_outcome, sharpening the "
+                "framing if the new evidence reveals it was poorly framed."
+            )
+            ollama_proposer = OllamaProposer(
+                model=ollama_model, endpoint=ollama_endpoint
+            )
+            try:
+                drafted = ollama_proposer.propose(
+                    question=replay_question, wing=leaf.wing, room=leaf.room
+                )
+            except OllamaError as exc:
+                typer.echo(
+                    f"cairntir: local model proposer failed: {exc}", err=True
+                )
+                raise typer.Exit(code=1) from exc
+
+            typer.echo()
+            typer.echo(
+                typer.style(
+                    f"--- {ollama_model} drafted (replay reframe) ---",
+                    fg=typer.colors.CYAN,
+                )
+            )
+            typer.echo(f"  claim:     {drafted.claim}")
+            typer.echo(f"  predicted: {drafted.predicted_outcome}")
+            typer.echo()
+            new_claim = typer.prompt(
+                "claim (Enter to accept draft)", default=drafted.claim
+            )
+            new_predicted = typer.prompt(
+                "predicted (Enter to accept draft)",
+                default=drafted.predicted_outcome,
+            )
+            replay_proposer = ManualProposer(
+                claim=new_claim, predicted_outcome=new_predicted
+            )
+        else:
+            # Manual mode: re-use the original chain leaf's claim verbatim.
+            # The default for closing a prediction window — the whole point
+            # of replay is to test the original commitment.
+            replay_proposer = ManualProposer(
+                claim=leaf.claim,
+                predicted_outcome=leaf.predicted_outcome,
+            )
+
         recipe_runner = RecipeRunner(
             memory=StoreBackedMemory(store=store),
             beliefs=StoreBackedBeliefs(store=store),
-            proposer=ManualProposer(
-                claim=leaf.claim,
-                predicted_outcome=leaf.predicted_outcome,
-            ),
+            proposer=replay_proposer,
             runner=NullRunner(observed=observed, success=success),
         )
         try:
