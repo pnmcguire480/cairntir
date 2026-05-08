@@ -22,7 +22,11 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from cairntir.errors import TaxonomyError
 
-_IDENT_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{0,62}[a-z0-9]$")
+# v1.1+ — allow `:` inside identifiers so reserved wings like
+# ``agent:crucible`` can exist alongside project wings. The first and
+# last characters must still be alphanumeric so a stray ``:`` cannot
+# anchor either end.
+_IDENT_RE = re.compile(r"^[a-z0-9][a-z0-9._:-]{0,62}[a-z0-9]$")
 
 
 class Layer(StrEnum):

@@ -76,7 +76,7 @@ class BeliefStore(Protocol):
 
 @runtime_checkable
 class MemoryGateway(Protocol):
-    """Narrow view of memory the loop needs: remember + recall."""
+    """Narrow view of memory the loop needs: remember + recall + list_by."""
 
     def remember(self, drawer: Drawer) -> int:
         """Persist a drawer and return its newly assigned id."""
@@ -91,4 +91,20 @@ class MemoryGateway(Protocol):
         limit: int = 5,
     ) -> list[Drawer]:
         """Return drawers relevant to ``query`` in ``wing``, belief-weighted if possible."""
+        ...
+
+    def list_by(
+        self,
+        *,
+        wing: str | None = None,
+        room: str | None = None,
+        limit: int = 10,
+    ) -> list[Drawer]:
+        """Return drawers in ``wing``/``room`` ordered most-recent-first.
+
+        Non-semantic — pure metadata filter. Used by Agent Memory
+        (v1.1+) to walk a skill's prior invocations in the
+        ``agent:<skill>`` wing for the originating project, where
+        recency matters more than relevance.
+        """
         ...

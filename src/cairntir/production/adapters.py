@@ -58,6 +58,21 @@ class StoreBackedMemory:
         hits = self.store.search(query, wing=wing, room=room, limit=limit)
         return [drawer for drawer, _distance in hits]
 
+    def list_by(
+        self,
+        *,
+        wing: str | None = None,
+        room: str | None = None,
+        limit: int = 10,
+    ) -> list[Drawer]:
+        """Return drawers in ``wing``/``room`` ordered most-recent-first.
+
+        Pure metadata filter. Delegates to :meth:`Store.list_by`.
+        Used by Agent Memory hooks for non-semantic walks of a
+        skill's prior invocations.
+        """
+        return self.store.list_by(wing=wing, room=room, limit=limit)
+
 
 @dataclass
 class StoreBackedBeliefs:

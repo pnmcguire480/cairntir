@@ -94,6 +94,22 @@ class FakeMemoryGateway:
     ) -> list[Drawer]:
         return [d for d in self.drawers.values() if d.wing == wing][:limit]
 
+    def list_by(
+        self,
+        *,
+        wing: str | None = None,
+        room: str | None = None,
+        limit: int = 10,
+    ) -> list[Drawer]:
+        result = [
+            d
+            for d in self.drawers.values()
+            if (wing is None or d.wing == wing) and (room is None or d.room == room)
+        ]
+        # Most-recent-first by drawer id (the fake assigns monotonic ids).
+        result.sort(key=lambda d: d.id or 0, reverse=True)
+        return result[:limit]
+
 
 # --------- protocol conformance ----------------------------------------
 

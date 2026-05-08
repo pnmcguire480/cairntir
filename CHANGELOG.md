@@ -7,6 +7,94 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — Agent Memory (per-skill self-memory wings)
+
+Cairntir's three skills (crucible, quality, reason) now keep their
+own *self-memory* in reserved wings under the `agent:` prefix —
+`agent:crucible`, `agent:quality`, `agent:reason`. Every invocation
+through the recipe runner leaves a self-memory drawer in the
+appropriate agent wing recording the case, with a pointer back to
+the marker drawer in the project wing. The next invocation in the
+same originating wing surfaces prior cases as context.
+
+**The compounding effect.** After Crucible has been invoked
+several times against the cairntir wing, those prior stress-tests
+appear as a "Prior cases" section inside the next Crucible marker
+drawer's content. Quality remembers patterns that earned ship-it
+verdicts. Reason remembers rabbit holes it has already gone down.
+The skills get *better at their own work* without any new
+primitives — pure convention-as-code on top of the v1.0 memory
+surface.
+
+#### Schema relaxation: `:` allowed in wing identifiers
+
+`_IDENT_RE` in `cairntir.memory.taxonomy` now accepts `:` inside
+identifiers (the first and last characters must still be
+alphanumeric). This unlocks `agent:crucible` etc. without a database
+migration — `wing` is a normal `TEXT` column; only the validator
+needed loosening. Existing wing names continue to validate
+unchanged.
+
+#### `cairntir.skills.memory` — new module
+
+Five public helpers:
+- `agent_wing_for(skill_name)` — returns `"agent:<name>"` for the
+  three reserved skills; raises for any other name.
+- `is_agent_skill(skill_name)` — predicate used by the recipe runner
+  to decide whether to write a self-memory drawer.
+- `record_skill_invocation(memory, *, skill_name, originating_wing,
+  originating_room, skill_marker_id, summary, metadata)` — writes
+  the self-memory drawer with the right metadata shape so future
+  recall is structured.
+- `recall_skill_history(memory, *, skill_name, originating_wing,
+  limit=3)` — pulls recent prior cases. Returns `[]` for non-agent
+  skills so callers can invoke unconditionally.
+- `format_history_for_prompt(history)` — renders prior cases as
+  markdown for inclusion in a skill's marker drawer.
+
+#### `MemoryGateway.list_by` — new protocol method
+
+The `MemoryGateway` Protocol gains a third method:
+`list_by(*, wing, room, limit)` — non-semantic listing,
+most-recent-first. Required for Agent Memory's recall path (skill
+history is recency-ordered, not relevance-ordered). Implemented on
+`StoreBackedMemory` by delegating to `Store.list_by`. The fake
+`MemoryGateway` in `test_reason_loop.py` was updated to match.
+
+This is a non-breaking addition for `StoreBackedMemory` users; any
+custom `MemoryGateway` implementer must add the new method to
+satisfy the protocol.
+
+#### `RecipeRunner` integration
+
+`RecipeRunner._run_skill_marker` and `RecipeRunner._run_reason` now:
+1. Recall prior cases from the agent wing for the originating wing
+   before writing the marker drawer.
+2. Embed those cases under a "Prior cases" section in the marker
+   content.
+3. After the marker (or prediction) lands, write a parallel
+   self-memory drawer to the agent wing pointing back at the
+   marker.
+
+A guard skips the agent-memory write when the recipe's `output_wing`
+is itself an agent wing — the agent prefix is not a fractal.
+
+### Tests — 14 new
+
+- `test_agent_memory.py` (13 tests): pure helper smoke tests,
+  taxonomy regex relaxation, record/recall round-trip, originating
+  wing scoping, non-agent skill rejection, empty originating wing
+  rejection, recipe runner writes agent drawer for crucible/reason,
+  recipe runner includes prior cases in subsequent marker, no
+  recursion when recipe targets agent wing.
+- `test_reason_loop.py` (1 update): `FakeMemoryGateway` now
+  implements `list_by`.
+
+### Status
+
+283 tests passing, 84% coverage, ruff + mypy --strict clean,
+silent-except scanner clean. No new runtime dependencies.
+
 ### Added — Local-AI proposer (Ollama)
 
 The Reason loop's `HypothesisProposer` port has shipped only a manual

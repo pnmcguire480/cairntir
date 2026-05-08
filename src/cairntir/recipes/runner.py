@@ -25,6 +25,12 @@ from cairntir.errors import CairntirError
 from cairntir.memory.taxonomy import Drawer, Layer
 from cairntir.reason.loop import ReasonLoop
 from cairntir.skills import load_skill
+from cairntir.skills.memory import (
+    format_history_for_prompt,
+    is_agent_skill,
+    recall_skill_history,
+    record_skill_invocation,
+)
 
 if TYPE_CHECKING:
     from cairntir.reason.ports import (
@@ -143,6 +149,11 @@ class RecipeRunner:
         Returns [prediction_id, observation_id]. The loop already does
         the work — we just hand it the question (and an optional
         ``supersedes_id`` so a replay extends an existing chain).
+
+        Agent Memory side-effect: after the loop's prediction drawer
+        lands, a self-memory drawer is written to ``agent:reason``
+        keyed off the originating wing, so a future invocation of
+        Reason in the same wing sees prior cases.
         """
         loop = ReasonLoop(
             proposer=self._proposer,
@@ -161,6 +172,20 @@ class RecipeRunner:
         # supersedes pointer — the reason loop uses supersedes for the
         # prediction→observation chain.
         _ = seed_id
+
+        # Agent Memory: record the case in agent:reason. The
+        # originating wing is the recipe's output_wing (e.g. signals,
+        # replays); the prediction_id is the marker the agent drawer
+        # points back at.
+        self._record_agent_memory(
+            skill_name="reason",
+            originating_wing=contract.output_wing,
+            originating_room=_canonical_room(contract),
+            skill_marker_id=update.prediction_id,
+            summary=question,
+            metadata={"recipe": contract.name, "recipe_version": contract.version},
+        )
+
         return [update.prediction_id, update.observation_id]
 
     def _run_skill_marker(
@@ -178,13 +203,36 @@ class RecipeRunner:
         fetch. ``supersedes_id`` points at the seed so
         :func:`~cairntir.memory.temporal.walk_supersedes` can reconstruct
         the recipe's execution arc.
+
+        Agent Memory side-effect: when the skill is one of the
+        reserved set (``crucible`` / ``quality`` / ``reason``), prior
+        cases from ``agent:<skill>`` for the originating wing are
+        prepended to the marker's content under a "Prior cases"
+        section, and a parallel self-memory drawer is written to the
+        agent wing pointing back at the marker.
         """
         skill_text = load_skill(skill_name)
-        body = (
-            f"# Skill: {skill_name} (recipe step for {contract.name})\n\n"
-            f"## Inputs\n{_format_inputs(inputs)}\n\n"
-            f"## Skill prompt\n{skill_text}\n"
+
+        # Recall first so the marker can include prior context.
+        history = recall_skill_history(
+            self._memory,
+            skill_name=skill_name,
+            originating_wing=contract.output_wing,
+            limit=3,
         )
+        history_block = format_history_for_prompt(history)
+        body_parts = [f"# Skill: {skill_name} (recipe step for {contract.name})", ""]
+        if history_block:
+            body_parts.append(history_block)
+        body_parts.extend(
+            [
+                f"## Inputs\n{_format_inputs(inputs)}",
+                "",
+                f"## Skill prompt\n{skill_text}",
+            ]
+        )
+        body = "\n".join(body_parts)
+
         drawer = Drawer(
             wing=contract.output_wing,
             room=_canonical_room(contract),
@@ -197,7 +245,56 @@ class RecipeRunner:
             },
             supersedes_id=seed_id,
         )
-        return self._memory.remember(drawer)
+        marker_id = self._memory.remember(drawer)
+
+        # Record this invocation in the agent wing for future recall.
+        self._record_agent_memory(
+            skill_name=skill_name,
+            originating_wing=contract.output_wing,
+            originating_room=_canonical_room(contract),
+            skill_marker_id=marker_id,
+            summary=_format_inputs(inputs),
+            metadata={"recipe": contract.name, "recipe_version": contract.version},
+        )
+
+        return marker_id
+
+    def _record_agent_memory(
+        self,
+        *,
+        skill_name: str,
+        originating_wing: str,
+        originating_room: str,
+        skill_marker_id: int,
+        summary: str,
+        metadata: dict[str, object] | None = None,
+    ) -> None:
+        """Write a self-memory drawer to the skill's agent wing, if reserved.
+
+        Non-agent skills are no-ops — the helper exists so the
+        recipe runner can call it unconditionally without first
+        checking the skill name.
+
+        Agent wings have ``:`` in their identifier (e.g.
+        ``agent:reason``). If the originating wing is ITSELF an agent
+        wing — which can happen when a recipe's ``output_wing`` is
+        the agent wing — we skip the write to prevent
+        agent-wing-of-agent-wing recursion. Cairntir is local memory,
+        not a fractal.
+        """
+        if not is_agent_skill(skill_name):
+            return
+        if originating_wing.startswith("agent:"):
+            return
+        record_skill_invocation(
+            self._memory,
+            skill_name=skill_name,
+            originating_wing=originating_wing,
+            originating_room=originating_room,
+            skill_marker_id=skill_marker_id,
+            summary=summary,
+            metadata=dict(metadata or {}),
+        )
 
 
 # --------- helpers ------------------------------------------------------
