@@ -86,6 +86,14 @@ under `docs/recipes/` and earn their place by use, not by governance.
   become compounding reads because Cairntir's prediction-bound drawers
   close the loop over months. See `docs/recipes/signal-reader/`.
   Plan: `plans/signal-reader.md`.
+- **Decision Replay** — closes the prediction window on a past
+  decision. `cairntir replay <id>` walks the supersedes chain, pulls
+  the leaf's claim + predicted_outcome, runs one reason-loop step
+  with `supersedes_id` set, drops a Crucible marker, and writes the
+  new prediction-bound drawer onto the chain leaf. The first recipe
+  that exercises *all three* v1.1 synergy components — recipe
+  runtime + temporal walk + production reason loop — at once. See
+  `docs/recipes/decision-replay/`.
 
 ---
 
@@ -93,7 +101,75 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
-- **Date:** 2026-04-08 (**v1.0.0 — Library Extraction, shipped**)
+- **Date:** 2026-05-08 (**Decision Replay — synergy stack closure**)
+- **What was accomplished:** First recipe to exercise *all three* v1.1
+  synergy components together. The cold-start patch series (1.1.0 →
+  1.1.3) ate four days; once 1.1.3 was confirmed in practice
+  (drawer #95, 2026-05-07), this session completed the synergy stack
+  by writing the recipe that uses recipe runtime + temporal walk +
+  production reason loop in one invocation.
+  - **`cairntir replay <id>`:** new CLI command. Walks the supersedes
+    chain from `<id>`, pulls the leaf's claim + predicted_outcome
+    into a `ManualProposer`, prompts for the observed outcome and a
+    verdict, runs the Decision Replay recipe with `supersedes_id`
+    set to the leaf id. Output: a new prediction drawer with
+    `supersedes_id == leaf_id`, a new observation drawer
+    superseding the new prediction, a Crucible marker drawer, and a
+    seed drawer in `replays/decision-replay`. Zero network calls.
+  - **`docs/recipes/decision-replay/`:** bundled recipe.
+    `recipe.toml` declares three inputs (`decision_drawer_id`,
+    `current_evidence`, `horizon_months`) and the two-skill chain
+    `["reason", "crucible"]`. README documents the protocol,
+    anti-patterns, and how it closes the loop on Signal Reader
+    outputs. Discoverable via `cairntir recipe-list`.
+  - **`ReasonLoop.step(supersedes_id=…)`:** non-breaking extension.
+    The reason loop now accepts an optional `supersedes_id` keyword;
+    when supplied, the new prediction drawer carries that pointer.
+    Default (`None`) preserves v0.6 semantics. Existing callers
+    unaffected.
+  - **`RecipeRunner.run(contract, inputs, supersedes_id=…)`:**
+    matching extension at the recipe layer. Threads the pointer into
+    the reason step when the chain includes `reason`.
+  - **Tests added:** 7 — two for the new `ReasonLoop.step` modes,
+    two for `RecipeRunner` with/without `supersedes_id`, one for
+    bundled-recipe discovery, four for the CLI replay command (happy
+    path + three error paths).
+  - **Status:** 250 tests passing, 83% coverage, ruff +
+    mypy --strict clean, silent-except scanner clean.
+- **Next session:** outstanding synergy work per `docs/roadmap.md`
+  Road to 2.0:
+  - **Calibration dashboard** (`cairntir calibration --wing X`) —
+    becomes load-bearing now that Decision Replay produces
+    prediction/observation pairs across multiple chains. Read-only
+    aggregates over prediction-bound drawers: % predictions
+    confirmed, mean belief mass per wing, contradictions surfaced
+    by `consolidate.detect_contradictions`. Stdlib-only, no new
+    deps.
+  - **Cross-wing timeline mode** — extend the existing
+    `cairntir_timeline` MCP tool with an optional all-wings flag so
+    "what was happening across every project on date X" becomes one
+    call.
+  - **Local-AI proposer** (Gemma via llama.cpp/Ollama) — bigger
+    lift, defer until calibration shows the recipe shapes that
+    actually pay off.
+  - **v1.4 file-based team sync** — once the local recipe pipeline
+    is well-exercised.
+
+  Not committed yet — pick whichever is most pressing in the moment.
+
+- **Prior session — 2026-05-07 (v1.1.3 cold-start fix confirmed):**
+- **What was accomplished:** v1.1.3 (shipped 2026-05-03, defaulting
+  to fastembed and dropping torch from the MCP hot path) confirmed
+  in practice four days post-ship. Drawer #95 in `cairntir/journey`
+  records the closure, supersedes #94 (the ship drawer), carries the
+  prediction-bound metadata `claim` / `predicted_outcome` /
+  `observed_outcome`. The cold-start arc — five prior patch commits
+  that chased symptoms — is finally closed.
+
+- **Prior session — 2026-04-08 (v1.0.0 — Library Extraction, shipped):**
+- **What was accomplished:** v1.0.0 locked the seam. The full round-table
+  committed arc from v0.2 through v0.6 is now the pre-v1.0 history,
+  and today's session graduated Cairntir from "a tool" to "the thing
 - **What was accomplished:** v1.0.0 locked the seam. The full round-table
   committed arc from v0.2 through v0.6 is now the pre-v1.0 history,
   and today's session graduated Cairntir from "a tool" to "the thing

@@ -224,6 +224,60 @@ def test_loop_never_swallows_runner_errors() -> None:
         loop.step(question="q", wing="cairntir", room="room-a")
 
 
+def test_step_with_supersedes_id_chains_new_prediction_onto_existing_chain() -> None:
+    """A replay-style step extends an existing chain via the prediction's
+    ``supersedes_id`` pointer, not by mutating the original drawer."""
+    hypothesis = Hypothesis(
+        claim="fastembed default kills the cold-start hang",
+        predicted_outcome="MCP startup stays under 5s on every install",
+        wing="cairntir",
+        room="journey",
+    )
+    proposer = FakeProposer(hypothesis=hypothesis)
+    runner = FakeRunner(observed="cold start steady at ~1.4s for four days", success=True)
+    beliefs = FakeBeliefStore()
+    memory = FakeMemoryGateway()
+
+    # Pretend an earlier prediction already exists at id 42 — this is the
+    # leaf of the chain we want to extend.
+    loop = ReasonLoop(proposer=proposer, runner=runner, beliefs=beliefs, memory=memory)
+    update = loop.step(
+        question="did the fastembed default hold?",
+        wing="cairntir",
+        room="journey",
+        supersedes_id=42,
+    )
+
+    prediction = memory.drawers[update.prediction_id]
+    observation = memory.drawers[update.observation_id]
+    # New prediction extends the chain: supersedes the prior leaf id (42).
+    assert prediction.supersedes_id == 42
+    # New observation supersedes the new prediction (unchanged behavior).
+    assert observation.supersedes_id == update.prediction_id
+
+
+def test_step_without_supersedes_id_starts_fresh_chain() -> None:
+    """The default behavior — no supersedes_id — leaves the prediction
+    drawer rootless, as v0.6 has always done."""
+    hypothesis = Hypothesis(
+        claim="x", predicted_outcome="y", wing="cairntir", room="phase-6"
+    )
+    memory = FakeMemoryGateway()
+    loop = ReasonLoop(
+        proposer=FakeProposer(hypothesis=hypothesis),
+        runner=FakeRunner(observed="y", success=True),
+        beliefs=FakeBeliefStore(),
+        memory=memory,
+    )
+    update = loop.step(question="q", wing="cairntir", room="phase-6")
+    # The fresh-chain default is preserved — the prediction is rootless,
+    # the observation supersedes the prediction (unchanged from v0.6).
+    prediction = memory.drawers[update.prediction_id]
+    observation = memory.drawers[update.observation_id]
+    assert prediction.supersedes_id is None
+    assert observation.supersedes_id == update.prediction_id
+
+
 def test_two_steps_in_a_row_accumulate_mass_on_repeated_success() -> None:
     hypothesis = Hypothesis(
         claim="claim",

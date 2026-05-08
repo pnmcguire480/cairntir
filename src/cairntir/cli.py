@@ -222,6 +222,150 @@ def reason_cmd(
         typer.echo(f"delta:              {update.delta}")
 
 
+@app.command("replay")
+def replay_cmd(
+    decision_drawer_id: int = typer.Argument(
+        ...,
+        help="Drawer id of the past decision to replay. Must carry claim + predicted_outcome.",
+    ),
+    evidence: str | None = typer.Option(
+        None,
+        "--evidence",
+        "-e",
+        help="What you've observed since the original prediction. Prompted if omitted.",
+    ),
+    horizon_months: int | None = typer.Option(
+        None,
+        "--horizon-months",
+        help="Re-prediction horizon in months. Defaults to the original.",
+    ),
+    observed: str | None = typer.Option(
+        None,
+        "--observed",
+        help="The actual outcome of the original prediction, in your words. "
+        "Prompted if omitted.",
+    ),
+    success: bool | None = typer.Option(
+        None,
+        "--success/--fail",
+        help="Verdict: did the original prediction hold? Prompted if omitted.",
+    ),
+) -> None:
+    """Replay a past decision against today's evidence.
+
+    Walks the supersedes chain from ``decision_drawer_id``, pulls the
+    chain leaf's claim + predicted_outcome to seed the reason step, and
+    runs the ``decision-replay`` recipe with ``supersedes_id`` set to
+    the leaf — so the new prediction extends the original chain instead
+    of starting a new one.
+
+    Cairntir does not call LLMs. The observed outcome and the verdict
+    come from you (or from the Claude Code session driving this CLI).
+    """
+    from cairntir.memory.temporal import walk_supersedes
+    from cairntir.production import (
+        ManualProposer,
+        NullRunner,
+        StoreBackedBeliefs,
+        StoreBackedMemory,
+    )
+    from cairntir.recipes import RecipeError, RecipeRunner, discover_recipes
+
+    if not db_path().exists():
+        typer.echo("cairntir: no store yet — run `cairntir setup` first.", err=True)
+        raise typer.Exit(code=1)
+
+    contracts = {c.name: c for c in discover_recipes()}
+    contract = contracts.get("decision-replay")
+    if contract is None:
+        typer.echo(
+            "cairntir: decision-replay recipe not found. "
+            "Reinstall cairntir to restore the bundled recipes.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    store = DrawerStore(db_path(), HashEmbeddingProvider(dimension=_PRODUCTION_DIM))
+    try:
+        try:
+            chain = walk_supersedes(store, decision_drawer_id)
+        except MemoryStoreError as exc:
+            typer.echo(f"cairntir: {exc}", err=True)
+            raise typer.Exit(code=1) from exc
+
+        leaf = chain[-1]
+        if not (leaf.claim and leaf.predicted_outcome):
+            typer.echo(
+                f"cairntir: drawer #{leaf.id} (chain leaf for #{decision_drawer_id}) "
+                "has no claim/predicted_outcome — Decision Replay only works on "
+                "prediction-bound drawers.",
+                err=True,
+            )
+            raise typer.Exit(code=1)
+        if leaf.id is None:
+            # Defensive — store.get returns drawers with ids, so this branch
+            # is structural, not a runtime failure path. Surface it loudly
+            # if it ever happens.
+            raise MemoryStoreError(
+                f"chain leaf for drawer #{decision_drawer_id} has no id"
+            )
+
+        typer.echo(
+            f"replaying decision #{decision_drawer_id} "
+            f"(chain leaf #{leaf.id}, length {len(chain)}):"
+        )
+        typer.echo(f"  wing/room:  {leaf.wing}/{leaf.room}")
+        typer.echo(f"  claim:      {leaf.claim}")
+        typer.echo(f"  predicted:  {leaf.predicted_outcome}")
+        typer.echo()
+
+        if evidence is None:
+            evidence = typer.prompt("current evidence (what you've observed since)")
+        if observed is None:
+            observed = typer.prompt("observed outcome of the original prediction")
+        if success is None:
+            success = typer.confirm(
+                "did the original prediction hold?", default=False
+            )
+
+        inputs: dict[str, object] = {
+            "decision_drawer_id": decision_drawer_id,
+            "current_evidence": evidence,
+        }
+        if horizon_months is not None:
+            inputs["horizon_months"] = horizon_months
+
+        recipe_runner = RecipeRunner(
+            memory=StoreBackedMemory(store=store),
+            beliefs=StoreBackedBeliefs(store=store),
+            proposer=ManualProposer(
+                claim=leaf.claim,
+                predicted_outcome=leaf.predicted_outcome,
+            ),
+            runner=NullRunner(observed=observed, success=success),
+        )
+        try:
+            result = recipe_runner.run(contract, inputs, supersedes_id=leaf.id)
+        except (RecipeError, ValueError) as exc:
+            typer.echo(f"cairntir: replay failed: {exc}", err=True)
+            raise typer.Exit(code=1) from exc
+    finally:
+        store.close()
+
+    typer.echo()
+    typer.echo(f"replay committed (recipe {result.recipe_name}):")
+    typer.echo(f"  seed drawer:   #{result.seed_drawer_id} in wing {result.output_wing!r}")
+    for skill, drawer_ids in result.skill_drawer_ids.items():
+        ids = ", ".join(f"#{i}" for i in drawer_ids)
+        typer.echo(f"  {skill}: {ids}")
+    reason_drawers = result.skill_drawer_ids.get("reason", [])
+    if reason_drawers:
+        new_prediction_id = reason_drawers[0]
+        typer.echo(
+            f"  chain extended: #{leaf.id} <- #{new_prediction_id} (new prediction)"
+        )
+
+
 @app.command("export")
 def export_cmd(
     path: Path,

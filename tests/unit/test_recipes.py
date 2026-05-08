@@ -296,6 +296,79 @@ def test_runner_writes_seed_and_crucible_drawer(tmp_path: Path) -> None:
     assert "CRUCIBLE" in crucible_drawer.content.upper()
 
 
+def test_runner_threads_supersedes_id_into_reason_step(tmp_path: Path) -> None:
+    """When supersedes_id is supplied, the new prediction drawer carries it."""
+    contract = _make_contract(tmp_path, skills=["reason"])
+    store = DrawerStore(tmp_path / "r.db", HashEmbeddingProvider(dimension=32))
+    proposer = _StubProposer(
+        hypothesis=Hypothesis(
+            claim="fastembed default holds",
+            predicted_outcome="cold start under 5s on every install",
+            wing="test-wing",
+            room="test-recipe",
+        )
+    )
+    recipe_runner = RecipeRunner(
+        memory=StoreBackedMemory(store=store),
+        beliefs=StoreBackedBeliefs(store=store),
+        proposer=proposer,
+        runner=NullRunner(observed="cold start ~1.4s steady", success=True),
+    )
+    # Pretend drawer #42 is the existing chain leaf we want to extend.
+    result = recipe_runner.run(
+        contract,
+        {"topic": "replay v1.1.3 cold-start fix"},
+        supersedes_id=42,
+    )
+
+    prediction_id, observation_id = result.skill_drawer_ids["reason"]
+    prediction = store.get(prediction_id)
+    observation = store.get(observation_id)
+    assert prediction is not None and observation is not None
+    # The new prediction extends the supplied chain.
+    assert prediction.supersedes_id == 42
+    # The observation supersedes the new prediction (unchanged behavior).
+    assert observation.supersedes_id == prediction_id
+
+
+def test_runner_default_no_supersedes_id_starts_fresh_chain(tmp_path: Path) -> None:
+    """Without supersedes_id, the prediction drawer remains rootless."""
+    contract = _make_contract(tmp_path, skills=["reason"])
+    store = DrawerStore(tmp_path / "r.db", HashEmbeddingProvider(dimension=32))
+    recipe_runner = RecipeRunner(
+        memory=StoreBackedMemory(store=store),
+        beliefs=StoreBackedBeliefs(store=store),
+        proposer=_StubProposer(
+            hypothesis=Hypothesis(
+                claim="c", predicted_outcome="p", wing="test-wing", room="test-recipe"
+            )
+        ),
+        runner=NullRunner(observed="o", success=True),
+    )
+    result = recipe_runner.run(contract, {"topic": "fresh"})
+    prediction_id = result.skill_drawer_ids["reason"][0]
+    prediction = store.get(prediction_id)
+    assert prediction is not None
+    assert prediction.supersedes_id is None
+
+
+def test_discover_recipes_finds_decision_replay(tmp_path: Path) -> None:
+    """The bundled decision-replay recipe.toml must load cleanly."""
+    repo_root = Path(__file__).resolve().parents[2]
+    search = [repo_root / "docs" / "recipes"]
+    contracts = discover_recipes(search_paths=search)
+    by_name = {c.name: c for c in contracts}
+    assert "decision-replay" in by_name
+    contract = by_name["decision-replay"]
+    assert contract.output_wing == "replays"
+    assert contract.skills == ("reason", "crucible")
+    assert contract.required_input_names() == frozenset(
+        {"decision_drawer_id", "current_evidence"}
+    )
+    horizon = contract.input_spec("horizon_months")
+    assert horizon is not None and horizon.required is False
+
+
 def test_runner_runs_reason_loop(tmp_path: Path) -> None:
     contract = _make_contract(tmp_path, skills=["reason"])
     store = DrawerStore(tmp_path / "r.db", HashEmbeddingProvider(dimension=32))

@@ -74,8 +74,19 @@ class RecipeRunner:
         self,
         contract: RecipeContract,
         inputs: dict[str, object],
+        *,
+        supersedes_id: int | None = None,
     ) -> RecipeResult:
-        """Validate inputs against ``contract`` and execute the skill chain."""
+        """Validate inputs against ``contract`` and execute the skill chain.
+
+        ``supersedes_id`` extends an existing prediction-bound chain.
+        When supplied and the recipe chains the ``reason`` skill, the
+        prediction drawer that step writes carries that pointer — the
+        Decision Replay recipe uses this so the new prediction lives
+        on the leaf of a past decision's chain instead of starting a
+        fresh one. The seed drawer itself is unaffected; supersedes
+        edges are reserved for the load-bearing reason output.
+        """
         _validate_inputs(contract, inputs)
 
         seed_drawer = Drawer(
@@ -94,7 +105,12 @@ class RecipeRunner:
         skill_drawer_ids: dict[str, list[int]] = {}
         for skill in contract.skills:
             if skill == "reason":
-                skill_drawer_ids[skill] = self._run_reason(contract, inputs, seed_id=seed_id)
+                skill_drawer_ids[skill] = self._run_reason(
+                    contract,
+                    inputs,
+                    seed_id=seed_id,
+                    supersedes_id=supersedes_id,
+                )
             elif skill in ("crucible", "quality"):
                 skill_drawer_ids[skill] = [
                     self._run_skill_marker(skill, contract, inputs, seed_id=seed_id)
@@ -120,11 +136,13 @@ class RecipeRunner:
         inputs: dict[str, object],
         *,
         seed_id: int,
+        supersedes_id: int | None = None,
     ) -> list[int]:
         """Run a ReasonLoop step seeded with the recipe's inputs.
 
         Returns [prediction_id, observation_id]. The loop already does
-        the work — we just hand it the question.
+        the work — we just hand it the question (and an optional
+        ``supersedes_id`` so a replay extends an existing chain).
         """
         loop = ReasonLoop(
             proposer=self._proposer,
@@ -137,6 +155,7 @@ class RecipeRunner:
             question=question,
             wing=contract.output_wing,
             room=_canonical_room(contract),
+            supersedes_id=supersedes_id,
         )
         # seed_id is recorded in the seed drawer metadata, not as a
         # supersedes pointer — the reason loop uses supersedes for the

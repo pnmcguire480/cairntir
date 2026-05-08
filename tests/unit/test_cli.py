@@ -497,6 +497,112 @@ def test_init_rejects_malformed_config(tmp_path: Path, monkeypatch: object) -> N
     assert result.exit_code != 0
 
 
+def test_replay_extends_supersedes_chain(tmp_path: Path, monkeypatch: object) -> None:
+    """`cairntir replay` walks the chain, runs the recipe, and the new
+    prediction drawer's supersedes_id points at the original chain leaf.
+    """
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
+    original = store.add(
+        Drawer(
+            wing="cairntir",
+            room="journey",
+            content="v1.1.3 cold-start fix prediction",
+            layer=Layer.ESSENTIAL,
+            claim="fastembed-default kills the MCP cold-start hang",
+            predicted_outcome="cold start under 5s on every fresh install",
+        )
+    )
+    assert original.id is not None
+    store.close()
+
+    result = runner.invoke(
+        app,
+        [
+            "replay",
+            str(original.id),
+            "--evidence",
+            "fastembed has held for four days; no cold-start regressions reported.",
+            "--observed",
+            "cold start steady at ~1.4s across multiple sessions",
+            "--success",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert "replay committed" in result.output
+    assert "chain extended" in result.output
+
+    # Reopen the store and confirm the new prediction drawer chains onto
+    # the original via supersedes_id.
+    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
+    try:
+        replays = store.list_by(wing="replays", limit=100)
+        # The reason step writes 2 drawers (prediction + observation), the
+        # crucible step writes a marker, the seed drawer is the fourth.
+        assert len(replays) == 4
+        # Find the drawer whose supersedes_id points at the original — that
+        # is the new prediction.
+        new_prediction = next(
+            (d for d in replays if d.supersedes_id == original.id), None
+        )
+        assert new_prediction is not None, (
+            f"no replay drawer chains onto original #{original.id}: "
+            f"supersedes pointers were {[d.supersedes_id for d in replays]}"
+        )
+        assert new_prediction.claim == original.claim
+        assert new_prediction.predicted_outcome == original.predicted_outcome
+    finally:
+        store.close()
+
+
+def test_replay_refuses_drawer_without_claim(tmp_path: Path, monkeypatch: object) -> None:
+    """A drawer with no claim/predicted_outcome cannot be replayed."""
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
+    plain = store.add(
+        Drawer(
+            wing="cairntir",
+            room="notes",
+            content="not a prediction-bound drawer — no claim or predicted_outcome",
+        )
+    )
+    assert plain.id is not None
+    store.close()
+
+    result = runner.invoke(
+        app,
+        ["replay", str(plain.id), "--evidence", "x", "--observed", "x", "--success"],
+    )
+    assert result.exit_code == 1
+    combined = (result.output + (result.stderr or "")).lower()
+    assert "no claim/predicted_outcome" in combined or "prediction-bound" in combined
+
+
+def test_replay_errors_on_missing_drawer(tmp_path: Path, monkeypatch: object) -> None:
+    """A drawer id that does not exist exits with a clear message."""
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384)).close()
+
+    result = runner.invoke(
+        app,
+        ["replay", "9999", "--evidence", "x", "--observed", "x", "--success"],
+    )
+    assert result.exit_code == 1
+    combined = (result.output + (result.stderr or "")).lower()
+    assert "no drawer" in combined or "9999" in combined
+
+
+def test_replay_no_store(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    result = runner.invoke(
+        app,
+        ["replay", "1", "--evidence", "x", "--observed", "x", "--success"],
+    )
+    assert result.exit_code == 1
+    combined = (result.output + (result.stderr or "")).lower()
+    assert "no store" in combined
+
+
 def test_migrate_already_up_to_date(tmp_path: Path, monkeypatch: object) -> None:
     monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
     from cairntir.config import db_path

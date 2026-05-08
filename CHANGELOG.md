@@ -7,6 +7,82 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — Decision Replay recipe (synergy stack completion)
+
+The v1.1 synergy stack — production reason loop, cross-wing recall,
+recipe runtime — landed 2026-04-18 but only one recipe (Signal
+Reader) ever exercised them together. The cold-start fire (1.1.0 →
+1.1.3) ate four days of attention, then the stack sat. Decision
+Replay is the second recipe and the first one that uses *all three*
+synergy components at once: it loads a past decision drawer through
+`cairntir.memory.temporal.walk_supersedes`, runs the production
+reason loop with the chain leaf's claim + predicted_outcome
+auto-filled, and writes the new prediction-bound drawer with
+`supersedes_id` pointing at the leaf — so the chain extends instead
+of restarting.
+
+#### `cairntir replay <id>` — new CLI command
+
+The seamless invocation. Walks the supersedes chain from
+`<id>`, pre-fills the proposer's claim + predicted_outcome from the
+leaf, prompts for the observed outcome and a verdict, runs the
+Decision Replay recipe with `supersedes_id` set to the leaf id,
+prints the new prediction drawer id and the chain extension. Zero
+network calls — Cairntir still never runs LLMs itself.
+
+```
+cairntir replay 95 --evidence "fastembed default has held for four days,
+no cold-start regressions" --observed "cold start steady at ~1.4s" --success
+```
+
+The generic `cairntir recipe-run decision-replay` path also works
+when the caller wants to override the auto-filled claim.
+
+#### `docs/recipes/decision-replay/`
+
+Bundled recipe — `recipe.toml` with three inputs
+(`decision_drawer_id`, `current_evidence`, `horizon_months`) and the
+two-skill chain `["reason", "crucible"]`. Discoverable via
+`cairntir recipe-list` alongside Signal Reader. README documents the
+full protocol, anti-patterns, and how Decision Replay closes the
+loop on Signal Reader's outputs.
+
+#### `ReasonLoop.step(supersedes_id=…)` — non-breaking extension
+
+The reason loop now accepts an optional `supersedes_id` keyword. When
+supplied, the prediction drawer that step writes carries that
+pointer, so a new prediction can extend an existing chain instead of
+starting a fresh one. The default (`None`) preserves v0.6 semantics:
+the prediction is rootless, the observation supersedes the
+prediction. Existing callers are unaffected.
+
+`RecipeRunner.run(contract, inputs, supersedes_id=…)` is the matching
+extension at the recipe layer — the runner threads the pointer into
+the reason step when the recipe chains the reason skill.
+
+### Tests
+
+- `test_step_with_supersedes_id_chains_new_prediction_onto_existing_chain`
+  / `test_step_without_supersedes_id_starts_fresh_chain` confirm the
+  loop's two modes.
+- `test_runner_threads_supersedes_id_into_reason_step` /
+  `test_runner_default_no_supersedes_id_starts_fresh_chain` confirm
+  the runner threads the pointer correctly.
+- `test_discover_recipes_finds_decision_replay` asserts the bundled
+  recipe loads cleanly with the right inputs and skill chain.
+- `test_replay_extends_supersedes_chain` is the load-bearing
+  end-to-end: seeds a prediction-bound drawer, invokes
+  `cairntir replay`, reopens the store, walks the chain, asserts the
+  new prediction's `supersedes_id` points at the original.
+- `test_replay_refuses_drawer_without_claim` /
+  `test_replay_errors_on_missing_drawer` /
+  `test_replay_no_store` cover the error paths.
+
+### Status
+
+250 tests passing, 83% coverage, ruff + mypy --strict clean,
+silent-except scanner clean.
+
 ## [1.1.3] — 2026-05-03
 
 **The cold-start fix that should have happened four commits ago.**

@@ -49,7 +49,14 @@ class ReasonLoop:
         self._beliefs = beliefs
         self._memory = memory
 
-    def step(self, *, question: str, wing: str, room: str) -> BeliefUpdate:
+    def step(
+        self,
+        *,
+        question: str,
+        wing: str,
+        room: str,
+        supersedes_id: int | None = None,
+    ) -> BeliefUpdate:
         """Run one full predict → observe → update cycle.
 
         Returns a :class:`BeliefUpdate` describing the drawers written
@@ -57,6 +64,12 @@ class ReasonLoop:
         — the loop does not swallow errors. If a proposer returns an
         empty ``predicted_outcome`` it is a programming mistake in the
         adapter and the loop surfaces it immediately.
+
+        ``supersedes_id`` extends an existing prediction-bound chain:
+        when supplied, the prediction drawer this step writes carries
+        that pointer. The Decision Replay recipe uses this to chain a
+        new prediction onto the leaf of a past decision's history.
+        Leave it ``None`` for a fresh chain (the v0.6 default).
         """
         hypothesis = self._proposer.propose(question=question, wing=wing, room=room)
         if not hypothesis.predicted_outcome.strip():
@@ -66,7 +79,11 @@ class ReasonLoop:
             )
 
         prediction_id = self._memory.remember(
-            _build_prediction_drawer(hypothesis, question=question)
+            _build_prediction_drawer(
+                hypothesis,
+                question=question,
+                supersedes_id=supersedes_id,
+            )
         )
 
         outcome = self._runner.run(hypothesis)
@@ -105,7 +122,12 @@ class ReasonLoop:
         return -1.0
 
 
-def _build_prediction_drawer(hypothesis: Hypothesis, *, question: str) -> Drawer:
+def _build_prediction_drawer(
+    hypothesis: Hypothesis,
+    *,
+    question: str,
+    supersedes_id: int | None = None,
+) -> Drawer:
     return Drawer(
         wing=hypothesis.wing,
         room=hypothesis.room,
@@ -116,6 +138,7 @@ def _build_prediction_drawer(hypothesis: Hypothesis, *, question: str) -> Drawer
         metadata={"source": "reason.predict"},
         claim=hypothesis.claim,
         predicted_outcome=hypothesis.predicted_outcome,
+        supersedes_id=supersedes_id,
     )
 
 

@@ -1,0 +1,21 @@
+[recipe]
+name = "decision-replay"
+description = "Replay a past decision against today's evidence. Loads the decision drawer's supersedes chain, frames the original claim + predicted outcome as a fresh hypothesis, lets the reason loop record a new prediction-bound observation, and stress-tests the result through Crucible. The new prediction extends the original chain — supersedes wires the past decision to its replay so the longitudinal record stays intact."
+version = "0.1"
+output_wing = "replays"
+skills = ["reason", "crucible"]
+
+[input.decision_drawer_id]
+type = "integer"
+required = true
+description = "Drawer id of the past decision being replayed. The CLI walks the supersedes chain from this id, pulls the leaf's claim + predicted_outcome to seed the reason step, and chains the new prediction onto the leaf."
+
+[input.current_evidence]
+type = "string"
+required = true
+description = "What you've observed since the original decision was made — the new ground truth you want to test the original prediction against. One-to-three paragraphs."
+
+[input.horizon_months]
+type = "integer"
+required = false
+description = "Re-prediction horizon in months. Defaults to the same window the original decision used; set explicitly to revisit on a different cadence."
