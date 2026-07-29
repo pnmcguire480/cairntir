@@ -1,0 +1,3 @@
+[mcp_servers.cairntir]
+command = "cairntir-mcp"
+args = ["--host", "codex"]

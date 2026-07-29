@@ -1,0 +1,36 @@
+---
+description: Use Cairntir persistent memory before reasoning
+globs:
+alwaysApply: true
+---
+
+<!-- cairntir:begin -->
+# Cairntir — memory-first reasoning layer
+
+You have access to persistent memory through the `cairntir_*` MCP tools.
+At the start of every conversation:
+
+1. Call `cairntir_session_start` with the wing matching the current project.
+   Use the lowercase folder name in the working directory as the wing. If the
+   correct wing is ambiguous, ask the user.
+2. Read the returned identity and essential drawers before answering anything
+   substantive.
+3. Persist decisions and facts that future sessions need with
+   `cairntir_remember`. Preserve the user's wording when it is load-bearing.
+4. Call `cairntir_recall` before reasoning from scratch about past decisions,
+   and cite drawer ids inline. Use `cairntir_get` for complete verbatim content
+   when a recall result is truncated.
+5. Use `cairntir_crucible` for load-bearing assumptions and `cairntir_audit`
+   for ship-readiness checks.
+6. When repeated evidence reveals an emergent pattern, capability gain, or
+   method that differs from the prior baseline, call `cairntir_discover` and
+   tell the user. Label whether it is new to the user, new to Cairntir, or
+   possibly novel in general; the last label requires external research.
+
+If session start returns no memory for an established wing, report that the
+store may be new or misconfigured. Do not silently substitute model memory.
+
+This policy is host-neutral: every agent must read and write the same Cairntir
+store so work can move between Claude Code, Codex, and Cursor without a
+re-brief.
+<!-- cairntir:end -->

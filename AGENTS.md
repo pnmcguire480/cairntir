@@ -1,4 +1,4 @@
-# CLAUDE.md — Cairntir
+# AGENTS.md — Cairntir
 
 > 🔄 **UPDATE EVERY SESSION**
 > This is the first file any AI agent reads. Out-of-date info here cascades into bad decisions everywhere.
@@ -10,7 +10,7 @@
 - **Name:** Cairntir
 - **Pronunciation:** *CAIRN-teer*
 - **Etymology:** Cairn (stacked waypoint stones marking a path) + Palantir (seeing-stone across time and distance). A stack of stones that sees across time.
-- **One-liner:** Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia.
+- **One-liner:** Memory-first reasoning layer for Codex. Kills cross-chat AI amnesia.
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` (local — GitHub push pending)
@@ -22,7 +22,7 @@
 
 > **Cross-chat AI amnesia is the problem. Everything Cairntir does serves killing it.**
 
-A fresh Claude Code chat opened in `c:\Dev\Cairntir\` on day 30 should feel like walking into a lit room. No re-briefing. No lost decisions. No "what were we doing?"
+A fresh Codex chat opened in `c:\Dev\Cairntir\` on day 30 should feel like walking into a lit room. No re-briefing. No lost decisions. No "what were we doing?"
 
 This is the one test that matters. If a feature doesn't serve it, we don't build it.
 
@@ -269,7 +269,7 @@ under `docs/recipes/` and earn their place by use, not by governance.
     with raw SQL and verify the forward-only ALTER TABLE chain
     upgrades them losslessly. With the existing v1→v4 test, every
     prior schema version now has a fixture kept in tree forever.
-  - **Version bump:** `pyproject.toml` and `.claude-plugin/plugin.json`
+  - **Version bump:** `pyproject.toml` and `.Codex-plugin/plugin.json`
     to `1.0.0`; CHANGELOG entry written.
   - **Deferred past v1.0:** splitting the CLI / MCP server / daemon
     into separate distributions is noted as follow-on work. Their
@@ -524,7 +524,7 @@ under `docs/recipes/` and earn their place by use, not by governance.
   - Real LongMemEval subset + sentence-transformers eval run (80% R@5 bar)
   - GitHub remote creation + initial push (still pending per Phase 0)
   - `cairntir` CLI surface (2 commands) on top of the backend
-  - Claude Code plugin packaging
+  - Codex plugin packaging
 
 ### What Works Right Now
 
@@ -538,7 +538,7 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 - GitHub remote (local repo only so far)
 - CLI wrapper (`cairntir` + `cairntir recall`)
-- Claude Code plugin bundle
+- Codex plugin bundle
 - Real LongMemEval benchmark run
 - Published PyPI release
 
@@ -583,7 +583,7 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ## Key Files Every AI Agent Should Read
 
-1. **This file** (`CLAUDE.md`)
+1. **This file** (`AGENTS.md`)
 2. `docs/manifesto.md` — WHY Cairntir exists
 3. `docs/concept.md` — WHAT Cairntir is (three ingredients)
 4. `docs/lineage/brainstormer.md` — what we kept/dropped from BrainStormer

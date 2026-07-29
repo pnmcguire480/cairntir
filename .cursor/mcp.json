@@ -3,7 +3,7 @@
     "cairntir": {
       "args": [
         "--host",
-        "claude"
+        "cursor"
       ],
       "command": "cairntir-mcp"
     }
