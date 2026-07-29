@@ -133,9 +133,12 @@ under `docs/recipes/` and earn their place by use, not by governance.
     reindex both preserved the complete 123-drawer corpus byte-for-byte at the
     logical table level (SHA-256
     `2292d830767a60fa59fcd550f52aa16c51797873f62bfbb5bd4a3fb513515591`).
-    The live index is verified at 123 vectors, dimension 384, generation
+    The reindex itself was verified at 123 vectors, dimension 384, generation
     `3f7b6b69-44d2-48e0-96ea-b56cb8f04115`; SQLite, foreign keys, and durable
-    workflows are clean. Timestamped backups remain beside the live database.
+    workflows are clean. The required final Quality write then appended audit
+    drawer #124; a follow-up doctor check reports 124 drawers / 124 vectors in
+    the same verified generation. Timestamped backups remain beside the live
+    database.
   - **Host acceptance:** project-local Codex, Cursor, and Claude configurations
     and policy files are installed. Claude reports its Cairntir MCP connection
     healthy. The shared-store acceptance suite covers all three hosts. Cursor
