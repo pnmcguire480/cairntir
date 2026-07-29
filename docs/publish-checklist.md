@@ -33,7 +33,9 @@ Operational acceptance:
 
 Release operations:
 
-- [ ] review the release-candidate diff and commit history
+- [x] create the local `codex/v1.2.0-rc` branch and conventional checkpoints
+- [x] review the release-candidate diff, secret patterns, and local-only
+      artifacts
 - [ ] push the release-candidate branch
 - [ ] wait for CI on every supported operating system and Python version
 - [ ] merge the reviewed release candidate
