@@ -37,6 +37,7 @@ nav:
   - Manifesto: manifesto.md
   - Concept: concept.md
   - Roadmap: roadmap.md
+  - v1.2.0 Release Candidate: release/v1.2.0-rc.md
   - Lineage:
       - BrainStormer: lineage/brainstormer.md
       - MemPalace: lineage/mempalace.md

@@ -7,6 +7,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-07-28
+
+### Added — Foundation hardening, multi-host continuity, and visible learning
+
+- Added a single production embedding-provider factory and persisted
+  embedding-space identity. Semantic reads and writes now fail closed when the
+  database was built by an unknown, mismatched, or structurally incomplete
+  embedding index.
+- Added read-only `cairntir doctor` diagnostics plus backup-first, sidecar-based
+  `cairntir reindex`. Dimension/schema changes are rebuilt outside the live
+  database and atomically swapped only after verification.
+- Moved wing, room, and layer filters inside sqlite-vec's KNN query so crowded
+  global neighbors cannot hide the requested scoped results.
+- Added exact `cairntir get` / `cairntir_get` retrieval with stable
+  `cairntir://drawer/<id>` references, content length, SHA-256 receipts, and
+  explicit truncation markers on summaries.
+- Added safe host adapters for Claude Code, Codex, and Cursor:
+  `cairntir init --host <host|all> [--user]`. One canonical startup policy is
+  rendered into each host's supported instruction surface without overwriting
+  unrelated content.
+- Added the append-only Discovery Ledger and Human Learning Log. Evidence-backed
+  discoveries have explicit novelty scope and lifecycle state; active learning
+  is surfaced at session start and through learning MCP/CLI operations.
+- Added schema-v6 immutable write provenance: host, model, session, capture
+  path, trust, visibility, sensitivity, validity, client version, and tool
+  surface version. Legacy memories migrate as explicitly untrusted evidence,
+  with a timestamped backup created before schema changes.
+- Added crash-safe nested transactions, savepoints, durable workflow receipts,
+  and idempotency-key conflict detection. Reason, recipes, replay, portable
+  import, daemon capture, and CodeGlass now commit all-or-nothing and replay
+  exact retries without duplicate drawers.
+- Added prompt-safe evidence rendering. Retrieved memories carry explicit
+  `instruction_authority=none`, provenance, trust, and suspicious-pattern
+  signals so stored prompt injection cannot masquerade as agent policy.
+- Added automatic multi-episode discovery proposals and a read-only
+  calibration report. Automation may create or refresh candidates after
+  repeated evidence, but cannot corroborate or promote itself.
+- Recovered CodeGlass as an evidence-cited teaching recipe with
+  novice/intermediate/expert modes, immediate and delayed teach-back,
+  retention tracking, and Human Learning Log integration.
+- Added one-way `cairntir obsidian-project` projection for Anthropicer/Obsidian.
+  Generated learning and CodeGlass notes preserve human annotations, exclude
+  secret memories, and leave SQLite authoritative.
+- Expanded the MCP surface to 17 tools and added automated Codex ↔ Cursor ↔
+  Claude continuity coverage over one canonical store with immutable
+  host/model/session provenance.
+- Hardened release automation with immutable GitHub Action SHAs,
+  least-privilege job permissions, a full pre-publish verification job, OIDC
+  Trusted Publishing, build-provenance attestations, and tag-only publish /
+  GitHub Release guards.
+- Bundled recipe contracts in wheels and made discovery host-neutral. The
+  legacy sentence-transformers provider moved to an optional extra; FastEmbed
+  remains the production default.
+
+### Fixed — Release-candidate closure
+
+- Fixed Windows CLI help/status output crashing with `UnicodeEncodeError` when
+  redirected through a cp1252 process. The console-script boundary now emits
+  UTF-8 safely before Typer renders help.
+- Fixed the Claude plugin MCP launcher omitting `--host claude`, which made
+  immutable write provenance fall back to a generic MCP host.
+- Prevented a manually dispatched release workflow from publishing to PyPI or
+  creating a GitHub Release; only a `v*.*.*` tag can cross that gate.
+
 ### Added — Cairntir Blender add-on (horizon thesis demonstrator)
 
 The first non-code Cairntir client. A Blender add-on that captures
