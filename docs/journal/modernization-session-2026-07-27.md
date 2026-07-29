@@ -115,14 +115,15 @@ governable mechanism that can produce and measure that improvement.
 
 ## Next-steps presentation
 
-### 1. Real-host release-candidate smoke
+### 1. Real-host release-candidate smoke — completed 2026-07-29
 
-Run Codex, Cursor, and Claude Code as three independent clients against the
-same temporary project. Write, exact-fetch, supersede, and inspect provenance
-across all three. The adapter contract is automated; the live-client smoke
-cannot be honestly claimed from one Codex session.
+Codex, Cursor, and Claude Code completed a real handoff through one live store:
+#125 (`host=codex`) → #126 (`host=cursor`) → #130 (`host=claude`). Codex
+semantic-recalled and exact-fetched the final hop. The test also caught a
+Claude Desktop/Claude Code surface mismatch and two Windows prompt-transport
+mistakes before accepting the final receipt.
 
-### 2. Rehearse the live data transition
+### 2. Rehearse the live data transition — completed 2026-07-29
 
 Copy the real Cairntir database, run v6 migration/doctor/reindex against the
 copy, and verify counts, provenance, semantic recall, and recovery artifacts
@@ -143,5 +144,28 @@ cited walkthrough; an agent still supplies the evidence and explanation.
 ### 5. Release deliberately
 
 Inspect the wheel, test strict docs, reconcile version/tag/PyPI/release notes,
-then cut v1.2. No version was bumped and nothing was committed during this
-session.
+then review and push the release-candidate branch. Wait for remote CI on all
+supported platforms before creating `v1.2.0`; the tag intentionally crosses
+the PyPI publication gate.
+
+## Live-host learning addendum
+
+The real-client test taught three things that the automated suite could not:
+
+- **Client surface:** two apps from one vendor can have separate MCP
+  registrations. Claude Desktop is not evidence that Claude Code used the
+  right launcher.
+- **Receipt over narration:** an agent can confidently say a write is correct
+  while the immutable stored receipt proves otherwise. Completion must use
+  exact fetch, hashes, metadata, and provenance.
+- **Prompt transport:** shell characters can damage a test prompt before an
+  agent sees it. Standard input preserved the exact acceptance payload on
+  Windows.
+
+The prompt-injection boundary also behaved correctly: Claude refused a
+protocol-looking memory write, inspected the recalled drawer as untrusted
+evidence, and waited for a separate direct human authorization.
+
+Final Cairntir Quality drawer #131 scores this boundary **96/100 — SHIP IT**
+to the release candidate and remote CI. Publication remains a separate human
+gate. The post-audit doctor check is clean at 131 drawers / 131 vectors.

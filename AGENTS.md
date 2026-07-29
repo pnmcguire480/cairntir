@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` (local — GitHub push pending)
-- **Stage:** v1.1.3 published → **v1.2.0 release candidate** (local verification and live reindex complete; CI/tag/publish pending)
+- **Stage:** v1.1.3 published → **v1.2.0 release candidate** (local verification, live reindex, and real three-host smoke complete; CI/tag/publish pending)
 
 ---
 
@@ -101,7 +101,7 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
-- **Date:** 2026-07-28 (**v1.2.0 local release candidate accepted**)
+- **Date:** 2026-07-29 (**v1.2.0 live three-host acceptance complete**)
 - **What was accomplished:** Closed the modernization arc at a safe,
   reviewable release boundary.
   - **Schema v6 trust receipts:** every new write records immutable host,
@@ -139,12 +139,15 @@ under `docs/recipes/` and earn their place by use, not by governance.
     drawer #124; a follow-up doctor check reports 124 drawers / 124 vectors in
     the same verified generation. Timestamped backups remain beside the live
     database.
-  - **Host acceptance:** project-local Codex, Cursor, and Claude configurations
-    and policy files are installed. Claude reports its Cairntir MCP connection
-    healthy. The shared-store acceptance suite covers all three hosts. Cursor
-    is not installed on this machine, Claude model execution is blocked by
-    account entitlement, and Codex CLI introspection is blocked by its Windows
-    Store sandbox; those limits are recorded rather than presented as passes.
+  - **Live host acceptance:** real Codex #125, Cursor #126, and Claude Code
+    #130 writes formed one exact-recalled chain through the live store.
+    Immutable receipts preserve `host=codex|cursor|claude`, unique sessions,
+    MCP tool surface 17, source links, complete content, and hashes. Claude's
+    first opaque request refusal positively exercised the poisoned-memory
+    boundary. A Claude Desktop mismatch (#127) and two Windows test-harness
+    truncations (#128/#129) remain append-only failure evidence rather than
+    being rewritten as passes. Runtime model remains explicitly `unknown`
+    because current hosts do not disclose it to the MCP subprocess.
   - **Release engineering:** all external GitHub Actions are pinned to immutable
     commits; release verification now precedes build; provenance attestation
     and PyPI trusted publishing are wired; manual dispatch cannot publish.
@@ -156,13 +159,15 @@ under `docs/recipes/` and earn their place by use, not by governance.
     the source tree.
   - **Status:** all 372 tests passing, 81.12% coverage, Ruff clean,
     mypy --strict clean across 46 source files, silent-exception scan clean,
-    strict docs clean, workflows parse, and sdist/wheel build successfully.
-- **Next session:** restart Codex and Claude so they load the new host launchers;
-  run the Cursor client smoke when Cursor is installed; review and push the
-  release-candidate branch; wait for remote CI on all supported platforms; only
-  then create `v1.2.0`, which intentionally triggers publishing. After the
-  release, continue the Evolving Mind through contextual usefulness feedback,
-  strategy holdouts, and longitudinal proof.
+    strict docs clean, workflows parse, sdist/wheel build successfully, and
+    final Quality drawer #131 records `96/100 — SHIP IT` to RC/remote CI.
+    Post-audit doctor reports 131 drawers / 131 vectors with clean SQLite,
+    foreign keys, and durable workflows.
+- **Next session:** review and push the release-candidate branch; wait for
+  remote CI on all supported platforms; only then create `v1.2.0`, which
+  intentionally triggers publishing. After release, add honest runtime-model
+  discovery where hosts expose it, then continue the Evolving Mind through
+  contextual usefulness feedback, strategy holdouts, and longitudinal proof.
 
 - **Prior session — 2026-05-08 (Decision Replay — synergy stack closure):**
 - **Date:** 2026-05-08 (**Decision Replay — synergy stack closure**)

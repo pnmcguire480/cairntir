@@ -77,11 +77,12 @@ Cursor's global User Rules are managed through Cursor Settings and have no
 documented file-backed API. User-scope setup therefore installs the global MCP
 entry and reports the one manual rule step instead of claiming false success.
 
-Host/model/session provenance is now immutable on every write, and the
+Host/model/session provenance fields are now immutable on every write, and the
 automated three-adapter continuity fixture proves that all three hosts can
-write and recall through one store without changing drawer identity. One
-real-host release-candidate smoke test is still required because this test
-session cannot truthfully impersonate three independently running clients.
+write and recall through one store without changing drawer identity. Runtime
+model is explicitly `unknown` when a host does not disclose its selected model
+to the MCP subprocess; Cairntir records that limitation instead of inventing a
+name.
 
 ## Acceptance test
 
@@ -100,3 +101,28 @@ For a temporary project and temporary Cairntir home:
 The test may use adapter simulators in CI. A release candidate also requires a
 human-operated smoke test against current host versions because configuration
 surfaces change faster than the Cairntir core.
+
+## Live acceptance result
+
+The release-candidate smoke completed on 2026-07-29 against the live canonical
+store:
+
+1. Codex wrote #125 with immutable `host=codex`.
+2. Cursor recalled #125 and wrote #126 with immutable `host=cursor`.
+3. Claude Code recalled the chain and wrote passing retry #130 with immutable
+   `host=claude`, source drawer #126, and complete verbatim content.
+4. Codex recalled #130 and exact-fetched its complete content and provenance.
+5. Doctor reported 130 drawers / 130 vectors, matching embedding space and
+   generation, SQLite integrity `ok`, zero foreign-key errors, and no stranded
+   workflows.
+
+The append-only evidence also records three important integration lessons:
+
+- Claude Desktop and Claude Code are distinct surfaces. A Desktop write through
+  a generic registration produced #127 with `host=unknown` and was rejected as
+  acceptance evidence.
+- A launcher connection is not enough; acceptance reads the immutable drawer
+  receipt after every write.
+- Windows harnesses must send protocol-shaped prompts through standard input
+  or otherwise quote pipe characters safely. Two truncated harness attempts
+  (#128 and #129) were preserved, diagnosed, and superseded by #130.
