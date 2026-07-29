@@ -1,4 +1,4 @@
-"""MCP server exposing 6 tools: remember, recall, session_start, timeline, audit, crucible.
+"""Host-neutral MCP server exposing Cairntir's memory and reasoning tools.
 
 The transport-free backend lives in :mod:`cairntir.mcp.backend`; the stdio
 adapter lives in :mod:`cairntir.mcp.server`.

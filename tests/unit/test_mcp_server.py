@@ -72,6 +72,51 @@ def test_session_start_tool_spec_does_not_advertise_query() -> None:
     )
 
 
+def test_get_tool_spec_exposes_exact_drawer_fetch() -> None:
+    from cairntir.mcp.server import _tool_specs
+
+    specs = {tool.name: tool for tool in _tool_specs()}
+    get_tool = specs["cairntir_get"]
+    assert get_tool.inputSchema["required"] == ["drawer_id"]
+    assert get_tool.inputSchema["properties"]["drawer_id"]["minimum"] == 1
+
+
+def test_discovery_tools_are_exposed_with_evidence_requirement() -> None:
+    from cairntir.mcp.server import _tool_specs
+
+    specs = {tool.name: tool for tool in _tool_specs()}
+    assert {
+        "cairntir_discover",
+        "cairntir_discovery_transition",
+        "cairntir_discoveries",
+        "cairntir_learning_log",
+        "cairntir_discover_scan",
+        "cairntir_calibration",
+        "cairntir_codeglass_record",
+        "cairntir_codeglass_teachback",
+        "cairntir_codeglass_retention",
+    } <= specs.keys()
+    discover = specs["cairntir_discover"]
+    assert "evidence_ids" in discover.inputSchema["required"]
+    assert discover.inputSchema["properties"]["evidence_ids"]["minItems"] == 1
+
+
+def test_get_tool_returns_complete_drawer(_backend: CairntirBackend) -> None:
+    server = build_server(_backend)
+    _invoke_call_tool(
+        server,
+        "cairntir_remember",
+        {
+            "wing": "cairntir",
+            "room": "exact",
+            "content": "complete content through MCP",
+        },
+    )
+    text = _invoke_call_tool(server, "cairntir_get", {"drawer_id": 1})
+    assert '"content": "complete content through MCP"' in text
+    assert '"resource": "cairntir://drawer/1"' in text
+
+
 def test_remember_invalid_wing_returns_clean_error(_backend: CairntirBackend) -> None:
     """Pydantic ValidationError from Drawer construction must be caught.
 

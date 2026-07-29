@@ -92,9 +92,7 @@ if _HAS_BPY:
 
         def execute(self, context):
             settings = context.scene.cairntir_settings
-            home_override = (
-                settings.cairntir_home_override.strip() or None
-            )
+            home_override = settings.cairntir_home_override.strip() or None
             try:
                 from pathlib import Path
 
@@ -154,9 +152,7 @@ if _HAS_BPY:
 
         def execute(self, context):
             settings = context.scene.cairntir_settings
-            home_override = (
-                settings.cairntir_home_override.strip() or None
-            )
+            home_override = settings.cairntir_home_override.strip() or None
             try:
                 from pathlib import Path
 
@@ -201,9 +197,7 @@ if _HAS_BPY:
             layout.prop(settings, "cairntir_home_override")
             layout.separator()
             layout.operator(CAIRNTIR_OT_capture_decision.bl_idname, icon="TEXT")
-            layout.operator(
-                CAIRNTIR_OT_capture_print_outcome.bl_idname, icon="MOD_BUILD"
-            )
+            layout.operator(CAIRNTIR_OT_capture_print_outcome.bl_idname, icon="MOD_BUILD")
 
     _CLASSES = (
         CAIRNTIR_PG_settings,
@@ -216,9 +210,7 @@ if _HAS_BPY:
         """Register every Blender class and bind the per-scene settings property."""
         for cls in _CLASSES:
             bpy.utils.register_class(cls)
-        bpy.types.Scene.cairntir_settings = bpy.props.PointerProperty(
-            type=CAIRNTIR_PG_settings
-        )
+        bpy.types.Scene.cairntir_settings = bpy.props.PointerProperty(type=CAIRNTIR_PG_settings)
 
     def unregister() -> None:
         """Unregister Cairntir add-on classes in reverse order, dropping the property."""

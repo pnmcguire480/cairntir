@@ -1,0 +1,434 @@
+"""Safe, host-specific adapters for Cairntir's shared MCP memory.
+
+The database and MCP server are host-neutral.  This module contains the
+small amount of host-specific wiring needed to make that same server visible
+to Claude Code, Codex, and Cursor without overwriting unrelated user config.
+"""
+
+from __future__ import annotations
+
+import json
+import shutil
+import subprocess
+import tomllib
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Final, Literal
+
+HostName = Literal["claude", "codex", "cursor"]
+HostScope = Literal["project", "user"]
+
+SUPPORTED_HOSTS: Final[tuple[HostName, ...]] = ("claude", "codex", "cursor")
+MCP_SERVER_NAME: Final[str] = "cairntir"
+MCP_SERVER_COMMAND: Final[str] = "cairntir-mcp"
+
+POLICY_BEGIN_MARKER: Final[str] = "<!-- cairntir:begin -->"
+POLICY_END_MARKER: Final[str] = "<!-- cairntir:end -->"
+
+MEMORY_POLICY: Final[str] = """# Cairntir — memory-first reasoning layer
+
+You have access to persistent memory through the `cairntir_*` MCP tools.
+At the start of every conversation:
+
+1. Call `cairntir_session_start` with the wing matching the current project.
+   Use the lowercase folder name in the working directory as the wing. If the
+   correct wing is ambiguous, ask the user.
+2. Read the returned identity and essential drawers before answering anything
+   substantive.
+3. Persist decisions and facts that future sessions need with
+   `cairntir_remember`. Preserve the user's wording when it is load-bearing.
+4. Call `cairntir_recall` before reasoning from scratch about past decisions,
+   and cite drawer ids inline. Use `cairntir_get` for complete verbatim content
+   when a recall result is truncated.
+5. Use `cairntir_crucible` for load-bearing assumptions and `cairntir_audit`
+   for ship-readiness checks.
+6. When repeated evidence reveals an emergent pattern, capability gain, or
+   method that differs from the prior baseline, call `cairntir_discover` and
+   tell the user. Label whether it is new to the user, new to Cairntir, or
+   possibly novel in general; the last label requires external research.
+
+If session start returns no memory for an established wing, report that the
+store may be new or misconfigured. Do not silently substitute model memory.
+
+This policy is host-neutral: every agent must read and write the same Cairntir
+store so work can move between Claude Code, Codex, and Cursor without a
+re-brief.
+"""
+
+_CURSOR_RULE_HEADER: Final[str] = """---
+description: Use Cairntir persistent memory before reasoning
+globs:
+alwaysApply: true
+---
+
+"""
+
+_CODEX_MCP_BEGIN: Final[str] = "# cairntir:mcp:begin"
+_CODEX_MCP_END: Final[str] = "# cairntir:mcp:end"
+
+
+class HostConfigurationError(RuntimeError):
+    """A host configuration could not be changed without risking user data."""
+
+
+@dataclass(frozen=True, slots=True)
+class HostSetupResult:
+    """Outcome of configuring one agent host."""
+
+    host: HostName
+    scope: HostScope
+    registration: str
+    registration_path: Path | None
+    policy: str
+    policy_path: Path | None
+
+
+@dataclass(frozen=True, slots=True)
+class HostStatus:
+    """Read-only status for one host's MCP and memory-policy wiring."""
+
+    host: HostName
+    scope: HostScope
+    mcp_configured: bool | None
+    mcp_detail: str
+    policy_configured: bool | None
+    policy_detail: str
+
+
+def mcp_spec(host: HostName | None = None) -> dict[str, object]:
+    """Return the portable stdio MCP specification used by JSON hosts."""
+    args = ["--host", host] if host is not None else []
+    return {"command": MCP_SERVER_COMMAND, "args": args}
+
+
+def _codex_mcp_block() -> str:
+    return """[mcp_servers.cairntir]
+command = "cairntir-mcp"
+args = ["--host", "codex"]
+"""
+
+
+def load_json_object(path: Path) -> dict[str, Any]:
+    """Load a JSON object, returning an empty object for a missing file."""
+    if not path.exists():
+        return {}
+    try:
+        loaded = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise HostConfigurationError(f"{path} is not valid readable JSON: {exc}") from exc
+    if not isinstance(loaded, dict):
+        raise HostConfigurationError(f"{path} is not a JSON object")
+    return loaded
+
+
+def merge_mcp_spec(
+    config: dict[str, Any],
+    *,
+    host: HostName | None = None,
+) -> tuple[dict[str, Any], bool]:
+    """Merge Cairntir into a JSON MCP config while preserving other servers."""
+    servers = config.setdefault("mcpServers", {})
+    if not isinstance(servers, dict):
+        raise HostConfigurationError("mcpServers in target config is not a JSON object")
+    spec = mcp_spec(host)
+    if servers.get(MCP_SERVER_NAME) == spec:
+        return config, False
+    servers[MCP_SERVER_NAME] = spec
+    return config, True
+
+
+def write_json_object(path: Path, data: dict[str, Any]) -> None:
+    """Write a deterministic JSON object, creating parent directories."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def upsert_marked_policy(path: Path, *, prefix: str = "", body: str = MEMORY_POLICY) -> str:
+    """Install the delimited memory policy without clobbering other content.
+
+    Returns ``created``, ``appended``, ``updated``, or ``unchanged``.
+    """
+    block = f"{POLICY_BEGIN_MARKER}\n{body}{POLICY_END_MARKER}\n"
+    if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(prefix + block, encoding="utf-8")
+        return "created"
+
+    try:
+        existing = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise HostConfigurationError(f"could not read {path}: {exc}") from exc
+    begin = existing.find(POLICY_BEGIN_MARKER)
+    end = existing.find(POLICY_END_MARKER)
+
+    if (begin == -1) != (end == -1) or (begin != -1 and end < begin):
+        raise HostConfigurationError(
+            f"{path} contains only one Cairntir policy marker; repair it manually"
+        )
+    if begin == -1:
+        separator = "" if existing.endswith("\n\n") else "\n" if existing.endswith("\n") else "\n\n"
+        path.write_text(existing + separator + block, encoding="utf-8")
+        return "appended"
+
+    end_of_block = end + len(POLICY_END_MARKER)
+    if end_of_block < len(existing) and existing[end_of_block] == "\n":
+        end_of_block += 1
+    replacement = existing[:begin] + block + existing[end_of_block:]
+    if replacement == existing:
+        return "unchanged"
+    path.write_text(replacement, encoding="utf-8")
+    return "updated"
+
+
+def _json_mcp_path(host: HostName, scope: HostScope, root: Path, home: Path) -> Path:
+    if host == "claude":
+        if scope == "user":
+            raise HostConfigurationError("Claude user registration is managed by the Claude CLI")
+        return root / ".mcp.json"
+    if host == "cursor":
+        return home / ".cursor" / "mcp.json" if scope == "user" else root / ".cursor" / "mcp.json"
+    raise HostConfigurationError(f"{host} does not use a JSON MCP configuration")
+
+
+def _policy_path(host: HostName, scope: HostScope, root: Path, home: Path) -> Path | None:
+    if host == "claude":
+        return home / ".claude" / "CLAUDE.md" if scope == "user" else root / "CLAUDE.md"
+    if host == "codex":
+        return home / ".codex" / "AGENTS.md" if scope == "user" else root / "AGENTS.md"
+    if scope == "project":
+        return root / ".cursor" / "rules" / "cairntir.mdc"
+    return None
+
+
+def _run_cli(executable_name: str, *args: str) -> tuple[int, str, str]:
+    executable = shutil.which(executable_name)
+    if executable is None:
+        return 127, "", f"could not find `{executable_name}` on PATH"
+    try:
+        completed = subprocess.run(  # noqa: S603 - executable resolved by shutil.which
+            [executable, *args],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=20,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return 1, "", f"failed to invoke `{executable_name}`: {exc}"
+    return (
+        completed.returncode,
+        (completed.stdout or "").strip(),
+        (completed.stderr or "").strip(),
+    )
+
+
+def _register_cli_host(host: Literal["claude", "codex"], *, force: bool) -> str:
+    remove_args: tuple[str, ...]
+    add_args: tuple[str, ...]
+    if host == "claude":
+        remove_args = ("mcp", "remove", "-s", "user", MCP_SERVER_NAME)
+        add_args = (
+            "mcp",
+            "add",
+            "-s",
+            "user",
+            MCP_SERVER_NAME,
+            "--",
+            MCP_SERVER_COMMAND,
+            "--host",
+            host,
+        )
+    else:
+        remove_args = ("mcp", "remove", MCP_SERVER_NAME)
+        add_args = (
+            "mcp",
+            "add",
+            MCP_SERVER_NAME,
+            "--",
+            MCP_SERVER_COMMAND,
+            "--host",
+            host,
+        )
+
+    if force:
+        _run_cli(host, *remove_args)
+    code, stdout, stderr = _run_cli(host, *add_args)
+    if code == 0:
+        return stdout or "registered"
+    combined = stderr or stdout
+    if "already exists" in combined.lower() and not force:
+        return "already registered"
+    raise HostConfigurationError(f"`{host} {' '.join(add_args)}` exited {code}: {combined}")
+
+
+def _codex_project_config(path: Path, *, force: bool) -> str:
+    block = _codex_mcp_block()
+    if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            f"{_CODEX_MCP_BEGIN}\n{block}{_CODEX_MCP_END}\n",
+            encoding="utf-8",
+        )
+        return "created"
+
+    try:
+        existing = path.read_text(encoding="utf-8")
+        parsed = tomllib.loads(existing)
+    except (OSError, tomllib.TOMLDecodeError) as exc:
+        raise HostConfigurationError(f"{path} is not valid readable TOML: {exc}") from exc
+
+    servers = parsed.get("mcp_servers", {})
+    cairntir = servers.get(MCP_SERVER_NAME) if isinstance(servers, dict) else None
+    expected = mcp_spec("codex")
+    if cairntir == expected:
+        return "unchanged"
+    if cairntir is not None and _CODEX_MCP_BEGIN not in existing:
+        action = "replace" if force else "change"
+        raise HostConfigurationError(
+            f"{path} already defines mcp_servers.cairntir outside Cairntir markers; "
+            f"refusing to {action} user-owned TOML"
+        )
+
+    marked = f"{_CODEX_MCP_BEGIN}\n{block}{_CODEX_MCP_END}\n"
+    begin = existing.find(_CODEX_MCP_BEGIN)
+    end = existing.find(_CODEX_MCP_END)
+    if (begin == -1) != (end == -1) or (begin != -1 and end < begin):
+        raise HostConfigurationError(f"{path} contains an incomplete Cairntir MCP block")
+    if begin == -1:
+        separator = "" if existing.endswith("\n\n") else "\n" if existing.endswith("\n") else "\n\n"
+        path.write_text(existing + separator + marked, encoding="utf-8")
+        return "appended"
+    end_of_block = end + len(_CODEX_MCP_END)
+    if end_of_block < len(existing) and existing[end_of_block] == "\n":
+        end_of_block += 1
+    replacement = existing[:begin] + marked + existing[end_of_block:]
+    path.write_text(replacement, encoding="utf-8")
+    return "updated"
+
+
+def configure_host(
+    host: HostName,
+    *,
+    scope: HostScope,
+    root: Path,
+    home: Path,
+    force: bool = False,
+    install_policy: bool = True,
+) -> HostSetupResult:
+    """Configure one host to use Cairntir's shared MCP server and policy."""
+    registration_path: Path | None
+    if host == "codex":
+        if scope == "user":
+            registration = _register_cli_host("codex", force=force)
+            registration_path = home / ".codex" / "config.toml"
+        else:
+            registration_path = root / ".codex" / "config.toml"
+            registration = _codex_project_config(registration_path, force=force)
+    elif host == "claude" and scope == "user":
+        registration = _register_cli_host("claude", force=force)
+        registration_path = None
+    else:
+        registration_path = _json_mcp_path(host, scope, root, home)
+        existed = registration_path.exists()
+        config = load_json_object(registration_path)
+        config, changed = merge_mcp_spec(config, host=host)
+        if changed or force:
+            write_json_object(registration_path, config)
+            registration = "updated" if existed else "created"
+        else:
+            registration = "unchanged"
+
+    policy_path = _policy_path(host, scope, root, home) if install_policy else None
+    if not install_policy:
+        policy = "skipped"
+    elif policy_path is None:
+        policy = "manual: add the Cairntir memory policy to Cursor Settings > Rules > User Rules"
+    else:
+        prefix = _CURSOR_RULE_HEADER if host == "cursor" else ""
+        policy = upsert_marked_policy(policy_path, prefix=prefix)
+
+    return HostSetupResult(
+        host=host,
+        scope=scope,
+        registration=registration,
+        registration_path=registration_path,
+        policy=policy,
+        policy_path=policy_path,
+    )
+
+
+def _json_status(path: Path, *, host: HostName) -> tuple[bool, str]:
+    if not path.exists():
+        return False, f"missing {path}"
+    try:
+        config = load_json_object(path)
+    except HostConfigurationError as exc:
+        return False, str(exc)
+    servers = config.get("mcpServers", {})
+    if not isinstance(servers, dict) or servers.get(MCP_SERVER_NAME) != mcp_spec(host):
+        return False, f"{path} has no matching Cairntir MCP entry"
+    return True, str(path)
+
+
+def _codex_status(path: Path) -> tuple[bool, str]:
+    if not path.exists():
+        return False, f"missing {path}"
+    try:
+        parsed = tomllib.loads(path.read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError) as exc:
+        return False, f"{path} is not valid readable TOML: {exc}"
+    servers = parsed.get("mcp_servers", {})
+    spec = servers.get(MCP_SERVER_NAME) if isinstance(servers, dict) else None
+    if spec != mcp_spec("codex"):
+        return False, f"{path} has no matching Cairntir MCP entry"
+    return True, str(path)
+
+
+def inspect_host(
+    host: HostName,
+    *,
+    scope: HostScope,
+    root: Path,
+    home: Path,
+) -> HostStatus:
+    """Inspect one host without modifying config or invoking its CLI."""
+    if host == "claude" and scope == "user":
+        mcp_configured: bool | None = None
+        mcp_detail = "use `claude mcp list`; Claude owns its user registry"
+    elif host == "codex":
+        config_path = (
+            home / ".codex" / "config.toml" if scope == "user" else root / ".codex" / "config.toml"
+        )
+        mcp_configured, mcp_detail = _codex_status(config_path)
+    else:
+        config_path = _json_mcp_path(host, scope, root, home)
+        mcp_configured, mcp_detail = _json_status(config_path, host=host)
+
+    policy_path = _policy_path(host, scope, root, home)
+    if policy_path is None:
+        policy_configured: bool | None = None
+        policy_detail = "Cursor global User Rules are managed in Cursor Settings"
+    elif not policy_path.exists():
+        policy_configured = False
+        policy_detail = f"missing {policy_path}"
+    else:
+        try:
+            contents = policy_path.read_text(encoding="utf-8")
+        except OSError as exc:
+            policy_configured = False
+            policy_detail = f"could not read {policy_path}: {exc}"
+        else:
+            policy_configured = POLICY_BEGIN_MARKER in contents and POLICY_END_MARKER in contents
+            policy_detail = (
+                str(policy_path)
+                if policy_configured
+                else f"{policy_path} has no complete Cairntir policy block"
+            )
+
+    return HostStatus(
+        host=host,
+        scope=scope,
+        mcp_configured=mcp_configured,
+        mcp_detail=mcp_detail,
+        policy_configured=policy_configured,
+        policy_detail=policy_detail,
+    )

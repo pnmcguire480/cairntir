@@ -19,7 +19,7 @@ has the skill's prompt in memory to execute against.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from cairntir.errors import CairntirError
 from cairntir.memory.taxonomy import Drawer, Layer
@@ -82,6 +82,7 @@ class RecipeRunner:
         inputs: dict[str, object],
         *,
         supersedes_id: int | None = None,
+        idempotency_key: str | None = None,
     ) -> RecipeResult:
         """Validate inputs against ``contract`` and execute the skill chain.
 
@@ -94,7 +95,44 @@ class RecipeRunner:
         edges are reserved for the load-bearing reason output.
         """
         _validate_inputs(contract, inputs)
+        from cairntir.reason.ports import DurableMemoryGateway
 
+        if isinstance(self._memory, DurableMemoryGateway):
+            if idempotency_key is not None:
+                execution = self._memory.execute_once(
+                    idempotency_key=idempotency_key,
+                    operation="recipe.run",
+                    request={
+                        "recipe_name": contract.name,
+                        "recipe_version": contract.version,
+                        "inputs": inputs,
+                        "supersedes_id": supersedes_id,
+                    },
+                    action=lambda: _recipe_result_to_dict(
+                        self._run_once(
+                            contract,
+                            inputs,
+                            supersedes_id=supersedes_id,
+                        )
+                    ),
+                )
+                return _recipe_result_from_dict(execution.result)
+            with self._memory.atomic():
+                return self._run_once(
+                    contract,
+                    inputs,
+                    supersedes_id=supersedes_id,
+                )
+        return self._run_once(contract, inputs, supersedes_id=supersedes_id)
+
+    def _run_once(
+        self,
+        contract: RecipeContract,
+        inputs: dict[str, object],
+        *,
+        supersedes_id: int | None,
+    ) -> RecipeResult:
+        """Execute one validated recipe invocation inside its caller's boundary."""
         seed_drawer = Drawer(
             wing=contract.output_wing,
             room=_canonical_room(contract),
@@ -352,3 +390,36 @@ def _format_reason_question(contract: RecipeContract, inputs: dict[str, object])
     """Turn the recipe description + inputs into a question for the proposer."""
     body = _format_inputs(inputs)
     return f"Recipe: {contract.name}\nGoal:   {contract.description}\nInputs:\n{body}"
+
+
+def _recipe_result_to_dict(result: RecipeResult) -> dict[str, object]:
+    return {
+        "recipe_name": result.recipe_name,
+        "output_wing": result.output_wing,
+        "seed_drawer_id": result.seed_drawer_id,
+        "skill_drawer_ids": result.skill_drawer_ids,
+    }
+
+
+def _recipe_result_from_dict(payload: dict[str, Any]) -> RecipeResult:
+    try:
+        skill_ids = _parse_skill_drawer_ids(payload["skill_drawer_ids"])
+        return RecipeResult(
+            recipe_name=str(payload["recipe_name"]),
+            output_wing=str(payload["output_wing"]),
+            seed_drawer_id=int(payload["seed_drawer_id"]),
+            skill_drawer_ids=skill_ids,
+        )
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError(f"invalid durable recipe result: {exc}") from exc
+
+
+def _parse_skill_drawer_ids(value: object) -> dict[str, list[int]]:
+    if not isinstance(value, dict):
+        raise TypeError("skill_drawer_ids is not an object")
+    parsed: dict[str, list[int]] = {}
+    for skill, ids in value.items():
+        if not isinstance(ids, list):
+            raise TypeError("skill_drawer_ids values must be arrays")
+        parsed[str(skill)] = [int(drawer_id) for drawer_id in ids]
+    return parsed

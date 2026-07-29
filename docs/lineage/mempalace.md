@@ -62,14 +62,17 @@ Cairntir operates entirely at small scales (solo developer, mostly under 1000 dr
 
 ### 19 MCP Tools
 
-MemPalace exposes 19 MCP tools. Cairntir collapses the surface to **6**:
+MemPalace exposes 19 MCP tools. Cairntir's v0.1 collapsed the surface to
+**6**, and later added only two earned retrieval operations:
 
 1. `cairntir_remember`
 2. `cairntir_recall`
-3. `cairntir_session_start`
-4. `cairntir_timeline`
-5. `cairntir_audit` (from BrainStormer)
-6. `cairntir_crucible` (from BrainStormer)
+3. `cairntir_cross_recall`
+4. `cairntir_get`
+5. `cairntir_session_start`
+6. `cairntir_timeline`
+7. `cairntir_audit` (from BrainStormer)
+8. `cairntir_crucible` (from BrainStormer)
 
 Fewer tools = fewer decisions for the AI. Decisions are where things go wrong.
 

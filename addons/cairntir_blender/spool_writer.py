@@ -102,9 +102,7 @@ def write_capture(
     if not isinstance(content, str) or not content.strip():
         raise ValueError("content must be non-empty (whitespace not allowed)")
     if layer not in _VALID_LAYERS:
-        raise ValueError(
-            f"layer must be one of {sorted(_VALID_LAYERS)}, got {layer!r}"
-        )
+        raise ValueError(f"layer must be one of {sorted(_VALID_LAYERS)}, got {layer!r}")
 
     # Cairntir's taxonomy regex requires lowercase identifiers. Blender
     # users naturally type material names like "PLA" — silently
@@ -158,9 +156,7 @@ def write_print_outcome(
     cluster naturally: ``blender-print/PLA``, ``blender-print/PETG``.
     A future Decision Replay can walk the chain to compare iterations.
     """
-    parameter_block = "\n".join(
-        f"  {k}: {v}" for k, v in sorted(parameters.items())
-    )
+    parameter_block = "\n".join(f"  {k}: {v}" for k, v in sorted(parameters.items()))
     body = (
         f"# Print iteration ({material})\n"
         f"\n"

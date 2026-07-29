@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -32,6 +34,33 @@ def test_remember_then_recall_roundtrip(backend: CairntirBackend) -> None:
     assert "MCP server wired" in hits
 
 
+def test_recall_receipt_links_to_complete_verbatim_get(backend: CairntirBackend) -> None:
+    content = "A deliberately long educational drawer. " + ("evidence " * 40)
+    backend.remember(
+        wing="cairntir",
+        room="exact",
+        content=content,
+        metadata={"source": "test", "nested": {"verified": True}},
+    )
+
+    hits = backend.recall(query="deliberately long educational drawer")
+    assert "ref=cairntir://drawer/1" in hits
+    assert f"len={len(content)}" in hits
+    assert f"sha256={hashlib.sha256(content.encode()).hexdigest()}" in hits
+    assert "truncated=true" in hits
+
+    payload = json.loads(backend.get(drawer_id=1))
+    assert payload["resource"] == "cairntir://drawer/1"
+    assert payload["content"] == content
+    assert payload["content_length"] == len(content)
+    assert payload["metadata"]["nested"]["verified"] is True
+
+
+def test_get_missing_drawer_errors(backend: CairntirBackend) -> None:
+    with pytest.raises(MCPError, match="no drawer"):
+        backend.get(drawer_id=999)
+
+
 def test_recall_empty_query_errors(backend: CairntirBackend) -> None:
     with pytest.raises(MCPError):
         backend.recall(query="   ")
@@ -57,6 +86,74 @@ def test_session_start_with_query_pulls_on_demand(backend: CairntirBackend) -> N
     out = backend.session_start(wing="cairntir", query="kill cross chat amnesia forever")
     assert "On-demand" in out
     assert "amnesia" in out
+
+
+def test_discovery_ledger_surfaces_active_learning_at_session_start(
+    backend: CairntirBackend,
+) -> None:
+    backend.remember(
+        wing="cairntir",
+        room="evidence",
+        content="Three independent scoped retrieval tests passed.",
+    )
+    recorded = backend.discover(
+        wing="cairntir",
+        title="Scoped retrieval became reliable",
+        summary="Filtering before KNN consistently preserves relevant wing-local hits.",
+        novelty="cairntir",
+        evidence_ids=[1],
+        state="candidate",
+    )
+    assert "Recorded discovery #2 [candidate]" in recorded
+
+    session = backend.session_start(wing="cairntir")
+    assert "Active discoveries" in session
+    assert "Scoped retrieval became reliable" in session
+    assert "cairntir://drawer/1" in session
+
+    log = backend.learning_log(wing="cairntir")
+    assert "Human Learning Log" in log
+    assert "Scoped retrieval became reliable" in log
+
+
+def test_discovery_transition_keeps_only_current_leaf(backend: CairntirBackend) -> None:
+    backend.remember(wing="cairntir", room="evidence", content="The method repeated.")
+    backend.discover(
+        wing="cairntir",
+        title="Method emerged",
+        summary="A repeatable workflow reduced repair time.",
+        novelty="user",
+        evidence_ids=[1],
+        state="candidate",
+    )
+    corroborated = backend.transition_discovery(
+        drawer_id=2,
+        state="corroborated",
+        note="Three independent examples reproduced the method.",
+    )
+    assert "drawer #3" in corroborated
+    transitioned = backend.transition_discovery(
+        drawer_id=3,
+        state="promoted",
+        note="Patrick reviewed and accepted the method.",
+    )
+    assert "drawer #4" in transitioned
+    listing = backend.discoveries(wing="cairntir")
+    assert "cairntir://drawer/4" in listing
+    assert "cairntir://drawer/3" not in listing
+    assert "cairntir://drawer/2" not in listing
+    assert "[promoted]" in listing
+
+
+def test_discover_rejects_invalid_novelty(backend: CairntirBackend) -> None:
+    with pytest.raises(MCPError, match="invalid novelty"):
+        backend.discover(
+            wing="cairntir",
+            title="Bad novelty",
+            summary="This label is unsupported.",
+            novelty="world-changing",
+            evidence_ids=[1],
+        )
 
 
 def test_timeline_filters_by_entity(backend: CairntirBackend) -> None:

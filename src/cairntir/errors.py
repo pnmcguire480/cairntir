@@ -20,6 +20,26 @@ class MemoryStoreError(CairntirError):
     """Raised when the memory layer fails to read or write a drawer."""
 
 
+class ProvenanceError(MemoryStoreError):
+    """Raised when stored write provenance is missing or malformed."""
+
+
+class WorkflowError(CairntirError):
+    """Raised when a durable workflow cannot be prepared or completed."""
+
+
+class IdempotencyConflictError(WorkflowError):
+    """Raised when an idempotency key is reused for a different request."""
+
+
+class ProjectionError(CairntirError):
+    """Raised when a human-facing projection cannot preserve user-owned text."""
+
+
+class EmbeddingSpaceError(MemoryStoreError):
+    """Raised when a semantic index is unverified, corrupt, or incompatible."""
+
+
 class TaxonomyError(CairntirError):
     """Raised when a wing, room, or drawer identifier is invalid."""
 

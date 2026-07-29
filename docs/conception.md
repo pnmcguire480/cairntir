@@ -1,7 +1,9 @@
 # Conception — how Cairntir came to be
 
 This document tells the story behind Cairntir. If you want the product
-pitch, read the [README](../README.md). If you want to install it, read
+pitch, read the
+[README](https://github.com/pnmcguire480/cairntir/blob/main/README.md).
+If you want to install it, read
 [cairntir-for-dummies.md](cairntir-for-dummies.md). If you want to know
 *why anyone built this in the first place*, read on.
 
@@ -156,7 +158,8 @@ internalize:
    + a silent-except scanner + a LongMemEval fail-on-regression gate.
    The green CI build is the minimum, not the goal.
 
-Full text: **[ETHOS.md](../ETHOS.md)**.
+Full text:
+**[ETHOS.md](https://github.com/pnmcguire480/cairntir/blob/main/ETHOS.md)**.
 
 ## The naming
 

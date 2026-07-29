@@ -91,9 +91,7 @@ def test_propose_uses_custom_endpoint(monkeypatch: object) -> None:
 
     def _fake_urlopen(req: urllib.request.Request, **_: object) -> io.BytesIO:
         captured.append(req.full_url)
-        return _fake_response(
-            {"response": json.dumps({"claim": "x", "predicted_outcome": "y"})}
-        )
+        return _fake_response({"response": json.dumps({"claim": "x", "predicted_outcome": "y"})})
 
     monkeypatch.setattr(urllib.request, "urlopen", _fake_urlopen)  # type: ignore[attr-defined]
     proposer = OllamaProposer(model="m", endpoint="http://10.0.0.5:9999/")
@@ -128,9 +126,7 @@ def test_model_not_pulled_raises_model_missing(monkeypatch: object) -> None:
     """Ollama wraps 'model not found' inside a 200 response with an 'error' key."""
 
     def _model_missing(_req: urllib.request.Request, **_: object) -> io.BytesIO:
-        return _fake_response(
-            {"error": "model 'gemma2:2b' not found, try pulling it first"}
-        )
+        return _fake_response({"error": "model 'gemma2:2b' not found, try pulling it first"})
 
     monkeypatch.setattr(urllib.request, "urlopen", _model_missing)  # type: ignore[attr-defined]
     proposer = OllamaProposer(model="gemma2:2b")
@@ -192,9 +188,7 @@ def test_response_field_json_not_object_raises(monkeypatch: object) -> None:
 
 def test_missing_claim_field_raises(monkeypatch: object) -> None:
     def _no_claim(_req: urllib.request.Request, **_: object) -> io.BytesIO:
-        return _fake_response(
-            {"response": json.dumps({"predicted_outcome": "x"})}
-        )
+        return _fake_response({"response": json.dumps({"predicted_outcome": "x"})})
 
     monkeypatch.setattr(urllib.request, "urlopen", _no_claim)  # type: ignore[attr-defined]
     proposer = OllamaProposer(model="m")
@@ -214,9 +208,7 @@ def test_missing_predicted_outcome_field_raises(monkeypatch: object) -> None:
 
 def test_empty_claim_field_raises(monkeypatch: object) -> None:
     def _empty_claim(_req: urllib.request.Request, **_: object) -> io.BytesIO:
-        return _fake_response(
-            {"response": json.dumps({"claim": "   ", "predicted_outcome": "y"})}
-        )
+        return _fake_response({"response": json.dumps({"claim": "   ", "predicted_outcome": "y"})})
 
     monkeypatch.setattr(urllib.request, "urlopen", _empty_claim)  # type: ignore[attr-defined]
     proposer = OllamaProposer(model="m")

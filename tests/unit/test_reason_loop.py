@@ -275,9 +275,7 @@ def test_step_with_supersedes_id_chains_new_prediction_onto_existing_chain() -> 
 def test_step_without_supersedes_id_starts_fresh_chain() -> None:
     """The default behavior — no supersedes_id — leaves the prediction
     drawer rootless, as v0.6 has always done."""
-    hypothesis = Hypothesis(
-        claim="x", predicted_outcome="y", wing="cairntir", room="phase-6"
-    )
+    hypothesis = Hypothesis(claim="x", predicted_outcome="y", wing="cairntir", room="phase-6")
     memory = FakeMemoryGateway()
     loop = ReasonLoop(
         proposer=FakeProposer(hypothesis=hypothesis),

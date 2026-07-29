@@ -201,6 +201,21 @@ def test_recipe_search_paths_is_list_of_existing_dirs(tmp_path: Path) -> None:
         assert p.is_dir()
 
 
+def test_recipe_search_paths_uses_host_neutral_cairntir_home(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    project = tmp_path / "project-without-recipes"
+    project.mkdir()
+    home = tmp_path / "cairntir-home"
+    recipes = home / "recipes"
+    recipes.mkdir(parents=True)
+    monkeypatch.chdir(project)
+    monkeypatch.setenv("CAIRNTIR_HOME", str(home))
+
+    assert recipes in recipe_search_paths()
+
+
 # --------- runner ------------------------------------------------------
 
 
@@ -362,9 +377,7 @@ def test_discover_recipes_finds_decision_replay(tmp_path: Path) -> None:
     contract = by_name["decision-replay"]
     assert contract.output_wing == "replays"
     assert contract.skills == ("reason", "crucible")
-    assert contract.required_input_names() == frozenset(
-        {"decision_drawer_id", "current_evidence"}
-    )
+    assert contract.required_input_names() == frozenset({"decision_drawer_id", "current_evidence"})
     horizon = contract.input_spec("horizon_months")
     assert horizon is not None and horizon.required is False
 

@@ -1,13 +1,12 @@
-"""Cairntir CLI entry point.
-
-Two commands: ``cairntir`` (umbrella / status) and ``cairntir recall`` — the
-one thing a human ever needs to type. Everything else is automatic via the
-daemon and MCP.
-"""
+"""Cairntir's host-neutral memory, reasoning, learning, and setup CLI."""
 
 from __future__ import annotations
 
+import hashlib
 import json
+import sys
+from datetime import UTC, datetime
+from io import TextIOWrapper
 from pathlib import Path
 from typing import Any
 
@@ -15,43 +14,84 @@ import typer
 
 from cairntir import __version__
 from cairntir.config import cairntir_home, db_path
-from cairntir.errors import MemoryStoreError
+from cairntir.errors import EmbeddingError, MCPError, MemoryStoreError, ProjectionError
+from cairntir.hosts import (
+    MEMORY_POLICY,
+    POLICY_BEGIN_MARKER,
+    POLICY_END_MARKER,
+    SUPPORTED_HOSTS,
+    HostConfigurationError,
+    HostName,
+    HostScope,
+    configure_host,
+    inspect_host,
+    upsert_marked_policy,
+)
 from cairntir.mcp.backend import CairntirBackend
-from cairntir.memory.embeddings import FastEmbedProvider, HashEmbeddingProvider
-from cairntir.memory.store import SCHEMA_VERSION, DrawerStore
+from cairntir.memory.embeddings import production_embedding_provider
+from cairntir.memory.store import (
+    SCHEMA_VERSION,
+    DrawerStore,
+    backup_database,
+    inspect_database_integrity,
+    inspect_embedding_space,
+    reindex_database,
+)
+from cairntir.memory.taxonomy import Drawer
 from cairntir.portable import export_drawers, import_drawers
+from cairntir.provenance import TrustLevel, WriteProvenance
 from cairntir.register import clear_checkpoint, ensure_registered
 from cairntir.update import maybe_check_in_background, pending_update_banner
 
+
+def _configure_windows_stdio() -> None:
+    """Keep Unicode CLI output safe when Windows redirects through cp1252.
+
+    Typer renders help before invoking the root callback, so this boundary
+    must run while the console-script module is imported. Test runners replace
+    stdout/stderr with in-memory streams, which are intentionally left alone.
+    """
+    if sys.platform != "win32":
+        return
+    for stream in (sys.stdout, sys.stderr):
+        if isinstance(stream, TextIOWrapper):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
+
+_configure_windows_stdio()
+
 app = typer.Typer(
     name="cairntir",
-    help="Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia.",
+    help="Host-neutral memory-first reasoning layer. Kills cross-chat AI amnesia.",
     no_args_is_help=False,
     add_completion=False,
 )
 
 
-_PRODUCTION_DIM = 384
-"""Embedding dimension the MCP server's ``all-MiniLM-L6-v2`` model produces.
-
-The CLI uses :class:`HashEmbeddingProvider` at the same dimension so the
-``vec_drawers`` virtual table shape matches regardless of which code path
-touched the database first. The hash embedder is deterministic and
-dimension-independent, so the only cost of 384 vs 64 is a few extra
-floats per insert — negligible.
-"""
-
-
 def _backend() -> CairntirBackend:
     """Open the on-disk drawer store and wrap it in a backend.
 
-    Uses :class:`HashEmbeddingProvider` at the production dimension
-    (384) to keep the CLI startup free of the ~90 MB
-    sentence-transformers model while staying shape-compatible with
-    the MCP server's ``SentenceTransformerProvider``.
+    Every production entry point uses the same provider factory. Equal
+    dimensions do not make two embedding spaces compatible.
     """
-    store = DrawerStore(db_path(), HashEmbeddingProvider(dimension=_PRODUCTION_DIM))
+    store = _open_store()
     return CairntirBackend(store)
+
+
+def _open_store(
+    path: Path | None = None,
+    *,
+    capture_path: str = "cli",
+) -> DrawerStore:
+    return DrawerStore(
+        path or db_path(),
+        production_embedding_provider(),
+        provenance=WriteProvenance.create(
+            host="cli",
+            capture_path=capture_path,
+            trust=TrustLevel.USER_ASSERTED,
+        ),
+    )
 
 
 @app.callback(invoke_without_command=True)
@@ -79,7 +119,7 @@ def _root(ctx: typer.Context) -> None:
         return
     home = cairntir_home()
     typer.echo(f"cairntir {__version__}  home={home}")
-    typer.echo("commands: version · status · recall")
+    typer.echo("commands: status · doctor · recall · get · discoveries · learning-log")
     _print_update_banner()
 
 
@@ -121,6 +161,124 @@ def status() -> None:
 
 
 @app.command()
+def doctor() -> None:
+    """Inspect semantic-index and agent-host wiring without modifying either."""
+    path = db_path()
+    provider = production_embedding_provider()
+    try:
+        report = inspect_embedding_space(path, provider)
+    except MemoryStoreError as exc:
+        typer.echo(f"cairntir: doctor failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+    typer.echo(f"db:                 {path}")
+    typer.echo(f"state:              {report.state}")
+    typer.echo(f"active space:       {report.current_space_id}")
+    typer.echo(f"stored space:       {report.stored_space_id or '(unknown)'}")
+    typer.echo(f"stored dimension:   {report.stored_dimension or '(unknown)'}")
+    typer.echo(f"vector dimension:   {report.vector_dimension or '(unknown)'}")
+    typer.echo(f"index generation:   {report.generation or '(unknown)'}")
+    typer.echo(f"drawers / vectors:  {report.drawer_count} / {report.vector_count}")
+    typer.echo(f"detail:             {report.detail}")
+    try:
+        integrity = inspect_database_integrity(path)
+    except MemoryStoreError as exc:
+        typer.echo(f"cairntir: integrity check failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"sqlite integrity:   {'ok' if integrity.ok else 'FAILED'}")
+    typer.echo(f"foreign-key errors: {integrity.foreign_key_violations}")
+    typer.echo(f"workflows started:  {integrity.started_workflows}")
+    typer.echo(f"workflows failed:   {integrity.failed_workflows}")
+    if not integrity.ok:
+        raise typer.Exit(code=1)
+    if not report.verified:
+        typer.echo("semantic reads and writes are disabled until `cairntir reindex` succeeds.")
+        raise typer.Exit(code=1)
+
+    typer.echo()
+    typer.echo("agent hosts (read-only):")
+    for scope in ("user", "project"):
+        for host in SUPPORTED_HOSTS:
+            status = inspect_host(
+                host,
+                scope=scope,
+                root=Path.cwd(),
+                home=Path.home(),
+            )
+            mcp = (
+                "unknown"
+                if status.mcp_configured is None
+                else "ready"
+                if status.mcp_configured
+                else "missing"
+            )
+            policy = (
+                "manual"
+                if status.policy_configured is None
+                else "ready"
+                if status.policy_configured
+                else "missing"
+            )
+            typer.echo(f"  {scope:7} {host:7} MCP={mcp:7} policy={policy}")
+            if not status.mcp_configured:
+                typer.echo(f"           MCP: {status.mcp_detail}")
+            if not status.policy_configured:
+                typer.echo(f"           policy: {status.policy_detail}")
+
+
+@app.command()
+def reindex(
+    yes: bool = typer.Option(
+        False,
+        "--yes",
+        "-y",
+        help="Confirm the explicit semantic-index rebuild without prompting.",
+    ),
+    backup: Path | None = typer.Option(  # noqa: B008
+        None,
+        "--backup",
+        help="Backup path. Defaults to a timestamped sibling of the database.",
+    ),
+    batch_size: int = typer.Option(64, "--batch-size", min=1),
+) -> None:
+    """Back up the store, rebuild every vector, and stamp its embedding identity."""
+    path = db_path()
+    if not path.exists():
+        typer.echo(f"cairntir: {path} does not exist.", err=True)
+        raise typer.Exit(code=1)
+
+    provider = production_embedding_provider()
+    try:
+        before = inspect_embedding_space(path, provider)
+    except MemoryStoreError as exc:
+        typer.echo(f"cairntir: reindex inspection failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"current state: {before.state} — {before.detail}")
+    if not yes and not typer.confirm(
+        f"Back up and re-embed all {before.drawer_count} drawers?",
+        default=False,
+    ):
+        typer.echo("reindex cancelled; no changes made.")
+        raise typer.Exit()
+
+    if backup is None:
+        stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+        backup = path.with_name(f"{path.stem}.backup-{stamp}{path.suffix}")
+    try:
+        created_backup = backup_database(path, backup)
+        result = reindex_database(path, provider, batch_size=batch_size)
+    except (EmbeddingError, MemoryStoreError, ValueError) as exc:
+        typer.echo(f"cairntir: reindex failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+    typer.echo(f"backup:      {created_backup}")
+    typer.echo(f"drawers:     {result.drawer_count}")
+    typer.echo(f"dimension:   {result.dimension}")
+    typer.echo(f"space:       {result.space_id}")
+    typer.echo(f"generation:  {result.generation}")
+
+
+@app.command()
 def recall(
     query: str,
     wing: str | None = typer.Option(None, "--wing", "-w", help="Scope to a wing (project)."),
@@ -135,6 +293,20 @@ def recall(
     typer.echo(backend.recall(query=query, wing=wing, room=room, limit=limit))
 
 
+@app.command("get")
+def get_cmd(drawer_id: int) -> None:
+    """Print one complete, verbatim drawer as structured JSON."""
+    if not db_path().exists():
+        typer.echo("cairntir: no store yet — nothing to fetch.", err=True)
+        raise typer.Exit(code=1)
+    backend = _backend()
+    try:
+        typer.echo(backend.get(drawer_id=drawer_id))
+    except (MCPError, MemoryStoreError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+
 @app.command("cross-recall")
 def cross_recall_cmd(
     query: str,
@@ -146,6 +318,158 @@ def cross_recall_cmd(
         raise typer.Exit(code=1)
     backend = _backend()
     typer.echo(backend.cross_recall(query=query, limit=limit))
+
+
+@app.command("discover")
+def discover_cmd(
+    title: str,
+    summary: str,
+    wing: str = typer.Option(..., "--wing", "-w"),
+    novelty: str = typer.Option(
+        ...,
+        "--novelty",
+        help="Novelty scope: user, cairntir, or general.",
+    ),
+    evidence: list[int] = typer.Option(  # noqa: B008
+        ...,
+        "--evidence",
+        "-e",
+        help="Evidence drawer id. Repeat for multiple drawers.",
+    ),
+    state: str = typer.Option("signal", "--state"),
+) -> None:
+    """Record an evidence-backed emergent pattern in the Discovery Ledger."""
+    try:
+        typer.echo(
+            _backend().discover(
+                wing=wing,
+                title=title,
+                summary=summary,
+                novelty=novelty,
+                evidence_ids=evidence,
+                state=state,
+            )
+        )
+    except (MCPError, MemoryStoreError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("discovery-transition")
+def discovery_transition_cmd(
+    drawer_id: int,
+    state: str,
+    note: str = typer.Option(..., "--note", "-n"),
+) -> None:
+    """Append a reviewed lifecycle transition for a discovery."""
+    try:
+        typer.echo(
+            _backend().transition_discovery(
+                drawer_id=drawer_id,
+                state=state,
+                note=note,
+            )
+        )
+    except (MCPError, MemoryStoreError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("discoveries")
+def discoveries_cmd(
+    wing: str | None = typer.Option(None, "--wing", "-w"),
+    state: str | None = typer.Option(None, "--state"),
+    limit: int = typer.Option(100, "--limit", "-n", min=1),
+) -> None:
+    """Read the current leaves of the append-only Discovery Ledger."""
+    try:
+        typer.echo(_backend().discoveries(wing=wing, state=state, limit=limit))
+    except (MCPError, MemoryStoreError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("learning-log")
+def learning_log_cmd(
+    wing: str | None = typer.Option(None, "--wing", "-w"),
+    include_candidates: bool = typer.Option(
+        True,
+        "--include-candidates/--promoted-only",
+    ),
+    limit: int = typer.Option(100, "--limit", "-n", min=1),
+) -> None:
+    """Read Cairntir's easy-to-access Human Learning Log."""
+    try:
+        typer.echo(
+            _backend().learning_log(
+                wing=wing,
+                include_candidates=include_candidates,
+                limit=limit,
+            )
+        )
+    except (MCPError, MemoryStoreError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("discover-scan")
+def discover_scan_cmd(
+    wing: str = typer.Option(..., "--wing", "-w"),
+    min_observations: int = typer.Option(3, "--min-observations", min=2),
+    confidence_threshold: float = typer.Option(
+        0.8,
+        "--confidence-threshold",
+        min=0.5,
+        max=1.0,
+    ),
+) -> None:
+    """Propose reviewable patterns from repeated prediction episodes."""
+    try:
+        typer.echo(
+            _backend().discover_scan(
+                wing=wing,
+                min_observations=min_observations,
+                confidence_threshold=confidence_threshold,
+            )
+        )
+    except (MCPError, MemoryStoreError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("calibration")
+def calibration_cmd(
+    wing: str = typer.Option(..., "--wing", "-w"),
+) -> None:
+    """Show whether Cairntir's recorded predictions are actually holding."""
+    try:
+        typer.echo(_backend().calibration(wing=wing))
+    except (MCPError, MemoryStoreError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("obsidian-project")
+def obsidian_project_cmd(
+    vault: Path = typer.Argument(..., help="Path to the Obsidian vault."),  # noqa: B008
+    wing: str | None = typer.Option(None, "--wing", "-w"),
+) -> None:
+    """Project the learning log and CodeGlass notes one-way into Obsidian."""
+    from cairntir.obsidian import project_to_obsidian
+
+    store = _open_store(capture_path="cli.obsidian-project")
+    try:
+        try:
+            result = project_to_obsidian(store, vault=vault, wing=wing)
+        except ProjectionError as exc:
+            typer.echo(f"cairntir: {exc}", err=True)
+            raise typer.Exit(code=1) from exc
+    finally:
+        store.close()
+    typer.echo(f"projected learning log to {result.learning_log}")
+    typer.echo(f"projected {len(result.codeglass_notes)} CodeGlass note(s)")
+    typer.echo(f"projected {len(result.receipt_notes)} drawer receipt note(s)")
+    typer.echo("SQLite remains authoritative; text outside generated markers was preserved.")
 
 
 _VALID_PROPOSERS = ("manual", "ollama")
@@ -271,6 +595,11 @@ def reason_cmd(
         "--ollama-endpoint",
         help="Ollama HTTP endpoint. Defaults to localhost:11434.",
     ),
+    idempotency_key: str | None = typer.Option(
+        None,
+        "--idempotency-key",
+        help="Stable retry key. Reusing it replays the committed result without duplicate writes.",
+    ),
 ) -> None:
     """Run one Reason loop step: predict \u2192 observe \u2192 update belief.
 
@@ -308,7 +637,7 @@ def reason_cmd(
     if success is None:
         success = typer.confirm("did the prediction hold?", default=False)
 
-    store = DrawerStore(db_path(), HashEmbeddingProvider(dimension=_PRODUCTION_DIM))
+    store = _open_store(capture_path="cli.reason")
     try:
         loop = ReasonLoop(
             proposer=proposer_obj,  # type: ignore[arg-type]
@@ -316,7 +645,12 @@ def reason_cmd(
             beliefs=StoreBackedBeliefs(store=store),
             memory=StoreBackedMemory(store=store),
         )
-        update = loop.step(question=question, wing=wing, room=room)
+        update = loop.step(
+            question=question,
+            wing=wing,
+            room=room,
+            idempotency_key=idempotency_key,
+        )
     finally:
         store.close()
 
@@ -348,8 +682,7 @@ def replay_cmd(
     observed: str | None = typer.Option(
         None,
         "--observed",
-        help="The actual outcome of the original prediction, in your words. "
-        "Prompted if omitted.",
+        help="The actual outcome of the original prediction, in your words. Prompted if omitted.",
     ),
     success: bool | None = typer.Option(
         None,
@@ -373,6 +706,11 @@ def replay_cmd(
         _DEFAULT_OLLAMA_ENDPOINT,
         "--ollama-endpoint",
         help="Ollama HTTP endpoint. Defaults to localhost:11434.",
+    ),
+    idempotency_key: str | None = typer.Option(
+        None,
+        "--idempotency-key",
+        help="Stable retry key. Reusing it cannot extend the decision chain twice.",
     ),
 ) -> None:
     """Replay a past decision against today's evidence.
@@ -415,7 +753,7 @@ def replay_cmd(
         )
         raise typer.Exit(code=1)
 
-    store = DrawerStore(db_path(), HashEmbeddingProvider(dimension=_PRODUCTION_DIM))
+    store = _open_store(capture_path="cli.replay")
     try:
         try:
             chain = walk_supersedes(store, decision_drawer_id)
@@ -436,9 +774,7 @@ def replay_cmd(
             # Defensive — store.get returns drawers with ids, so this branch
             # is structural, not a runtime failure path. Surface it loudly
             # if it ever happens.
-            raise MemoryStoreError(
-                f"chain leaf for drawer #{decision_drawer_id} has no id"
-            )
+            raise MemoryStoreError(f"chain leaf for drawer #{decision_drawer_id} has no id")
 
         typer.echo(
             f"replaying decision #{decision_drawer_id} "
@@ -454,9 +790,7 @@ def replay_cmd(
         if observed is None:
             observed = typer.prompt("observed outcome of the original prediction")
         if success is None:
-            success = typer.confirm(
-                "did the original prediction hold?", default=False
-            )
+            success = typer.confirm("did the original prediction hold?", default=False)
 
         inputs: dict[str, object] = {
             "decision_drawer_id": decision_drawer_id,
@@ -482,17 +816,13 @@ def replay_cmd(
                 "Restate the claim and predicted_outcome, sharpening the "
                 "framing if the new evidence reveals it was poorly framed."
             )
-            ollama_proposer = OllamaProposer(
-                model=ollama_model, endpoint=ollama_endpoint
-            )
+            ollama_proposer = OllamaProposer(model=ollama_model, endpoint=ollama_endpoint)
             try:
                 drafted = ollama_proposer.propose(
                     question=replay_question, wing=leaf.wing, room=leaf.room
                 )
             except OllamaError as exc:
-                typer.echo(
-                    f"cairntir: local model proposer failed: {exc}", err=True
-                )
+                typer.echo(f"cairntir: local model proposer failed: {exc}", err=True)
                 raise typer.Exit(code=1) from exc
 
             typer.echo()
@@ -505,16 +835,12 @@ def replay_cmd(
             typer.echo(f"  claim:     {drafted.claim}")
             typer.echo(f"  predicted: {drafted.predicted_outcome}")
             typer.echo()
-            new_claim = typer.prompt(
-                "claim (Enter to accept draft)", default=drafted.claim
-            )
+            new_claim = typer.prompt("claim (Enter to accept draft)", default=drafted.claim)
             new_predicted = typer.prompt(
                 "predicted (Enter to accept draft)",
                 default=drafted.predicted_outcome,
             )
-            replay_proposer = ManualProposer(
-                claim=new_claim, predicted_outcome=new_predicted
-            )
+            replay_proposer = ManualProposer(claim=new_claim, predicted_outcome=new_predicted)
         else:
             # Manual mode: re-use the original chain leaf's claim verbatim.
             # The default for closing a prediction window — the whole point
@@ -531,7 +857,12 @@ def replay_cmd(
             runner=NullRunner(observed=observed, success=success),
         )
         try:
-            result = recipe_runner.run(contract, inputs, supersedes_id=leaf.id)
+            result = recipe_runner.run(
+                contract,
+                inputs,
+                supersedes_id=leaf.id,
+                idempotency_key=idempotency_key,
+            )
         except (RecipeError, ValueError) as exc:
             typer.echo(f"cairntir: replay failed: {exc}", err=True)
             raise typer.Exit(code=1) from exc
@@ -547,9 +878,7 @@ def replay_cmd(
     reason_drawers = result.skill_drawer_ids.get("reason", [])
     if reason_drawers:
         new_prediction_id = reason_drawers[0]
-        typer.echo(
-            f"  chain extended: #{leaf.id} <- #{new_prediction_id} (new prediction)"
-        )
+        typer.echo(f"  chain extended: #{leaf.id} <- #{new_prediction_id} (new prediction)")
 
 
 @app.command("export")
@@ -573,7 +902,14 @@ def export_cmd(
 
 
 @app.command("import")
-def import_cmd(path: Path) -> None:
+def import_cmd(
+    path: Path,
+    idempotency_key: str | None = typer.Option(
+        None,
+        "--idempotency-key",
+        help="Override the content-derived retry key.",
+    ),
+) -> None:
     """Import drawers from a portable JSONL envelope file into the local store.
 
     Verifies each envelope's content hash before inserting. Signatures
@@ -583,11 +919,30 @@ def import_cmd(path: Path) -> None:
     if not path.exists():
         typer.echo(f"cairntir: {path} does not exist.", err=True)
         raise typer.Exit(code=1)
+    raw_hash = hashlib.sha256(path.read_bytes()).hexdigest()
     drawers = import_drawers(path)
-    backend = _backend()
+    store = _open_store(capture_path="cli.import")
+    try:
+        execution = store.execute_once(
+            idempotency_key=idempotency_key or f"import:{raw_hash}",
+            operation="portable.import",
+            request={"sha256": raw_hash, "drawer_count": len(drawers)},
+            action=lambda: _import_batch(store, drawers),
+        )
+    finally:
+        store.close()
+    replay_note = " (already imported; replayed receipt)" if execution.replayed else ""
+    typer.echo(f"imported {len(drawers)} drawers from {path}{replay_note}")
+
+
+def _import_batch(store: DrawerStore, drawers: list[Drawer]) -> dict[str, object]:
+    ids: list[int] = []
     for drawer in drawers:
-        backend._store.add(drawer)
-    typer.echo(f"imported {len(drawers)} drawers from {path}")
+        saved = store.add(drawer)
+        if saved.id is None:
+            raise MemoryStoreError("portable import produced a drawer without an id")
+        ids.append(saved.id)
+    return {"drawer_ids": ids, "drawer_count": len(ids)}
 
 
 @app.command("migrate")
@@ -639,7 +994,7 @@ def migrate_cmd(
 
     # Opening through DrawerStore applies the forward-only ALTER TABLE
     # chain and stamps user_version to SCHEMA_VERSION.
-    with DrawerStore(target, HashEmbeddingProvider()) as store:
+    with _open_store(target, capture_path="cli.migrate") as store:
         after = store._conn.execute("PRAGMA user_version").fetchone()[0]
     typer.echo(f"migrated to:      {after}")
 
@@ -759,154 +1114,106 @@ def _register_user_via_claude_cli(*, force: bool) -> tuple[bool, str]:
     return False, f"`claude mcp add` exited {code}: {stderr or stdout}"
 
 
-GREETING_BEGIN_MARKER: str = "<!-- cairntir:begin -->"
-GREETING_END_MARKER: str = "<!-- cairntir:end -->"
-
-GREETING_BODY: str = """# Cairntir — memory-first reasoning layer
-
-You have access to a persistent memory system via the `cairntir_*` MCP tools.
-At the start of every conversation:
-
-1. Call `cairntir_session_start` with the wing matching the current project.
-   Use the lowercase folder name in cwd as the wing (e.g. `stars-2026`,
-   `cairntir`). If unsure, ask the user.
-2. Read the identity and essential drawers it returns *before* answering
-   anything substantive.
-3. When a decision is made or a fact is learned that future sessions will
-   need, call `cairntir_remember` to persist it verbatim.
-4. When the user asks about past decisions, call `cairntir_recall` first
-   before reasoning from scratch. Cite drawer ids inline.
-5. For load-bearing assumptions, invoke `cairntir_crucible` before committing
-   to them. For ship-readiness checks, invoke `cairntir_audit`.
-
-If `cairntir_session_start` returns empty for a wing, either the wing is new
-(write the first drawer) or the MCP server is misconfigured (tell the user so
-they can run `cairntir init --user --force`).
-
-This is not optional. A Claude Code session that does not check Cairntir
-memory at the start of a chat is hallucinating by default.
-"""
-"""The user-level CLAUDE.md preamble Cairntir installs on `init --user`."""
+GREETING_BEGIN_MARKER: str = POLICY_BEGIN_MARKER
+GREETING_END_MARKER: str = POLICY_END_MARKER
+GREETING_BODY: str = MEMORY_POLICY
+"""Backward-compatible names for the now host-neutral memory policy."""
 
 
 def _upsert_greeting(path: Path, *, body: str = GREETING_BODY) -> str:
-    """Idempotently install the Cairntir greeting into a user CLAUDE.md.
-
-    Returns one of ``"created"``, ``"appended"``, ``"updated"``, or
-    ``"unchanged"`` so the CLI can report what happened. Never clobbers
-    existing non-Cairntir content: the greeting is delimited by HTML
-    comment markers and everything outside the markers is preserved
-    byte-for-byte.
-    """
-    block = f"{GREETING_BEGIN_MARKER}\n{body}{GREETING_END_MARKER}\n"
-
-    if not path.exists():
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(block, encoding="utf-8")
-        return "created"
-
-    existing = path.read_text(encoding="utf-8")
-    begin = existing.find(GREETING_BEGIN_MARKER)
-    end = existing.find(GREETING_END_MARKER)
-
-    if begin == -1 or end == -1 or end < begin:
-        # No markers — append the block, preserving everything that was
-        # already in the file. A blank line separates prior content from
-        # the new block if the file didn't end with one.
-        if existing.endswith("\n\n"):
-            separator = ""
-        elif existing.endswith("\n"):
-            separator = "\n"
-        else:
-            separator = "\n\n"
-        path.write_text(existing + separator + block, encoding="utf-8")
-        return "appended"
-
-    # Markers found — replace the delimited block only.
-    end_of_end = end + len(GREETING_END_MARKER)
-    # Include the trailing newline after the end marker if present.
-    if end_of_end < len(existing) and existing[end_of_end] == "\n":
-        end_of_end += 1
-    new_contents = existing[:begin] + block + existing[end_of_end:]
-    if new_contents == existing:
-        return "unchanged"
-    path.write_text(new_contents, encoding="utf-8")
-    return "updated"
+    """Idempotently install the host-neutral policy into a Markdown file."""
+    return upsert_marked_policy(path, body=body)
 
 
 @app.command("init")
 def init_cmd(
+    host: str = typer.Option(
+        "claude",
+        "--host",
+        help="Agent host to configure: claude, codex, cursor, or all.",
+    ),
     user: bool = typer.Option(
         False,
         "--user",
-        help="Register Cairntir at user level via `claude mcp add -s user`, so"
-        " every Claude Code session sees it regardless of cwd. Without this"
-        " flag, writes .mcp.json in the current directory.",
+        help="Configure the selected host(s) at user scope. Without this flag,"
+        " configuration is project-local.",
     ),
     force: bool = typer.Option(
-        False,
-        "--force",
-        help="Re-register even if Cairntir is already present. In --user mode,"
-        " removes the existing user-scope entry and re-adds it — use this to"
-        " fix a registration pointing at the wrong Python interpreter.",
+        False, "--force", help="Refresh Cairntir-owned entries even when already present."
     ),
     no_greeting: bool = typer.Option(
         False,
         "--no-greeting",
-        help="Skip installing the user-level CLAUDE.md preamble that tells"
-        " every Claude Code session to call cairntir_session_start on the"
-        " first turn. Only meaningful with --user.",
+        "--no-policy",
+        help="Skip installing the memory-first startup policy. --no-greeting"
+        " remains as a backward-compatible alias.",
     ),
 ) -> None:
-    """Register Cairntir's MCP server with Claude Code.
+    """Connect Claude Code, Codex, Cursor, or all three to one Cairntir store.
 
-    Project mode (default): writes ``.mcp.json`` in the current
-    directory. Idempotent — an already-registered project is a no-op
-    unless ``--force`` is passed. Other ``mcpServers`` entries are
-    preserved.
-
-    User mode (``--user``): shells out to ``claude mcp add -s user``,
-    which is the only authoritative way to touch Claude Code's
-    user-level MCP registry. Requires the ``claude`` CLI on PATH.
-
-    Both modes pin the server command to ``sys.executable`` — the
-    absolute path of the Python interpreter running this CLI — so
-    Claude Code spawns the server against the interpreter that
-    actually has Cairntir installed, regardless of cwd or which venv
-    (if any) is active in the session that reads the registration.
+    Existing JSON, TOML, and instruction-file content is preserved. Cairntir
+    only replaces blocks carrying its own markers and refuses ambiguous
+    conflicts.
     """
-    if user:
-        ok, message = _register_user_via_claude_cli(force=force)
-        if not ok:
-            typer.echo(f"cairntir: {message}", err=True)
-            raise typer.Exit(code=1)
-        typer.echo("registered cairntir MCP server at user scope")
-        typer.echo(message)
+    requested = host.strip().lower()
+    if requested == "all":
+        hosts: tuple[HostName, ...] = SUPPORTED_HOSTS
+    elif requested in SUPPORTED_HOSTS:
+        hosts = (requested,)
+    else:
+        choices = ", ".join((*SUPPORTED_HOSTS, "all"))
+        typer.echo(f"cairntir: unknown host {host!r}; choose {choices}", err=True)
+        raise typer.Exit(code=2)
 
-        if not no_greeting:
-            greeting_path = Path.home() / ".claude" / "CLAUDE.md"
-            action = _upsert_greeting(greeting_path)
-            typer.echo(f"greeting preamble {action} at {greeting_path}")
+    scope: HostScope = "user" if user else "project"
+    failures = 0
+    for selected in hosts:
+        try:
+            result = configure_host(
+                selected,
+                scope=scope,
+                root=Path.cwd(),
+                home=Path.home(),
+                force=force,
+                install_policy=not no_greeting,
+            )
+        except HostConfigurationError as exc:
+            failures += 1
+            typer.echo(f"cairntir: {selected} configuration failed: {exc}", err=True)
+            continue
 
-        typer.echo("restart Claude Code (fully quit, not just close the window) to pick it up.")
-        return
+        location = f" in {result.registration_path}" if result.registration_path else ""
+        if selected == "claude" and result.registration == "unchanged":
+            typer.echo(f"cairntir already registered at {scope} scope{location}")
+        else:
+            typer.echo(
+                f"registered cairntir MCP server for {selected} "
+                f"at {scope} scope{location} ({result.registration})"
+            )
+            if selected == "claude" and result.registration == "already registered":
+                typer.echo(
+                    "If its launcher is stale, refresh it with "
+                    "`cairntir init --user --force --host claude`."
+                )
+        if selected == "claude" and result.policy_path is not None:
+            typer.echo(f"greeting preamble {result.policy} at {result.policy_path}")
+        elif result.policy_path is None:
+            typer.echo(f"{selected}: policy {result.policy}")
+        else:
+            typer.echo(f"{selected}: policy {result.policy} at {result.policy_path}")
+        if selected == "claude" and force:
+            clear_checkpoint()
 
-    target = Path.cwd() / ".mcp.json"
-    config = _load_or_init_json(target)
-    config, changed = _merge_mcp_spec(config)
-    if not changed and not force:
-        typer.echo(f"cairntir already registered in {target}")
-        return
-    _write_json(target, config)
-    typer.echo(f"registered cairntir MCP server (project) in {target}")
-    typer.echo("restart Claude Code (fully quit, not just close the window) to pick it up.")
+    if failures:
+        raise typer.Exit(code=1)
+    typer.echo("restart the configured agent host(s) so they reload MCP and policy settings.")
 
 
 def _setup_smoke_test() -> None:
     """Write a drawer, read it back, fail loudly if anything is off."""
     from cairntir.memory.taxonomy import Drawer, Layer
 
-    with DrawerStore(db_path(), HashEmbeddingProvider(dimension=_PRODUCTION_DIM)) as store:
+    with _open_store(capture_path="cli.setup") as store:
         saved = store.add(
             Drawer(
                 wing="cairntir",
@@ -1061,7 +1368,7 @@ def setup_cmd(
     # ---- Step 6: initialize / migrate the store --------------------------
     _emoji_step(6, total, "Initializing the memory store")
     try:
-        DrawerStore(db_path(), HashEmbeddingProvider(dimension=_PRODUCTION_DIM)).close()
+        _open_store(capture_path="cli.setup").close()
     except MemoryStoreError as exc:
         _emoji_fail(f"could not initialize store: {exc}")
         raise typer.Exit(code=1) from exc
@@ -1075,12 +1382,10 @@ def setup_cmd(
         "every fresh MCP server boot starts in seconds instead of minutes."
     )
     try:
-        provider = FastEmbedProvider()
+        provider = production_embedding_provider()
         provider.embed(["cairntir setup warmup probe"])
     except Exception as exc:  # noqa: BLE001 — we want to log + continue, not crash setup
-        _emoji_warn(
-            f"embedder warmup did not complete: {type(exc).__name__}: {exc}"
-        )
+        _emoji_warn(f"embedder warmup did not complete: {type(exc).__name__}: {exc}")
         _emoji_tip(
             "this is not fatal — Cairntir will still work. The first "
             "remember/recall in your next chat may be slow (~10-30s) "
@@ -1168,6 +1473,11 @@ def recipe_run_cmd(
         "--success/--fail",
         help="Verdict for the reason step. Prompted if omitted.",
     ),
+    idempotency_key: str | None = typer.Option(
+        None,
+        "--idempotency-key",
+        help="Stable retry key. Reusing it replays the recipe result without duplicate writes.",
+    ),
 ) -> None:
     """Execute a named recipe with the given inputs.
 
@@ -1231,7 +1541,7 @@ def recipe_run_cmd(
         observed = observed or ""
         success = success if success is not None else True
 
-    store = DrawerStore(db_path(), HashEmbeddingProvider(dimension=_PRODUCTION_DIM))
+    store = _open_store(capture_path="cli.recipe")
     try:
         recipe_runner = RecipeRunner(
             memory=StoreBackedMemory(store=store),
@@ -1243,7 +1553,11 @@ def recipe_run_cmd(
             runner=NullRunner(observed=observed, success=success),
         )
         try:
-            result = recipe_runner.run(contract, inputs)
+            result = recipe_runner.run(
+                contract,
+                inputs,
+                idempotency_key=idempotency_key,
+            )
         except (RecipeError, ValueError) as exc:
             typer.echo(f"cairntir: recipe execution failed: {exc}", err=True)
             raise typer.Exit(code=1) from exc

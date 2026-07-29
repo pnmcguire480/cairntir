@@ -201,9 +201,7 @@ class OllamaProposer:
             ) from exc
 
         if not isinstance(payload, dict):
-            raise OllamaInvalidResponseError(
-                f"Ollama JSON payload is not an object: {payload!r}"
-            )
+            raise OllamaInvalidResponseError(f"Ollama JSON payload is not an object: {payload!r}")
 
         claim = payload.get("claim")
         predicted = payload.get("predicted_outcome")

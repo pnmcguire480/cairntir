@@ -63,6 +63,11 @@ class HashEmbeddingProvider:
         """Return the configured dimension."""
         return self._dim
 
+    @property
+    def embedding_space_id(self) -> str:
+        """Return the stable identity of this non-semantic vector space."""
+        return f"cairntir/hash-sha256-cyclic-v1/dimension={self._dim}"
+
     def embed(self, texts: Sequence[str]) -> list[list[float]]:
         """Embed each text as a unit-norm vector derived from its SHA-256 digest."""
         out: list[list[float]] = []
@@ -115,13 +120,18 @@ class FastEmbedProvider:
         self._model: object | None = None
         self._dim: int | None = None
 
+    @property
+    def embedding_space_id(self) -> str:
+        """Return the model/runtime identity without loading the model."""
+        return f"fastembed/text-embedding-v1/model={self._model_name}"
+
     def _load(self) -> None:
         _embed_trace(f"fastembed _load start model={self._model_name!r}")
         try:
             from fastembed import TextEmbedding
         except ImportError as exc:
             raise EmbeddingError(
-                "fastembed is not installed; install cairntir with the default extras"
+                "fastembed is not installed; reinstall Cairntir's core dependencies"
             ) from exc
         _embed_trace("fastembed imported; constructing TextEmbedding()")
         with _silence_io():
@@ -190,13 +200,18 @@ class SentenceTransformerProvider:
         self._model: object | None = None
         self._dim: int | None = None
 
+    @property
+    def embedding_space_id(self) -> str:
+        """Return the model/runtime identity without loading the model."""
+        return f"sentence-transformers/text-embedding-v1/model={self._model_name}/normalize=true"
+
     def _load(self) -> None:
         _embed_trace(f"_load start model={self._model_name!r}")
         try:
             from sentence_transformers import SentenceTransformer
         except ImportError as exc:
             raise EmbeddingError(
-                "sentence-transformers is not installed; install cairntir with the default extras"
+                "sentence-transformers is not installed; install `cairntir[legacy-embeddings]`"
             ) from exc
         _embed_trace(
             "_load sentence_transformers imported; entering silence + SentenceTransformer()"
@@ -256,6 +271,30 @@ def _embed_trace(message: str) -> None:
         _mcp_trace(f"embed: {message}")
     except (ImportError, OSError):
         return
+
+
+def embedding_space_id(provider: EmbeddingProvider) -> str:
+    """Return a stable identity for vectors produced by ``provider``.
+
+    Concrete Cairntir providers expose an explicit identity containing the
+    algorithm/runtime and model. Third-party providers that predate v1.2
+    remain source-compatible: their fully qualified class name becomes the
+    identity. Such providers should add an ``embedding_space_id`` property
+    whenever constructor options can change vector meaning.
+    """
+    explicit = getattr(provider, "embedding_space_id", None)
+    if explicit is not None:
+        value = str(explicit).strip()
+        if not value:
+            raise EmbeddingError("embedding_space_id must be a non-empty string")
+        return value
+    cls = type(provider)
+    return f"python-provider-v1/{cls.__module__}.{cls.__qualname__}"
+
+
+def production_embedding_provider() -> EmbeddingProvider:
+    """Construct Cairntir's single production embedding provider."""
+    return FastEmbedProvider()
 
 
 @contextlib.contextmanager

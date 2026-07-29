@@ -44,9 +44,7 @@ def writer() -> ModuleType:
 # --------- happy paths -------------------------------------------------
 
 
-def test_write_capture_drops_a_valid_spool_file(
-    writer: ModuleType, tmp_path: Path
-) -> None:
+def test_write_capture_drops_a_valid_spool_file(writer: ModuleType, tmp_path: Path) -> None:
     """A normal write produces a parseable JSON spool file."""
     final = writer.write_capture(
         wing="blender-print",
@@ -76,13 +74,9 @@ def test_write_capture_attaches_metadata(writer: ModuleType, tmp_path: Path) -> 
     assert payload["metadata"]["frame"] == 42
 
 
-def test_writer_creates_spool_subdir_under_home(
-    writer: ModuleType, tmp_path: Path
-) -> None:
+def test_writer_creates_spool_subdir_under_home(writer: ModuleType, tmp_path: Path) -> None:
     """``home`` is the cairntir home; the writer creates ``home/spool``."""
-    final = writer.write_capture(
-        wing="w", room="r1", content="x", home=tmp_path
-    )
+    final = writer.write_capture(wing="w", room="r1", content="x", home=tmp_path)
     spool = tmp_path / "spool"
     assert spool.is_dir()
     assert final.parent == spool
@@ -98,9 +92,7 @@ def test_cairntir_home_uses_env_var(
     assert resolved == tmp_path / "custom"
 
 
-def test_cairntir_home_falls_back_to_user_home(
-    writer: ModuleType, monkeypatch: object
-) -> None:
+def test_cairntir_home_falls_back_to_user_home(writer: ModuleType, monkeypatch: object) -> None:
     monkeypatch.delenv("CAIRNTIR_HOME", raising=False)  # type: ignore[attr-defined]
     resolved = writer.cairntir_home()
     assert resolved == Path.home() / ".cairntir"
@@ -126,17 +118,13 @@ def test_whitespace_content_rejected(writer: ModuleType, tmp_path: Path) -> None
 
 def test_unknown_layer_rejected(writer: ModuleType, tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="layer"):
-        writer.write_capture(
-            wing="w", room="r1", content="x", layer="cosmic", home=tmp_path
-        )
+        writer.write_capture(wing="w", room="r1", content="x", layer="cosmic", home=tmp_path)
 
 
 # --------- print outcome helper ----------------------------------------
 
 
-def test_write_print_outcome_encodes_parameters(
-    writer: ModuleType, tmp_path: Path
-) -> None:
+def test_write_print_outcome_encodes_parameters(writer: ModuleType, tmp_path: Path) -> None:
     final = writer.write_print_outcome(
         wing="blender-print",
         material="PETG",
@@ -166,9 +154,7 @@ def test_write_print_outcome_encodes_parameters(
     assert md["parameters"]["nozzle_temp_c"] == 240
 
 
-def test_write_capture_lowercases_wing_and_room(
-    writer: ModuleType, tmp_path: Path
-) -> None:
+def test_write_capture_lowercases_wing_and_room(writer: ModuleType, tmp_path: Path) -> None:
     """Cairntir's taxonomy regex requires lowercase; the writer normalizes."""
     final = writer.write_capture(
         wing="Blender-Print",
@@ -212,9 +198,7 @@ def test_writer_output_round_trips_through_cairntir_daemon(
     assert drawer.metadata["source"] == "blender"
 
 
-def test_print_outcome_round_trips_through_daemon(
-    writer: ModuleType, tmp_path: Path
-) -> None:
+def test_print_outcome_round_trips_through_daemon(writer: ModuleType, tmp_path: Path) -> None:
     writer.write_print_outcome(
         wing="blender-print",
         material="PLA",
@@ -234,9 +218,7 @@ def test_print_outcome_round_trips_through_daemon(
     assert drawer.metadata["success"] is False
 
 
-def test_writer_atomic_write_leaves_no_tmp_file(
-    writer: ModuleType, tmp_path: Path
-) -> None:
+def test_writer_atomic_write_leaves_no_tmp_file(writer: ModuleType, tmp_path: Path) -> None:
     """The .tmp file is renamed atomically — pending_files never sees it."""
     writer.write_capture(wing="w", room="r1", content="atomic check", home=tmp_path)
     spool = tmp_path / "spool"

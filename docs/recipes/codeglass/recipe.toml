@@ -1,0 +1,26 @@
+[recipe]
+name = "codeglass"
+description = "Teach an unfamiliar code change or subsystem with evidence-cited WHAT/HOW/WHERE/WHEN/WHY sections, then measure understanding through immediate and delayed teach-back."
+version = "0.1"
+output_wing = "codeglass"
+skills = ["quality"]
+
+[input.target]
+type = "string"
+required = true
+description = "Project, change, subsystem, diff, or explicit file scope to explain."
+
+[input.reader_level]
+type = "string"
+required = true
+description = "novice, intermediate, or expert."
+
+[input.learning_goal]
+type = "string"
+required = true
+description = "What the reader wants to understand or safely change."
+
+[input.evidence_summary]
+type = "string"
+required = true
+description = "Deterministically inspected files, lines, tests, history, and drawer references."

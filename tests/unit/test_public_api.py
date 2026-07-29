@@ -40,6 +40,7 @@ EXPECTED_PUBLIC_NAMES: frozenset[str] = frozenset(
         "CairntirError",
         "ConfigError",
         "EmbeddingError",
+        "EmbeddingSpaceError",
         "ExternalUrlError",
         "MCPError",
         "MemoryStoreError",

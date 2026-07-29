@@ -30,6 +30,7 @@ from typing import TYPE_CHECKING
 from cairntir.memory.taxonomy import Drawer, Layer
 
 if TYPE_CHECKING:
+    from cairntir.contracts import Store
     from cairntir.memory.store import DrawerStore
 
 _DERIVED_SOURCE: str = "consolidate"
@@ -82,7 +83,7 @@ def demote_stale(
 
 
 def detect_contradictions(
-    store: DrawerStore,
+    store: Store,
     *,
     wing: str | None = None,
     limit: int = 1000,
@@ -111,16 +112,17 @@ def detect_contradictions(
     for group in by_claim.values():
         if len(group) < 2:
             continue
-        # Compare each drawer to the first one in the group. This catches
-        # every pair where the first asserts X and a later one asserts
-        # not-X, without exploding to O(n^2) for large clusters.
-        anchor = group[0]
-        for other in group[1:]:
-            for field in ("predicted_outcome", "observed_outcome"):
+        # Pick the first drawer that actually supplies each field. A
+        # prediction drawer usually has no observed_outcome, so using one
+        # universal anchor would silently miss later observation conflicts.
+        for field in ("predicted_outcome", "observed_outcome"):
+            comparable = [drawer for drawer in group if getattr(drawer, field) is not None]
+            if len(comparable) < 2:
+                continue
+            anchor = comparable[0]
+            for other in comparable[1:]:
                 a = getattr(anchor, field)
                 b = getattr(other, field)
-                if a is None or b is None:
-                    continue
                 if _normalize_claim(a) == _normalize_claim(b):
                     continue
                 contradictions.append(

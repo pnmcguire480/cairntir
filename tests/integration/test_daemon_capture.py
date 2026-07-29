@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 from collections.abc import Iterator
 from pathlib import Path
@@ -120,6 +121,31 @@ def test_tick_is_idempotent_when_spool_empty(store: DrawerStore, spool: Path) ->
     assert daemon.tick() == 0
     assert daemon.tick() == 0
     assert daemon.stats.processed == 0
+
+
+def test_tick_replays_receipt_after_commit_before_unlink(
+    store: DrawerStore,
+    spool: Path,
+) -> None:
+    path = write_capture(
+        spool,
+        wing="cairntir",
+        room="notes",
+        content="committed before daemon could unlink",
+    )
+    drawer = parse_capture(path)
+    raw_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+    store.execute_once(
+        idempotency_key=f"spool:{path.name}",
+        operation="daemon.capture",
+        request={"filename": path.name, "sha256": raw_hash},
+        action=lambda: {"drawer_id": store.add(drawer).id},
+    )
+
+    daemon = CaptureDaemon(store, spool)
+    assert daemon.tick() == 1
+    assert len(store.list_by()) == 1
+    assert pending_files(spool) == []
 
 
 def test_run_loop_exits_on_request_stop(store: DrawerStore, spool: Path) -> None:

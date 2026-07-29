@@ -22,12 +22,16 @@ fails. Verbatim is the floor; a failed step is not a skipped step.
 
 from __future__ import annotations
 
+from typing import Any
+
 from cairntir.memory.taxonomy import Drawer, Layer
 from cairntir.reason.model import BeliefUpdate, Hypothesis, Outcome
 from cairntir.reason.ports import (
     BeliefStore,
+    DurableMemoryGateway,
     ExperimentRunner,
     HypothesisProposer,
+    LearningMemoryGateway,
     MemoryGateway,
 )
 
@@ -56,6 +60,7 @@ class ReasonLoop:
         wing: str,
         room: str,
         supersedes_id: int | None = None,
+        idempotency_key: str | None = None,
     ) -> BeliefUpdate:
         """Run one full predict → observe → update cycle.
 
@@ -71,6 +76,50 @@ class ReasonLoop:
         new prediction onto the leaf of a past decision's history.
         Leave it ``None`` for a fresh chain (the v0.6 default).
         """
+        if isinstance(self._memory, DurableMemoryGateway):
+            self._require_shared_store_when_visible()
+            if idempotency_key is not None:
+                execution = self._memory.execute_once(
+                    idempotency_key=idempotency_key,
+                    operation="reason.step",
+                    request={
+                        "question": question,
+                        "wing": wing,
+                        "room": room,
+                        "supersedes_id": supersedes_id,
+                    },
+                    action=lambda: _belief_update_to_dict(
+                        self._step_once(
+                            question=question,
+                            wing=wing,
+                            room=room,
+                            supersedes_id=supersedes_id,
+                        )
+                    ),
+                )
+                return _belief_update_from_dict(execution.result)
+            with self._memory.atomic():
+                return self._step_once(
+                    question=question,
+                    wing=wing,
+                    room=room,
+                    supersedes_id=supersedes_id,
+                )
+        return self._step_once(
+            question=question,
+            wing=wing,
+            room=room,
+            supersedes_id=supersedes_id,
+        )
+
+    def _step_once(
+        self,
+        *,
+        question: str,
+        wing: str,
+        room: str,
+        supersedes_id: int | None,
+    ) -> BeliefUpdate:
         hypothesis = self._proposer.propose(question=question, wing=wing, room=room)
         if not hypothesis.predicted_outcome.strip():
             raise ValueError(
@@ -99,6 +148,8 @@ class ReasonLoop:
         )
 
         mass_change = self._update_beliefs(prediction_id, outcome)
+        if isinstance(self._memory, LearningMemoryGateway):
+            self._memory.reflect(wing=wing)
 
         return BeliefUpdate(
             prediction_id=prediction_id,
@@ -106,6 +157,18 @@ class ReasonLoop:
             mass_change=mass_change,
             delta=delta,
         )
+
+    def _require_shared_store_when_visible(self) -> None:
+        memory_store = getattr(self._memory, "store", None)
+        belief_store = getattr(self._beliefs, "store", None)
+        if (
+            memory_store is not None
+            and belief_store is not None
+            and memory_store is not belief_store
+        ):
+            raise ValueError(
+                "durable Reason workflows require memory and beliefs to share one store"
+            )
 
     def _update_beliefs(self, drawer_id: int, outcome: Outcome) -> float:
         """Nudge belief mass and return the signed mass change the loop intended.
@@ -178,3 +241,24 @@ def _compute_delta(hypothesis: Hypothesis, outcome: Outcome) -> str:
     if outcome.success:
         return ""
     return f"predicted {hypothesis.predicted_outcome!r}, observed {outcome.observed!r}"
+
+
+def _belief_update_to_dict(update: BeliefUpdate) -> dict[str, object]:
+    return {
+        "prediction_id": update.prediction_id,
+        "observation_id": update.observation_id,
+        "mass_change": update.mass_change,
+        "delta": update.delta,
+    }
+
+
+def _belief_update_from_dict(payload: dict[str, Any]) -> BeliefUpdate:
+    try:
+        return BeliefUpdate(
+            prediction_id=int(payload["prediction_id"]),
+            observation_id=int(payload["observation_id"]),
+            mass_change=float(payload["mass_change"]),
+            delta=str(payload["delta"]),
+        )
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError(f"invalid durable Reason result: {exc}") from exc

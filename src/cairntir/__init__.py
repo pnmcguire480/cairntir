@@ -1,4 +1,4 @@
-"""Cairntir — memory-first reasoning layer for Claude Code.
+"""Cairntir — host-neutral memory-first reasoning layer for AI agents.
 
 Cairntir stores verbatim drawers of memory in a wing/room taxonomy
 backed by sqlite-vec, exposes a 4-layer retrieval model, and provides
@@ -38,6 +38,7 @@ from cairntir.errors import (
     CairntirError,
     ConfigError,
     EmbeddingError,
+    EmbeddingSpaceError,
     ExternalUrlError,
     MCPError,
     MemoryStoreError,
@@ -56,7 +57,7 @@ from cairntir.reason.ports import (
     MemoryGateway,
 )
 
-__version__ = "1.1.3"
+__version__ = "1.2.0"
 
 __all__ = [
     "BeliefStore",
@@ -67,6 +68,7 @@ __all__ = [
     "Drawer",
     "EmbeddingError",
     "EmbeddingProvider",
+    "EmbeddingSpaceError",
     "Experiment",
     "ExperimentRunner",
     "ExternalUrlError",

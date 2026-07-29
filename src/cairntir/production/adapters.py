@@ -14,9 +14,13 @@ without a change to this module.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from contextlib import AbstractContextManager
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
+from cairntir.durability import DurableStore, WorkflowExecution
+from cairntir.errors import MemoryStoreError
 from cairntir.reason.model import Experiment, Hypothesis, Outcome
 
 if TYPE_CHECKING:
@@ -41,10 +45,32 @@ class StoreBackedMemory:
         if saved.id is None:
             # The Store protocol requires add() to return a drawer with an id.
             # Any impl that skips this has violated its own contract.
-            from cairntir.errors import MemoryStoreError
-
             raise MemoryStoreError("store.add returned a drawer without an id")
         return saved.id
+
+    def atomic(self) -> AbstractContextManager[None]:
+        """Return the concrete store's nestable transaction boundary."""
+        if not isinstance(self.store, DurableStore):
+            raise MemoryStoreError("the configured Store does not support durable workflows")
+        return self.store.transaction()
+
+    def execute_once(
+        self,
+        *,
+        idempotency_key: str,
+        operation: str,
+        request: dict[str, Any],
+        action: Callable[[], dict[str, Any]],
+    ) -> WorkflowExecution:
+        """Delegate durable replay to the concrete store."""
+        if not isinstance(self.store, DurableStore):
+            raise MemoryStoreError("the configured Store does not support durable workflows")
+        return self.store.execute_once(
+            idempotency_key=idempotency_key,
+            operation=operation,
+            request=request,
+            action=action,
+        )
 
     def recall(
         self,
@@ -72,6 +98,13 @@ class StoreBackedMemory:
         skill's prior invocations.
         """
         return self.store.list_by(wing=wing, room=room, limit=limit)
+
+    def reflect(self, *, wing: str) -> list[int]:
+        """Propose evidence-backed candidates after a completed episode."""
+        from cairntir.learning import propose_multi_episode_discoveries
+
+        discoveries = propose_multi_episode_discoveries(self.store, wing=wing)
+        return [item.drawer_id for item in discoveries]
 
 
 @dataclass

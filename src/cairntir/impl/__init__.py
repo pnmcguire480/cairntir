@@ -18,18 +18,33 @@ from cairntir.memory.embeddings import (
     FastEmbedProvider,
     HashEmbeddingProvider,
     SentenceTransformerProvider,
+    production_embedding_provider,
 )
 from cairntir.memory.retrieval import RetrievalResult, Retriever
-from cairntir.memory.store import SCHEMA_VERSION, DrawerStore
+from cairntir.memory.store import (
+    SCHEMA_VERSION,
+    DrawerStore,
+    EmbeddingReindexResult,
+    EmbeddingSpaceStatus,
+    backup_database,
+    inspect_embedding_space,
+    reindex_database,
+)
 from cairntir.reason.loop import ReasonLoop
 
 __all__ = [
     "SCHEMA_VERSION",
     "DrawerStore",
+    "EmbeddingReindexResult",
+    "EmbeddingSpaceStatus",
     "FastEmbedProvider",
     "HashEmbeddingProvider",
     "ReasonLoop",
     "RetrievalResult",
     "Retriever",
     "SentenceTransformerProvider",
+    "backup_database",
+    "inspect_embedding_space",
+    "production_embedding_provider",
+    "reindex_database",
 ]

@@ -13,8 +13,10 @@ directly so they don't need to spin up the asyncio event loop.
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import logging
 from dataclasses import dataclass, field
+from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -72,7 +74,13 @@ class CaptureDaemon:
                 _LOG.warning("quarantined spool file %s: %s", path.name, exc)
                 continue
             try:
-                self._store.add(drawer)
+                raw_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+                self._store.execute_once(
+                    idempotency_key=f"spool:{path.name}",
+                    operation="daemon.capture",
+                    request={"filename": path.name, "sha256": raw_hash},
+                    action=partial(_persist_drawer, self._store, drawer),
+                )
             except CairntirError as exc:
                 quarantine(path, self._spool, f"store.add failed: {exc}")
                 self._stats.failed += 1
@@ -97,3 +105,12 @@ class CaptureDaemon:
                 await asyncio.wait_for(self._stop.wait(), timeout=self._poll_interval)
             except TimeoutError:
                 continue
+
+
+def _persist_drawer(store: DrawerStore, drawer: object) -> dict[str, object]:
+    from cairntir.memory.taxonomy import Drawer
+
+    if not isinstance(drawer, Drawer):
+        raise TypeError("daemon persistence requires a Drawer")
+    saved = store.add(drawer)
+    return {"drawer_id": saved.id}

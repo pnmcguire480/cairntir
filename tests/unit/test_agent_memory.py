@@ -195,10 +195,7 @@ def test_recall_returns_empty_for_non_agent_skill(tmp_path: Path) -> None:
     """Non-agent skills don't raise — they have no history by design."""
     store = DrawerStore(tmp_path / "x.db", HashEmbeddingProvider(dimension=32))
     memory = StoreBackedMemory(store=store)
-    assert (
-        recall_skill_history(memory, skill_name="invented", originating_wing="cairntir")
-        == []
-    )
+    assert recall_skill_history(memory, skill_name="invented", originating_wing="cairntir") == []
 
 
 def test_record_rejects_empty_originating_wing(tmp_path: Path) -> None:

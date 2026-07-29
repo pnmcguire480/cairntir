@@ -38,9 +38,11 @@ Drawer convention:
 
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING, Any
 
 from cairntir.memory.taxonomy import Drawer, Layer
+from cairntir.prompt_safety import EVIDENCE_BOUNDARY, assess_memory_content
 
 if TYPE_CHECKING:
     from cairntir.reason.ports import MemoryGateway
@@ -60,8 +62,7 @@ def agent_wing_for(skill_name: str) -> str:
     """
     if skill_name not in _AGENT_SKILLS:
         raise ValueError(
-            f"no agent wing for skill {skill_name!r}; "
-            f"reserved skills are {sorted(_AGENT_SKILLS)}"
+            f"no agent wing for skill {skill_name!r}; reserved skills are {sorted(_AGENT_SKILLS)}"
         )
     return f"agent:{skill_name}"
 
@@ -96,8 +97,7 @@ def record_skill_invocation(
     """
     if not is_agent_skill(skill_name):
         raise ValueError(
-            f"skill {skill_name!r} has no reserved agent wing; "
-            f"cannot record invocation"
+            f"skill {skill_name!r} has no reserved agent wing; cannot record invocation"
         )
 
     # Identifier validators reject empty strings; the skill should
@@ -164,11 +164,22 @@ def format_history_for_prompt(history: list[Drawer]) -> str:
     """
     if not history:
         return ""
-    lines = ["## Prior cases (most recent first)", ""]
+    lines = ["## Prior cases (most recent first)", "", EVIDENCE_BOUNDARY]
     for drawer in history:
+        assessment = assess_memory_content(drawer.content)
         lines.append(
-            f"- #{drawer.id} ({drawer.created_at.date().isoformat()}): "
-            f"{drawer.content.strip()[:200]}"
+            json.dumps(
+                {
+                    "drawer_id": drawer.id,
+                    "created_at": drawer.created_at.date().isoformat(),
+                    "content": drawer.content.strip()[:200],
+                    "instruction_authority": "none",
+                    "suspicious": assessment.suspicious,
+                    "security_signals": list(assessment.signals),
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+            )
         )
     lines.append("")
     return "\n".join(lines)

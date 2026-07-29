@@ -82,8 +82,13 @@ class Retriever:
         )
         on_demand: list[Drawer] = []
         if query:
-            hits = self._store.search(query, wing=wing, limit=self._on_demand_limit)
-            on_demand = [drawer for drawer, _distance in hits if drawer.layer is Layer.ON_DEMAND]
+            hits = self._store.search(
+                query,
+                wing=wing,
+                layer=Layer.ON_DEMAND,
+                limit=self._on_demand_limit,
+            )
+            on_demand = [drawer for drawer, _distance in hits]
         deep: list[Drawer] = []
         if include_deep:
             deep = self._store.list_by(wing=wing, layer=Layer.DEEP, limit=self._deep_limit)

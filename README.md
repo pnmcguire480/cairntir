@@ -1,5 +1,5 @@
 <!--
-Cairntir — memory-first reasoning layer for Claude Code.
+Cairntir — host-neutral memory-first reasoning layer for AI coding agents.
 Keywords: Claude Code memory, Claude Code plugin, MCP server, AI memory,
 cross-session memory, persistent context, Claude memory, Anthropic MCP,
 kill AI amnesia, Claude Code extension, Python MCP server, sqlite-vec
@@ -8,9 +8,15 @@ memory, Claude Code MCP, Anthropic Claude memory, Model Context Protocol.
 
 # Cairntir
 
-### **The memory layer Claude Code should have shipped with.**
+### **One evolving memory for Codex, Cursor, Claude Code, and every MCP agent.**
 
-Cairntir is a local-first, open-source memory system for [Claude Code](https://claude.com/claude-code) and every other [Model Context Protocol](https://modelcontextprotocol.io/) client. It kills cross-chat AI amnesia — the thing where you open a fresh session and your AI has forgotten every decision, every trade-off, every hard-won lesson from yesterday. Nothing is summarized, truncated, or rewritten: what the model wrote down, you can read back, verbatim, six months from now.
+Cairntir is a local-first, open-source memory system for Codex, Cursor,
+[Claude Code](https://claude.com/claude-code), and every other
+[Model Context Protocol](https://modelcontextprotocol.io/) client. It kills
+cross-chat and cross-agent AI amnesia: a lesson written through one host is
+available to the next. Evidence stays verbatim, while an append-only Discovery
+Ledger exposes what Cairntir is learning instead of hiding it in an opaque
+optimization loop.
 
 > *A stack of stones that sees across time.*
 >
@@ -22,7 +28,7 @@ Cairntir is a local-first, open-source memory system for [Claude Code](https://c
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![mypy: strict](https://img.shields.io/badge/mypy-strict-blueviolet.svg)](https://mypy.readthedocs.io/)
 [![ruff](https://img.shields.io/badge/ruff-clean-green.svg)](https://github.com/astral-sh/ruff)
-[![Tests: 165](https://img.shields.io/badge/tests-165_passing-brightgreen.svg)](tests/)
+[![Tests: 372](https://img.shields.io/badge/tests-372_passing-brightgreen.svg)](tests/)
 [![MCP compatible](https://img.shields.io/badge/MCP-compatible-purple.svg)](https://modelcontextprotocol.io/)
 
 ---
@@ -41,10 +47,15 @@ It ships as an [MCP server](https://modelcontextprotocol.io/), so it works with 
 
 ```bash
 pip install cairntir           # live on PyPI
-cairntir setup                 # interactive wizard — one command, seven steps
+cairntir setup                 # initialize the store + Claude Code
+cairntir init --host all --user # connect Codex, Cursor, and Claude Code
 ```
 
-Then fully quit Claude Code (check the system tray), reopen it in any folder, and ask *"what is cairntir?"* in a fresh chat. If it answers with real knowledge and offers to check memory, you're done.
+Restart the configured hosts. Cursor's global MCP entry is installed
+automatically, but its global User Rule must be pasted into
+**Cursor Settings → Rules → User Rules** because Cursor does not publish a
+file-backed global-rule surface. Project-local Cursor setup is fully automatic:
+`cairntir init --host cursor`.
 
 **Once installed, Cairntir stays on.** Every `cairntir` CLI invocation silently re-verifies the user-scope MCP registration and re-registers the stable `cairntir-mcp` launcher if Claude Code can't find it. Moving venvs, upgrading Python, or reinstalling no longer breaks the wiring — `pip install cairntir` is TRUE, `pip uninstall cairntir` is FALSE, nothing in between. When a newer release lands on PyPI, the next CLI run and the next MCP tool response prepend a one-line update banner; nothing is interrupted.
 
@@ -95,13 +106,25 @@ That's walking into a lit room. That's the North Star. Every feature in this rep
 
 ---
 
-## The five moving parts
+## The six moving parts
 
 1. **`Drawer`** — one verbatim memory entry. Content, metadata, retrieval layer, optional prediction fields (`claim`, `predicted_outcome`, `observed_outcome`, `delta`, `supersedes_id`), belief mass. Frozen pydantic model.
-2. **`DrawerStore`** — SQLite + sqlite-vec backend. Forward-only schema migrations (v1 → v4 so far). Contract-tested via [tests/contract/test_store_contract.py](tests/contract/test_store_contract.py).
-3. **MCP server** — six tools over stdio: `cairntir_session_start`, `cairntir_recall`, `cairntir_remember`, `cairntir_timeline`, `cairntir_audit`, `cairntir_crucible`. Runs via `python -m cairntir.mcp.server`.
+2. **`DrawerStore`** — SQLite + sqlite-vec backend. Forward-only schema
+   migrations (v1 → v6 so far), with explicit embedding identity, immutable
+   provenance, durable workflow receipts, and backup-first migration/reindex.
+   Contract-tested via
+   [tests/contract/test_store_contract.py](tests/contract/test_store_contract.py).
+3. **MCP server** — seventeen tools over stdio: exact memory, scoped and
+   cross-wing recall, session start, timeline, audit, Crucible, Discovery
+   Ledger/calibration, and CodeGlass operations. Runs via
+   `python -m cairntir.mcp.server`.
 4. **Three skills** — `crucible` (stress-test assumptions), `quality` (audit a wing), `reason` (memory-backed thinking loop with a mandatory predict step). Bundled as markdown, loaded via `importlib.resources`.
 5. **Reason loop** — `ReasonLoop.step()` over four Protocol ports (`HypothesisProposer`, `ExperimentRunner`, `BeliefStore`, `MemoryGateway`). Testable without LLMs, networks, or SQLite. See [docs/integration-guide.md](docs/integration-guide.md).
+6. **Discovery Ledger** — evidence-backed signals move through `signal →
+   candidate → corroborated → promoted/rejected/expired` as append-only
+   drawers. Repeated Reason episodes can propose calibrated candidates but
+   cannot promote themselves. Active discoveries appear at session start;
+   `cairntir learning-log` gives the human-readable learning history.
 
 ---
 
@@ -119,7 +142,7 @@ That's walking into a lit room. That's the North Star. Every feature in this rep
 
 Cairntir is an MCP server. Anything that speaks [Model Context Protocol](https://modelcontextprotocol.io/) can talk to it unchanged:
 
-- **[Claude Code](https://claude.com/claude-code)** (primary target — this is the reason Cairntir exists)
+- **Codex, Cursor, and [Claude Code](https://claude.com/claude-code)** (first-class hosts sharing one store)
 - **[Claude Desktop](https://claude.ai/download)**
 - **[Cursor](https://cursor.sh/)**
 - **[Windsurf](https://codeium.com/windsurf)**
@@ -128,7 +151,9 @@ Cairntir is an MCP server. Anything that speaks [Model Context Protocol](https:/
 
 Pairs naturally with:
 - **Git hooks** — auto-capture commit messages as drawers via the daemon's spool directory.
-- **Obsidian / any markdown tool** — export drawers to portable signed envelopes, import them into a vault, edit them by hand, import them back.
+- **Obsidian / Anthropicer** — project the learning log and verified
+  CodeGlass walkthroughs one-way with `cairntir obsidian-project`; SQLite
+  stays authoritative and human notes are preserved.
 - **Linear / GitHub issues** — daemon picks up mentions and cross-references to drawer ids.
 - **VS Code** — decision-marker extension (planned, not shipped) writes to the spool as you type.
 
@@ -202,7 +227,7 @@ cairntir/
 │   ├── impl/               # Concrete impls — reserved right to change
 │   ├── memory/             # DrawerStore, belief scorer, consolidate, embeddings
 │   ├── reason/             # ReasonLoop + four Protocol ports
-│   ├── mcp/                # MCP stdio server (six tools)
+│   ├── mcp/                # Host-neutral MCP stdio server
 │   ├── portable.py         # Signed envelope format (v0.5)
 │   ├── skills/             # crucible.md, quality.md, reason.md
 │   ├── daemon/             # Auto-capture spool watcher

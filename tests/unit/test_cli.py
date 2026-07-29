@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 from cairntir import __version__
@@ -12,14 +16,63 @@ from cairntir.cli import app
 from cairntir.memory.embeddings import HashEmbeddingProvider
 from cairntir.memory.store import DrawerStore
 from cairntir.memory.taxonomy import Drawer, Layer
+from cairntir.portable import export_drawers
 
 runner = CliRunner()
+
+
+@pytest.fixture(autouse=True)
+def _use_test_embedding_space(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep CLI tests deterministic while exercising the production factory seam."""
+    monkeypatch.setattr(
+        "cairntir.cli.production_embedding_provider",
+        lambda: HashEmbeddingProvider(dimension=384),
+    )
 
 
 def test_version() -> None:
     result = runner.invoke(app, ["version"])
     assert result.exit_code == 0
     assert __version__ in result.stdout
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows encoding regression")
+def test_help_is_safe_when_redirected_from_a_cp1252_process() -> None:
+    environment = os.environ.copy()
+    environment["PYTHONIOENCODING"] = "cp1252"
+    completed = subprocess.run(
+        [sys.executable, "-m", "cairntir.cli", "--help"],
+        cwd=Path(__file__).resolve().parents[2],
+        env=environment,
+        capture_output=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr.decode("utf-8", errors="replace")
+    assert b"Usage:" in completed.stdout
+
+
+def test_portable_import_is_idempotent_by_file_content(
+    tmp_path: Path,
+    monkeypatch: object,
+) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path / "home"))  # type: ignore[attr-defined]
+    portable = tmp_path / "drawers.jsonl"
+    export_drawers(
+        [Drawer(wing="cairntir", room="portable", content="import exactly once")],
+        portable,
+    )
+
+    first = runner.invoke(app, ["import", str(portable)])
+    replay = runner.invoke(app, ["import", str(portable)])
+
+    assert first.exit_code == 0, first.output
+    assert replay.exit_code == 0, replay.output
+    assert "already imported" in replay.output
+    with DrawerStore(
+        tmp_path / "home" / "cairntir.db",
+        HashEmbeddingProvider(dimension=384),
+    ) as store:
+        assert [d.content for d in store.list_by()] == ["import exactly once"]
 
 
 def test_cross_recall_no_store(tmp_path: Path, monkeypatch: object) -> None:
@@ -40,6 +93,53 @@ def test_cross_recall_with_drawers(tmp_path: Path, monkeypatch: object) -> None:
     assert result.exit_code == 0
     assert "across" in result.stdout
     assert "[ground-zero]" in result.stdout
+
+
+def test_discovery_and_human_learning_log_commands(
+    tmp_path: Path,
+    monkeypatch: object,
+) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    with DrawerStore(
+        tmp_path / "cairntir.db",
+        HashEmbeddingProvider(dimension=384),
+    ) as store:
+        evidence = store.add(
+            Drawer(
+                wing="cairntir",
+                room="evidence",
+                content="The same repair worked three times.",
+            )
+        )
+    assert evidence.id is not None
+
+    recorded = runner.invoke(
+        app,
+        [
+            "discover",
+            "Repair pattern emerged",
+            "The repeated sequence reduced repair time.",
+            "--wing",
+            "cairntir",
+            "--novelty",
+            "user",
+            "--evidence",
+            str(evidence.id),
+            "--state",
+            "candidate",
+        ],
+    )
+    assert recorded.exit_code == 0, recorded.output
+    assert "Recorded discovery" in recorded.output
+
+    listing = runner.invoke(app, ["discoveries", "--wing", "cairntir"])
+    assert listing.exit_code == 0
+    assert "Repair pattern emerged" in listing.output
+
+    learning_log = runner.invoke(app, ["learning-log", "--wing", "cairntir"])
+    assert learning_log.exit_code == 0
+    assert "Human Learning Log" in learning_log.output
+    assert "Repair pattern emerged" in learning_log.output
 
 
 def test_reason_non_interactive_writes_drawers(tmp_path: Path, monkeypatch: object) -> None:
@@ -120,6 +220,12 @@ def test_status_and_recall_with_drawers(tmp_path: Path, monkeypatch: object) -> 
     assert recall.exit_code == 0
     assert "hit" in recall.stdout
 
+    get_result = runner.invoke(app, ["get", "1"])
+    assert get_result.exit_code == 0
+    payload = json.loads(get_result.stdout)
+    assert payload["content"] == "cairn stones mark the path"
+    assert payload["resource"] == "cairntir://drawer/1"
+
 
 def test_migrate_check_reports_version(tmp_path: Path, monkeypatch: object) -> None:
     monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
@@ -140,6 +246,43 @@ def test_migrate_missing_db_exits_nonzero(tmp_path: Path) -> None:
     assert result.exit_code == 1
 
 
+def test_doctor_reports_verified_embedding_space(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))
+    with DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384)) as store:
+        store.add(Drawer(wing="cairntir", room="doctor", content="verified index"))
+
+    result = runner.invoke(app, ["doctor"])
+    assert result.exit_code == 0, result.output
+    assert "state:              verified" in result.output
+    assert "drawers / vectors:  1 / 1" in result.output
+
+
+def test_reindex_creates_backup_and_repairs_mismatch(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))
+    database = tmp_path / "cairntir.db"
+    backup = tmp_path / "before-reindex.db"
+    with DrawerStore(database, HashEmbeddingProvider(dimension=32)) as store:
+        store.add(Drawer(wing="cairntir", room="doctor", content="repair me"))
+
+    result = runner.invoke(
+        app,
+        ["reindex", "--yes", "--backup", str(backup), "--batch-size", "1"],
+    )
+    assert result.exit_code == 0, result.output
+    assert backup.exists()
+    assert "dimension:   384" in result.output
+
+    doctor_result = runner.invoke(app, ["doctor"])
+    assert doctor_result.exit_code == 0, doctor_result.output
+    assert "state:              verified" in doctor_result.output
+
+
 def test_init_writes_project_mcp_json(tmp_path: Path, monkeypatch: object) -> None:
     monkeypatch.chdir(tmp_path)  # type: ignore[attr-defined]
     result = runner.invoke(app, ["init"])
@@ -152,7 +295,7 @@ def test_init_writes_project_mcp_json(tmp_path: Path, monkeypatch: object) -> No
     # launcher hard-pins the right interpreter, so we don't have to
     # bake an absolute path that breaks on venv changes.
     assert data["mcpServers"]["cairntir"]["command"] == "cairntir-mcp"
-    assert data["mcpServers"]["cairntir"]["args"] == []
+    assert data["mcpServers"]["cairntir"]["args"] == ["--host", "claude"]
     assert "registered cairntir" in result.stdout
 
 
@@ -183,6 +326,37 @@ def test_init_preserves_other_mcp_servers(tmp_path: Path, monkeypatch: object) -
     assert "other" in data["mcpServers"]
     assert data["mcpServers"]["other"]["command"] == "node"
     assert "cairntir" in data["mcpServers"]
+
+
+def test_init_cursor_project_writes_mcp_and_always_rule(
+    tmp_path: Path,
+    monkeypatch: object,
+) -> None:
+    monkeypatch.chdir(tmp_path)  # type: ignore[attr-defined]
+    result = runner.invoke(app, ["init", "--host", "cursor"])
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / ".cursor" / "mcp.json").exists()
+    rule = tmp_path / ".cursor" / "rules" / "cairntir.mdc"
+    assert rule.exists()
+    contents = rule.read_text(encoding="utf-8")
+    assert "alwaysApply: true" in contents
+    assert "cairntir_session_start" in contents
+
+
+def test_init_codex_project_preserves_existing_config(
+    tmp_path: Path,
+    monkeypatch: object,
+) -> None:
+    monkeypatch.chdir(tmp_path)  # type: ignore[attr-defined]
+    config = tmp_path / ".codex" / "config.toml"
+    config.parent.mkdir()
+    config.write_text('model = "test-model"\n', encoding="utf-8")
+    result = runner.invoke(app, ["init", "--host", "codex"])
+    assert result.exit_code == 0, result.output
+    contents = config.read_text(encoding="utf-8")
+    assert 'model = "test-model"' in contents
+    assert "[mcp_servers.cairntir]" in contents
+    assert (tmp_path / "AGENTS.md").exists()
 
 
 def test_init_user_shells_out_to_claude_cli(monkeypatch: object) -> None:
@@ -220,6 +394,8 @@ def test_init_user_shells_out_to_claude_cli(monkeypatch: object) -> None:
         "cairntir",
         "--",
         "cairntir-mcp",
+        "--host",
+        "claude",
     ]
 
 
@@ -542,9 +718,7 @@ def test_replay_extends_supersedes_chain(tmp_path: Path, monkeypatch: object) ->
         assert len(replays) == 4
         # Find the drawer whose supersedes_id points at the original — that
         # is the new prediction.
-        new_prediction = next(
-            (d for d in replays if d.supersedes_id == original.id), None
-        )
+        new_prediction = next((d for d in replays if d.supersedes_id == original.id), None)
         assert new_prediction is not None, (
             f"no replay drawer chains onto original #{original.id}: "
             f"supersedes pointers were {[d.supersedes_id for d in replays]}"
@@ -711,9 +885,7 @@ def test_reason_unknown_proposer_exits_clean(tmp_path: Path, monkeypatch: object
     assert "unknown proposer" in combined
 
 
-def test_replay_proposer_ollama_re_drafts_claim(
-    tmp_path: Path, monkeypatch: object
-) -> None:
+def test_replay_proposer_ollama_re_drafts_claim(tmp_path: Path, monkeypatch: object) -> None:
     """`cairntir replay --proposer ollama` overrides the chain-leaf
     auto-fill with a freshly-drafted claim."""
     import io
@@ -780,9 +952,7 @@ def test_replay_proposer_ollama_re_drafts_claim(
     store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
     try:
         replays = store.list_by(wing="replays", limit=100)
-        new_prediction = next(
-            (d for d in replays if d.supersedes_id == original.id), None
-        )
+        new_prediction = next((d for d in replays if d.supersedes_id == original.id), None)
         assert new_prediction is not None
         assert new_prediction.claim == "the sharper reframed claim"
     finally:

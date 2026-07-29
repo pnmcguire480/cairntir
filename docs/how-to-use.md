@@ -115,58 +115,66 @@ Or to just one room:
 cairntir recall "bug" --wing cairntir --room bugs
 ```
 
-That's all three commands. The rest of Cairntir is used **from inside
-Claude Code**, which is where the magic really happens.
+The rest of Cairntir can be used from Codex, Cursor, Claude Code, or any
+MCP-compatible agent.
 
 ---
 
-## Step 3 — Let Claude Code Use It
+## Step 3 — Connect Your AI Agents
 
-Cairntir's real power shows up when Claude Code talks to it directly.
-To turn this on in any project:
+Cairntir's real power shows up when every coding agent talks to the same
+store. To configure all three first-class hosts at user scope:
 
-1. Go to that project's folder.
-2. Create a file named `.mcp.json` at the top of the folder.
-3. Put this inside:
-
-```json
-{
-  "mcpServers": {
-    "cairntir": {
-      "command": "python",
-      "args": ["-m", "cairntir.mcp.server"]
-    }
-  }
-}
+```powershell
+cairntir init --host all --user
 ```
 
-4. Open Claude Code in that folder.
-5. You'll see six new tools Claude can use:
+For one project or one host:
+
+```powershell
+cairntir init --host codex
+cairntir init --host cursor
+cairntir init --host claude
+```
+
+The command preserves existing config and instruction text. Run
+`cairntir doctor` to inspect user and project wiring without changing it.
+Cursor's global User Rule is the one manual exception because Cursor stores it
+inside Settings; project-local Cursor rules are installed automatically.
+
+Restart the host. You'll see twelve Cairntir tools:
 
 | Tool | What it does |
 |---|---|
 | `cairntir_remember` | Save a new drawer (something you want to remember) |
 | `cairntir_recall` | Search for old drawers |
+| `cairntir_cross_recall` | Search across every project wing |
+| `cairntir_get` | Fetch one complete verbatim drawer from a recall reference |
 | `cairntir_session_start` | Load the most important drawers at the start of a chat |
+| `cairntir_discover` | Record an evidence-backed emergent pattern and notify the user |
+| `cairntir_discovery_transition` | Promote, reject, corroborate, or expire a finding append-only |
+| `cairntir_discoveries` | Read the current Discovery Ledger |
+| `cairntir_learning_log` | Read the plain-language Human Learning Log |
 | `cairntir_timeline` | See everything about one topic, in order |
 | `cairntir_audit` | Check if a wing is healthy — uses the Quality skill |
 | `cairntir_crucible` | Stress-test an idea — uses the Crucible skill |
 
-You don't call these yourself. You just talk to Claude like normal,
-and Claude picks the right tool.
+You don't normally call these yourself. Talk to your agent as usual and its
+installed Cairntir policy tells it when to use them.
 
 Try saying:
 
 > *"Remember that we decided to use sqlite-vec because it's embedded
 > and doesn't need a server."*
 
-Claude will call `cairntir_remember` and save it.
+The active agent will call `cairntir_remember` and save it.
 
 Then in a **brand new chat**, in the **same folder**, say:
 
 > *"What did we decide about the database?"*
 
-Claude will call `cairntir_recall`, find the drawer, and answer.
+The next agent—even a different host—can call `cairntir_recall`, find the
+same drawer, and answer.
 **That's the amnesia cure.** That moment is the whole reason Cairntir
 exists.
 
@@ -279,9 +287,9 @@ in the same notebook.
 Set `CAIRNTIR_HOME` to a different folder in each project.
 
 **Q: Does Cairntir work without Claude Code?**
-Sort of. You can save and search memories with the `cairntir`
-command. But the real value is when Claude Code can read and write
-to it automatically.
+Yes. You can save and search through the CLI, or connect Codex, Cursor,
+Claude Code, and any other MCP client. The value comes from every host reading
+and writing one canonical store.
 
 **Q: What happens when Cairntir gets a new version?**
 If you installed with `pipx install -e`, just `git pull` in the

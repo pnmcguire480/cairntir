@@ -24,8 +24,11 @@ networks, or LLMs — that's the whole point of v0.6.
 
 from __future__ import annotations
 
-from typing import Protocol, runtime_checkable
+from collections.abc import Callable
+from contextlib import AbstractContextManager
+from typing import Any, Protocol, runtime_checkable
 
+from cairntir.durability import WorkflowExecution
 from cairntir.memory.taxonomy import Drawer
 from cairntir.reason.model import Hypothesis, Outcome
 
@@ -107,4 +110,33 @@ class MemoryGateway(Protocol):
         ``agent:<skill>`` wing for the originating project, where
         recency matters more than relevance.
         """
+        ...
+
+
+@runtime_checkable
+class DurableMemoryGateway(MemoryGateway, Protocol):
+    """Optional production extension for atomic, idempotent memory workflows."""
+
+    def atomic(self) -> AbstractContextManager[None]:
+        """Return a nestable unit of work spanning memory and beliefs."""
+        ...
+
+    def execute_once(
+        self,
+        *,
+        idempotency_key: str,
+        operation: str,
+        request: dict[str, Any],
+        action: Callable[[], dict[str, Any]],
+    ) -> WorkflowExecution:
+        """Execute ``action`` once and replay its committed result on retry."""
+        ...
+
+
+@runtime_checkable
+class LearningMemoryGateway(MemoryGateway, Protocol):
+    """Optional hook that derives conservative patterns after an episode."""
+
+    def reflect(self, *, wing: str) -> list[int]:
+        """Return discovery drawer ids proposed from repeated episodes."""
         ...

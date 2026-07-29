@@ -1,4 +1,4 @@
-"""MCP stdio server exposing the six Cairntir tools.
+"""MCP stdio server exposing Cairntir's host-neutral tools.
 
 Run directly with ``python -m cairntir.mcp.server`` — see ``.mcp.json``. The
 server holds a single :class:`~cairntir.mcp.backend.CairntirBackend`
@@ -7,6 +7,7 @@ instance backed by the store at :func:`cairntir.config.db_path`.
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import os
 import threading
@@ -20,8 +21,9 @@ from pydantic import ValidationError
 from cairntir.config import db_path
 from cairntir.errors import CairntirError, EmbeddingError
 from cairntir.mcp.backend import CairntirBackend
-from cairntir.memory.embeddings import FastEmbedProvider
+from cairntir.memory.embeddings import production_embedding_provider
 from cairntir.memory.store import DrawerStore
+from cairntir.provenance import TrustLevel, WriteProvenance
 from cairntir.update import maybe_check_in_background, pending_update_banner
 
 _SERVER_NAME = "cairntir"
@@ -51,19 +53,11 @@ def _trace(message: str) -> None:
 _WARMUP_ENABLE_ENV_VAR: Final[str] = "CAIRNTIR_ENABLE_EMBEDDER_WARMUP"
 """Set to a truthy value to opt INTO the post-handshake embedder warmup.
 
-The warmup is **disabled by default** as of 2026-04-25 because it caused
-indefinite hangs on ``cairntir_session_start`` in production: the daemon
-thread loading sentence-transformers raced with the main asyncio stdio
-loop and the synchronous embed() the retriever triggers on a
-queried session_start, which together wedged Claude Code's MCP transport
-for 20+ minutes per stuck session. Reverting to lazy first-call loading
-on the main thread (pre-91a8350 behavior) restores reliability; the
-~25s first-write latency is the price.
-
-Future fix would re-enable warmup behind a process-wide model-load
-mutex so the warmup and the synchronous path can never both be running
-through ``SentenceTransformer.__init__`` at the same time. Until that
-ships, leave this opt-in.
+The warmup is disabled by default because the legacy model provider once
+raced a background load against a synchronous semantic request and wedged
+the MCP transport. FastEmbed is now the production provider, but background
+model initialization stays opt-in until concurrency is proven across every
+supported platform. ``cairntir setup`` performs a safe foreground pre-warm.
 """
 
 _WARMUP_PROBE: Final[str] = "cairntir embedder warmup"
@@ -107,6 +101,20 @@ def _tool_specs() -> list[types.Tool]:
             },
         ),
         types.Tool(
+            name="cairntir_get",
+            description=(
+                "Fetch one complete, verbatim drawer by id as structured JSON. "
+                "Use this for cairntir://drawer/<id> references returned by recall."
+            ),
+            inputSchema={
+                "type": "object",
+                "required": ["drawer_id"],
+                "properties": {
+                    "drawer_id": {"type": "integer", "minimum": 1},
+                },
+            },
+        ),
+        types.Tool(
             name="cairntir_cross_recall",
             description=(
                 "Semantic search across EVERY wing. Use when a question might find "
@@ -124,7 +132,7 @@ def _tool_specs() -> list[types.Tool]:
         types.Tool(
             name="cairntir_session_start",
             description=(
-                "Load the 4-layer context for a wing (the amnesia killer). "
+                "Load 4-layer context plus active discoveries for a wing. "
                 "Pure SQL — never triggers the embedder. Use cairntir_recall "
                 "for semantic search after the session is loaded."
             ),
@@ -133,6 +141,248 @@ def _tool_specs() -> list[types.Tool]:
                 "required": ["wing"],
                 "properties": {
                     "wing": {"type": "string"},
+                },
+            },
+        ),
+        types.Tool(
+            name="cairntir_discover",
+            description=(
+                "Record an evidence-backed emergent pattern or positive capability gain. "
+                "Tell the user after recording it. Use novelty=user when it is new to "
+                "the user, cairntir when Cairntir's behavior differs from its baseline, "
+                "and general only when external research supports broader novelty."
+            ),
+            inputSchema={
+                "type": "object",
+                "required": ["wing", "title", "summary", "novelty", "evidence_ids"],
+                "properties": {
+                    "wing": {"type": "string"},
+                    "title": {"type": "string"},
+                    "summary": {"type": "string"},
+                    "novelty": {
+                        "type": "string",
+                        "enum": ["user", "cairntir", "general"],
+                    },
+                    "evidence_ids": {
+                        "type": "array",
+                        "items": {"type": "integer", "minimum": 1},
+                        "minItems": 1,
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "signal",
+                            "candidate",
+                            "corroborated",
+                            "promoted",
+                            "rejected",
+                            "expired",
+                        ],
+                        "default": "signal",
+                    },
+                },
+            },
+        ),
+        types.Tool(
+            name="cairntir_discovery_transition",
+            description=(
+                "Append a reviewed lifecycle transition for a discovery. "
+                "Never rewrites or deletes the earlier learning record."
+            ),
+            inputSchema={
+                "type": "object",
+                "required": ["drawer_id", "state", "note"],
+                "properties": {
+                    "drawer_id": {"type": "integer", "minimum": 1},
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "signal",
+                            "candidate",
+                            "corroborated",
+                            "promoted",
+                            "rejected",
+                            "expired",
+                        ],
+                    },
+                    "note": {"type": "string"},
+                },
+            },
+        ),
+        types.Tool(
+            name="cairntir_discoveries",
+            description="List the current leaves of the append-only Discovery Ledger.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "wing": {"type": "string"},
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "signal",
+                            "candidate",
+                            "corroborated",
+                            "promoted",
+                            "rejected",
+                            "expired",
+                        ],
+                    },
+                    "limit": {"type": "integer", "default": 100, "minimum": 1},
+                },
+            },
+        ),
+        types.Tool(
+            name="cairntir_learning_log",
+            description=(
+                "Read the easy-to-access Human Learning Log of candidate, "
+                "corroborated, and promoted discoveries."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "wing": {"type": "string"},
+                    "include_candidates": {"type": "boolean", "default": True},
+                    "limit": {"type": "integer", "default": 100, "minimum": 1},
+                },
+            },
+        ),
+        types.Tool(
+            name="cairntir_discover_scan",
+            description=(
+                "Propose conservative discovery candidates from repeated "
+                "prediction/observation episodes. Never auto-promotes."
+            ),
+            inputSchema={
+                "type": "object",
+                "required": ["wing"],
+                "properties": {
+                    "wing": {"type": "string"},
+                    "min_observations": {
+                        "type": "integer",
+                        "default": 3,
+                        "minimum": 2,
+                    },
+                    "confidence_threshold": {
+                        "type": "number",
+                        "default": 0.8,
+                        "exclusiveMinimum": 0.5,
+                        "maximum": 1.0,
+                    },
+                },
+            },
+        ),
+        types.Tool(
+            name="cairntir_calibration",
+            description=(
+                "Show empirical prediction success, uncertainty, unresolved "
+                "predictions, belief mass, and contradictions for a wing."
+            ),
+            inputSchema={
+                "type": "object",
+                "required": ["wing"],
+                "properties": {"wing": {"type": "string"}},
+            },
+        ),
+        types.Tool(
+            name="cairntir_codeglass_record",
+            description=(
+                "Store an evidence-cited WHAT/HOW/WHERE/WHEN/WHY walkthrough. "
+                "Each non-unknown section must contain a [source:...] citation."
+            ),
+            inputSchema={
+                "type": "object",
+                "required": [
+                    "wing",
+                    "target",
+                    "reader_level",
+                    "what",
+                    "how",
+                    "where",
+                    "when",
+                    "why",
+                    "evidence_ids",
+                    "glossary",
+                    "danger_zones",
+                ],
+                "properties": {
+                    "wing": {"type": "string"},
+                    "target": {"type": "string"},
+                    "reader_level": {
+                        "type": "string",
+                        "enum": ["novice", "intermediate", "expert"],
+                    },
+                    "what": {"type": "string"},
+                    "how": {"type": "string"},
+                    "where": {"type": "string"},
+                    "when": {"type": "string"},
+                    "why": {"type": "string"},
+                    "evidence_ids": {
+                        "type": "array",
+                        "items": {"type": "integer", "minimum": 1},
+                        "minItems": 1,
+                    },
+                    "glossary": {"type": "string"},
+                    "danger_zones": {"type": "string"},
+                    "idempotency_key": {"type": "string"},
+                },
+            },
+        ),
+        types.Tool(
+            name="cairntir_codeglass_teachback",
+            description=(
+                "Record two or three reviewed teach-back answers. Use phase=immediate "
+                "after the walkthrough and phase=delayed later to measure retention."
+            ),
+            inputSchema={
+                "type": "object",
+                "required": ["walkthrough_id", "phase", "responses"],
+                "properties": {
+                    "walkthrough_id": {"type": "integer", "minimum": 1},
+                    "phase": {
+                        "type": "string",
+                        "enum": ["immediate", "delayed"],
+                    },
+                    "responses": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 3,
+                        "items": {
+                            "type": "object",
+                            "required": ["question", "answer", "score"],
+                            "properties": {
+                                "question": {"type": "string"},
+                                "answer": {"type": "string"},
+                                "score": {
+                                    "type": "number",
+                                    "minimum": 0.0,
+                                    "maximum": 1.0,
+                                },
+                            },
+                        },
+                    },
+                    "mastered_concepts": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                    },
+                    "misunderstood_concepts": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                    },
+                    "idempotency_key": {"type": "string"},
+                },
+            },
+        ),
+        types.Tool(
+            name="cairntir_codeglass_retention",
+            description=(
+                "Compare immediate and delayed CodeGlass teach-back scores and "
+                "show mastered concepts and concepts to revisit."
+            ),
+            inputSchema={
+                "type": "object",
+                "required": ["walkthrough_id"],
+                "properties": {
+                    "walkthrough_id": {"type": "integer", "minimum": 1},
                 },
             },
         ),
@@ -176,10 +426,30 @@ def _dispatch(backend: CairntirBackend, name: str, args: dict[str, Any]) -> str:
             return backend.remember(**args)
         case "cairntir_recall":
             return backend.recall(**args)
+        case "cairntir_get":
+            return backend.get(**args)
         case "cairntir_cross_recall":
             return backend.cross_recall(**args)
         case "cairntir_session_start":
             return backend.session_start(**args)
+        case "cairntir_discover":
+            return backend.discover(**args)
+        case "cairntir_discovery_transition":
+            return backend.transition_discovery(**args)
+        case "cairntir_discoveries":
+            return backend.discoveries(**args)
+        case "cairntir_learning_log":
+            return backend.learning_log(**args)
+        case "cairntir_discover_scan":
+            return backend.discover_scan(**args)
+        case "cairntir_calibration":
+            return backend.calibration(**args)
+        case "cairntir_codeglass_record":
+            return backend.codeglass_record(**args)
+        case "cairntir_codeglass_teachback":
+            return backend.codeglass_teachback(**args)
+        case "cairntir_codeglass_retention":
+            return backend.codeglass_retention(**args)
         case "cairntir_timeline":
             return backend.timeline(**args)
         case "cairntir_audit":
@@ -264,17 +534,14 @@ def warm_embedder_in_background(store: DrawerStore) -> threading.Thread | None:
     """Spawn a daemon thread that loads the embedder model (opt-in).
 
     Returns ``None`` unless ``CAIRNTIR_ENABLE_EMBEDDER_WARMUP=1`` is set
-    in the environment. Default-off as of 2026-04-25 because the warmup
-    raced with the main asyncio loop and wedged ``cairntir_session_start``
-    for 20+ minutes on real user machines (Issue: warmup vs synchronous
-    embed contention through ``SentenceTransformer.__init__``).
+    in the environment. It remains default-off because model providers may
+    not make concurrent first-load guarantees.
 
     When enabled, the helper kicks off a single throwaway ``embed()``
     call in a daemon thread so the model loads in parallel with the
     MCP handshake. First-write latency drops from ~25s to ~0s in the
-    happy case — but only enable this once the model-load mutex
-    described in ``_WARMUP_ENABLE_ENV_VAR`` is in place, otherwise you
-    will reproduce the hang.
+    happy case. Normal installations should use ``cairntir setup`` to
+    pre-warm in the foreground instead.
 
     Failures are intentionally swallowed: a warmup miss simply means
     the next real ``embed()`` call surfaces the actual error to the
@@ -302,9 +569,9 @@ def warm_embedder_in_background(store: DrawerStore) -> threading.Thread | None:
     return thread
 
 
-async def _amain() -> None:
-    # Force HuggingFace Hub fully offline so SentenceTransformer never
-    # tries to revalidate the model against the network during load.
+async def _amain(*, host: str = "unknown", model: str = "unknown") -> None:
+    # Force HuggingFace Hub fully offline so local model providers never
+    # try to revalidate cached assets against the network during load.
     # The model files are cached locally after first download; phoning
     # home on every server start adds latency and, on flaky/blocked
     # networks, can wedge the load indefinitely. Users who genuinely
@@ -320,7 +587,16 @@ async def _amain() -> None:
     maybe_check_in_background()
     _trace("update check spawned")
 
-    store = DrawerStore(db_path(), FastEmbedProvider())
+    store = DrawerStore(
+        db_path(),
+        production_embedding_provider(),
+        provenance=WriteProvenance.create(
+            host=host,
+            capture_path="mcp",
+            trust=TrustLevel.AGENT_GENERATED,
+            model=model,
+        ),
+    )
     _trace("DrawerStore opened")
     backend = CairntirBackend(store)
 
@@ -349,7 +625,11 @@ def main() -> None:
     script is the registered command — see ``cairntir.cli._mcp_spec``
     and the ``[project.scripts]`` entry in ``pyproject.toml``.
     """
-    asyncio.run(_amain())
+    parser = argparse.ArgumentParser(description="Run the Cairntir MCP stdio server")
+    parser.add_argument("--host", default="unknown")
+    parser.add_argument("--model", default=os.environ.get("CAIRNTIR_MODEL", "unknown"))
+    args = parser.parse_args()
+    asyncio.run(_amain(host=args.host, model=args.model))
 
 
 if __name__ == "__main__":

@@ -3,15 +3,27 @@
 from __future__ import annotations
 
 import sqlite3
-from collections.abc import Iterator
+import struct
+from collections.abc import Iterator, Sequence
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
 import sqlite_vec
 
-from cairntir.memory.embeddings import HashEmbeddingProvider
-from cairntir.memory.store import SCHEMA_VERSION, DrawerStore
+from cairntir.errors import EmbeddingError, EmbeddingSpaceError, MemoryStoreError
+from cairntir.memory.embeddings import (
+    FastEmbedProvider,
+    HashEmbeddingProvider,
+    embedding_space_id,
+)
+from cairntir.memory.store import (
+    SCHEMA_VERSION,
+    DrawerStore,
+    backup_database,
+    inspect_embedding_space,
+    reindex_database,
+)
 from cairntir.memory.taxonomy import Drawer, Layer
 
 
@@ -70,6 +82,46 @@ def test_search_scopes_to_wing(store: DrawerStore) -> None:
     results = store.search("memory spike", wing="cairntir", limit=5)
     assert all(d.wing == "cairntir" for d, _ in results)
     assert len(results) == 1
+
+
+def test_search_prefilters_wing_before_knn_limit(store: DrawerStore) -> None:
+    """The only in-scope hit must survive even when outside global top-K."""
+    for index in range(20):
+        store.add(_drawer("identical crowded vector", wing=f"other-{index}"))
+    store.add(_drawer("identical crowded vector", wing="wanted"))
+
+    results = store.search("identical crowded vector", wing="wanted", limit=1)
+    assert len(results) == 1
+    assert results[0][0].wing == "wanted"
+
+
+def test_search_prefilters_room_and_layer_before_knn_limit(store: DrawerStore) -> None:
+    for index in range(20):
+        store.add(
+            _drawer(
+                "identical scoped vector",
+                room=f"other-{index}",
+                layer=Layer.ESSENTIAL,
+            )
+        )
+    store.add(
+        _drawer(
+            "identical scoped vector",
+            room="wanted",
+            layer=Layer.ON_DEMAND,
+        )
+    )
+
+    results = store.search(
+        "identical scoped vector",
+        wing="cairntir",
+        room="wanted",
+        layer=Layer.ON_DEMAND,
+        limit=1,
+    )
+    assert len(results) == 1
+    assert results[0][0].room == "wanted"
+    assert results[0][0].layer is Layer.ON_DEMAND
 
 
 def test_prediction_fields_round_trip(store: DrawerStore) -> None:
@@ -163,9 +215,35 @@ def test_migration_from_v1_database_preserves_old_rows(tmp_path: Path) -> None:
         assert row.observed_outcome is None
         assert row.delta is None
         assert row.supersedes_id is None
+        provenance = s.get_provenance(row.id or 0)
+        assert provenance is not None
+        assert provenance.host == "legacy"
+        assert provenance.trust.value == "untrusted"
 
-        # New inserts alongside legacy rows must still work and carry
-        # their prediction fields through.
+        # Legacy vectors have no provable provider identity. Raw access
+        # survives migration, but semantic reads/writes fail closed.
+        assert s.embedding_status().state == "unverified"
+        with pytest.raises(EmbeddingSpaceError, match="reindex"):
+            s.search("pre-v2 drawer")
+        with pytest.raises(EmbeddingSpaceError, match="reindex"):
+            s.add(_drawer("refused until verified"))
+
+        # PRAGMA user_version is stamped even though semantic behavior remains
+        # disabled pending the explicit offline index rebuild.
+        version = s._conn.execute("PRAGMA user_version").fetchone()[0]
+        assert version == SCHEMA_VERSION
+
+    migration_backups = list(tmp_path.glob("legacy.pre-v6-*.db"))
+    assert len(migration_backups) == 1
+
+    receipt = reindex_database(db_path, HashEmbeddingProvider(dimension=32))
+    assert receipt.drawer_count == 1
+
+    with DrawerStore(db_path, HashEmbeddingProvider(dimension=32)) as s:
+        assert s.embedding_status().verified
+
+        # New inserts work only after the explicit rebuild established the
+        # embedding-space identity.
         saved = s.add(
             Drawer(
                 wing="cairntir",
@@ -179,10 +257,6 @@ def test_migration_from_v1_database_preserves_old_rows(tmp_path: Path) -> None:
         got = s.get(saved.id)
         assert got is not None
         assert got.claim == "migration is idempotent"
-
-        # PRAGMA user_version is stamped to the current schema version.
-        version = s._conn.execute("PRAGMA user_version").fetchone()[0]
-        assert version == SCHEMA_VERSION
 
     # Reopening the same DB is a no-op for migration (idempotency check).
     with DrawerStore(db_path, HashEmbeddingProvider(dimension=32)) as s2:
@@ -296,6 +370,147 @@ def test_migration_from_v3_database_preserves_access_counters(tmp_path: Path) ->
         assert version == SCHEMA_VERSION
 
 
+def test_migration_from_v4_requires_explicit_embedding_verification(tmp_path: Path) -> None:
+    """A v4 database remains readable but cannot guess which provider made its vectors."""
+    db_path = tmp_path / "v4.db"
+    provider = HashEmbeddingProvider(dimension=32)
+    now = datetime.now(UTC).isoformat()
+    conn = sqlite3.connect(db_path)
+    conn.enable_load_extension(True)
+    sqlite_vec.load(conn)
+    conn.enable_load_extension(False)
+    with conn:
+        conn.execute(
+            """
+            CREATE TABLE drawers (
+                id                INTEGER PRIMARY KEY AUTOINCREMENT,
+                wing              TEXT NOT NULL,
+                room              TEXT NOT NULL,
+                content           TEXT NOT NULL,
+                layer             TEXT NOT NULL,
+                metadata          TEXT NOT NULL,
+                created_at        TEXT NOT NULL,
+                claim             TEXT,
+                predicted_outcome TEXT,
+                observed_outcome  TEXT,
+                delta             TEXT,
+                supersedes_id     INTEGER,
+                last_accessed_at  TEXT,
+                access_count      INTEGER NOT NULL DEFAULT 0,
+                belief_mass       REAL NOT NULL DEFAULT 1.0
+            )
+            """
+        )
+        conn.execute(
+            "CREATE VIRTUAL TABLE vec_drawers USING vec0("
+            "drawer_id INTEGER PRIMARY KEY, embedding FLOAT[32])"
+        )
+        cursor = conn.execute(
+            "INSERT INTO drawers (wing, room, content, layer, metadata, created_at,"
+            " last_accessed_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            ("cairntir", "legacy", "v4 row", "on_demand", "{}", now, now),
+        )
+        drawer_id = int(cursor.lastrowid or 0)
+        vector = provider.embed(["v4 row"])[0]
+        conn.execute(
+            "INSERT INTO vec_drawers(drawer_id, embedding) VALUES (?, ?)",
+            (drawer_id, struct.pack(f"{len(vector)}f", *vector)),
+        )
+        conn.execute("PRAGMA user_version = 4")
+    conn.close()
+
+    with DrawerStore(db_path, provider) as store:
+        assert store.list_by()[0].content == "v4 row"
+        assert store.embedding_status().state == "unverified"
+        with pytest.raises(EmbeddingSpaceError):
+            store.search("v4 row")
+
+    reindex_database(db_path, provider)
+    with DrawerStore(db_path, provider) as store:
+        assert store.embedding_status().verified
+        assert store.search("v4 row")[0][0].content == "v4 row"
+        assert store._conn.execute("PRAGMA user_version").fetchone()[0] == SCHEMA_VERSION
+
+
+def test_migration_from_v5_backfills_provenance_and_trust_filters(tmp_path: Path) -> None:
+    db_path = tmp_path / "v5.db"
+    provider = HashEmbeddingProvider(dimension=32)
+    now = datetime.now(UTC).isoformat()
+    conn = sqlite3.connect(db_path)
+    conn.enable_load_extension(True)
+    sqlite_vec.load(conn)
+    conn.enable_load_extension(False)
+    with conn:
+        conn.execute(
+            """
+            CREATE TABLE drawers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                wing TEXT NOT NULL,
+                room TEXT NOT NULL,
+                content TEXT NOT NULL,
+                layer TEXT NOT NULL,
+                metadata TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                claim TEXT,
+                predicted_outcome TEXT,
+                observed_outcome TEXT,
+                delta TEXT,
+                supersedes_id INTEGER,
+                last_accessed_at TEXT,
+                access_count INTEGER NOT NULL DEFAULT 0,
+                belief_mass REAL NOT NULL DEFAULT 1.0
+            )
+            """
+        )
+        conn.execute(
+            "CREATE VIRTUAL TABLE vec_drawers USING vec0("
+            "drawer_id INTEGER PRIMARY KEY, embedding FLOAT[32], "
+            "wing TEXT, room TEXT, layer TEXT)"
+        )
+        cursor = conn.execute(
+            "INSERT INTO drawers("
+            "wing, room, content, layer, metadata, created_at, last_accessed_at"
+            ") VALUES (?, ?, ?, ?, ?, ?, ?)",
+            ("cairntir", "legacy", "v5 row", "on_demand", "{}", now, now),
+        )
+        drawer_id = int(cursor.lastrowid or 0)
+        vector = provider.embed(["v5 row"])[0]
+        conn.execute(
+            "INSERT INTO vec_drawers("
+            "drawer_id, embedding, wing, room, layer) VALUES (?, ?, ?, ?, ?)",
+            (
+                drawer_id,
+                struct.pack(f"{len(vector)}f", *vector),
+                "cairntir",
+                "legacy",
+                "on_demand",
+            ),
+        )
+        conn.execute("CREATE TABLE store_metadata(key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+        conn.executemany(
+            "INSERT INTO store_metadata(key, value) VALUES (?, ?)",
+            (
+                ("embedding_space_id", embedding_space_id(provider)),
+                ("embedding_dimension", "32"),
+                ("embedding_generation", "v5-generation"),
+                ("embedding_verified_at", now),
+            ),
+        )
+        conn.execute("PRAGMA user_version = 5")
+    conn.close()
+
+    with DrawerStore(db_path, provider) as store:
+        provenance = store.get_provenance(drawer_id)
+        assert provenance is not None
+        assert provenance.host == "legacy"
+        assert store.embedding_status().state == "corrupt"
+
+    reindex_database(db_path, provider)
+    with DrawerStore(db_path, provider) as store:
+        assert store.embedding_status().verified
+        assert store.search("v5 row")[0][0].id == drawer_id
+
+
 def test_touch_and_stale_ids_drive_forgetting_curve(store: DrawerStore) -> None:
     old = datetime.now(UTC) - timedelta(days=10)
     saved = store.add(Drawer(wing="cairntir", room="room-x", content="x", created_at=old))
@@ -314,6 +529,8 @@ def test_update_layer_moves_drawer(store: DrawerStore) -> None:
     fetched = store.get(saved.id)
     assert fetched is not None
     assert fetched.layer == Layer.DEEP
+    assert store.search("demote me", layer=Layer.ON_DEMAND) == []
+    assert store.search("demote me", layer=Layer.DEEP)[0][0].id == saved.id
 
 
 def test_metadata_is_preserved(store: DrawerStore) -> None:
@@ -328,3 +545,201 @@ def test_metadata_is_preserved(store: DrawerStore) -> None:
     fetched = store.get(saved.id)
     assert fetched is not None
     assert fetched.metadata == {"k": "v", "n": 3}
+
+
+def test_new_store_stamps_verified_embedding_space(tmp_path: Path) -> None:
+    provider = HashEmbeddingProvider(dimension=32)
+    with DrawerStore(tmp_path / "verified.db", provider) as s:
+        status = s.embedding_status()
+        assert status.verified
+        assert status.stored_space_id == embedding_space_id(provider)
+        assert status.stored_dimension == 32
+        assert status.vector_dimension == 32
+        assert status.generation
+        assert status.drawer_count == status.vector_count == 0
+
+
+def test_mismatched_space_keeps_raw_drawers_readable_and_refuses_semantics(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "mismatch.db"
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as original:
+        saved = original.add(_drawer("one canonical semantic space"))
+        assert saved.id is not None
+
+    with DrawerStore(path, HashEmbeddingProvider(dimension=64)) as mismatched:
+        status = mismatched.embedding_status()
+        assert status.state == "mismatch"
+        assert mismatched.list_by()[0].content == "one canonical semantic space"
+        assert mismatched.get(saved.id) is not None
+        with pytest.raises(EmbeddingSpaceError, match="mismatch"):
+            mismatched.search("canonical")
+        with pytest.raises(EmbeddingSpaceError, match="mismatch"):
+            mismatched.add(_drawer("must not contaminate"))
+
+
+class _AlternateSpaceProvider:
+    dimension = 32
+    embedding_space_id = "test/alternate-semantic-space-v1"
+
+    def __init__(self) -> None:
+        self._delegate = HashEmbeddingProvider(dimension=32)
+
+    def embed(self, texts: Sequence[str]) -> list[list[float]]:
+        return self._delegate.embed(texts)
+
+
+def test_reindex_repairs_same_dimension_mismatch_and_changes_generation(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "repair.db"
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as original:
+        original.add(_drawer("rebuild all semantic vectors"))
+        old_generation = original.embedding_status().generation
+
+    with DrawerStore(path, _AlternateSpaceProvider()) as replacement:
+        receipt = replacement.reindex_embeddings(batch_size=1)
+        status = replacement.embedding_status()
+        assert status.verified
+        assert receipt.dimension == 32
+        assert receipt.generation != old_generation
+        assert status.vector_dimension == 32
+        assert replacement.search("rebuild all semantic vectors")[0][0].content == (
+            "rebuild all semantic vectors"
+        )
+
+
+def test_offline_reindex_changes_dimension_via_verified_sidecar(tmp_path: Path) -> None:
+    path = tmp_path / "dimension-change.db"
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as original:
+        original.add(_drawer("sidecar rebuild"))
+
+    receipt = reindex_database(path, HashEmbeddingProvider(dimension=64), batch_size=1)
+    assert receipt.dimension == 64
+    report = inspect_embedding_space(path, HashEmbeddingProvider(dimension=64))
+    assert report.verified
+    assert report.vector_dimension == 64
+    with DrawerStore(path, HashEmbeddingProvider(dimension=64)) as reopened:
+        assert reopened.search("sidecar rebuild")[0][0].content == "sidecar rebuild"
+
+
+class _FailingReindexProvider:
+    dimension = 32
+    embedding_space_id = "cairntir/hash-sha256-cyclic-v1/dimension=32"
+
+    def embed(self, texts: Sequence[str]) -> list[list[float]]:
+        raise EmbeddingError(f"intentional failure for {len(texts)} inputs")
+
+
+def test_failed_reindex_preserves_verified_index(tmp_path: Path) -> None:
+    path = tmp_path / "atomic.db"
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as original:
+        original.add(_drawer("old index survives"))
+        old_generation = original.embedding_status().generation
+
+    with DrawerStore(path, _FailingReindexProvider()) as failing:
+        with pytest.raises(EmbeddingError, match="intentional failure"):
+            failing.reindex_embeddings()
+        assert failing.embedding_status().generation == old_generation
+
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as reopened:
+        assert reopened.embedding_status().verified
+        assert reopened.embedding_status().generation == old_generation
+        assert reopened.search("old index survives")[0][0].content == "old index survives"
+
+
+def test_failed_index_swap_rolls_back_old_vectors_and_metadata(tmp_path: Path) -> None:
+    path = tmp_path / "swap-rollback.db"
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as original:
+        original.add(_drawer("transactional old vector"))
+        old_generation = original.embedding_status().generation
+
+    with DrawerStore(path, _AlternateSpaceProvider()) as replacement:
+        replacement._conn.execute(
+            """
+            CREATE TRIGGER reject_embedding_metadata_update
+            BEFORE UPDATE ON store_metadata
+            BEGIN
+                SELECT RAISE(ABORT, 'intentional metadata failure');
+            END
+            """
+        )
+        with pytest.raises(MemoryStoreError, match="intentional metadata failure"):
+            replacement.reindex_embeddings()
+        replacement._conn.execute("DROP TRIGGER reject_embedding_metadata_update")
+        status = replacement.embedding_status()
+        assert status.state == "mismatch"
+        assert status.vector_dimension == 32
+        assert status.generation == old_generation
+
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as reopened:
+        assert reopened.embedding_status().verified
+        assert reopened.search("transactional old vector")[0][0].content == (
+            "transactional old vector"
+        )
+
+
+def test_future_schema_is_refused_without_mutation(tmp_path: Path) -> None:
+    path = tmp_path / "future.db"
+    conn = sqlite3.connect(path)
+    with conn:
+        conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION + 1}")
+    conn.close()
+
+    with pytest.raises(MemoryStoreError, match="newer"):
+        DrawerStore(path, HashEmbeddingProvider(dimension=32))
+
+    check = sqlite3.connect(path)
+    try:
+        assert check.execute("PRAGMA user_version").fetchone()[0] == SCHEMA_VERSION + 1
+        assert (
+            check.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='drawers'"
+            ).fetchone()
+            is None
+        )
+    finally:
+        check.close()
+
+
+def test_inspection_is_read_only_and_reports_unverified_legacy_index(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "inspect.db"
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)):
+        pass
+    conn = sqlite3.connect(path)
+    with conn:
+        conn.execute("DELETE FROM store_metadata")
+        conn.execute("PRAGMA user_version = 4")
+    conn.close()
+
+    report = inspect_embedding_space(path, HashEmbeddingProvider(dimension=32))
+    assert report.state == "unverified"
+
+    check = sqlite3.connect(path)
+    try:
+        assert check.execute("PRAGMA user_version").fetchone()[0] == 4
+        assert check.execute("SELECT COUNT(*) FROM store_metadata").fetchone()[0] == 0
+    finally:
+        check.close()
+
+
+def test_backup_database_creates_independent_verified_copy(tmp_path: Path) -> None:
+    source = tmp_path / "source.db"
+    destination = tmp_path / "backup.db"
+    provider = HashEmbeddingProvider(dimension=32)
+    with DrawerStore(source, provider) as original:
+        original.add(_drawer("backup before rebuild"))
+
+    assert backup_database(source, destination) == destination
+    report = inspect_embedding_space(destination, provider)
+    assert report.verified
+    assert report.drawer_count == report.vector_count == 1
+
+
+def test_provider_identity_distinguishes_algorithm_model_and_dimension() -> None:
+    hash_32 = embedding_space_id(HashEmbeddingProvider(dimension=32))
+    hash_64 = embedding_space_id(HashEmbeddingProvider(dimension=64))
+    fastembed = embedding_space_id(FastEmbedProvider())
+    assert len({hash_32, hash_64, fastembed}) == 3

@@ -1,12 +1,12 @@
-"""Find ``recipe.toml`` files under the project docs dir + the user's home.
+"""Find project, bundled, and user-level ``recipe.toml`` files.
 
 The CLI uses this to power ``cairntir recipe list``. Two well-known
 locations are scanned:
 
-1. ``<repo-root>/docs/recipes/**/recipe.toml`` — recipes shipped with
-   Cairntir or with the consumer's project.
-2. ``~/.claude/recipes/**/recipe.toml`` — recipes the user has
-   installed for their own use.
+1. ``<repo-root>/docs/recipes/**/recipe.toml`` — project overrides.
+2. ``cairntir/recipes/bundled/**/recipe.toml`` — recipes in the wheel.
+3. ``$CAIRNTIR_HOME/recipes/**/recipe.toml`` — host-neutral user recipes.
+4. ``~/.claude/recipes/**/recipe.toml`` — legacy user recipes.
 
 Both locations are walked with :meth:`pathlib.Path.rglob` so any depth
 of subdirectories works — authors can group recipes by domain.
@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from cairntir.config import cairntir_home
 from cairntir.recipes.contract import RecipeContract, RecipeError, load_recipe
 
 
@@ -35,10 +36,19 @@ def recipe_search_paths() -> list[Path]:
         if candidate.is_dir():
             paths.append(candidate)
             break
-    # User-level.
-    user_dir = Path.home() / ".claude" / "recipes"
-    if user_dir.is_dir():
-        paths.append(user_dir)
+    # Wheel-bundled recipes. In an editable source checkout, the project
+    # docs path above supplies these; built wheels force-include them here.
+    bundled = Path(__file__).resolve().parent / "bundled"
+    if bundled.is_dir() and bundled not in paths:
+        paths.append(bundled)
+    # Host-neutral user recipes, followed by the pre-v1.2 Claude-specific
+    # location for backwards compatibility.
+    for user_dir in (
+        cairntir_home() / "recipes",
+        Path.home() / ".claude" / "recipes",
+    ):
+        if user_dir.is_dir() and user_dir not in paths:
+            paths.append(user_dir)
     return paths
 
 

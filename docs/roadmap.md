@@ -15,7 +15,10 @@
 - First LongMemEval subset eval (target: **80% R@5**)
 
 ## Phase 2 — MCP Server
-- 6 MCP tools over stdio: `remember`, `recall`, `session_start`, `timeline`, `audit`, `crucible`
+- 17 MCP tools over stdio: the eight memory/reasoning tools (`remember`,
+  `recall`, `cross_recall`, `get`, `session_start`, `timeline`, `audit`,
+  `crucible`), six visible-learning/calibration tools, and three CodeGlass
+  teaching/retention tools
 - `.mcp.json` wiring
 - Claude Code plugin manifest + slash commands (`/cairntir:remember`, `/cairntir:recall`, `/cairntir:reason`)
 - Integration tests
@@ -133,6 +136,20 @@ what the v0.2 → v1.0 arc actually taught us.
 
 > *A cairn is useful to a traveler. A cairntir is useful to a civilization.*
 
+On 2026-07-27 Patrick made the personal half of that North Star explicit:
+Cairntir should provide instant recall, recursive learning, and functional
+self-improvement—the more it is used, the more it grows around the user and
+strengthens both the agents and the user's own mind. This is not measured by
+drawer count. It is measured by better recall, calibration, strategies,
+repeated-error avoidance, and human comprehension over time.
+
+The falsifiable architecture and safeguards for that outcome live in
+`plans/evolving-mind.md`.
+
+The growth is never silent. A Discovery Ledger surfaces corroborated emergent
+patterns and capability gains with evidence, while an easy-to-access Human
+Learning Log records how both Cairntir and Patrick's own understanding changed.
+
 v1.0 killed cross-chat amnesia for **one developer's sessions**. v2 kills
 cross-chat amnesia for **every agent, every project, every collaborator
 the memory touches**. The fundamental shift: at v1.0 Cairntir is a
@@ -166,6 +183,40 @@ Five themes, shipped as six versioned phases.
    it's fallen down. The three skills get their own memory of their own
    work.
 
+### v1.2 — Foundation Hardening *(implemented; release-candidate verification active)*
+
+Cairntir is now serving as the memory substrate for an external agent
+system. Before expanding reach, the substrate must fail closed when its
+semantic index, workflow state, or trust boundary is uncertain.
+
+The committed sequence is:
+
+1. BabyTIEROS → BrainStormer → Cairntir feature archaeology, with explicit
+   preserve/replace/reject decisions;
+2. embedding-space identity, mismatch refusal, doctor/reindex, and one
+   production provider path;
+3. Codex, Cursor, and Claude Code continuity over one canonical store and
+   host-neutral MCP contract;
+4. scoped sqlite-vec prefiltering and exact full-drawer retrieval;
+5. durable/idempotent Reason, recipe, and daemon workflows;
+6. provenance, trust, visibility, validity, and prompt-injection boundaries;
+7. release, wheel, dependency, and supply-chain reconciliation;
+8. production-aligned LongMemEval-V2, stale-memory, poisoning, concurrency,
+   recovery, and latency evaluation.
+
+The complete execution contract and ship gates live in
+`plans/v1.2-foundation-hardening.md`. This phase preserves the three-skill
+core, local-first ownership, SQLite default, verbatim floor,
+prediction-bound drawers, append-only evidence, and recipe model.
+
+Implementation is complete in the working tree through durable/idempotent
+workflows, schema-v6 provenance/trust, prompt-safe evidence rendering,
+automated three-adapter continuity, multi-episode discovery proposals,
+calibration, CodeGlass teach-back/retention, and Anthropicer projection. The
+remaining blockers are release operations and real-environment validation:
+live Codex ↔ Cursor ↔ Claude smoke, a live-data migration rehearsal,
+versioning, and publication.
+
 ### v1.1 — Reach *(the post-launch phase)*
 
 - PyPI publish: `pip install cairntir` goes live
@@ -176,7 +227,7 @@ Five themes, shipped as six versioned phases.
 - Fix whatever the first wave of external users breaks
 - Submit to Awesome MCP lists + LongMemEval leaderboard
 
-### v1.2 — Production Reason Loop — **delivered ahead of schedule in v1.1 (2026-04-18), stdlib-only**
+### Production Reason Loop — **delivered ahead of schedule in v1.1 (2026-04-18), stdlib-only**
 
 Shipped in `cairntir.production`: `ManualProposer`, `StoreBackedMemory`,
 `StoreBackedBeliefs`, `NullRunner`. CLI `cairntir reason "<q>" --wing X`
@@ -302,7 +353,7 @@ the structural story, name the constraint that moved, project gains and
 losses, stress-test through Crucible, commit as a prediction-bound
 drawer in a `signals` wing. Every read carries a falsifiable claim; the
 belief-as-distribution scorer tracks calibration across months.
-[docs/recipes/signal-reader/](recipes/signal-reader/)
+[docs/recipes/signal-reader/](recipes/signal-reader/README.md)
 
 ### Candidate recipes *(not committed — surface when demand appears)*
 - **Codebase Autopsy** — read under a PR the same way Signal Reader
