@@ -17,6 +17,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
       - name: Install uv
         uses: astral-sh/setup-uv@8d55fbecc275b1c35dbe060458839f8d30439ccf # v3
         with:
@@ -33,6 +35,8 @@ jobs:
         run: uv run pytest -q
       - name: No silent exceptions
         run: uv run python scripts/check_no_silent_except.py
+      - name: Every changelogged version is tagged
+        run: uv run python scripts/check_release_tags.py
       - name: Strict documentation build
         run: uv run mkdocs build --strict
 
