@@ -54,6 +54,17 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   MCP reply rather than aborting the recall or being silently skipped.
   **Deliberately does not flag staleness** — `symbol_source_hash` is stored and
   never compared, held until rename survival is tested (gate A2).
+- `DrawerStore.add_anchors` plus `cairntir anchor` and `cairntir
+  recall-for-change` CLI commands — the retroactive path. New drawers can carry
+  anchors at write time via `cairntir_remember`, but a corpus written before
+  anchors existed could not participate at all. `add_anchors` is append-only
+  within metadata: existing anchors are kept, duplicates collapse, unrelated
+  metadata is preserved, and the drawer's verbatim content, layer, and belief
+  mass are never touched — the same controlled mutation `update_layer` already
+  performs. A batch containing a malformed entry is rejected before any write,
+  so a partial anchor set is impossible. Backfill is a one-time job and agents
+  can already anchor at write time, so this is CLI-only and the MCP surface
+  stays at 18.
 
 ### Changed
 

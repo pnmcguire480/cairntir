@@ -75,6 +75,84 @@ def test_portable_import_is_idempotent_by_file_content(
         assert [d.content for d in store.list_by()] == ["import exactly once"]
 
 
+def test_anchor_then_recall_for_change_roundtrip(tmp_path: Path, monkeypatch: object) -> None:
+    """The retroactive path end to end: an old drawer becomes structurally recallable."""
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
+    saved = store.add(
+        Drawer(
+            wing="cairntir",
+            room="journey",
+            content="cold start went from twelve minutes to 1.4s by defaulting to fastembed",
+        )
+    )
+    store.close()
+    assert saved.id is not None
+
+    before = runner.invoke(app, ["recall-for-change", "src/cairntir/memory/embeddings.py"])
+    assert before.exit_code == 0, before.output
+    assert "No anchored drawers touch" in before.output
+
+    anchored = runner.invoke(
+        app,
+        [
+            "anchor",
+            str(saved.id),
+            "--path",
+            "src/cairntir/memory/embeddings.py",
+            "--symbol",
+            "production_embedding_provider",
+        ],
+    )
+    assert anchored.exit_code == 0, anchored.output
+    assert "now carries 1 anchor(s)" in anchored.output
+
+    after = runner.invoke(app, ["recall-for-change", "src/cairntir/memory/embeddings.py"])
+    assert after.exit_code == 0, after.output
+    assert f"#{saved.id}" in after.output
+    assert "cold start" in after.output
+
+
+def test_anchor_accepts_multiple_paths(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
+    saved = store.add(Drawer(wing="cairntir", room="journey", content="two files"))
+    store.close()
+    assert saved.id is not None
+
+    result = runner.invoke(
+        app,
+        [
+            "anchor",
+            str(saved.id),
+            "--path",
+            "src/cairntir/cli.py",
+            "--path",
+            "src/cairntir/memory/store.py",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert "now carries 2 anchor(s)" in result.output
+
+
+def test_anchor_unknown_drawer_fails_cleanly(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384)).close()
+
+    result = runner.invoke(app, ["anchor", "9999", "--path", "src/cairntir/cli.py"])
+    assert result.exit_code == 1
+    combined = result.output + (result.stderr or "")
+    assert "no drawer with id" in combined
+
+
+def test_anchor_no_store(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    result = runner.invoke(app, ["anchor", "1", "--path", "src/cairntir/cli.py"])
+    assert result.exit_code == 1
+    combined = (result.output + (result.stderr or "")).lower()
+    assert "no store" in combined
+
+
 def test_cross_recall_no_store(tmp_path: Path, monkeypatch: object) -> None:
     monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
     result = runner.invoke(app, ["cross-recall", "anything"])

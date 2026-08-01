@@ -232,7 +232,7 @@ cairntir/
 │   ├── portable.py         # Signed envelope format (v0.5)
 │   ├── skills/             # crucible.md, quality.md, reason.md
 │   ├── daemon/             # Auto-capture spool watcher
-│   └── cli.py              # cairntir setup | init | recall | status | export | import | migrate
+│   └── cli.py              # cairntir setup | init | recall | recall-for-change | anchor | status | export | import | migrate
 ├── tests/
 │   ├── unit/               # 140+ unit tests
 │   ├── contract/           # Store contract suite — every impl must pass
