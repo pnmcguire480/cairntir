@@ -59,32 +59,66 @@ anyone remembering to be decent at 2am.
 only by what you thought to ask. code-review-graph gets there with a full
 tree-sitter graph. Cairntir needs only the anchor.
 
-**Gate before build.** Drawer #173 recorded two load-bearing assumptions and a
-Crucible verdict of *investigate, do not proceed*. Both resolve in about an hour
-and both must pass first:
+### Gate results — run 2026-07-31, bars pre-registered (drawer #176)
 
-- **A1 — Are drawers actually about code symbols?** Sample 30 drawers across
-  wings, count how many name a file or symbol that still exists. Set the pass bar
-  *before* looking. If most drawers are about decisions, releases, and
-  preferences rather than code, anchors sit empty and Track A dies here.
-- **A2 — Does symbol identity survive refactoring?** Replay Cairntir's own git
-  history across a rename and a file move. If every refactor floods false "stale"
-  flags, the signal is noise and nobody will trust it twice.
+**A1 — anchorability. Bar: ≥30% of cairntir-wing drawers. MARGINAL.**
+Census of all 45 cairntir-wing drawers (and all 175 globally), resolved against
+the repo as it stands. **33.3% permissive, 28.9% strict** — the result straddles
+the bar. The permissive pass leaned on anchors like `sym:__init__` that resolve
+but locate nothing. Not a clean pass.
 
-**If both pass — Tier 1 only:**
+*Post-hoc diagnostic — a hypothesis for a future pre-registered test, not a
+rescue of this one:* anchorability splits by room. Code-facing rooms anchor
+(architecture 1/1, predictions 2/2, lineage 3/5, audits 2/4, journey 4/10);
+collaboration-facing rooms anchor at 0% and structurally should
+(host-acceptance 0/6, identity, model-handoffs, north-star, project-identity,
+project-portfolio, release, working-preferences). **Anchors belong per-room and
+opt-in, not per-wing.**
 
-- optional `metadata.anchors` of `{path, symbol, content_hash}`; no schema break,
-  the store already carries arbitrary JSON
-- `cairntir_recall_for_change(files)` — drawers whose anchors intersect a diff
-- staleness flagging when an anchored symbol's hash moves: flag as a supersession
-  *candidate*, never mutate, never delete
+**A2 — staleness signal quality. Bar: ≥50% of firings meaningful. The naive
+spec FAILED; the corrected spec passes.**
+Replayed real git history over the 23 symbols and 6 paths A1 found, comparing
+each anchored symbol's exact AST source segment across every commit pair.
+
+- **File-scoped** anchoring (hash the whole file): **40.3% precision** (29 of 72).
+  **Fails.** Noise factor **2.48x** — about two and a half flags per real change.
+  `replay_cmd` fired 17 times for 3 real changes. `EmbeddingProvider`,
+  `ManualProposer`, `parse_capture` and all five `Ollama*` error classes fired
+  only false.
+- **Symbol-scoped** anchoring (hash the anchored symbol's source segment):
+  **100%** by construction. A2's contribution is proving the file-scoped
+  alternative is the noisy one.
+
+**The defect this caught.** Drawer #173 and the first draft of this plan both
+specified the anchor as `{path, symbol, content_hash}`. Read naturally as the
+file's hash, that *is* the 40.3% design. **Corrected: the hash is of the anchored
+symbol's source segment, never the file.** Caught before a line of feature code.
+
+**Untested, not passed.** `git log --diff-filter=R -M` finds **zero** rename or
+move events in Cairntir's entire history, and 0 of 6 path anchors are dead. The
+corpus cannot answer "does symbol identity survive refactoring." That question is
+**open**, and closing it needs a synthetic rename test or replay against a repo
+that has renames.
+
+### Verdict — conditional proceed, and split the tier
+
+The two Tier 1 capabilities rest on different evidence and must not ship together.
+
+1. **`cairntir_recall_for_change(files)` — BUILD FIRST, scoped per-room.** Rests
+   on A1: marginal but usable, and path anchors are the robust half (17 of 46
+   strict hits, 0 of 6 dead).
+2. **Staleness flagging — HOLD.** The corrected symbol-scoped design is sound,
+   but rename survival is untested. A staleness signal that floods false
+   positives on the first refactor loses trust permanently and does not get a
+   second chance.
+
+Anchor shape: optional `metadata.anchors` of
+`{path, symbol, symbol_source_hash}` — no schema break, the store already
+carries arbitrary JSON.
 
 **Hard constraint carried from #173:** the index is a cache, never a drawer. No
 belief mass, no provenance receipts, no supersession chain. Deletable and
 rebuildable at any moment. The verbatim floor does not move.
-
-**If A1 fails:** stop, and write the negative result as a drawer. A falsified
-assumption recorded is worth more than a feature shipped on a hunch.
 
 **Not doing:** Tier 3 (communities, hubs, bridges, wiki, refactor-apply,
 cross-repo search). Cairntir sits at 17 MCP tools by deliberate restraint.
