@@ -114,10 +114,30 @@ When a deprecation lands:
 
 ## Versioning
 
-Cairntir follows [Semantic Versioning](https://semver.org/). `1.x.y`
-releases are guaranteed protocol-compatible with `1.0.0` under the
-rules above. A `2.0.0` release may remove any previously deprecated
-surface without further warning.
+Cairntir uses three-segment [Semantic Versioning](https://semver.org/)
+numbering with one deliberate, documented deviation: **a deprecated
+public surface may be removed in a MINOR release** once it has served
+the two-minor warning window above. Strict SemVer would require a MAJOR
+bump for that removal. Cairntir does not take one.
+
+The deviation is safe because the warning window does the work a major
+bump would otherwise do. Nothing public disappears without a
+`CairntirDeprecationWarning`, a named replacement, a `CHANGELOG.md`
+migration note, and at least two minor releases of overlap. You will
+never be surprised; you will be told, in code and in the changelog,
+with time to move.
+
+What `1.x.y` therefore guarantees is **not** permanent surface
+compatibility with `1.0.0`. It guarantees the *process*: no public name
+is removed or retargeted without the full window. Pin a minor version
+and read the changelog before upgrading it, exactly as you would for
+any dependency.
+
+`2.0.0` is **reserved** for a revolutionary change in what Cairntir is,
+not for an accumulation of breaking changes. It may never happen, and
+the minor segment is unbounded — `1.24.0` is an ordinary version. See
+[Release Cadence](release-cadence.md) for the full versioning rules and
+the reasoning behind the reservation.
 
 ## Disputes
 
