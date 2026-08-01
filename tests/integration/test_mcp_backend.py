@@ -34,6 +34,69 @@ def test_remember_then_recall_roundtrip(backend: CairntirBackend) -> None:
     assert "MCP server wired" in hits
 
 
+def test_recall_for_change_surfaces_anchored_drawer(backend: CairntirBackend) -> None:
+    backend.remember(
+        wing="cairntir",
+        room="architecture",
+        content="cold start went from twelve minutes to 1.4s by defaulting to fastembed",
+        metadata={
+            "anchors": [
+                {"path": "src/cairntir/memory/embeddings.py", "symbol": "production_provider"}
+            ]
+        },
+    )
+    backend.remember(wing="cairntir", room="identity", content="unanchored drawer")
+
+    reply = backend.recall_for_change(files=["src/cairntir/memory/embeddings.py"])
+
+    assert "1 anchored drawer(s)" in reply
+    assert "via src/cairntir/memory/embeddings.py:production_provider" in reply
+    assert "cold start" in reply
+    assert "unanchored drawer" not in reply
+    # Recalled content must ride inside the prompt-safety evidence boundary.
+    assert "instruction_authority" in reply
+
+
+def test_recall_for_change_reports_no_match_without_failing(backend: CairntirBackend) -> None:
+    backend.remember(
+        wing="cairntir",
+        room="architecture",
+        content="anchored elsewhere",
+        metadata={"anchors": [{"path": "src/cairntir/cli.py"}]},
+    )
+    reply = backend.recall_for_change(files=["src/cairntir/memory/store.py"])
+    assert "No anchored drawers touch" in reply
+    assert "Scanned 1 anchored drawer(s)" in reply
+
+
+def test_recall_for_change_warns_about_malformed_anchors(backend: CairntirBackend) -> None:
+    """A malformed anchor must be visible in the reply, never silently dropped."""
+    backend.remember(
+        wing="cairntir",
+        room="architecture",
+        content="good",
+        metadata={"anchors": [{"path": "src/cairntir/cli.py"}]},
+    )
+    backend.remember(
+        wing="cairntir",
+        room="architecture",
+        content="bad",
+        metadata={"anchors": [{"symbol": "missing path"}]},
+    )
+    reply = backend.recall_for_change(files=["src/cairntir/cli.py"])
+    assert "WARNING" in reply
+    assert "malformed metadata.anchors" in reply
+    assert "#2" in reply
+
+
+@pytest.mark.parametrize("files", [[], [""], ["  "]])
+def test_recall_for_change_rejects_empty_file_list(
+    backend: CairntirBackend, files: list[str]
+) -> None:
+    with pytest.raises(MCPError, match="at least one non-empty file path"):
+        backend.recall_for_change(files=files)
+
+
 def test_recall_receipt_links_to_complete_verbatim_get(backend: CairntirBackend) -> None:
     content = "A deliberately long educational drawer. " + ("evidence " * 40)
     backend.remember(

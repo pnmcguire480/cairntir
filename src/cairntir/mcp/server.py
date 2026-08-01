@@ -130,6 +130,37 @@ def _tool_specs() -> list[types.Tool]:
             },
         ),
         types.Tool(
+            name="cairntir_recall_for_change",
+            description=(
+                "Structural recall: given the files a change touches, return the "
+                "drawers anchored to them. Answers the question the caller did NOT "
+                "think to ask. Only drawers carrying metadata.anchors participate, "
+                "so an empty result means nothing was ever written about those "
+                "files. Does not flag staleness."
+            ),
+            inputSchema={
+                "type": "object",
+                "required": ["files"],
+                "properties": {
+                    "files": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "minItems": 1,
+                        "description": (
+                            "Changed file paths. Absolute or repo-relative, either separator style."
+                        ),
+                    },
+                    "wing": {"type": "string"},
+                    "rooms": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Optional narrowing to known code-facing rooms.",
+                    },
+                    "limit": {"type": "integer", "default": 20, "minimum": 1},
+                },
+            },
+        ),
+        types.Tool(
             name="cairntir_session_start",
             description=(
                 "Load 4-layer context plus active discoveries for a wing. "
@@ -430,6 +461,8 @@ def _dispatch(backend: CairntirBackend, name: str, args: dict[str, Any]) -> str:
             return backend.get(**args)
         case "cairntir_cross_recall":
             return backend.cross_recall(**args)
+        case "cairntir_recall_for_change":
+            return backend.recall_for_change(**args)
         case "cairntir_session_start":
             return backend.session_start(**args)
         case "cairntir_discover":

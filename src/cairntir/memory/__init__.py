@@ -7,6 +7,14 @@ for persistence, :mod:`cairntir.memory.embeddings` for embedding providers, and
 
 from __future__ import annotations
 
+from cairntir.memory.anchors import (
+    Anchor,
+    AnchorMatch,
+    ChangeRecall,
+    parse_anchors,
+    paths_intersect,
+    recall_for_change,
+)
 from cairntir.memory.belief import effective_distance, rerank_results
 from cairntir.memory.consolidate import (
     Contradiction,
@@ -25,6 +33,9 @@ from cairntir.memory.store import DrawerStore
 from cairntir.memory.taxonomy import Drawer, Layer
 
 __all__ = [
+    "Anchor",
+    "AnchorMatch",
+    "ChangeRecall",
     "Contradiction",
     "Drawer",
     "DrawerStore",
@@ -39,5 +50,8 @@ __all__ = [
     "demote_stale",
     "detect_contradictions",
     "effective_distance",
+    "parse_anchors",
+    "paths_intersect",
+    "recall_for_change",
     "rerank_results",
 ]

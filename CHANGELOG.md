@@ -41,8 +41,26 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   its grammars, and 27 of its 30 MCP tools — and says plainly that his tool is
   the better fit for any question about the code itself.
 
+- `cairntir_recall_for_change(files)` and `cairntir.memory.anchors` — structural
+  recall. Given the files a change touches, surface the drawers anchored to
+  them: the question the caller did not think to ask. Anchors are optional
+  `metadata.anchors` entries of `{path, symbol, symbol_source_hash}`, so there
+  is **no schema change, no migration, no parser, and no new dependency** — the
+  store already carries arbitrary JSON. Paths match across separator styles and
+  absolute-vs-relative, at segment boundaries so `cli.py` cannot match
+  `fastcli.py`. Drawers with no anchors never match, which is the opt-in
+  mechanism: anchorability splits per-room (gate A1), and rooms that shouldn't
+  anchor simply don't. Malformed anchors are reported on the result and in the
+  MCP reply rather than aborting the recall or being silently skipped.
+  **Deliberately does not flag staleness** — `symbol_source_hash` is stored and
+  never compared, held until rename survival is tested (gate A2).
+
 ### Changed
 
+- MCP tool surface is now **18** (was 17), and `TOOL_SURFACE_VERSION` moves to
+  `"18"` so new writes stamp the surface that produced them. The single added
+  tool is `cairntir_recall_for_change`; 27 of code-review-graph's 30 tools were
+  deliberately not taken.
 - Stated the versioning policy honestly. `2.0.0` is reserved for a
   revolutionary change in what Cairntir is; a deprecated public surface may be
   removed in a MINOR release after the existing two-minor warning window. This
