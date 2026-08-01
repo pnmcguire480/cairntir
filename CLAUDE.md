@@ -13,8 +13,8 @@
 - **One-liner:** Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia.
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
-- **Repo:** `c:\Dev\Cairntir\` (local — GitHub push pending)
-- **Stage:** v1.1.3 published → **v1.2.0 release candidate** (local verification, live reindex, and real three-host smoke complete; CI/tag/publish pending)
+- **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
+- **Stage:** **v1.2.0 published** 2026-08-01 (PyPI + GitHub release, both artifacts attested). Latest on PyPI is `1.2.0`; the four live releases are 1.0.0, 1.1.0, 1.1.2, 1.2.0. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`, which now fails the build if that happens again.
 
 ---
 
@@ -69,6 +69,15 @@ Cairntir is the distillation of two predecessors:
 
 **The merge:** MemPalace gives us memory. BrainStormer gives us reasoning vocabulary. Cairntir is both, simplified, opinionated, and shipped.
 
+**Under assessment (not yet adopted):** `plans/next-map.md` scopes two further
+sources — [code-review-graph](https://github.com/tirth8205/code-review-graph)
+(structural anchors) and [mattpocock/skills](https://github.com/mattpocock/skills)
+(shared-vocabulary glossary) — and states the binding attribution contract for
+every future source: concepts never code, a lineage doc before a line of code,
+credit by name, never restate their benchmarks as ours, never position as
+"better than," and say plainly when their tool is the better fit. Full
+assessment of code-review-graph is in drawer #173.
+
 ---
 
 ## Recipes (post-v1.0)
@@ -101,6 +110,48 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-07-31 (**v1.2.0 SHIPPED — and the release gap that hid 1.1.3 for three months**)
+- **What was accomplished:**
+  - **v1.2.0 is public.** Tag `v1.2.0` on `eaad14b`; `main` fast-forwarded from
+    `b7f384e` (the RC branch was a strict superset — 6 ahead, 0 behind — so no
+    merge commit). Release run `30675705402` green across all four jobs. Live on
+    PyPI (`1.2.0` is latest) and as a GitHub release, both artifacts carrying
+    build-provenance attestations. Pre-flight CI run `30427672275` was green on
+    *exactly* the tagged commit: 9-job matrix (ubuntu/macos/windows ×
+    py3.11/3.12/3.13) plus lint, LongMemEval R@5 gate, and package build.
+  - **Found: 1.0.1 and 1.1.3 were never released.** Both were committed and
+    changelogged; neither was ever tagged; the release workflow fires only on a
+    pushed `v*.*.*` tag, so neither reached PyPI. Commit `325547c` — the
+    cold-start fix taking first-run from ~12 min to 1.4s — sat unpublished from
+    2026-05-03 to 2026-08-01 while every `pip install cairntir` kept resolving
+    to 1.1.2 and hanging. Downloads at the time of discovery: 33/month, 4/week,
+    0/day. This is a mechanical cause of the "no visibility" problem that
+    precedes any marketing question. Verified `325547c` is an ancestor of
+    `eaad14b`, so 1.2.0 closes it.
+  - **Guarded against recurrence.** New `scripts/check_release_tags.py` fails
+    when a released changelog header has no matching tag. The in-flight
+    `pyproject` version is exempt (the header is written before the tag, which
+    is the normal order) and the two historical gaps are recorded in
+    `KNOWN_UNRELEASED` rather than hidden. Wired into the CI lint job and the
+    release verification gate; both now check out with `fetch-depth: 0`.
+    `tests/unit/test_release_tags.py` covers it and skips on shallow clones so
+    forks fail on defects, not on clone depth. CHANGELOG entries for 1.0.1 and
+    1.1.3 now say plainly that they were never released.
+  - **Deliberately NOT done:** retroactively tagging 1.0.1/1.1.3. Pushing either
+    tag would re-fire the release workflow against a stale commit and publish a
+    months-old build. They stay changelog-only, annotated.
+  - **Open decision for Patrick:** the `main` push reported
+    `Bypassed rule violations for refs/heads/main` — branch protection wants a PR
+    plus 2 status checks and admin overrode it. Either releases go through a PR
+    or the rule should be relaxed to match practice. Right now the rule exists
+    but does not bind.
+  - **Memory:** drawer #173 (code-review-graph lineage assessment, deferred),
+    drawer #174 (the release + the 1.1.3 correction, essential layer).
+- **Next session:** `plans/next-map.md` — the ethically-scoped plan drawing on
+  code-review-graph and mattpocock/skills. Attribution and lineage docs come
+  before any code.
+
+- **Prior session — 2026-07-29 (v1.2.0 live three-host acceptance complete):**
 - **Date:** 2026-07-29 (**v1.2.0 live three-host acceptance complete**)
 - **What was accomplished:** Closed the modernization arc at a safe,
   reviewable release boundary.

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `scripts/check_release_tags.py` — fails when a released `## [x.y.z]` changelog
+  header has no matching `vx.y.z` git tag. The version in `pyproject.toml` is
+  exempt while a release is in flight, and the two historically untagged
+  versions (1.0.1, 1.1.3) are recorded explicitly rather than hidden. Wired into
+  the CI lint job and the release verification gate, both of which now check out
+  with `fetch-depth: 0` so tags are visible.
+
+### Fixed
+
+- Marked 1.0.1 and 1.1.3 in this changelog as never released. Both were
+  committed and changelogged but never tagged, so neither reached PyPI.
+
 ## [1.2.0] — 2026-07-28
 
 ### Added — Foundation hardening, multi-host continuity, and visible learning
@@ -404,6 +418,13 @@ silent-except scanner clean.
 
 ## [1.1.3] — 2026-05-03
 
+> **Never released.** This version was committed and changelogged but never
+> tagged, so the release workflow — which fires only on a pushed `v*.*.*` tag —
+> never ran. It never reached PyPI. The cold-start fix described below finally
+> shipped inside **1.2.0** on 2026-08-01, three months later; until then every
+> `pip install cairntir` resolved to 1.1.2 and hung on first run. Guarded
+> against recurrence by `scripts/check_release_tags.py`.
+
 **The cold-start fix that should have happened four commits ago.**
 
 Five prior commits chased variants of the same symptom — the MCP
@@ -672,6 +693,10 @@ inference provider that would double-bill the user.
   doesn't crash the tool response.
 
 ## [1.0.1] — 2026-04-17
+
+> **Never released.** Committed and changelogged but never tagged, so it never
+> reached PyPI. The work below is present in every later version. Guarded
+> against recurrence by `scripts/check_release_tags.py`.
 
 Install hardening. The 1.0.0 install model pinned the MCP registration
 to `sys.executable`, which silently broke whenever a venv moved, was
