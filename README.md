@@ -284,14 +284,24 @@ the other project is the better fit.
 | **[MemPalace](https://github.com/milla-jovovich/mempalace)** by [@milla-jovovich](https://github.com/milla-jovovich) | Wing / room / drawer taxonomy, 4-layer retrieval, verbatim storage | Shipped — [lineage](docs/lineage/mempalace.md) |
 | **BrainStormer** (the author's own prior attempt) | Reasoning vocabulary — Crucible, Quality, ETHOS | Shipped — [lineage](docs/lineage/brainstormer.md) |
 | **[mattpocock/skills](https://github.com/mattpocock/skills)** by [@mattpocock](https://github.com/mattpocock) | The premise that a shared project vocabulary is a first-class artifact | **Scoped, not built** — [lineage](docs/lineage/mattpocock-skills.md) |
+| **[code-review-graph](https://github.com/tirth8205/code-review-graph)** by [@tirth8205](https://github.com/tirth8205) | Structural recall — memory reachable by what you're changing, not only what you asked | **In progress** — [lineage](docs/lineage/code-review-graph.md) |
 
-On that last one, plainly: **mattpocock/skills is the better tool for most
-people right now.** If you want engineering practices your agent will actually
-follow — test-first discipline, structured debugging, real code review, triage —
-install his, not ours. Cairntir has no equivalent and isn't building one. The
-two compose rather than compete: his skills make an agent better *within* a
-session, and none of them — none of anyone's — remember anything after that
-session ends. That gap is the layer Cairntir works on.
+On the two current sources, plainly:
+
+**mattpocock/skills is the better tool for most people right now.** If you want
+engineering practices your agent will actually follow — test-first discipline,
+structured debugging, real code review, triage — install his, not ours. Cairntir
+has no equivalent and isn't building one. The two compose rather than compete:
+his skills make an agent better *within* a session, and none of them — none of
+anyone's — remember anything after that session ends. That gap is the layer
+Cairntir works on.
+
+**code-review-graph is the better tool whenever the question is about your code
+rather than about your collaboration.** What a change breaks, which modules
+cluster, where the architectural bridges are, risk-scored PR comments — Cairntir
+answers none of that and isn't going to. It runs happily as a second MCP server
+alongside Cairntir; that's a supported setup, not a fallback. Cairntir reads what
+you *said about* your code, never the code itself.
 
 ---
 

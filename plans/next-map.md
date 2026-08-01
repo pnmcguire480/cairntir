@@ -139,8 +139,15 @@ cross-repo search). Cairntir sits at 17 MCP tools by deliberate restraint.
 Anyone who wants that surface should run code-review-graph — it is MIT, actively
 maintained, and better at it than a reimplementation would be.
 
-**Attribution deliverable:** `docs/lineage/code-review-graph.md`, same format as
-`mempalace.md`, written *before* Tier 1 code.
+**Attribution deliverable — DELIVERED 2026-08-01:**
+`docs/lineage/code-review-graph.md`, same format as `mempalace.md`, written
+*before* Tier 1 code. It also corrects this plan's and drawer #173's
+characterization of his benchmarks as *"inflated by a strawman."* That was too
+harsh: he names his baseline plainly, publicly corrects people who over-quote his
+best number in his favor, states the impact-analysis circularity in his own
+README, and publishes results that make his tool look worse (MRR 0.35, flow
+recall 33%, small changes costing more than a naive read). The surviving note is
+a disagreement about which baseline is representative, not an accusation.
 
 ## Track B — The glossary drawer (from mattpocock/skills)
 

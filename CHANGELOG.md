@@ -32,6 +32,14 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   Written before any glossary-drawer code, per the project's attribution
   contract. Says plainly that his skills are the better tool for most people and
   that Cairntir is not building an equivalent.
+- `docs/lineage/code-review-graph.md` — attribution for
+  [code-review-graph](https://github.com/tirth8205/code-review-graph) by Tirth
+  Kanani ([@tirth8205](https://github.com/tirth8205)), for the idea that recall
+  should be triggerable by what you are touching rather than only by what you
+  thought to ask. Written before any `recall_for_change` code, per the
+  attribution contract. Records what Cairntir is *not* taking — tree-sitter and
+  its grammars, and 27 of its 30 MCP tools — and says plainly that his tool is
+  the better fit for any question about the code itself.
 
 ### Changed
 
@@ -58,6 +66,13 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   the file's `## Flagged ambiguities` section records resolved terminology
   conflicts and their resolutions, which is exactly that. Corrected in the plan
   and in the lineage doc rather than quietly edited away.
+- Corrected an unfairly harsh characterization of `code-review-graph` in
+  `plans/next-map.md` and drawer #173, which called its token-reduction
+  benchmark "inflated by a strawman." He names his baseline plainly, publicly
+  corrects people who over-quote his best number in his favor, states the
+  impact-analysis circularity in his own README, and publishes results that make
+  his tool look worse. The surviving point is a disagreement about which baseline
+  is representative, not an accusation of bad faith.
 
 ## [1.2.0] — 2026-07-28
 
