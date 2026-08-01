@@ -270,6 +270,31 @@ Full story: **[docs/conception.md](docs/conception.md)**.
 
 ---
 
+## Standing on other people's work
+
+Cairntir borrows concepts, never code. Every source gets a lineage doc naming
+the author, what we kept, and — the part that actually matters — **what we
+dropped and why**. The doc lands *before* the feature it credits, so it is
+structurally impossible to ship first and credit afterward. We never reuse
+anyone's benchmark numbers as our own, and every lineage doc says plainly when
+the other project is the better fit.
+
+| Source | What Cairntir took | Status |
+|---|---|---|
+| **[MemPalace](https://github.com/milla-jovovich/mempalace)** by [@milla-jovovich](https://github.com/milla-jovovich) | Wing / room / drawer taxonomy, 4-layer retrieval, verbatim storage | Shipped — [lineage](docs/lineage/mempalace.md) |
+| **BrainStormer** (the author's own prior attempt) | Reasoning vocabulary — Crucible, Quality, ETHOS | Shipped — [lineage](docs/lineage/brainstormer.md) |
+| **[mattpocock/skills](https://github.com/mattpocock/skills)** by [@mattpocock](https://github.com/mattpocock) | The premise that a shared project vocabulary is a first-class artifact | **Scoped, not built** — [lineage](docs/lineage/mattpocock-skills.md) |
+
+On that last one, plainly: **mattpocock/skills is the better tool for most
+people right now.** If you want engineering practices your agent will actually
+follow — test-first discipline, structured debugging, real code review, triage —
+install his, not ours. Cairntir has no equivalent and isn't building one. The
+two compose rather than compete: his skills make an agent better *within* a
+session, and none of them — none of anyone's — remember anything after that
+session ends. That gap is the layer Cairntir works on.
+
+---
+
 ## The horizon
 
 This section is mythos, not a commitment. But every contributor deserves to know what Cairntir is ultimately pointed at.

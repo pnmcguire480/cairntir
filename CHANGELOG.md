@@ -25,6 +25,13 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   commit vs. merge vs. tag, when a release is warranted, the rule that anything
   breaking install or first run ships immediately as a patch, and how the
   version number is chosen.
+- `docs/lineage/mattpocock-skills.md` — attribution for
+  [mattpocock/skills](https://github.com/mattpocock/skills) by
+  [@mattpocock](https://github.com/mattpocock), whose `CONTEXT.md` demonstrated
+  that a shared project vocabulary is worth treating as a first-class artifact.
+  Written before any glossary-drawer code, per the project's attribution
+  contract. Says plainly that his skills are the better tool for most people and
+  that Cairntir is not building an equivalent.
 
 ### Changed
 
@@ -46,6 +53,11 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   warning-window rule permitted removing a deprecated surface in a minor
   release. The guarantee is now stated as what it actually is: a guarantee of
   process, not of permanent surface stability.
+- Corrected an unfair characterization of `mattpocock/skills` in
+  `plans/next-map.md`. It claimed his `CONTEXT.md` approach "has no provenance";
+  the file's `## Flagged ambiguities` section records resolved terminology
+  conflicts and their resolutions, which is exactly that. Corrected in the plan
+  and in the lineage doc rather than quietly edited away.
 
 ## [1.2.0] — 2026-07-28
 

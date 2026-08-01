@@ -78,6 +78,11 @@ credit by name, never restate their benchmarks as ours, never position as
 "better than," and say plainly when their tool is the better fit. Full
 assessment of code-review-graph is in drawer #173.
 
+**Attribution status:** `docs/lineage/mattpocock-skills.md` is **written**
+(2026-08-01), before any glossary-drawer code, per the contract.
+`docs/lineage/code-review-graph.md` is **still owed** and must land before
+`recall_for_change` — which is the ratified next build.
+
 ---
 
 ## Recipes (post-v1.0)
