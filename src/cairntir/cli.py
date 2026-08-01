@@ -307,6 +307,68 @@ def get_cmd(drawer_id: int) -> None:
         raise typer.Exit(code=1) from exc
 
 
+@app.command("anchor")
+def anchor_cmd(
+    drawer_id: int,
+    path: list[str] = typer.Option(  # noqa: B008 — Typer declares options at import time
+        ..., "--path", "-p", help="Repo-relative code path. Repeat for several."
+    ),
+    symbol: str | None = typer.Option(
+        None, "--symbol", "-s", help="Optional function/class name, applied to every --path."
+    ),
+) -> None:
+    """Attach structural anchors to an existing drawer.
+
+    Anchored drawers surface from `cairntir recall-for-change` when those
+    files change. New drawers can carry anchors at write time; this is the
+    retroactive path for a corpus written before anchors existed.
+
+    Append-only: existing anchors are kept, duplicates collapse, and the
+    drawer's verbatim content is never touched.
+    """
+    if not db_path().exists():
+        typer.echo("cairntir: no store yet — nothing to anchor.", err=True)
+        raise typer.Exit(code=1)
+    entries: list[dict[str, Any]] = []
+    for raw in path:
+        entry: dict[str, Any] = {"path": raw}
+        if symbol:
+            entry["symbol"] = symbol
+        entries.append(entry)
+    try:
+        merged = _open_store().add_anchors(drawer_id, entries)
+    except MemoryStoreError as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"Drawer #{drawer_id} now carries {len(merged)} anchor(s):")
+    for item in merged:
+        label = item["path"] if not item.get("symbol") else f"{item['path']}:{item['symbol']}"
+        typer.echo(f"  {label}")
+
+
+@app.command("recall-for-change")
+def recall_for_change_cmd(
+    files: list[str],
+    wing: str | None = typer.Option(None, "--wing", "-w", help="Scope to a wing (project)."),
+    limit: int = typer.Option(20, "--limit", "-n", help="Max results to return."),
+) -> None:
+    """Surface drawers anchored to the files a change touches.
+
+    Structural recall: answers the question you did not think to ask. Only
+    drawers carrying anchors participate, so empty output means nothing was
+    ever written about those files.
+    """
+    if not db_path().exists():
+        typer.echo("cairntir: no store yet — nothing to recall.", err=True)
+        raise typer.Exit(code=1)
+    backend = _backend()
+    try:
+        typer.echo(backend.recall_for_change(files=files, wing=wing, limit=limit))
+    except (MCPError, MemoryStoreError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+
 @app.command("cross-recall")
 def cross_recall_cmd(
     query: str,

@@ -15,7 +15,7 @@ import os
 import re
 import sqlite3
 import struct
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -1148,6 +1148,59 @@ class DrawerStore:
                 )
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"failed to update layer for drawer {drawer_id}: {exc}") from exc
+
+    def add_anchors(
+        self, drawer_id: int, anchors: Sequence[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
+        """Attach structural anchors to an existing drawer. Returns the merged list.
+
+        Anchors point a drawer at a code location so
+        :func:`cairntir.memory.anchors.recall_for_change` can surface it when
+        that file changes. New drawers can carry anchors at write time; this
+        exists for the retroactive case — a corpus written before anchors
+        existed cannot otherwise participate at all.
+
+        **Append-only, and content is never touched.** Existing anchors are
+        preserved, duplicates are collapsed, and nothing is removed. This is
+        the same controlled mutation :meth:`update_layer` already performs:
+        retrieval routing changes, the verbatim floor does not.
+        """
+        drawer = self.get(drawer_id)
+        if drawer is None:
+            raise MemoryStoreError(f"no drawer with id {drawer_id} to add_anchors")
+
+        merged: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        existing = drawer.metadata.get("anchors")
+        candidates: list[Any] = list(existing) if isinstance(existing, list) else []
+        candidates.extend(anchors)
+        for entry in candidates:
+            if not isinstance(entry, dict):
+                raise MemoryStoreError(
+                    f"anchor entries must be objects, got {type(entry).__name__}"
+                )
+            path = entry.get("path")
+            if not isinstance(path, str) or not path.strip():
+                raise MemoryStoreError("each anchor requires a non-empty string 'path'")
+            fingerprint = f"{path}\x00{entry.get('symbol') or ''}"
+            if fingerprint in seen:
+                continue
+            seen.add(fingerprint)
+            merged.append(entry)
+
+        metadata = {**drawer.metadata, "anchors": merged}
+        payload = json.dumps(metadata, ensure_ascii=False, sort_keys=True)
+        try:
+            with self._write_scope():
+                cur = self._conn.execute(
+                    "UPDATE drawers SET metadata = ? WHERE id = ?",
+                    (payload, drawer_id),
+                )
+                if cur.rowcount == 0:
+                    raise MemoryStoreError(f"no drawer with id {drawer_id} to add_anchors")
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"failed to add anchors to drawer {drawer_id}: {exc}") from exc
+        return merged
 
     def reinforce(self, drawer_id: int, *, amount: float = 1.0) -> float:
         """Raise a drawer's ``belief_mass`` by ``amount``. Returns the new mass.
