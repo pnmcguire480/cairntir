@@ -1,52 +1,65 @@
 # Publish Checklist — releasing Cairntir
 
-This is the canonical release sequence. Code completion never authorizes
-publication. Pushing a `v*.*.*` tag starts the trusted-publishing workflow, so
-the tag is an explicit human gate.
+This is the canonical release sequence — *how* to publish, once publishing has
+been decided. Whether a release is warranted at all, and which version number it
+gets, is [Release Cadence](release-cadence.md).
 
-## Current release candidate — v1.2.0
+Code completion never authorizes publication. Pushing a `v*.*.*` tag starts the
+trusted-publishing workflow, so the tag is an explicit human gate.
+
+## Per-release acceptance
+
+This is a template. Copy it into the release's own evidence document under
+`docs/release/` and check items off *there* — leave the boxes here unchecked so
+the next release starts from a clean list.
 
 Automated acceptance:
 
-- [x] all tests, including the opt-in semantic eval
-- [x] Ruff lint and format
-- [x] mypy strict
-- [x] silent-exception scanner
-- [x] public API and Store contract suites
-- [x] strict MkDocs build
-- [x] sdist and wheel build
-- [x] isolated wheel install, redirected Windows help, and bundled-recipe smoke
-- [x] workflow YAML parses and all external actions use immutable SHAs
+- [ ] all tests, including the opt-in semantic eval
+- [ ] Ruff lint and format
+- [ ] mypy strict
+- [ ] silent-exception scanner
+- [ ] release tag check (`scripts/check_release_tags.py`)
+- [ ] public API and Store contract suites
+- [ ] strict MkDocs build
+- [ ] sdist and wheel build
+- [ ] isolated wheel install, redirected Windows help, and bundled-recipe smoke
+- [ ] workflow YAML parses and all external actions use immutable SHAs
 
 Operational acceptance:
 
-- [x] schema-v6 migration/reindex rehearsed on an online backup of the real
+- [ ] any schema migration/reindex rehearsed on an online backup of the real
       database; drawer count and full-table SHA-256 preserved
-- [x] project-local Claude/Codex/Cursor MCP and policy configuration reports
+- [ ] project-local Claude/Codex/Cursor MCP and policy configuration reports
       ready
-- [x] real Claude Code MCP health check connects through
+- [ ] real Claude Code MCP health check connects through
       `cairntir-mcp --host claude`
-- [x] live database reindex explicitly approved and verified
-- [ ] restart Codex and Claude so they reload v1.2 host provenance
+- [ ] live database reindex explicitly approved and verified, if one is needed
+- [ ] restart Codex and Claude so they reload the new host provenance
 - [ ] run Cursor smoke when Cursor is installed; automated adapter coverage
       remains the release fallback
 
 Release operations:
 
-- [x] create the local `codex/v1.2.0-rc` branch and conventional checkpoints
-- [x] review the release-candidate diff, secret patterns, and local-only
+- [ ] create the release-candidate branch and conventional checkpoints
+- [ ] review the release-candidate diff, secret patterns, and local-only
       artifacts
-- [ ] push the release-candidate branch
+- [ ] push the release-candidate branch and open its pull request
 - [ ] wait for CI on every supported operating system and Python version
-- [ ] merge the reviewed release candidate
-- [ ] with Patrick's explicit approval, create and push `v1.2.0`
+- [ ] merge the reviewed release candidate through the pull request, never by
+      pushing directly to `main`
+- [ ] with Patrick's explicit approval, create and push the version tag
 - [ ] confirm the GitHub Release, PyPI Trusted Publishing, and provenance
       attestations
-- [ ] install `cairntir==1.2.0` from PyPI in a fresh environment and run
+- [ ] install the published version from PyPI in a fresh environment and run
       `cairntir version`, `cairntir --help`, and `cairntir recipe-list`
 
-Evidence and known limits live in
-[`docs/release/v1.2.0-rc.md`](release/v1.2.0-rc.md).
+## Past release records
+
+Evidence and known limits for each shipped release live under `docs/release/`.
+The most recent is
+[`docs/release/v1.2.0-rc.md`](release/v1.2.0-rc.md) — v1.2.0, published
+2026-08-01.
 
 ## Local verification
 

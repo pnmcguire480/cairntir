@@ -3,7 +3,13 @@
 All notable changes to Cairntir will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project uses three-segment
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html) numbering with one
+documented deviation: a deprecated public surface may be removed in a MINOR
+release after the two-minor warning window, rather than requiring a MAJOR bump.
+`2.0.0` is reserved for a revolutionary change in what Cairntir is. See
+[docs/release-cadence.md](docs/release-cadence.md) and
+[docs/deprecation-policy.md](docs/deprecation-policy.md).
 
 ## [Unreleased]
 
@@ -15,11 +21,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   versions (1.0.1, 1.1.3) are recorded explicitly rather than hidden. Wired into
   the CI lint job and the release verification gate, both of which now check out
   with `fetch-depth: 0` so tags are visible.
+- `docs/release-cadence.md` — the release cadence and versioning policy. Defines
+  commit vs. merge vs. tag, when a release is warranted, the rule that anything
+  breaking install or first run ships immediately as a patch, and how the
+  version number is chosen.
+
+### Changed
+
+- Stated the versioning policy honestly. `2.0.0` is reserved for a
+  revolutionary change in what Cairntir is; a deprecated public surface may be
+  removed in a MINOR release after the existing two-minor warning window. This
+  is a documented deviation from strict SemVer, not a new rule — the
+  deprecation policy already permitted minor-release removal.
+- `docs/publish-checklist.md` now reads as a reusable per-release checklist
+  rather than a frozen v1.2.0 worksheet. The v1.2.0 evidence record stays in
+  `docs/release/v1.2.0-rc.md`.
 
 ### Fixed
 
 - Marked 1.0.1 and 1.1.3 in this changelog as never released. Both were
   committed and changelogged but never tagged, so neither reached PyPI.
+- Resolved a self-contradiction in `docs/deprecation-policy.md`. Its versioning
+  section guaranteed `1.x.y` protocol compatibility with `1.0.0` while its own
+  warning-window rule permitted removing a deprecated surface in a minor
+  release. The guarantee is now stated as what it actually is: a guarantee of
+  process, not of permanent surface stability.
 
 ## [1.2.0] — 2026-07-28
 

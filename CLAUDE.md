@@ -140,11 +140,14 @@ under `docs/recipes/` and earn their place by use, not by governance.
   - **Deliberately NOT done:** retroactively tagging 1.0.1/1.1.3. Pushing either
     tag would re-fire the release workflow against a stale commit and publish a
     months-old build. They stay changelog-only, annotated.
-  - **Open decision for Patrick:** the `main` push reported
-    `Bypassed rule violations for refs/heads/main` — branch protection wants a PR
-    plus 2 status checks and admin overrode it. Either releases go through a PR
-    or the rule should be relaxed to match practice. Right now the rule exists
-    but does not bind.
+  - **RESOLVED 2026-08-01 — releases go through a pull request.** The `main`
+    push had reported `Bypassed rule violations for refs/heads/main` because it
+    went straight to `main`, skipping the PR. The rule is not onerous: it wants
+    a PR plus `Build Package` and `LongMemEval R@5 Gate`, and **zero approving
+    reviews**. For a solo maintainer that is one click. PR #16 was merged
+    through it with no bypass. Go through the branch, never around it — `main`
+    is what the release workflow builds from, so the full matrix must be green
+    before `main` moves. The rule stays as configured.
   - **Memory:** drawer #173 (code-review-graph lineage assessment, deferred),
     drawer #174 (the release + the 1.1.3 correction, essential layer).
 - **Next session:** `plans/next-map.md` — the ethically-scoped plan drawing on
@@ -613,6 +616,8 @@ under `docs/recipes/` and earn their place by use, not by governance.
 5. **Small commits, conventional format.** `feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`.
 6. **Every exception is typed and surfaced.** No silent `except: pass`. Ever. CI will fail you.
 7. **Update "Last Session" below** at the end of every working session.
+8. **Land work on `main` through a pull request.** Zero reviews are required — it is one click — and it keeps the full matrix green before `main` moves.
+9. **Before closing a session, check `## [Unreleased]` for a `Fixed` entry a current user is hitting.** If there is one, that is a patch release now. See `docs/release-cadence.md`.
 
 ### Must Not
 1. **Never import code from BrainStormer or MemPalace.** Lineage is reference material, not source. We reimplement.
@@ -620,6 +625,8 @@ under `docs/recipes/` and earn their place by use, not by governance.
 3. **Never hardcode paths.** Use `Path.home()`, `platformdirs`, or config.
 4. **Never add dependencies** not listed in `pyproject.toml` without discussion.
 5. **Never modify `lineage/`** — it's read-only history.
+6. **Never treat a changelog entry as a release.** Only a pushed `v*.*.*` tag publishes. This gap silently swallowed 1.0.1 and 1.1.3.
+7. **Never propose `2.0.0` for a merely breaking change.** It is reserved for a revolutionary change in what Cairntir is. Deprecated surfaces are removed in a MINOR after the two-minor window.
 
 ### When Uncertain
 - Stop and ask. A question is cheaper than a wrong assumption.
@@ -651,8 +658,10 @@ under `docs/recipes/` and earn their place by use, not by governance.
 7. `HARNESS_AUDIT.md` — 12-primitive gap analysis (the rebuild justification)
 8. `plans/purrfect-drifting-sparrow.md` — execution plan
 9. `lineage/brainstormer/project_v1_realization.md` — "The Big Realization"
+10. `docs/release-cadence.md` — commit vs. merge vs. tag, when to release, how
+    the version number is chosen
 
-Reading all 9 in a fresh chat should produce full context awareness. That's the sniff test.
+Reading all 10 in a fresh chat should produce full context awareness. That's the sniff test.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer
