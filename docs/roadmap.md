@@ -15,10 +15,10 @@
 - First LongMemEval subset eval (target: **80% R@5**)
 
 ## Phase 2 — MCP Server
-- 17 MCP tools over stdio: the eight memory/reasoning tools (`remember`,
-  `recall`, `cross_recall`, `get`, `session_start`, `timeline`, `audit`,
-  `crucible`), six visible-learning/calibration tools, and three CodeGlass
-  teaching/retention tools
+- 18 MCP tools over stdio: the nine memory/reasoning tools (`remember`,
+  `recall`, `cross_recall`, `recall_for_change`, `get`, `session_start`,
+  `timeline`, `audit`, `crucible`), six visible-learning/calibration tools, and
+  three CodeGlass teaching/retention tools
 - `.mcp.json` wiring
 - Claude Code plugin manifest + slash commands (`/cairntir:remember`, `/cairntir:recall`, `/cairntir:reason`)
 - Integration tests

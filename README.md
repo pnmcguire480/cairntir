@@ -114,8 +114,9 @@ That's walking into a lit room. That's the North Star. Every feature in this rep
    provenance, durable workflow receipts, and backup-first migration/reindex.
    Contract-tested via
    [tests/contract/test_store_contract.py](tests/contract/test_store_contract.py).
-3. **MCP server** — seventeen tools over stdio: exact memory, scoped and
-   cross-wing recall, session start, timeline, audit, Crucible, Discovery
+3. **MCP server** — eighteen tools over stdio: exact memory, scoped and
+   cross-wing recall, **structural recall for a set of changed files**,
+   session start, timeline, audit, Crucible, Discovery
    Ledger/calibration, and CodeGlass operations. Runs via
    `python -m cairntir.mcp.server`.
 4. **Three skills** — `crucible` (stress-test assumptions), `quality` (audit a wing), `reason` (memory-backed thinking loop with a mandatory predict step). Bundled as markdown, loaded via `importlib.resources`.

@@ -48,6 +48,18 @@ class RetrievalError(CairntirError):
     """Raised when retrieval fails (embedding, search, or layer loading)."""
 
 
+class AnchorError(RetrievalError):
+    """Raised when a drawer's ``metadata.anchors`` entry is malformed.
+
+    Anchors are written by agents into free-form drawer metadata, so a
+    malformed entry is a data problem rather than a programming error.
+    :func:`cairntir.memory.anchors.recall_for_change` therefore does not let
+    one bad anchor abort a whole recall — it collects the offending drawer
+    ids and surfaces them on the result. This exception exists so the
+    parse itself still fails loudly for any caller that wants strictness.
+    """
+
+
 class EmbeddingError(CairntirError):
     """Raised when the embedding provider fails."""
 

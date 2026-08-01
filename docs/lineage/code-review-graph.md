@@ -122,11 +122,13 @@ grammar, no new dependency, no schema break.
 ### 27 of the 30 MCP tools
 
 Communities, hubs, bridges, execution-flow ranking, wiki generation, refactor
-apply, and cross-repo search are all out. Cairntir sits at 17 MCP tools by
-deliberate restraint; matching this surface would push past 40 and directly
-contradict *"fewer tools = fewer decisions for the AI."* Anyone who wants that
-surface should run code-review-graph as a second MCP server — it is MIT, it is
-actively maintained, and it is better at this than a reimplementation would be.
+apply, and cross-repo search are all out. Cairntir sits at 18 MCP tools by
+deliberate restraint — `cairntir_recall_for_change` is the *one* tool this
+lineage adds — and matching his surface would push past 40, directly
+contradicting *"fewer tools = fewer decisions for the AI."* Anyone who wants
+that surface should run code-review-graph as a second MCP server — it is MIT,
+it is actively maintained, and it is better at this than a reimplementation
+would be.
 
 ### Staleness flagging — held, not dropped
 

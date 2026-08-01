@@ -39,6 +39,7 @@ from cairntir.learning import (
     record_discovery,
     transition_discovery,
 )
+from cairntir.memory.anchors import recall_for_change as anchors_recall_for_change
 from cairntir.memory.retrieval import RetrievalResult, Retriever
 from cairntir.memory.taxonomy import Drawer, Layer
 from cairntir.prompt_safety import (
@@ -186,6 +187,59 @@ class CairntirBackend:
                 )
             )
         return "\n".join(lines) + "\n\n" + render_evidence_block(evidence)
+
+    def recall_for_change(
+        self,
+        *,
+        files: list[str],
+        wing: str | None = None,
+        rooms: list[str] | None = None,
+        limit: int = 20,
+    ) -> str:
+        """Structural recall: surface drawers anchored to the files being changed.
+
+        Where :meth:`recall` answers a question the caller thought to ask,
+        this answers one they did not — given a diff, it returns the memory
+        already attached to those files. A drawer participates only if
+        someone gave it an ``metadata.anchors`` entry, so silence here means
+        "nothing was ever written about these files," not "nothing matched."
+
+        Deliberately does **not** flag staleness. See
+        :mod:`cairntir.memory.anchors` for why that is held.
+        """
+        if not files or not any(f.strip() for f in files):
+            raise MCPError("recall_for_change requires at least one non-empty file path")
+        result = anchors_recall_for_change(self._store, files, wing=wing, rooms=rooms, limit=limit)
+        scope = f" in wing {wing!r}" if wing else ""
+        if not result.matches:
+            base = (
+                f"No anchored drawers touch those {len(files)} file(s){scope}. "
+                f"Scanned {result.scanned} anchored drawer(s)."
+            )
+            return base + _malformed_note(result.malformed_drawer_ids)
+
+        lines = [
+            f"{len(result.matches)} anchored drawer(s) touch those {len(files)} file(s){scope}:"
+        ]
+        evidence: list[str] = []
+        for match in result.matches:
+            drawer = match.drawer
+            where = ", ".join(
+                a.path if a.symbol is None else f"{a.path}:{a.symbol}" for a in match.anchors
+            )
+            lines.append(
+                f"  #{drawer.id}  {drawer.wing}/{drawer.room}  "
+                f"[{drawer.layer.value}]  via {where}  {_content_receipt(drawer)}"
+            )
+            evidence.append(
+                render_memory_evidence(
+                    drawer,
+                    self._required_provenance(drawer.id),
+                    content=_snippet(drawer.content),
+                )
+            )
+        body = "\n".join(lines) + _malformed_note(result.malformed_drawer_ids)
+        return body + "\n\n" + render_evidence_block(evidence)
 
     def session_start(self, *, wing: str, query: str | None = None) -> str:
         """Load 4-layer context plus active learning signals for ``wing``."""
@@ -570,6 +624,18 @@ def _content_receipt(drawer: Drawer, *, snippet_limit: int = 100) -> str:
 def _snippet(content: str, limit: int = 100) -> str:
     single = " ".join(content.split())
     return single if len(single) <= limit else single[: limit - 1] + "…"
+
+
+def _malformed_note(drawer_ids: tuple[int, ...]) -> str:
+    """Render a visible warning for drawers whose anchors could not be parsed.
+
+    Surfaced rather than swallowed. A malformed anchor is a data defect the
+    user needs to see and fix; it must never be silently skipped.
+    """
+    if not drawer_ids:
+        return ""
+    ids = ", ".join(f"#{i}" for i in drawer_ids)
+    return f"\n\nWARNING: {len(drawer_ids)} drawer(s) have malformed metadata.anchors: {ids}"
 
 
 def _fmt_ts(ts: datetime) -> str:
