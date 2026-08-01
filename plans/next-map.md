@@ -1,6 +1,8 @@
 # Next Map — Attribution-First Scoping After v1.2.0
 
-**Status:** proposed, not started
+**Status:** Track A verdict **ratified by Patrick 2026-08-01** — build
+`recall_for_change` first, scoped per-room; staleness flagging **on hold**. Track
+B attribution doc delivered; glossary drawer not started. Track C1 resolved.
 **Recorded:** 2026-07-31
 **Memory source:** Cairntir drawers #173 (code-review-graph assessment),
 #174 (v1.2.0 release and the untagged-release gap), #66 (project identity),
@@ -112,6 +114,18 @@ The two Tier 1 capabilities rest on different evidence and must not ship togethe
    positives on the first refactor loses trust permanently and does not get a
    second chance.
 
+**Ratified by Patrick, 2026-08-01, verbatim:** *"The two Tier 1 capabilities rest
+on different evidence and shouldn't ship together... Staleness flagging — hold.
+The corrected design is sound, but a staleness signal that floods false positives
+on someone's first big refactor loses trust permanently. It doesn't get a second
+chance. Not shipping it on an untested assumption."*
+
+The hold is **not** a scheduling decision to be revisited when convenient. It
+lifts only when rename survival is actually tested — a synthetic rename fixture,
+or replay against a repo whose history contains renames. Cairntir's own history
+contains zero (`git log --diff-filter=R -M`), so the corpus cannot answer it and
+no amount of waiting will change that.
+
 Anchor shape: optional `metadata.anchors` of
 `{path, symbol, symbol_source_hash}` — no schema break, the store already
 carries arbitrary JSON.
@@ -131,9 +145,23 @@ maintained, and better at it than a reimplementation would be.
 ## Track B — The glossary drawer (from mattpocock/skills)
 
 **The borrowed idea:** a shared domain vocabulary makes the agent terser and more
-consistent. Matt's version is a `CONTEXT.md` the agent reads. The insight is
-right and the storage is wrong — a markdown file goes stale silently, has no
-provenance, and gets rewritten in place.
+consistent. Matt's version is a `CONTEXT.md` the agent reads.
+
+**Corrected 2026-08-01, after reading the file rather than assuming it.** This
+section previously read: *"The insight is right and the storage is wrong — a
+markdown file goes stale silently, has no provenance, and gets rewritten in
+place."* That was unfair. His `CONTEXT.md` carries `## Language` (terms plus an
+`_Avoid_:` list of banned synonyms — a disambiguation instrument, not a
+dictionary), `## Relationships` (a small domain model), and
+`## Flagged ambiguities`, which records *resolved* terminology conflicts along
+with their resolution. That third section **is** a provenance mechanism. He
+identified the drift problem and solved it in-file, by hand.
+
+The remaining divergence is narrow and is a tradeoff, not an improvement:
+Cairntir records resolutions as superseded drawers — mechanical, timestamped,
+queryable across months, and resilient to the author forgetting to write the
+entry. His file is legible to a human in ten seconds and needs zero
+infrastructure. See `docs/lineage/mattpocock-skills.md`.
 
 **Cairntir's version:** an identity-layer glossary drawer per wing. Loaded at
 every `session_start` by construction, superseded rather than edited, so
@@ -175,11 +203,12 @@ a merge request, and the authorship interest is stated in the first sentence.
 
 ## Track C — Process hygiene left over from the release
 
-- **C1 — Branch protection (Patrick's decision).** The v1.2.0 `main` push
-  reported `Bypassed rule violations`; protection wants a PR plus two status
-  checks and admin overrode it. Either releases go through a PR, or the rule
-  relaxes to match practice. A rule that exists but never binds is worse than no
-  rule, because it produces false confidence.
+- **C1 — Branch protection. RESOLVED 2026-08-01: releases go through a PR.** The
+  v1.2.0 `main` push reported `Bypassed rule violations` because it went straight
+  to `main`, skipping the PR. The rule is cheap: a PR plus two status checks and
+  **zero approving reviews** — one click for a solo maintainer. PR #16 went
+  through it with no bypass. The rule stays as configured; go through the branch,
+  never around it.
 - **C2 — Done this session.** `scripts/check_release_tags.py` now fails the build
   when a released changelog header has no matching tag — the defect that hid
   1.0.1 and 1.1.3.
