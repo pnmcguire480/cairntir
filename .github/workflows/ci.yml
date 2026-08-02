@@ -37,6 +37,8 @@ jobs:
         run: uv run python scripts/check_no_silent_except.py
       - name: Release tag check
         run: uv run python scripts/check_release_tags.py
+      - name: Landed commitment check
+        run: uv run python scripts/check_landed_commitments.py
 
   test:
     name: Test (${{ matrix.os }} / Python ${{ matrix.python }})

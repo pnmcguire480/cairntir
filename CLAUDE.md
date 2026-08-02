@@ -719,6 +719,7 @@ session.
 7. **Update "Last Session" below** at the end of every working session.
 8. **Land work on `main` through a pull request.** Zero reviews are required — it is one click — and it keeps the full matrix green before `main` moves.
 9. **Before closing a session, check `## [Unreleased]` for a `Fixed` entry a current user is hitting.** If there is one, that is a patch release now. See `docs/release-cadence.md`.
+10. **When a plan promises a symbol, parameter, test, or file, write a `cairntir-commitments` block committing to it.** CI then fails if the release ships without it. Write the assertion with the promise, not after keeping it — v1.2 shipped without the context budget its own audit had committed to, and nothing noticed. See `docs/landed-commitments.md`.
 
 ### Must Not
 1. **Never import code from BrainStormer or MemPalace.** Lineage is reference material, not source. We reimplement.
