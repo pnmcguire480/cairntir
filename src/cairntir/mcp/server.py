@@ -20,6 +20,7 @@ from pydantic import ValidationError
 
 from cairntir.config import db_path
 from cairntir.errors import CairntirError, EmbeddingError
+from cairntir.handoff import DEFAULT_BUDGET_CHARS
 from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import production_embedding_provider
 from cairntir.memory.store import DrawerStore
@@ -200,11 +201,62 @@ def _tool_specs() -> list[types.Tool]:
             },
         ),
         types.Tool(
+            name="cairntir_handoff",
+            description=(
+                "START HERE. One call returning one composed brief for a wing: the "
+                "operating protocol, the most recent session deltas, open questions, "
+                "and — when you pass files — the memory anchored to the code you are "
+                "about to touch. Prefer this over cairntir_session_start when you are "
+                "resuming work; session_start lists what exists, handoff gives you "
+                "what you need to start. Drawers come back WHOLE, never truncated. "
+                "Anything that did not fit the budget is listed by id and size so you "
+                "can spend one cairntir_get on exactly what you want instead of a "
+                "blind recall. Deterministic — no ranking, no embedder — so repeat "
+                "calls are byte-identical and stay prompt-cache friendly."
+            ),
+            inputSchema={
+                "type": "object",
+                "required": ["wing"],
+                "properties": {
+                    "wing": {"type": "string"},
+                    "budget_chars": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "default": DEFAULT_BUDGET_CHARS,
+                        "description": (
+                            "Hard ceiling on returned drawer content, in characters "
+                            "(roughly 4 chars per token). Whole drawers are dropped to "
+                            "stay under it; none is ever cut in half."
+                        ),
+                    },
+                    "files": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": (
+                            "Optional paths you are about to change. Adds the drawers "
+                            "structurally anchored to them — the memory you would not "
+                            "have known to ask for."
+                        ),
+                    },
+                    "max_deltas": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "default": 8,
+                        "description": "How many recent session drawers to consider.",
+                    },
+                },
+            },
+        ),
+        types.Tool(
             name="cairntir_session_start",
             description=(
                 "Load 4-layer context plus active discoveries for a wing. "
                 "Pure SQL — never triggers the embedder. Use cairntir_recall "
-                "for semantic search after the session is loaded."
+                "for semantic search after the session is loaded. NOTE: this "
+                "returns a truncated stub per drawer, which is a routing index "
+                "rather than an answer. If you are resuming work, cairntir_handoff "
+                "gives you whole drawers under a budget and is usually the better "
+                "first call."
             ),
             inputSchema={
                 "type": "object",
@@ -502,6 +554,8 @@ def _dispatch(backend: CairntirBackend, name: str, args: dict[str, Any]) -> str:
             return backend.cross_recall(**args)
         case "cairntir_recall_for_change":
             return backend.recall_for_change(**args)
+        case "cairntir_handoff":
+            return backend.handoff(**args)
         case "cairntir_session_start":
             return backend.session_start(**args)
         case "cairntir_discover":

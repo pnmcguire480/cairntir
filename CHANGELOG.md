@@ -15,6 +15,30 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ### Added
 
+- `cairntir_handoff(wing)` and `cairntir handoff <wing>` — one call returning one
+  composed brief, under a hard character budget, to replace keeping a
+  `HANDOFF.md` file by hand. Composes the operating protocol, the most recent
+  session deltas, open questions, and — when you pass `files` — the drawers
+  structurally anchored to the code you are about to touch.
+
+  **Drawers come back whole or not at all.** Truncation is the anti-pattern this
+  is built against: it pays the full token cost *and* destroys the information.
+  Anything that does not fit the budget is listed with its id, room and size, so
+  the caller spends one targeted `cairntir_get` instead of a blind `recall`.
+
+  Measured against `session_start` on a copy of the live store: **7,737 → 4,261
+  estimated tokens for the `cairntir` wing (-44%)** and **8,201 → 3,880 for
+  `detroit-clone` (-52%)**. The saving is the less interesting half —
+  `session_start` spent its tokens on 51 truncated stubs that could not answer
+  anything, and `handoff` spends fewer on 9 whole drawers that can.
+
+  No ranking, no embedder, pure SQL, and verified byte-identical across repeat
+  calls, so it does not disturb a host's prompt cache. `budget_chars` bounds
+  drawer content; the evidence envelope adds provenance on top, which is stated
+  in the response rather than quietly excluded from the number.
+
+  Identity is scoped to the wing, unlike `session_start` — a `cairntir` session
+  was paying for identity drawers belonging to `larder` and `quietpdf`.
 - `scripts/check_release_tags.py` — fails when a released `## [x.y.z]` changelog
   header has no matching `vx.y.z` git tag. The version in `pyproject.toml` is
   exempt while a release is in flight, and the two historically untagged

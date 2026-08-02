@@ -1111,3 +1111,58 @@ def test_anchor_refuses_to_combine_repair_with_path(tmp_path: Path, monkeypatch:
 
     assert result.exit_code == 1, result.output
     assert "takes no --path" in result.output
+
+
+def test_handoff_returns_whole_drawers_under_a_budget(tmp_path: Path, monkeypatch: object) -> None:
+    """End to end: the replacement for HANDOFF.md, from the command line."""
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
+    body = "the release cadence is push daily, merge coherently, release rarely"
+    store.add(Drawer(wing="cairntir", room="release", content=body, layer=Layer.ESSENTIAL))
+    store.add(
+        Drawer(
+            wing="cairntir",
+            room="project-identity",
+            content="Cairntir kills cross-chat AI amnesia",
+            layer=Layer.IDENTITY,
+        )
+    )
+    store.close()
+
+    result = runner.invoke(app, ["handoff", "cairntir"])
+
+    assert result.exit_code == 0, result.output
+    assert body in result.output, "content came back cut instead of whole"
+    assert "Cairntir handoff" in result.output
+    assert "SECURITY BOUNDARY" in result.output
+
+
+def test_handoff_names_what_it_could_not_afford(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
+    store.add(
+        Drawer(
+            wing="cairntir",
+            room="journey",
+            content="q" * 4_000,
+            layer=Layer.ESSENTIAL,
+        )
+    )
+    store.close()
+
+    result = runner.invoke(app, ["handoff", "cairntir", "--budget", "500"])
+
+    assert result.exit_code == 0, result.output
+    assert "not fetched" in result.output
+    assert "4,000 chars" in result.output
+    assert "q" * 4_000 not in result.output
+
+
+def test_handoff_reports_an_empty_wing_honestly(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384)).close()
+
+    result = runner.invoke(app, ["handoff", "nothing-here"])
+
+    assert result.exit_code == 0, result.output
+    assert "Nothing is recorded" in result.output

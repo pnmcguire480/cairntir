@@ -656,7 +656,15 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 - **Memory layer:** wing/room/drawer taxonomy over sqlite-vec, 4-layer retrieval,
   schema v6 with immutable write provenance and durable idempotency receipts.
-- **MCP server:** 18 tools over stdio (`cairntir-mcp`, or `python -m cairntir.mcp.server`).
+- **MCP server:** 19 tools over stdio (`cairntir-mcp`, or `python -m cairntir.mcp.server`).
+- **Handoff:** `cairntir_handoff(wing)` / `cairntir handoff <wing>` returns one
+  composed brief under a hard character budget — protocol, recent deltas, open
+  questions, and anchors for the files in play. Drawers come back **whole**;
+  what does not fit is named with its id and size instead of being truncated.
+  Measured against `session_start` on the live store: 7,737 → 4,261 tokens for
+  `cairntir` (-44%) and 8,201 → 3,880 for `detroit-clone` (-52%), and the
+  drawers it returns can actually answer something. Deterministic, so it stays
+  prompt-cache friendly.
 - **Three skills:** Crucible, Quality, Reason — bundled and loadable.
 - **Recipes:** Signal Reader, Decision Replay, and the discovery/calibration ledger.
 - **Structural recall:** `cairntir_recall_for_change(files=[…])` surfaces drawers
@@ -675,13 +683,11 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### What's Not Built Yet
 
-- **`cairntir_handoff(wing)`** — one call returning one composed brief, so a
-  session no longer needs a `HANDOFF.md` file. The stated goal; see finding 5 of
-  `plans/field-report-2026-08-02.md`.
-- **Token budget on `session_start`** — it returns every identity + essential
-  stub, truncated, plus an evidence block repeating them. Measured as the largest
-  single response in a real session, and mostly unused. Finding 2, needs
-  instrumentation before action.
+- **Token budget on `session_start`** — it still returns every identity +
+  essential stub, truncated, plus an evidence block repeating them. `handoff`
+  now exists as the bounded alternative and `session_start`'s description points
+  at it, but `session_start` itself is unchanged and remains the expensive path.
+  Finding 2.
 - **Retrieval ranking quality** — semantic recall ranked a known-correct drawer
   7th with every hit clustered between 1.03 and 1.15. Hypothesis is drawer size,
   not the embedding model. Finding 3, needs the split test before any change.

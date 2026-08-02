@@ -135,7 +135,7 @@ belief mass, no provenance receipts, no supersession chain. Deletable and
 rebuildable at any moment. The verbatim floor does not move.
 
 **Not doing:** Tier 3 (communities, hubs, bridges, wiki, refactor-apply,
-cross-repo search). Cairntir sits at 18 MCP tools by deliberate restraint.
+cross-repo search). Cairntir sits at 19 MCP tools by deliberate restraint.
 Anyone who wants that surface should run code-review-graph — it is MIT, actively
 maintained, and better at it than a reimplementation would be.
 
