@@ -83,6 +83,18 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ### Fixed
 
+- **The anchor repair tool could not repair the damage it existed for.**
+  `DrawerStore.add_anchors` is append-only and validates the *merged* list, so
+  on a drawer whose existing `metadata.anchors` are the legacy string form it
+  raised `anchor entries must be objects, got str` and refused before it could
+  append. The retroactive-anchoring procedure shipped in 1.2.0 worked only
+  because the drawers it targeted had no anchors at all. New
+  `DrawerStore.repair_anchors(drawer_id)` and `cairntir anchor <id> --repair`
+  coerce the legacy form in place. Coercion is limited to the one case that is
+  not a guess — a bare string could only ever have meant a path; an object with
+  no recoverable `path` is refused loudly rather than invented. Idempotent,
+  metadata-only, duplicate-collapsing, and nothing is written unless every
+  entry validates first.
 - **`metadata.anchors` was accepted at write and rejected at read, silently
   disabling structural recall.** `cairntir_remember` declared `metadata` as a
   bare `{"type": "object"}` with no description, so a writing agent never saw

@@ -310,14 +310,19 @@ def get_cmd(drawer_id: int) -> None:
 @app.command("anchor")
 def anchor_cmd(
     drawer_id: int,
-    path: list[str] = typer.Option(  # noqa: B008 — Typer declares options at import time
-        ..., "--path", "-p", help="Repo-relative code path. Repeat for several."
+    path: list[str] | None = typer.Option(  # noqa: B008 — Typer declares options at import time
+        None, "--path", "-p", help="Repo-relative code path. Repeat for several."
     ),
     symbol: str | None = typer.Option(
         None, "--symbol", "-s", help="Optional function/class name, applied to every --path."
     ),
+    repair: bool = typer.Option(
+        False,
+        "--repair",
+        help="Rewrite this drawer's legacy string anchors into object form. Takes no --path.",
+    ),
 ) -> None:
-    """Attach structural anchors to an existing drawer.
+    """Attach structural anchors to an existing drawer, or repair broken ones.
 
     Anchored drawers surface from `cairntir recall-for-change` when those
     files change. New drawers can carry anchors at write time; this is the
@@ -325,18 +330,37 @@ def anchor_cmd(
 
     Append-only: existing anchors are kept, duplicates collapse, and the
     drawer's verbatim content is never touched.
+
+    `--repair` handles drawers written with the legacy `["a.py", "b.py"]`
+    shape, which the reader treats as malformed. Plain `--path` cannot fix
+    those: it validates the merged list, so it refuses on the existing bad
+    entries before it can append.
     """
     if not db_path().exists():
         typer.echo("cairntir: no store yet — nothing to anchor.", err=True)
         raise typer.Exit(code=1)
-    entries: list[dict[str, Any]] = []
-    for raw in path:
-        entry: dict[str, Any] = {"path": raw}
-        if symbol:
-            entry["symbol"] = symbol
-        entries.append(entry)
+    paths = path or []
+    if repair and paths:
+        typer.echo(
+            "cairntir: --repair rewrites the anchors already on the drawer and takes "
+            "no --path. Run the two as separate commands.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+    if not repair and not paths:
+        typer.echo("cairntir: give --path at least once, or --repair.", err=True)
+        raise typer.Exit(code=1)
     try:
-        merged = _open_store().add_anchors(drawer_id, entries)
+        if repair:
+            merged = _open_store().repair_anchors(drawer_id)
+        else:
+            entries: list[dict[str, Any]] = []
+            for raw in paths:
+                entry: dict[str, Any] = {"path": raw}
+                if symbol:
+                    entry["symbol"] = symbol
+                entries.append(entry)
+            merged = _open_store().add_anchors(drawer_id, entries)
     except MemoryStoreError as exc:
         typer.echo(f"cairntir: {exc}", err=True)
         raise typer.Exit(code=1) from exc

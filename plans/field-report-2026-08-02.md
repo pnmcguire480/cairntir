@@ -95,6 +95,18 @@ Cairntir.
 4. **Backfill #199, #204-#207** using the procedure drawer #182 documents — it
    is a good procedure and it verified cleanly last time.
 
+   > **CORRECTION, 2026-08-02 — fix 4 as written does not work.** Verified in
+   > a throwaway store, not reasoned from reading: `add_anchors` validates the
+   > *merged* list, so on a drawer whose existing anchors are the string form
+   > it raises `anchor entries must be objects, got str` and refuses before it
+   > can append. Drawer #182's procedure succeeded because those drawers had
+   > **no** anchors — a clean append. These five have malformed ones. The
+   > repair tool was blocked by exactly the damage it needed to repair.
+   >
+   > Closed by `DrawerStore.repair_anchors` and `cairntir anchor --repair`,
+   > which coerce the one unambiguous case (a bare string could only have
+   > meant a path) and refuse anything else loudly. Recorded as drawer #210.
+
 Do 1 and 2 regardless. 3 and 4 are judgement calls.
 
 ---
