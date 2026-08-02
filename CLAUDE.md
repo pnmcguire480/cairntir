@@ -118,6 +118,67 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-08-02, overnight (**the research landed as code — four PRs open, none merged**)
+- **What was accomplished:** Patrick commissioned the research, read it, then
+  went to sleep asking for the fixes and upgrades to be implemented and a
+  release prepared. Four stacked pull requests, all green on 14/14 checks,
+  **none merged** — merging was blocked by a permission gate, so `main` is
+  untouched and the editable install still runs pre-handoff code until Patrick
+  merges them.
+  - **#25 — the two research documents.** The finding that reorders the others:
+    the oldest idea in this lineage is not memory, it is **controlled context**.
+    BabyTIEROS had always-load / load-when-relevant / never-load before any
+    vector store existed; the 2026-07-27 audit found the policy survived and the
+    budget did not, wrote the fix into the v1.2 core list, and **v1.2 shipped
+    without it.** Patrick's Token Saver spec is the third independent
+    rediscovery of the founding invariant of his own lineage.
+  - **#26 — `cairntir_handoff(wing)`.** Finding 5, the stated goal: carry a chat
+    across sessions with no `HANDOFF.md`. One call, one composed brief, a hard
+    `budget_chars` ceiling. **Whole drawers or none** — anything that does not
+    fit is named with its id and size instead of truncated. Measured on a copy
+    of the live store: 7,737 → 4,261 tokens for `cairntir` (-44%), 8,201 → 3,880
+    for `detroit-clone` (-52%), and the drawers it returns can actually answer
+    something. Deterministic, so it does not disturb a host's prompt cache.
+  - **#27 — `scripts/check_landed_commitments.py`.** The anti-pattern killer,
+    and the only candidate addressing a defect present in all four generations:
+    *we do not verify that a commitment landed.* Plans carry a fenced
+    `cairntir-commitments` block asserting a file, symbol, **function
+    parameter**, or test exists; CI fails if any is absent. `param` is the kind
+    that earns its place — `session_start` existed the whole time the v1.2
+    budget was outstanding, so only a parameter-level check catches it.
+  - **#28 — `cairntir cost <wing>`.** Closes **P5**, the one primitive the
+    2026-04-03 harness audit scored MISSING at risk HIGH. Reports the tool
+    catalog (2,307 tokens across 19 tools, paid every session in every host),
+    `session_start`, `handoff`, and drawer sizes against the embedder window.
+    Honest in both directions: `handoff` is *not* universally cheaper and the
+    report says "more expensive" when that is true. Plus the determinism suite
+    protecting the 90% prompt-cache read discount.
+  - **Deliberately not done: the embedder change.** `cost` now measures that 29%
+    of `cairntir`-wing drawers exceed the ~2,048-char window, but chunking or
+    swapping the model **requires reindexing the live store**, and this
+    project's own rule (drawers #182, #210) is rehearse-on-snapshot with
+    explicit approval first. Not something to do while the maintainer sleeps.
+  - **A correction to the research:** practical upgrade 4 claims model capture
+    "remains unbuilt." It is wrong. `--model`, `CAIRNTIR_MODEL`, and
+    `WriteProvenance.create(model=...)` are all wired. No *host* sets it, which
+    is a narrower and different problem. See `plans/release-1.3.0.md`.
+  - **Status:** 525 tests passing, 82.62% coverage, ruff clean, format clean,
+    mypy --strict clean across 49 source files, silent-except clean, mkdocs
+    --strict clean, 13 commitments checked across 2 documents.
+- **Next session:**
+  1. **Merge #25 → #26 → #27 → #28, in that order.** They are stacked; merging
+     out of order produces confusing diffs. Until they merge, none of this is in
+     the editable install every AI host loads.
+  2. **Then cut 1.3.0** — the number, its justification, and the exact sequence
+     are in `plans/release-1.3.0.md`. It is a MINOR because a new MCP tool is
+     `docs/release-cadence.md`'s own example of one, and because a user would
+     need the changelog to know a new tool exists. Not a patch. The tag stays a
+     human gate.
+  3. **Then the embedder bake-off** — practical upgrade 1. Now that the cost is
+     measured, this is the highest-value remaining item, and it needs Patrick
+     awake for the live reindex.
+
+- **Prior session — 2026-08-02 (structural recall actually works now — two defects found in live use):**
 - **Date:** 2026-08-02 (**structural recall actually works now — two defects found in live use**)
 - **What was accomplished:** Cairntir was used as the memory layer for a real
   session on another project (`detroit-clone`, bite B08), and the experience was
