@@ -37,6 +37,8 @@ jobs:
         run: uv run python scripts/check_no_silent_except.py
       - name: Every changelogged version is tagged
         run: uv run python scripts/check_release_tags.py
+      - name: Every planned commitment landed
+        run: uv run python scripts/check_landed_commitments.py
       - name: Strict documentation build
         run: uv run mkdocs build --strict
 

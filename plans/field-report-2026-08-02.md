@@ -127,6 +127,22 @@ Answering a single question took: `session_start` → `recall` → `get`.
 guess at them. But the shape is clear: the fixed cost is paid up front, scales
 with wing size, and is mostly unused.
 
+> **INSTRUMENTED 2026-08-02.** `cairntir cost <wing>` now reports what the read
+> path costs, so this no longer has to be measured by hand. It closes **P5**,
+> the one primitive BrainStormer's 2026-04-03 harness audit scored MISSING at
+> risk HIGH. `session_start` itself is unchanged and still returns every stub —
+> `cairntir_handoff` is the bounded alternative rather than a fix to
+> `session_start`, which remains open work.
+
+```cairntir-commitments
+# Finding 2 — cost is measured, not guessed at.
+symbol src/cairntir/cost.py measure
+symbol src/cairntir/cost.py corpus_stats
+test   tests/unit/test_cost.py test_the_tool_catalog_is_counted_because_it_is_never_free
+# Practical upgrade 3 — the prompt-cache discount stays protected.
+test   tests/unit/test_determinism.py test_session_start_is_byte_identical_across_calls
+```
+
 Worth considering:
 - A char/token budget on `session_start`, or identity-only by default with
   essential fetched on demand.
@@ -219,6 +235,22 @@ brief, bounded in size, with no ranking involved:
 Every one of those already exists in the store. This is a **composition
 problem, not a retrieval problem** — which is why I think it is achievable
 cheaply and why ranking quality is not on its critical path.
+
+> **LANDED 2026-08-02.** `cairntir_handoff(wing)` ships with a hard
+> `budget_chars` ceiling, whole-drawer inclusion, and named omissions. Measured
+> against `session_start` on a copy of the live store: 7,737 → 4,261 estimated
+> tokens for `cairntir` (-44%), 8,201 → 3,880 for `detroit-clone` (-52%). The
+> assertions below are verified by `scripts/check_landed_commitments.py` in CI,
+> so this finding cannot be quietly un-landed by a later change.
+
+```cairntir-commitments
+# Finding 5 — the composed brief, and the budget v1.2 promised and never shipped.
+symbol src/cairntir/handoff.py compose
+param  src/cairntir/handoff.py compose:budget_chars
+param  src/cairntir/mcp/backend.py handoff:budget_chars
+test   tests/unit/test_handoff.py test_included_drawers_are_returned_whole
+test   tests/unit/test_handoff.py test_a_drawer_too_big_for_the_budget_is_omitted_not_truncated
+```
 
 **The use case to design against.** Patrick wants to reuse the R-00 → GATE G0
 arc as a repeatable template for every later phase gate. That template is

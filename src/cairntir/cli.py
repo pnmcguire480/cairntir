@@ -14,6 +14,8 @@ import typer
 
 from cairntir import __version__
 from cairntir.config import cairntir_home, db_path
+from cairntir.cost import measure as measure_cost
+from cairntir.cost import render as render_cost
 from cairntir.errors import EmbeddingError, MCPError, MemoryStoreError, ProjectionError
 from cairntir.handoff import DEFAULT_BUDGET_CHARS
 from cairntir.hosts import (
@@ -434,6 +436,35 @@ def handoff_cmd(
                 max_deltas=max_deltas,
             )
         )
+    except (MCPError, MemoryStoreError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("cost")
+def cost_cmd(
+    wing: str,
+    budget: int = typer.Option(
+        DEFAULT_BUDGET_CHARS,
+        "--budget",
+        "-b",
+        help="Budget to measure `handoff` at, in characters.",
+    ),
+) -> None:
+    """Report what Cairntir's own read path costs the context window.
+
+    Closes P5 — the one primitive BrainStormer's 2026-04-03 harness audit
+    scored MISSING, deferred "until cost becomes a real concern."
+
+    Measures Cairntir's payload only. It is not a general token dashboard
+    and should not become one; Tokalator and Headroom already do that
+    better. Token figures are characters divided by four, an estimate.
+    """
+    if not db_path().exists():
+        typer.echo("cairntir: no store yet — nothing to measure.", err=True)
+        raise typer.Exit(code=1)
+    try:
+        typer.echo(render_cost(measure_cost(_open_store(), wing=wing, budget_chars=budget)))
     except (MCPError, MemoryStoreError) as exc:
         typer.echo(f"cairntir: {exc}", err=True)
         raise typer.Exit(code=1) from exc
