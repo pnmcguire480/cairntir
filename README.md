@@ -28,7 +28,7 @@ optimization loop.
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![mypy: strict](https://img.shields.io/badge/mypy-strict-blueviolet.svg)](https://mypy.readthedocs.io/)
 [![ruff](https://img.shields.io/badge/ruff-clean-green.svg)](https://github.com/astral-sh/ruff)
-[![Tests: 372](https://img.shields.io/badge/tests-372_passing-brightgreen.svg)](tests/)
+[![Tests: 528](https://img.shields.io/badge/tests-528_passing-brightgreen.svg)](tests/)
 [![MCP compatible](https://img.shields.io/badge/MCP-compatible-purple.svg)](https://modelcontextprotocol.io/)
 
 ---
@@ -40,6 +40,10 @@ Every time you open a new Claude Code chat, Claude forgets everything from the l
 **Cairntir is that file.** It's a SQLite database on your hard drive that stores every decision, fact, and hard-won lesson Claude writes down — verbatim, forever, no summarization — and gives it back the next time you open a chat. Every session, in every project, on day 30, walks into a lit room.
 
 It ships as an [MCP server](https://modelcontextprotocol.io/), so it works with **Claude Code, Claude Desktop, Cursor, Windsurf, and every other MCP-compatible client** without modification.
+
+And it is built for a hard monthly ceiling, not an expense account. The design
+rule is **never return a token the model cannot use** — because on a $20 plan,
+context you paid for and can't read is the expensive kind.
 
 ---
 
@@ -76,12 +80,58 @@ You open a Claude Code chat in a project you haven't touched in three weeks. Nor
 
 With Cairntir installed:
 
-1. The chat starts. Claude's system prompt tells it to call `cairntir_session_start` before answering anything.
-2. Cairntir returns your **identity drawers** (who you are, how you work, the North Star) and the **essential drawers** for this project (current state, decisions, blockers).
+1. The chat starts. Claude's system prompt tells it to call `cairntir_handoff` before answering anything.
+2. Cairntir composes one brief: the operating protocol, the last few session deltas **in full text**, open questions, and — if Claude passes the files it's about to touch — the memory anchored to that code.
 3. Claude reads them. It now knows you picked Postgres, why you picked it, what the hack in `auth.py` is protecting, and what's on next session's list.
 4. You type your question. The answer comes back with real context — and drawer id citations, so you can click through to the source.
 
 That's walking into a lit room. That's the North Star. Every feature in this repo is measured against whether it makes that experience feel inevitable.
+
+---
+
+## The budget is the feature
+
+A memory layer that dumps everything it has is just a slower way to run out of
+context. Cairntir's read path is built around one rule:
+
+> **Never return a token the model cannot use.**
+
+`cairntir_handoff(wing)` returns **whole drawers under a hard character
+budget**. Nothing is truncated — a drawer either comes back complete or it is
+listed by id and size so you can fetch exactly the one you want. Truncation is
+the anti-pattern here: it pays the full token cost *and* destroys the
+information.
+
+Measured against the older `session_start`, on a real store, 2026-08-02:
+
+| wing | `session_start` | `handoff` | |
+|---|---:|---:|---:|
+| `cairntir` | 7,737 tok | 4,261 tok | **−44%** |
+| `detroit-clone` | 8,201 tok | 3,880 tok | **−52%** |
+
+The saving is the less interesting half. On the `cairntir` wing, `session_start`
+spent its 7,737 tokens on **54 truncated stubs** that could not answer anything;
+`handoff` spent 4,261 on **9 complete drawers that could**, and named the 13 it
+skipped so you could fetch any of them deliberately. Cheaper *and* usable is the
+only version of cheaper worth having.
+
+Those are one store on one day, not a benchmark. `session_start` grows with the
+wing, so the gap widens as a project accumulates history — which is exactly when
+you need the budget. Run `cairntir cost` on your own store rather than taking
+these numbers as a promise.
+
+It is deterministic — no ranking, no embedder, pure SQL — so repeat calls are
+byte-identical and stay friendly to your host's prompt cache.
+
+And you can audit it yourself, which is the point:
+
+```bash
+cairntir cost myproject
+```
+
+That reports what the tool catalog, `session_start`, and `handoff` each cost,
+plus how much of your corpus exceeds the embedder's input window. Cairntir
+measures its own overhead rather than asking you to trust it.
 
 ---
 
@@ -99,6 +149,8 @@ That's walking into a lit room. That's the North Star. Every feature in this rep
 | **Consolidation + forgetting curve** (sleep-cycle pass, contradiction detection) | ✅ | ❌ | ❌ |
 | **Library seam** (Protocol surface + contract test suite for custom backends) | ✅ | ❌ | ❌ |
 | **Clean-ports Reason loop** (LLM-agnostic, testable without network) | ✅ | ❌ | ❌ |
+| **Budgeted handoff** (whole drawers under a hard ceiling, never truncated) | ✅ | ❌ | ❌ |
+| **Self-measured token cost** (`cairntir cost` audits its own overhead) | ✅ | ❌ | ❌ |
 | MCP server | ✅ stdio | ✅ | ❌ |
 | One-command install wizard | ✅ `cairntir setup` | ❌ | N/A |
 
@@ -114,10 +166,10 @@ That's walking into a lit room. That's the North Star. Every feature in this rep
    provenance, durable workflow receipts, and backup-first migration/reindex.
    Contract-tested via
    [tests/contract/test_store_contract.py](tests/contract/test_store_contract.py).
-3. **MCP server** — eighteen tools over stdio: exact memory, scoped and
+3. **MCP server** — **19 tools** over stdio: exact memory, scoped and
    cross-wing recall, **structural recall for a set of changed files**,
-   session start, timeline, audit, Crucible, Discovery
-   Ledger/calibration, and CodeGlass operations. Runs via
+   **the budgeted handoff brief**, session start, timeline, audit, Crucible,
+   Discovery Ledger/calibration, and CodeGlass operations. Runs via
    `python -m cairntir.mcp.server`.
 4. **Three skills** — `crucible` (stress-test assumptions), `quality` (audit a wing), `reason` (memory-backed thinking loop with a mandatory predict step). Bundled as markdown, loaded via `importlib.resources`.
 5. **Reason loop** — `ReasonLoop.step()` over four Protocol ports (`HypothesisProposer`, `ExperimentRunner`, `BeliefStore`, `MemoryGateway`). Testable without LLMs, networks, or SQLite. See [docs/integration-guide.md](docs/integration-guide.md).
@@ -185,6 +237,23 @@ miss.
 > **Worked example:** [march-2026.md](docs/recipes/signal-reader/examples/march-2026.md) — five structural reads run through the full protocol, formatted as prediction-bound drawers ready for `cairntir_remember`.
 > **Trigger:** *"signal-read this"*, *"what's the structural story?"*, *"run the fog protocol"*.
 
+### Decision Replay — close the loop on a past call
+
+`cairntir replay <id>` walks the supersedes chain from a decision, pulls the
+leaf's claim and predicted outcome, asks what actually happened, and writes the
+result back onto the chain as a new prediction-bound drawer with a Crucible
+marker. It is how a guess from three months ago becomes a scored one.
+
+> **Recipe:** [docs/recipes/decision-replay/](docs/recipes/decision-replay/)
+
+### CodeGlass — turn unfamiliar code into durable understanding
+
+Evidence-cited five-part walkthroughs, immediate and delayed teach-back, and
+retention tracking, so reading a codebase produces something that survives the
+session. Built for people who ship useful software without formal CS training.
+
+> **Recipe:** [docs/recipes/codeglass/](docs/recipes/codeglass/)
+
 More recipes will land as patterns prove themselves. The governance rule
 is firm: three skills, unbounded recipes, never a fourth core primitive.
 
@@ -231,10 +300,15 @@ cairntir/
 │   ├── mcp/                # Host-neutral MCP stdio server
 │   ├── portable.py         # Signed envelope format (v0.5)
 │   ├── skills/             # crucible.md, quality.md, reason.md
+│   ├── handoff.py          # Budgeted brief composition — whole drawers only
+│   ├── cost.py             # What Cairntir's own read path costs
 │   ├── daemon/             # Auto-capture spool watcher
-│   └── cli.py              # cairntir setup | init | recall | recall-for-change | anchor | status | export | import | migrate
+│   └── cli.py              # cairntir setup | init | handoff | cost | recall | recall-for-change | anchor | replay | calibration | doctor | status | export | import | migrate
+├── scripts/
+│   ├── check_release_tags.py         # A changelog entry is not a release
+│   └── check_landed_commitments.py   # A plan that promises something must deliver it
 ├── tests/
-│   ├── unit/               # 140+ unit tests
+│   ├── unit/               # The bulk of the 528-test suite
 │   ├── contract/           # Store contract suite — every impl must pass
 │   ├── property/           # Hypothesis-driven invariants
 │   ├── integration/        # MCP backend + daemon
@@ -246,6 +320,8 @@ cairntir/
     ├── manifesto.md                # Why Cairntir exists
     ├── integration-guide.md        # How to embed Cairntir in your own tool
     ├── deprecation-policy.md       # What "stable" means at v1.0
+    ├── release-cadence.md          # Commit vs. merge vs. tag, and how a version is chosen
+    ├── landed-commitments.md       # How CI verifies a plan actually shipped
     ├── roadmap.md                  # v0.2 → v1.0 arc + beyond
     └── lineage/                    # What we kept from BrainStormer + MemPalace
 ```
@@ -285,7 +361,7 @@ the other project is the better fit.
 | **[MemPalace](https://github.com/milla-jovovich/mempalace)** by [@milla-jovovich](https://github.com/milla-jovovich) | Wing / room / drawer taxonomy, 4-layer retrieval, verbatim storage | Shipped — [lineage](docs/lineage/mempalace.md) |
 | **BrainStormer** (the author's own prior attempt) | Reasoning vocabulary — Crucible, Quality, ETHOS | Shipped — [lineage](docs/lineage/brainstormer.md) |
 | **[mattpocock/skills](https://github.com/mattpocock/skills)** by [@mattpocock](https://github.com/mattpocock) | The premise that a shared project vocabulary is a first-class artifact | **Scoped, not built** — [lineage](docs/lineage/mattpocock-skills.md) |
-| **[code-review-graph](https://github.com/tirth8205/code-review-graph)** by [@tirth8205](https://github.com/tirth8205) | Structural recall — memory reachable by what you're changing, not only what you asked | **In progress** — [lineage](docs/lineage/code-review-graph.md) |
+| **[code-review-graph](https://github.com/tirth8205/code-review-graph)** by [@tirth8205](https://github.com/tirth8205) | Structural recall — memory reachable by what you're changing, not only what you asked | Shipped in 1.2.0 — [lineage](docs/lineage/code-review-graph.md) |
 
 On the two current sources, plainly:
 
