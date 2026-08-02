@@ -1057,3 +1057,57 @@ def test_migrate_already_up_to_date(tmp_path: Path, monkeypatch: object) -> None
     result = runner.invoke(app, ["migrate"])
     assert result.exit_code == 0
     assert "already up to date" in result.stdout
+
+
+def test_anchor_repair_revives_a_legacy_drawer(tmp_path: Path, monkeypatch: object) -> None:
+    """End to end on the real defect: a dead drawer becomes structurally recallable."""
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
+    saved = store.add(
+        Drawer(
+            wing="detroit-clone",
+            room="phase-0-bites",
+            content="B07 IS DONE, the static data crate landed",
+            metadata={"anchors": ["sim-core/src/tech.rs", "data/tech-tree.toml"]},
+        )
+    )
+    store.close()
+    assert saved.id is not None
+
+    before = runner.invoke(app, ["recall-for-change", "sim-core/src/tech.rs"])
+    assert before.exit_code == 0, before.output
+    assert "No anchored drawers touch" in before.output
+
+    # The pre-existing path cannot fix it: add_anchors validates the merged list.
+    blocked = runner.invoke(app, ["anchor", str(saved.id), "--path", "sim-core/src/tech.rs"])
+    assert blocked.exit_code == 1, blocked.output
+    assert "must be objects" in blocked.output
+
+    repaired = runner.invoke(app, ["anchor", str(saved.id), "--repair"])
+    assert repaired.exit_code == 0, repaired.output
+    assert "now carries 2 anchor(s)" in repaired.output
+
+    after = runner.invoke(app, ["recall-for-change", "sim-core/src/tech.rs"])
+    assert after.exit_code == 0, after.output
+    assert f"#{saved.id}" in after.output
+    assert "B07 IS DONE" in after.output
+
+
+def test_anchor_requires_path_or_repair(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384)).close()
+
+    result = runner.invoke(app, ["anchor", "1"])
+
+    assert result.exit_code == 1, result.output
+    assert "--path at least once, or --repair" in result.output
+
+
+def test_anchor_refuses_to_combine_repair_with_path(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384)).close()
+
+    result = runner.invoke(app, ["anchor", "1", "--repair", "--path", "src/cairntir/cli.py"])
+
+    assert result.exit_code == 1, result.output
+    assert "takes no --path" in result.output

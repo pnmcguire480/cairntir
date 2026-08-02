@@ -1202,6 +1202,86 @@ class DrawerStore:
             raise MemoryStoreError(f"failed to add anchors to drawer {drawer_id}: {exc}") from exc
         return merged
 
+    def repair_anchors(self, drawer_id: int) -> list[dict[str, Any]]:
+        """Coerce a drawer's legacy string anchors into object form. Returns the list.
+
+        Agents writing through ``cairntir_remember`` had no way to see the
+        anchor contract -- the tool declared ``metadata`` as a bare object --
+        so they guessed a list of plain paths, ``["a.rs", "b.toml"]``, where
+        the reader requires ``[{"path": "a.rs"}]``. Those rows are invisible
+        to :func:`cairntir.memory.anchors.recall_for_change`.
+
+        :meth:`add_anchors` cannot fix them. It validates the *merged* list,
+        so it reads the existing bad entries and refuses before it can append
+        anything -- the repair tool was blocked by exactly the damage it
+        needed to repair. Hence this method.
+
+        Coercion is deliberately limited to the one case that is not a guess:
+        a bare string could only ever have meant a path. An object with no
+        recoverable ``path``, a number, a nested list -- those are left to a
+        human, loudly. Repairing by guessing would be the same class of
+        silent drift that caused the defect.
+
+        Idempotent, metadata-only, and duplicate-collapsing on the same
+        fingerprint as :meth:`add_anchors`. The verbatim content never moves,
+        and nothing is written unless every entry validates first.
+        """
+        drawer = self.get(drawer_id)
+        if drawer is None:
+            raise MemoryStoreError(f"no drawer with id {drawer_id} to repair_anchors")
+
+        raw = drawer.metadata.get("anchors")
+        if raw is None:
+            raise MemoryStoreError(f"drawer {drawer_id} has no anchors to repair")
+        if not isinstance(raw, list):
+            raise MemoryStoreError(
+                f"drawer {drawer_id} metadata.anchors must be a list, got {type(raw).__name__}"
+            )
+
+        repaired: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        for index, entry in enumerate(raw):
+            if isinstance(entry, str):
+                candidate: dict[str, Any] = {"path": entry}
+            elif isinstance(entry, dict):
+                candidate = entry
+            else:
+                raise MemoryStoreError(
+                    f"drawer {drawer_id} metadata.anchors[{index}] cannot be repaired: "
+                    f"expected an object or a path string, got {type(entry).__name__}"
+                )
+            path = candidate.get("path")
+            if not isinstance(path, str) or not path.strip():
+                raise MemoryStoreError(
+                    f"drawer {drawer_id} metadata.anchors[{index}] cannot be repaired: "
+                    "no non-empty string 'path' to recover"
+                )
+            fingerprint = f"{path}\x00{candidate.get('symbol') or ''}"
+            if fingerprint in seen:
+                continue
+            seen.add(fingerprint)
+            repaired.append(candidate)
+
+        if repaired == raw:
+            # Already healthy. A no-op must not churn the row or its metadata.
+            return repaired
+
+        metadata = {**drawer.metadata, "anchors": repaired}
+        payload = json.dumps(metadata, ensure_ascii=False, sort_keys=True)
+        try:
+            with self._write_scope():
+                cur = self._conn.execute(
+                    "UPDATE drawers SET metadata = ? WHERE id = ?",
+                    (payload, drawer_id),
+                )
+                if cur.rowcount == 0:
+                    raise MemoryStoreError(f"no drawer with id {drawer_id} to repair_anchors")
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(
+                f"failed to repair anchors on drawer {drawer_id}: {exc}"
+            ) from exc
+        return repaired
+
     def reinforce(self, drawer_id: int, *, amount: float = 1.0) -> float:
         """Raise a drawer's ``belief_mass`` by ``amount``. Returns the new mass.
 
