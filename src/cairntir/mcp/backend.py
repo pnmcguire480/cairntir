@@ -29,6 +29,8 @@ from cairntir.codeglass import (
 )
 from cairntir.durability import request_hash
 from cairntir.errors import AnchorError, MCPError
+from cairntir.handoff import DEFAULT_BUDGET_CHARS, Handoff
+from cairntir.handoff import compose as compose_handoff
 from cairntir.learning import (
     DISCOVERY_STATES,
     NOVELTY_SCOPES,
@@ -263,6 +265,33 @@ class CairntirBackend:
             )
         body = "\n".join(lines) + _malformed_note(result.malformed_drawer_ids)
         return body + "\n\n" + render_evidence_block(evidence)
+
+    def handoff(
+        self,
+        *,
+        wing: str,
+        budget_chars: int = DEFAULT_BUDGET_CHARS,
+        files: list[str] | None = None,
+        max_deltas: int = 8,
+    ) -> str:
+        """Compose one bounded brief for ``wing`` — the replacement for HANDOFF.md.
+
+        Where :meth:`session_start` answers "what is in this wing?" with a
+        stub per drawer, this answers "what do I need to start working?"
+        with whole drawers and a hard ceiling. Drawers that do not fit are
+        named, never cut. See :mod:`cairntir.handoff`.
+        """
+        try:
+            brief = compose_handoff(
+                self._store,
+                wing=wing,
+                budget_chars=budget_chars,
+                files=files,
+                max_deltas=max_deltas,
+            )
+        except ValueError as exc:
+            raise MCPError(str(exc)) from exc
+        return _format_handoff(brief, store=self._store)
 
     def session_start(self, *, wing: str, query: str | None = None) -> str:
         """Load 4-layer context plus active learning signals for ``wing``."""
@@ -663,6 +692,74 @@ def _malformed_note(drawer_ids: tuple[int, ...]) -> str:
 
 def _fmt_ts(ts: datetime) -> str:
     return ts.strftime("%Y-%m-%d %H:%M")
+
+
+def _provenance_or_fail(store: DrawerStore, drawer_id: int) -> WriteProvenance:
+    provenance = store.get_provenance(drawer_id)
+    if provenance is None:
+        raise MCPError(f"drawer {drawer_id} is missing write provenance")
+    return provenance
+
+
+def _format_handoff(brief: Handoff, *, store: DrawerStore) -> str:
+    """Render a composed brief: an index, then whole drawers as evidence.
+
+    The header lines are a cheap index — id, room, size — and the
+    evidence block carries each included drawer's **full** content
+    exactly once. Omitted drawers appear in the index only, with the
+    cost of fetching them, so the caller can spend one targeted
+    ``cairntir_get`` instead of a blind ``cairntir_recall``.
+    """
+    used_pct = (brief.used_chars * 100 // brief.budget_chars) if brief.budget_chars else 0
+    lines = [
+        f"# Cairntir handoff — wing={brief.wing!r}",
+        "",
+        f"Budget {brief.budget_chars:,} chars of drawer content "
+        f"(~{brief.budget_chars // 4:,} tokens est.; the evidence envelope adds "
+        f"provenance on top) · used {brief.used_chars:,} (~{brief.used_tokens:,}, "
+        f"{used_pct}%) · "
+        f"{brief.included_count} drawer(s) whole, {brief.omitted_count} named but not fetched.",
+        "",
+    ]
+    if brief.is_empty:
+        if brief.wing_is_unknown:
+            lines.append(
+                f"Nothing is recorded for wing {brief.wing!r}. If that is unexpected, "
+                "the store may be new or misconfigured — do not substitute model memory."
+            )
+        else:
+            # The store is healthy; these drawers are simply not briefing
+            # material. Saying "nothing is recorded" here would send someone
+            # to debug a store that is working exactly as designed.
+            lines.append(
+                f"Wing {brief.wing!r} holds {brief.wing_total} drawer(s), but none are "
+                "identity, essential, an open question, or anchored to the files given. "
+                "Nothing here is broken — use cairntir_recall to search them by meaning."
+            )
+        return "\n".join(lines) + "\n"
+
+    evidence: list[str] = []
+    for section in brief.sections:
+        if not section.included and not section.omitted:
+            continue
+        lines.append(f"## {section.title} ({len(section.included)})")
+        lines.append(f"_{section.why}_")
+        for drawer in section.included:
+            if drawer.id is None:
+                raise MCPError("stored drawer is missing its id")
+            lines.append(f"  #{drawer.id}  {drawer.room}  {len(drawer.content):,} chars")
+            evidence.append(render_memory_evidence(drawer, _provenance_or_fail(store, drawer.id)))
+        if section.omitted:
+            lines.append(
+                f"  ...{len(section.omitted)} not fetched — cairntir_get(<id>) for any you need:"
+            )
+            for miss in section.omitted:
+                lines.append(
+                    f"    #{miss.drawer_id}  {miss.room}  [{miss.layer.value}]  "
+                    f"{miss.chars:,} chars (~{miss.tokens:,} tokens)"
+                )
+        lines.append("")
+    return "\n".join(lines).rstrip() + "\n\n" + render_evidence_block(evidence) + "\n"
 
 
 def _format_retrieval(

@@ -122,7 +122,7 @@ grammar, no new dependency, no schema break.
 ### 27 of the 30 MCP tools
 
 Communities, hubs, bridges, execution-flow ranking, wiki generation, refactor
-apply, and cross-repo search are all out. Cairntir sits at 18 MCP tools by
+apply, and cross-repo search are all out. Cairntir sits at 19 MCP tools by
 deliberate restraint — `cairntir_recall_for_change` is the *one* tool this
 lineage adds — and matching his surface would push past 40, directly
 contradicting *"fewer tools = fewer decisions for the AI."* Anyone who wants

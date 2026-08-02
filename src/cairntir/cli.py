@@ -15,6 +15,7 @@ import typer
 from cairntir import __version__
 from cairntir.config import cairntir_home, db_path
 from cairntir.errors import EmbeddingError, MCPError, MemoryStoreError, ProjectionError
+from cairntir.handoff import DEFAULT_BUDGET_CHARS
 from cairntir.hosts import (
     MEMORY_POLICY,
     POLICY_BEGIN_MARKER,
@@ -388,6 +389,51 @@ def recall_for_change_cmd(
     backend = _backend()
     try:
         typer.echo(backend.recall_for_change(files=files, wing=wing, limit=limit))
+    except (MCPError, MemoryStoreError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("handoff")
+def handoff_cmd(
+    wing: str,
+    budget: int = typer.Option(
+        DEFAULT_BUDGET_CHARS,
+        "--budget",
+        "-b",
+        help="Hard ceiling on returned content, in characters (~4 chars per token).",
+    ),
+    file: list[str] | None = typer.Option(  # noqa: B008
+        None,
+        "--file",
+        "-f",
+        help="A path you are about to change. Repeat for several.",
+    ),
+    max_deltas: int = typer.Option(
+        8, "--deltas", help="How many recent session drawers to consider."
+    ),
+) -> None:
+    """Compose one bounded brief for a wing — the replacement for HANDOFF.md.
+
+    Where `session-start` lists what exists as truncated stubs, this returns
+    what you need to start working, as whole drawers under a hard budget.
+    Anything that does not fit is named with its id and size so you can
+    fetch exactly what you want with `cairntir get`.
+
+    Deterministic: no ranking and no embedder, so repeat runs are identical.
+    """
+    if not db_path().exists():
+        typer.echo("cairntir: no store yet — nothing to hand off.", err=True)
+        raise typer.Exit(code=1)
+    try:
+        typer.echo(
+            _backend().handoff(
+                wing=wing,
+                budget_chars=budget,
+                files=list(file) if file else None,
+                max_deltas=max_deltas,
+            )
+        )
     except (MCPError, MemoryStoreError) as exc:
         typer.echo(f"cairntir: {exc}", err=True)
         raise typer.Exit(code=1) from exc
