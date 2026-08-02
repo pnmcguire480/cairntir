@@ -39,6 +39,38 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
   Identity is scoped to the wing, unlike `session_start` — a `cairntir` session
   was paying for identity drawers belonging to `larder` and `quietpdf`.
+- `cairntir cost <wing>` and `cairntir.cost` — report what Cairntir's own read
+  path costs the context window it exists to protect. Measures the tool catalog
+  (paid in every session in every host, called or not), `session_start`,
+  `handoff`, and the drawer-size distribution against the embedder's ~2,048
+  character input window.
+
+  This closes **P5**, the only one of the twelve primitives BrainStormer's
+  2026-04-03 harness audit scored MISSING, at risk HIGH, deferred with the words
+  *"until cost becomes a real concern."* That condition is now met three ways,
+  and every figure in the 2026-08-02 research had to be produced by hand because
+  nothing reported it.
+
+  Deliberately narrow: it measures Cairntir's payload and must not grow into a
+  general token dashboard — Tokalator already does live budget monitoring and
+  Headroom already does reversible compression, both better. It is a CLI command
+  rather than an MCP tool because a twentieth tool definition would enlarge the
+  very catalog the report holds accountable.
+
+  The comparison is honest in both directions. `handoff` is **not** universally
+  cheaper than `session_start`: on a wing holding a few large drawers, stubs
+  genuinely cost less than whole content, and the report says so. The saving on
+  the live store comes from `session_start` also loading every *other* wing's
+  identity drawers.
+- Determinism tests on `session_start` and `handoff`
+  (`tests/unit/test_determinism.py`). Anthropic's prompt caching reads cached
+  tokens at 10% of normal input cost, but any change to a block invalidates that
+  block and everything after it. Both surfaces were measured as deterministic on
+  2026-08-02 and nothing guaranteed they would stay that way; the realistic
+  regressions — a wall-clock timestamp, an unsorted `set`, insertion-ordered
+  keys — would fail no other test in the suite. Also pins the boundary that
+  determinism holds *within* a store and deliberately **not** across two, since
+  each drawer carries a unique per-session write receipt.
 - `scripts/check_landed_commitments.py` and `docs/landed-commitments.md` — fail
   the build when a plan document promises something the code does not have. A
   plan may carry a fenced `cairntir-commitments` block asserting that a file,

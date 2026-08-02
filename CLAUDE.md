@@ -670,8 +670,12 @@ under `docs/recipes/` and earn their place by use, not by governance.
 - **Structural recall:** `cairntir_recall_for_change(files=[…])` surfaces drawers
   anchored to the files a change touches. Anchors are validated on write, and
   `cairntir anchor <id> --repair` fixes drawers written before that guard existed.
-- **CLI:** `cairntir` — recall, get, anchor, recall-for-change, replay, export,
-  import, calibration, doctor, register, and more.
+- **CLI:** `cairntir` — recall, get, handoff, cost, anchor, recall-for-change,
+  replay, export, import, calibration, doctor, register, and more.
+- **Cost accounting:** `cairntir cost <wing>` reports what the read path costs —
+  tool catalog, `session_start`, `handoff`, and drawer sizes against the
+  embedder's ~2,048-char window. Closes P5. Measures Cairntir's own payload
+  only; it is not a general token dashboard and must not become one.
 - **Daemon:** `python -m cairntir.daemon` polls a spool dir and persists drawers.
 - **Three-host continuity:** Claude Code, Codex, and Cursor read and write the
   same store with host/session provenance preserved.
