@@ -111,11 +111,20 @@ Run from `main`, in order. Nothing here publishes; step 6 is the human gate.
    > then merge the next — or do what happened here and retarget the top of the
    > stack onto `main` in one go. The second is fewer moving parts.
 
-2. **Bump the version in three places.** They must agree or the release
-   verification gate fails:
+2. **Bump the version in FOUR places.** They must agree or
+   `tests/unit/test_plugin.py::test_release_versions_agree` fails:
    - `pyproject.toml` → `version = "1.3.0"`
    - `.claude-plugin/plugin.json` → `"version": "1.3.0"`
    - `src/cairntir/__init__.py` → `__version__ = "1.3.0"`
+   - `uv.lock` → **do not hand-edit.** Run `uv lock`, which rewrites the
+     `cairntir` package version and nothing else. Verify the diff is exactly one
+     line before committing; if it touched other packages, a dependency drifted
+     and that does not belong in a release commit.
+
+   > **This step said "three places" until 2026-08-02 and was wrong.** `uv.lock`
+   > was the fourth, and it was caught by the test suite rather than by the
+   > plan. Left as a note because a release checklist that quietly under-counts
+   > is the same defect this release is about.
 
 3. **Cut the changelog header.** Change `## [Unreleased]` to
    `## [1.3.0] - <date>` and open a fresh empty `## [Unreleased]` above it.
