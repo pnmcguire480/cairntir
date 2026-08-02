@@ -118,6 +118,62 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-08-02 (**structural recall actually works now — two defects found in live use**)
+- **What was accomplished:** Cairntir was used as the memory layer for a real
+  session on another project (`detroit-clone`, bite B08), and the experience was
+  written up as a field report rather than a feeling. Two confirmed defects came
+  out of it, both now fixed and both found only because the tool was used in
+  anger. The report is `plans/field-report-2026-08-02.md` and it is the driving
+  document for the next several sessions.
+  - **Anchors were accepted at write and rejected at read (PR #22).**
+    `cairntir_remember` declared `metadata` as a bare `{"type": "object"}` — no
+    properties, no description, no validation — so a writing agent never saw the
+    anchor contract and guessed a list of path strings where `parse_anchors`
+    requires a list of objects. The store accepted it and the failure surfaced
+    weeks later, in a different tool, in a different session. **Structural recall
+    was 0% functional in the `detroit-clone` wing** while reporting itself as
+    installed and working. Fixed by publishing the anchor schema in the tool
+    description *and* validating on write. The reader stays strict on purpose:
+    accepting two shapes is exactly the drift Cairntir exists to oppose.
+  - **The repair tool could not repair the damage (PR #23).** `add_anchors` is
+    append-only and validates the *merged* list, so on a drawer whose existing
+    anchors are the string form it raises before it can append. Drawer #182's
+    backfill procedure had worked only because those drawers had *no* anchors.
+    New `DrawerStore.repair_anchors` + `cairntir anchor <id> --repair` coerce the
+    one case that is not a guess — a bare string could only have meant a path —
+    and refuse anything else loudly.
+  - **Live store repaired.** #199 and #204–#207 in `detroit-clone`, 33 anchors,
+    rehearsed first on a read-only snapshot. Timestamped backup taken beside the
+    live DB (`cairntir.db.backup-20260802T072414Z`). After: 210 drawers before
+    and after, every drawer's content SHA-256 byte-identical, zero lost, zero
+    malformed warnings. Verified through the MCP tool, not just the CLI.
+  - **`AGENTS.md` rewritten as a pointer to this file.** It had drifted into a
+    stale fork — still claiming the repo was local-only with a GitHub push
+    pending, four days after v1.2.0 published. Two 600-line near-duplicates will
+    always drift, so it is now thin: identity, the stable Must Do / Must Not
+    rules, and the managed policy block. Everything that moves lives here.
+  - **Root cause worth naming.** Three separate features were dead or unused for
+    one reason: **the tool descriptions are the only documentation a writing
+    agent ever reads, and they omitted the contracts that mattered.** Anchors
+    were malformed, predictions were never written (0 in the entire corpus), and
+    drawers are written 3–8k characters covering ten topics each. Fixing tool
+    descriptions is probably the cheapest correctness work available.
+  - **Status:** 466 tests passing, 82.04% coverage, ruff clean, mypy --strict
+    clean, silent-except scan clean. PRs #22 and #23 both merged with 14/14
+    checks green.
+- **Next session:** two tracks, in order.
+  1. **Finish the field report.** Finding 5 (`cairntir_handoff(wing)` — one call,
+     one composed brief, no ranking) is the stated goal and is a composition
+     problem, not a retrieval one. Then finding 2 (token cost — measure first),
+     finding 3 (test the drawer-size hypothesis before touching retrieval), and
+     finding 4 (predictions, nearly free while tool descriptions are being edited).
+  2. **The research project Patrick asked for on 2026-08-02:** recover features
+     already proposed but never built across Cairntir *and* BrainStormer history,
+     survey current AI trends / workflows / repos, hunt for blind spots, and
+     produce **10 upgrade recommendations for consideration, not implementation.**
+     Explicitly gated behind track 1.
+
+- **Prior session — 2026-07-31 (v1.2.0 SHIPPED — and the release gap that hid 1.1.3 for three months):**
 - **Date:** 2026-07-31 (**v1.2.0 SHIPPED — and the release gap that hid 1.1.3 for three months**)
 - **What was accomplished:**
   - **v1.2.0 is public.** Tag `v1.2.0` on `eaad14b`; `main` fast-forwarded from
@@ -598,19 +654,50 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### What Works Right Now
 
-- Memory layer: wing/room/drawer taxonomy over sqlite-vec with 4-layer retrieval
-- MCP server: six tools exposed over stdio (`python -m cairntir.mcp.server`)
-- Three skills: Crucible, Quality, Reason — bundled and loadable
-- Daemon: `python -m cairntir.daemon` polls a spool dir and persists drawers
-- 54 tests, 85% coverage, ruff clean, mypy --strict clean
+- **Memory layer:** wing/room/drawer taxonomy over sqlite-vec, 4-layer retrieval,
+  schema v6 with immutable write provenance and durable idempotency receipts.
+- **MCP server:** 18 tools over stdio (`cairntir-mcp`, or `python -m cairntir.mcp.server`).
+- **Three skills:** Crucible, Quality, Reason — bundled and loadable.
+- **Recipes:** Signal Reader, Decision Replay, and the discovery/calibration ledger.
+- **Structural recall:** `cairntir_recall_for_change(files=[…])` surfaces drawers
+  anchored to the files a change touches. Anchors are validated on write, and
+  `cairntir anchor <id> --repair` fixes drawers written before that guard existed.
+- **CLI:** `cairntir` — recall, get, anchor, recall-for-change, replay, export,
+  import, calibration, doctor, register, and more.
+- **Daemon:** `python -m cairntir.daemon` polls a spool dir and persists drawers.
+- **Three-host continuity:** Claude Code, Codex, and Cursor read and write the
+  same store with host/session provenance preserved.
+- **Published:** PyPI (`pip install cairntir`) and GitHub releases, both with
+  build-provenance attestations. Docs at
+  https://pnmcguire480.github.io/cairntir/
+- **Quality bar:** 466 tests passing, 82% coverage, ruff clean, mypy --strict
+  clean across 47 source files, silent-exception scan clean.
 
 ### What's Not Built Yet
 
-- GitHub remote (local repo only so far)
-- CLI wrapper (`cairntir` + `cairntir recall`)
-- Claude Code plugin bundle
-- Real LongMemEval benchmark run
-- Published PyPI release
+- **`cairntir_handoff(wing)`** — one call returning one composed brief, so a
+  session no longer needs a `HANDOFF.md` file. The stated goal; see finding 5 of
+  `plans/field-report-2026-08-02.md`.
+- **Token budget on `session_start`** — it returns every identity + essential
+  stub, truncated, plus an evidence block repeating them. Measured as the largest
+  single response in a real session, and mostly unused. Finding 2, needs
+  instrumentation before action.
+- **Retrieval ranking quality** — semantic recall ranked a known-correct drawer
+  7th with every hit clustered between 1.03 and 1.15. Hypothesis is drawer size,
+  not the embedding model. Finding 3, needs the split test before any change.
+- **Prediction/calibration in practice** — the machinery exists and has never
+  been used: 0 prediction drawers written by an agent. Nothing in the write path
+  asks for one. Finding 4.
+- **Rename-survival testing for anchor staleness** — `symbol_source_hash` is
+  stored and deliberately never compared. The hold lifts only when tested against
+  a corpus that actually contains renames.
+
+### Local Development Note
+
+The maintainer's `cairntir-mcp` is an **editable install pointing at this repo**,
+so every AI host loads Cairntir from this working tree. *Whatever branch is
+checked out is what every agent runs.* Leave the repo on `main` at the end of a
+session.
 
 ---
 
