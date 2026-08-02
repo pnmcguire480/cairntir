@@ -13,7 +13,7 @@ from cairntir.errors import MCPError
 from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import HashEmbeddingProvider
 from cairntir.memory.store import DrawerStore
-from cairntir.memory.taxonomy import Layer
+from cairntir.memory.taxonomy import Drawer, Layer
 
 
 @pytest.fixture()
@@ -69,6 +69,18 @@ def test_recall_for_change_reports_no_match_without_failing(backend: CairntirBac
     assert "Scanned 1 anchored drawer(s)" in reply
 
 
+def _write_legacy_drawer(backend: CairntirBackend, metadata: dict[str, object]) -> None:
+    """Write straight to the store, bypassing ``remember``'s anchor validation.
+
+    Reproduces a drawer that entered the store before write-time validation
+    existed. Those rows are real — #199 and #204-#207 in the live store — so
+    the reader must keep tolerating them after the writer is guarded.
+    """
+    backend._store.add(
+        Drawer(wing="cairntir", room="architecture", content="bad", metadata=metadata)
+    )
+
+
 def test_recall_for_change_warns_about_malformed_anchors(backend: CairntirBackend) -> None:
     """A malformed anchor must be visible in the reply, never silently dropped."""
     backend.remember(
@@ -77,16 +89,102 @@ def test_recall_for_change_warns_about_malformed_anchors(backend: CairntirBacken
         content="good",
         metadata={"anchors": [{"path": "src/cairntir/cli.py"}]},
     )
-    backend.remember(
-        wing="cairntir",
-        room="architecture",
-        content="bad",
-        metadata={"anchors": [{"symbol": "missing path"}]},
-    )
+    _write_legacy_drawer(backend, {"anchors": [{"symbol": "missing path"}]})
     reply = backend.recall_for_change(files=["src/cairntir/cli.py"])
     assert "WARNING" in reply
     assert "malformed metadata.anchors" in reply
     assert "#2" in reply
+
+
+def test_recall_for_change_still_reads_legacy_list_of_strings_as_malformed(
+    backend: CairntirBackend,
+) -> None:
+    """The exact live-store defect: agents wrote ``["a.py"]``, the reader rejects it.
+
+    Guarding the writer does not retroactively fix rows already stored, and it
+    must not start silently accepting them either. They stay visibly malformed
+    until someone backfills them.
+    """
+    _write_legacy_drawer(backend, {"anchors": ["src/cairntir/cli.py"]})
+    reply = backend.recall_for_change(files=["src/cairntir/cli.py"])
+    assert "No anchored drawers touch" in reply
+    assert "malformed metadata.anchors" in reply
+
+
+def test_remember_rejects_list_of_strings_anchors(backend: CairntirBackend) -> None:
+    """The defect this guard exists for: the intuitive-but-wrong anchor shape.
+
+    Five drawers in the live store were written this way and were unreadable
+    by structural recall for weeks. The write must fail loudly instead.
+    """
+    with pytest.raises(MCPError) as excinfo:
+        backend.remember(
+            wing="cairntir",
+            room="architecture",
+            content="anchored with the wrong shape",
+            metadata={"anchors": ["sim-core/src/tech.rs", "data/tech-tree.toml"]},
+        )
+    message = str(excinfo.value)
+    assert "must be an object" in message
+    assert '{"path"' in message, "the error must show the shape that works"
+    assert "not a list of strings" in message, "the error must name the mistake made"
+    assert message.isascii(), "error text reaches cp1252 consoles; keep it ASCII"
+
+
+def test_remember_rejects_anchor_without_a_path(backend: CairntirBackend) -> None:
+    with pytest.raises(MCPError, match="path"):
+        backend.remember(
+            wing="cairntir",
+            room="architecture",
+            content="no path",
+            metadata={"anchors": [{"symbol": "SentenceTransformerProvider"}]},
+        )
+
+
+def test_remember_rejects_anchors_that_are_not_a_list(backend: CairntirBackend) -> None:
+    with pytest.raises(MCPError, match="must be a list"):
+        backend.remember(
+            wing="cairntir",
+            room="architecture",
+            content="anchors as a bare string",
+            metadata={"anchors": "src/cairntir/cli.py"},
+        )
+
+
+def test_remember_rejects_before_writing_anything(backend: CairntirBackend) -> None:
+    """A rejected write must not leave a half-stored drawer behind."""
+    with pytest.raises(MCPError):
+        backend.remember(
+            wing="cairntir",
+            room="architecture",
+            content="should never be stored",
+            metadata={"anchors": ["wrong/shape.py"]},
+        )
+    assert backend.recall(query="should never be stored", wing="cairntir").count("#") == 0
+
+
+def test_remember_accepts_valid_anchors_whatever_the_separator(backend: CairntirBackend) -> None:
+    """Valid anchors round-trip. Content is stored verbatim; the reader normalizes."""
+    backend.remember(
+        wing="cairntir",
+        room="architecture",
+        content="the gdext bridge decision",
+        metadata={"anchors": [{"path": ".\\src\\cairntir\\cli.py", "symbol": "main"}]},
+    )
+    reply = backend.recall_for_change(files=["src/cairntir/cli.py"])
+    assert "1 anchored drawer(s)" in reply
+    assert "WARNING" not in reply
+
+
+def test_remember_without_anchors_is_unaffected(backend: CairntirBackend) -> None:
+    """Anchors are optional. Metadata with no anchors key must pass untouched."""
+    reply = backend.remember(
+        wing="cairntir",
+        room="architecture",
+        content="no anchors here",
+        metadata={"topic": "release", "related_drawers": [94, 95]},
+    )
+    assert "Stored drawer #1" in reply
 
 
 @pytest.mark.parametrize("files", [[], [""], ["  "]])
