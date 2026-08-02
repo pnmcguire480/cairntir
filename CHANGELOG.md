@@ -13,6 +13,16 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-08-02
+
+The context-budget release. Cairntir's oldest inherited idea is **controlled
+context** — BabyTIEROS separated material into always-load / load-when-relevant
+/ never-load before any vector store existed. The 2026-07-27 evolution audit
+found that the policy survived into Cairntir and the *budget* did not, and wrote
+the fix into the v1.2 core list. v1.2 shipped without it. This release lands it,
+and adds the CI gate that makes that class of miss fail the build instead of
+going unnoticed for five days.
+
 ### Added
 
 - `cairntir_handoff(wing)` and `cairntir handoff <wing>` — one call returning one
@@ -1056,7 +1066,11 @@ six-tool MCP surface that Claude Code can talk to directly.
 - `ruff check`, `ruff format`, `mypy --strict` clean
 - Every exception typed; no silent `except: pass`
 
-[Unreleased]: https://github.com/pnmcguire480/cairntir/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/pnmcguire480/cairntir/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/pnmcguire480/cairntir/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/pnmcguire480/cairntir/compare/v1.1.2...v1.2.0
+[1.1.2]: https://github.com/pnmcguire480/cairntir/compare/v1.1.0...v1.1.2
+[1.1.0]: https://github.com/pnmcguire480/cairntir/compare/v1.0.0...v1.1.0
 [1.0.1]: https://github.com/pnmcguire480/cairntir/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/pnmcguire480/cairntir/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/pnmcguire480/cairntir/releases/tag/v0.1.0
