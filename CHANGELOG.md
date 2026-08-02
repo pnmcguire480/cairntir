@@ -83,6 +83,22 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ### Fixed
 
+- **`metadata.anchors` was accepted at write and rejected at read, silently
+  disabling structural recall.** `cairntir_remember` declared `metadata` as a
+  bare `{"type": "object"}` with no description, so a writing agent never saw
+  the anchor contract and guessed a list of path strings —
+  `["a.rs", "b.toml"]` — where `parse_anchors` requires a list of objects. The
+  store accepted it, and the failure surfaced weeks later as a "malformed
+  metadata.anchors" warning in `cairntir_recall_for_change`, in a different
+  session, about drawers nobody could reconstruct. Found in live use: every
+  anchored drawer in the `detroit-clone` wing (#199, #204-#207) was unreadable
+  by the feature the anchors were written for. Two changes close it:
+  `cairntir_remember` now publishes the full anchor schema in its tool
+  description, and it validates anchors on write, raising `MCPError` with the
+  correct shape instead of storing a bad row. The reader stays strict — rows
+  written before this guard remain visibly malformed rather than being
+  silently reinterpreted — so existing bad drawers still need a
+  `cairntir anchor` backfill. See `plans/field-report-2026-08-02.md`.
 - Marked 1.0.1 and 1.1.3 in this changelog as never released. Both were
   committed and changelogged but never tagged, so neither reached PyPI.
 - Resolved a self-contradiction in `docs/deprecation-policy.md`. Its versioning

@@ -28,7 +28,7 @@ from cairntir.codeglass import (
     walkthrough_fingerprint,
 )
 from cairntir.durability import request_hash
-from cairntir.errors import MCPError
+from cairntir.errors import AnchorError, MCPError
 from cairntir.learning import (
     DISCOVERY_STATES,
     NOVELTY_SCOPES,
@@ -39,6 +39,7 @@ from cairntir.learning import (
     record_discovery,
     transition_discovery,
 )
+from cairntir.memory.anchors import parse_anchors
 from cairntir.memory.anchors import recall_for_change as anchors_recall_for_change
 from cairntir.memory.retrieval import RetrievalResult, Retriever
 from cairntir.memory.taxonomy import Drawer, Layer
@@ -53,6 +54,18 @@ from cairntir.skills import load_skill
 
 if TYPE_CHECKING:
     from cairntir.memory.store import DrawerStore
+
+
+ANCHOR_SHAPE_HINT = (
+    'Anchors must be a list of objects like [{"path": "src/cairntir/cli.py", '
+    '"symbol": "main"}], not a list of strings. Only "path" is required'
+)
+"""Correct anchor shape, appended to every anchor rejection.
+
+The original defect was not that agents wrote bad anchors; it was that
+nothing ever told them the shape. The error message is the one place a
+writing agent is guaranteed to read, so it carries the contract.
+"""
 
 
 class CairntirBackend:
@@ -81,6 +94,16 @@ class CairntirBackend:
             raise MCPError(
                 f"invalid layer {layer!r}; expected one of {[x.value for x in Layer]}"
             ) from exc
+        if metadata:
+            # Fail here, not weeks later in recall_for_change. An agent that
+            # guesses the anchor shape wrong gets a correctable error inside
+            # the session that wrote it; the alternative is a silent bad row
+            # and a warning in a different tool, in a different chat, about a
+            # drawer nobody can reconstruct from memory.
+            try:
+                parse_anchors(metadata)
+            except AnchorError as exc:
+                raise MCPError(f"{exc}. {ANCHOR_SHAPE_HINT}") from exc
         drawer = Drawer(
             wing=wing,
             room=room,

@@ -69,7 +69,11 @@ def _tool_specs() -> list[types.Tool]:
     return [
         types.Tool(
             name="cairntir_remember",
-            description="Store a verbatim memory drawer in a wing/room.",
+            description=(
+                "Store a verbatim memory drawer in a wing/room. When the memory is "
+                "about specific code, add metadata.anchors so cairntir_recall_for_change "
+                "can surface it later from a diff alone."
+            ),
             inputSchema={
                 "type": "object",
                 "required": ["wing", "room", "content"],
@@ -82,7 +86,42 @@ def _tool_specs() -> list[types.Tool]:
                         "enum": ["identity", "essential", "on_demand", "deep"],
                         "default": "on_demand",
                     },
-                    "metadata": {"type": "object"},
+                    "metadata": {
+                        "type": "object",
+                        "description": (
+                            "Free-form JSON. 'anchors' is the one reserved key; it is "
+                            "validated on write and the write is rejected if malformed."
+                        ),
+                        "properties": {
+                            "anchors": {
+                                "type": "array",
+                                "description": (
+                                    "Code locations this drawer is about. A list of "
+                                    "OBJECTS, not a list of path strings."
+                                ),
+                                "items": {
+                                    "type": "object",
+                                    "required": ["path"],
+                                    "properties": {
+                                        "path": {
+                                            "type": "string",
+                                            "description": (
+                                                "Repo-relative path, e.g. "
+                                                "'src/cairntir/memory/store.py'."
+                                            ),
+                                        },
+                                        "symbol": {
+                                            "type": "string",
+                                            "description": (
+                                                "Optional function or class name the "
+                                                "drawer is about."
+                                            ),
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
                 },
             },
         ),
