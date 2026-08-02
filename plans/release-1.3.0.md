@@ -44,14 +44,17 @@ remains reserved for a revolutionary change in what Cairntir *is*.
 
 ## Do not cut it yet, and why
 
-The work sits in **four stacked, unmerged pull requests**:
+The work sat in **five stacked pull requests**. As of 2026-08-02, #25 and #26
+are on `main`; #27 and #28 merged into their stacked bases rather than `main`
+(see step 1), and #29 now carries their commits:
 
-| PR | Contents |
-|---|---|
-| #25 | The two research documents (docs only) |
-| #26 | `cairntir_handoff` |
-| #27 | `check_landed_commitments.py` |
-| #28 | `cairntir cost` + determinism suite |
+| PR | Contents | Where it landed |
+|---|---|---|
+| #25 | The two research documents (docs only) | ✅ `main` |
+| #26 | `cairntir_handoff` | ✅ `main` |
+| #27 | `check_landed_commitments.py` | ⚠️ into `feat/handoff`; now carried by #29 |
+| #28 | `cairntir cost` + determinism suite | ⚠️ into `feat/landed-commitments`; now carried by #29 |
+| #29 | Release prep, **plus #27 and #28** | open, based on `main` |
 
 Bumping the version now would put a `## [1.3.0]` header on a branch whose
 features may not all land. If only some PRs merge, the changelog would claim
@@ -69,24 +72,44 @@ tag, but after the code.
 
 Run from `main`, in order. Nothing here publishes; step 6 is the human gate.
 
-1. **Merge #25 → #26 → #27 → #28 → #29, in that order, deleting each branch as
-   you go.** They are stacked, and the order is not optional.
+1. **Merge #29, which is now based on `main` and carries the whole remainder.**
 
-   > **Read this before you start.** `.github/workflows/ci.yml` triggers on
-   > `pull_request: branches: [main]` only. A PR whose base is a *feature*
-   > branch therefore gets **no checks at all** — which is why #27, #28 and #29
-   > currently show "no checks reported" while #25 and #26 were green on 14/14.
+   > **WHAT ACTUALLY HAPPENED, 2026-08-02 — the stacked-CI trap fired, and this
+   > is the record of it.**
    >
-   > This resolves itself if you merge in order **and let GitHub delete the
-   > merged branch**: deleting the base auto-retargets the next PR onto `main`,
-   > which fires its CI. Merge without deleting and the next PR keeps its
-   > feature-branch base, stays unchecked, and you will have merged something
-   > the matrix never ran.
+   > The original instruction here was "merge #25 → #26 → #27 → #28 → #29 in
+   > order, deleting each branch as you go," on the theory that deleting a
+   > merged base auto-retargets the next PR onto `main` and fires its CI.
    >
-   > Everything was verified locally before each push — 525 passing, ruff,
-   > format, `mypy --strict`, silent-except, `mkdocs --strict`, and the
-   > commitment check — but local is not the nine-job matrix, and the honest
-   > statement is that #27–#29 have not been proven on macOS or Linux.
+   > **The retarget did not win the race.** The four merges landed within about
+   > 150 seconds of each other, faster than GitHub retargeted anything, so #27
+   > merged into `feat/handoff` and #28 into `feat/landed-commitments` — into
+   > their stacked bases, **not into `main`.** Verified afterwards:
+   >
+   > ```
+   > git cat-file -e origin/main:src/cairntir/cost.py                 -> NO
+   > git cat-file -e origin/main:scripts/check_landed_commitments.py  -> NO
+   > ```
+   >
+   > `main` had #25 and #26 only. Two merged PRs were sitting in branches
+   > nothing would ever build from.
+   >
+   > **The fix, and why it is clean.** `docs/release-1.3.0-prep` is the top of
+   > the stack, so it already contains every remaining commit. Retargeting it to
+   > `main` collapses the rest of the stack into a single merge with no
+   > duplication — the handoff commits are already on `main` and git correctly
+   > excludes them. Four commits, 13 files, +1,445 −2.
+   >
+   > **The lesson, which is the same one this whole release is about.** A merge
+   > that reports success is a claim, not a fact. Nobody would have noticed that
+   > `cost.py` never reached `main` until something needed it — which is exactly
+   > the failure mode `check_landed_commitments.py` exists to catch, arriving
+   > one layer above the code it checks. Next time: **verify the file is on
+   > `main`, not that the PR says "Merged."**
+   >
+   > For future stacks: either merge one PR, *wait for the retarget to appear*,
+   > then merge the next — or do what happened here and retarget the top of the
+   > stack onto `main` in one go. The second is fewer moving parts.
 
 2. **Bump the version in three places.** They must agree or the release
    verification gate fails:
