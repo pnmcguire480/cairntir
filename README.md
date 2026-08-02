@@ -28,7 +28,7 @@ optimization loop.
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![mypy: strict](https://img.shields.io/badge/mypy-strict-blueviolet.svg)](https://mypy.readthedocs.io/)
 [![ruff](https://img.shields.io/badge/ruff-clean-green.svg)](https://github.com/astral-sh/ruff)
-[![Tests: 528](https://img.shields.io/badge/tests-528_passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](tests/)
 [![MCP compatible](https://img.shields.io/badge/MCP-compatible-purple.svg)](https://modelcontextprotocol.io/)
 
 ---
@@ -308,7 +308,7 @@ cairntir/
 │   ├── check_release_tags.py         # A changelog entry is not a release
 │   └── check_landed_commitments.py   # A plan that promises something must deliver it
 ├── tests/
-│   ├── unit/               # The bulk of the 528-test suite
+│   ├── unit/               # The bulk of the suite
 │   ├── contract/           # Store contract suite — every impl must pass
 │   ├── property/           # Hypothesis-driven invariants
 │   ├── integration/        # MCP backend + daemon
