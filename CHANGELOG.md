@@ -39,6 +39,26 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
   Identity is scoped to the wing, unlike `session_start` — a `cairntir` session
   was paying for identity drawers belonging to `larder` and `quietpdf`.
+- `scripts/check_landed_commitments.py` and `docs/landed-commitments.md` — fail
+  the build when a plan document promises something the code does not have. A
+  plan may carry a fenced `cairntir-commitments` block asserting that a file,
+  symbol, function parameter, or test exists; CI verifies every one.
+
+  This closes the oldest defect in the lineage and the only one present in all
+  four generations — *infrastructure without the enforcement layer*, named in
+  BrainStormer's 2026-04-03 harness audit. It recurred at the level of the
+  recovery plan itself: the 2026-07-27 evolution audit diagnosed the lost
+  context budget, wrote "restore explicit context budgets" into the v1.2 core
+  list, and v1.2 then shipped, was verified across three hosts, published and
+  attested **without it**. The pattern is not "we build badly," it is "we do not
+  verify that a commitment landed."
+
+  The `param` assertion is the one that earns its place: `session_start` existed
+  the whole time, so a symbol-level check would have passed. Only a
+  parameter-level assertion catches an argument that was promised and never
+  added. A malformed block fails the run rather than being skipped, because a
+  silently skipped assertion is how `## [1.2.0.0]` would have defeated
+  `check_release_tags.py`.
 - `scripts/check_release_tags.py` — fails when a released `## [x.y.z]` changelog
   header has no matching `vx.y.z` git tag. The version in `pyproject.toml` is
   exempt while a release is in flight, and the two historically untagged
