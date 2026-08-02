@@ -69,9 +69,24 @@ tag, but after the code.
 
 Run from `main`, in order. Nothing here publishes; step 6 is the human gate.
 
-1. **Merge #25 → #26 → #27 → #28**, in that order — they are stacked, so
-   merging out of order will produce confusing diffs. Each is already green on
-   14/14 checks.
+1. **Merge #25 → #26 → #27 → #28 → #29, in that order, deleting each branch as
+   you go.** They are stacked, and the order is not optional.
+
+   > **Read this before you start.** `.github/workflows/ci.yml` triggers on
+   > `pull_request: branches: [main]` only. A PR whose base is a *feature*
+   > branch therefore gets **no checks at all** — which is why #27, #28 and #29
+   > currently show "no checks reported" while #25 and #26 were green on 14/14.
+   >
+   > This resolves itself if you merge in order **and let GitHub delete the
+   > merged branch**: deleting the base auto-retargets the next PR onto `main`,
+   > which fires its CI. Merge without deleting and the next PR keeps its
+   > feature-branch base, stays unchecked, and you will have merged something
+   > the matrix never ran.
+   >
+   > Everything was verified locally before each push — 525 passing, ruff,
+   > format, `mypy --strict`, silent-except, `mkdocs --strict`, and the
+   > commitment check — but local is not the nine-job matrix, and the honest
+   > statement is that #27–#29 have not been proven on macOS or Linux.
 
 2. **Bump the version in three places.** They must agree or the release
    verification gate fails:
