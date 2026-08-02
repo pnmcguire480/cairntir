@@ -127,6 +127,22 @@ Answering a single question took: `session_start` → `recall` → `get`.
 guess at them. But the shape is clear: the fixed cost is paid up front, scales
 with wing size, and is mostly unused.
 
+> **INSTRUMENTED 2026-08-02.** `cairntir cost <wing>` now reports what the read
+> path costs, so this no longer has to be measured by hand. It closes **P5**,
+> the one primitive BrainStormer's 2026-04-03 harness audit scored MISSING at
+> risk HIGH. `session_start` itself is unchanged and still returns every stub —
+> `cairntir_handoff` is the bounded alternative rather than a fix to
+> `session_start`, which remains open work.
+
+```cairntir-commitments
+# Finding 2 — cost is measured, not guessed at.
+symbol src/cairntir/cost.py measure
+symbol src/cairntir/cost.py corpus_stats
+test   tests/unit/test_cost.py test_the_tool_catalog_is_counted_because_it_is_never_free
+# Practical upgrade 3 — the prompt-cache discount stays protected.
+test   tests/unit/test_determinism.py test_session_start_is_byte_identical_across_calls
+```
+
 Worth considering:
 - A char/token budget on `session_start`, or identity-only by default with
   essential fetched on demand.
