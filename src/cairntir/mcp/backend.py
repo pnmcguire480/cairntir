@@ -88,6 +88,7 @@ class CairntirBackend:
         content: str,
         layer: str = "on_demand",
         metadata: dict[str, Any] | None = None,
+        model: str | None = None,
     ) -> str:
         """Store a verbatim drawer. Returns a human-readable confirmation."""
         try:
@@ -113,7 +114,7 @@ class CairntirBackend:
             layer=layer_enum,
             metadata=metadata or {},
         )
-        saved = self._store.add(drawer)
+        saved = self._store.add(drawer, model=model)
         return (
             f"Stored drawer #{saved.id} in {saved.wing}/{saved.room} "
             f"(layer={saved.layer.value}, ref={_drawer_ref(saved)})."

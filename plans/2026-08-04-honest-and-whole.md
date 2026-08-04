@@ -95,6 +95,27 @@ The `claim` / `predicted_outcome` / `observed_outcome` / `delta` fields exist on
 3. **Surface unsettled predictions in `handoff`.** "3 open predictions in this wing" is the honest opening line of a session.
 4. **Retire the `untrusted` migration stamp.** 123 drawers carry it because of the v6 migration on 2026-07-29, not because anything is suspect. Either re-attest them as `legacy_migrated` or document the meaning where a reader will see it. Right now the banner cries wolf on 45% of the bank, which trains every agent to ignore it.
 
+5. **Record which model authored each drawer.** Added 2026-08-04 at Patrick's
+   request: *"drawers need to be marked by what ai generated them so we can
+   strengthen weaknesses between models as well as code habits and such."*
+
+   **Done, forward-only** — explicitly no backfill (Patrick: *"no need to back
+   fill on that. 95% is opus 4.6 anyways"*). `provenance.model` already existed
+   and worked; it read `unknown` on 279 of 280 drawers because nothing ever set
+   it. The reason is structural: **no host discloses the running model to the
+   MCP subprocess.** `cairntir-mcp --model` / `$CAIRNTIR_MODEL` exist, but a
+   value fixed at process start keeps asserting the first model after the user
+   switches — worse than `unknown`, because it looks like data.
+
+   So the model is a **per-write** argument. The writing agent is the only party
+   that knows its own identity, so `cairntir_remember` now takes `model` and the
+   tool description tells the agent to state it. Same lesson as the anchor
+   contract in drawer #275: *the tool description is the only documentation a
+   writing agent ever reads.*
+
+   Host attribution was already working and needs nothing: `claude` 87,
+   `legacy` 123, `cli` 36, `codex` 15, `unknown` 18, `cursor` 1.
+
 **Done when:** predictions can be written and settled through the MCP surface, and `handoff` shows open ones.
 
 ---
@@ -132,6 +153,10 @@ symbol src/cairntir/memory/anchors.py RepoIndex
 symbol src/cairntir/memory/anchors.py propose_anchors
 test   tests/unit/test_anchors.py test_backfilled_anchors_are_verified_against_disk
 test   tests/unit/test_anchors.py test_repo_index_will_not_drop_a_prefix_the_author_asserted
+param  src/cairntir/mcp/backend.py remember:model
+param  src/cairntir/memory/store.py add:model
+test   tests/integration/test_mcp_backend.py test_remember_records_the_authoring_model
+test   tests/integration/test_mcp_backend.py test_two_models_in_one_session_are_recorded_separately
 ```
 
 The block asserts only what has **actually landed**. The first five lines lock in

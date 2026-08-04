@@ -73,7 +73,8 @@ def _tool_specs() -> list[types.Tool]:
             description=(
                 "Store a verbatim memory drawer in a wing/room. When the memory is "
                 "about specific code, add metadata.anchors so cairntir_recall_for_change "
-                "can surface it later from a diff alone."
+                "can surface it later from a diff alone. Always pass 'model' with your "
+                "own model id -- Cairntir cannot discover it any other way."
             ),
             inputSchema={
                 "type": "object",
@@ -122,6 +123,16 @@ def _tool_specs() -> list[types.Tool]:
                                 },
                             },
                         },
+                    },
+                    "model": {
+                        "type": "string",
+                        "description": (
+                            "The model id YOU are running as, e.g. 'claude-opus-5' or "
+                            "'gpt-5'. Always pass it. No host discloses this to Cairntir, "
+                            "so you are the only party who knows; leaving it out records "
+                            "'unknown' forever and that drawer can never be attributed. "
+                            "State your own id, never guess another agent's."
+                        ),
                     },
                 },
             },

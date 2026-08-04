@@ -116,13 +116,23 @@ class WriteProvenance:
         sensitivity: Sensitivity | None = None,
         valid_from: datetime | None = None,
         valid_until: datetime | None = None,
+        model: str | None = None,
     ) -> WriteProvenance:
-        """Return a per-drawer receipt while retaining host/session identity."""
+        """Return a per-drawer receipt while retaining host/session identity.
+
+        ``model`` is per-write rather than per-process on purpose. The host
+        never discloses which model is running to the MCP subprocess, so a
+        value fixed at startup would keep asserting the first model after the
+        user switched to another. The writing agent knows its own identity and
+        can state it on each write; the process-level default stays "unknown",
+        which is honest, rather than a stale guess that looks like data.
+        """
         return replace(
             self,
             trust=trust or self.trust,
             visibility=visibility or self.visibility,
             sensitivity=sensitivity or self.sensitivity,
+            model=model.strip() if model and model.strip() else self.model,
             recorded_at=datetime.now(UTC),
             valid_from=valid_from if valid_from is not None else self.valid_from,
             valid_until=valid_until if valid_until is not None else self.valid_until,
