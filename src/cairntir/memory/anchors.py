@@ -50,7 +50,9 @@ which rooms are code-facing.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from cairntir.errors import AnchorError
@@ -66,6 +68,66 @@ ANCHORS_KEY = "anchors"
 
 _SCAN_LIMIT = 10_000
 """Upper bound on drawers examined in one call. Tier 1 does a scan, not an index."""
+
+_CANDIDATE_RE = re.compile(r"[A-Za-z0-9_.\-/\\]*[A-Za-z0-9_\-][/\\.][A-Za-z0-9_.\-/\\]*")
+"""Loose prefilter for path-like tokens in prose.
+
+Deliberately permissive. Extraction is *not* the safety mechanism —
+:class:`RepoIndex` is. A candidate that does not resolve to a real file on
+disk is discarded, so a sloppy regex costs a wasted lookup, never a bad anchor.
+"""
+
+_EXTENSION_RE = re.compile(r"\.[A-Za-z][A-Za-z0-9]{0,4}$")
+"""A trailing extension must contain a letter, so ``v1.2.0`` is not a filename."""
+
+_IGNORED_DIRS = frozenset(
+    {
+        ".git",
+        ".hg",
+        ".svn",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv",
+        "venv",
+        "__pycache__",
+        "node_modules",
+        "dist",
+        "build",
+        "target",
+        "htmlcov",
+        ".next",
+        ".gradle",
+        ".idea",
+    }
+)
+"""Directories excluded from the repo index. Build output is not source."""
+
+_AMBIGUOUS_BASENAMES = frozenset(
+    {
+        "__init__.py",
+        "index.js",
+        "index.ts",
+        "index.tsx",
+        "main.py",
+        "main.rs",
+        "main.ts",
+        "mod.rs",
+        "lib.rs",
+        "readme.md",
+        "license.md",
+        "package.json",
+        "tsconfig.json",
+        "setup.py",
+        "conftest.py",
+    }
+)
+"""Basenames too generic to anchor from a bare mention.
+
+A drawer that says "package.json" is usually talking *about* the concept, not
+pointing at one file. These are only anchored when the drawer spells out a path
+containing a separator, where the intent is unambiguous.
+"""
 
 
 @dataclass(frozen=True)
@@ -281,3 +343,160 @@ def _candidates(store: DrawerStore, *, wing: str | None) -> list[Drawer]:
         for drawer in store.list_by(wing=wing, limit=_SCAN_LIMIT)
         if ANCHORS_KEY in drawer.metadata
     ]
+
+
+@dataclass(frozen=True)
+class AnchorProposal:
+    """Anchors extracted from prose and verified against a real working tree.
+
+    Attributes:
+        anchors: Candidates that resolved to exactly one file on disk, carrying
+            the **repo-relative path of the resolved file** rather than the raw
+            token the prose happened to use.
+        rejected: Candidates that looked like paths and did not resolve. Kept so
+            a human can see what was skipped; a backfill that silently drops
+            them teaches nobody anything.
+    """
+
+    anchors: tuple[Anchor, ...]
+    rejected: tuple[str, ...]
+
+
+class RepoIndex:
+    """A filename index over one working tree, used to verify anchor candidates.
+
+    This exists to enforce the rule that made the 2026-08-02 damage expensive:
+    **never write an unverified anchor.** A wrong path does not fail loudly — it
+    silently poisons :func:`recall_for_change`, surfacing the wrong memory for a
+    change or, worse, nothing at all. A missing anchor costs one lost recall; a
+    wrong one costs trust in every recall.
+
+    So resolution is deliberately conservative. A candidate is accepted only
+    when it names exactly one file:
+
+    * an exact repo-relative hit, or
+    * a segment-boundary suffix matching exactly one indexed file (prose often
+      writes ``src/tech.rs`` for ``sim-core/src/tech.rs``), or
+    * a bare filename matching exactly one indexed file, unless the basename is
+      in :data:`_AMBIGUOUS_BASENAMES`.
+
+    Two matches is not a near-miss, it is a guess, and it is rejected. No
+    parser, no new dependency — a directory walk and a dict, consistent with
+    this module's standing refusal to take on tree-sitter.
+    """
+
+    def __init__(self, root: Path) -> None:
+        """Index every file under ``root``, skipping build output."""
+        self._root = Path(root).resolve()
+        self._by_relpath: set[str] = set()
+        self._by_basename: dict[str, list[str]] = {}
+        for absolute in self._walk(self._root):
+            relative = normalize_path(str(absolute.relative_to(self._root)))
+            self._by_relpath.add(relative)
+            self._by_basename.setdefault(absolute.name.lower(), []).append(relative)
+
+    @property
+    def root(self) -> Path:
+        """The working tree this index was built from."""
+        return self._root
+
+    def __len__(self) -> int:
+        """Number of indexed files."""
+        return len(self._by_relpath)
+
+    @staticmethod
+    def _walk(root: Path) -> Iterable[Path]:
+        stack = [root]
+        while stack:
+            current = stack.pop()
+            try:
+                entries = list(current.iterdir())
+            except (OSError, PermissionError):
+                # An unreadable directory is a fact about the filesystem, not a
+                # defect worth aborting an entire backfill over. Skip it.
+                continue
+            for entry in entries:
+                if entry.is_dir():
+                    if entry.name not in _IGNORED_DIRS:
+                        stack.append(entry)
+                elif entry.is_file():
+                    yield entry
+
+    def _strip_root_prefix(self, text: str) -> str:
+        r"""Drop an absolute prefix up to and including this repo's own directory name.
+
+        Drawers routinely write ``C:\Dev\MinnieSweets\catering.html`` where the
+        index holds ``catering.html``. That prefix is the only one that can be
+        removed without inferring: it names the very tree being searched. Any
+        other leading component is an assertion by the author, and dropping it
+        would turn ``vendor/package.json`` into a match for the root
+        ``package.json`` — a guess, and exactly the kind this refuses to make.
+        """
+        segments = text.split("/")
+        lowered = [s.lower() for s in segments[:-1]]
+        root_name = self._root.name.lower()
+        if root_name in lowered:
+            return "/".join(segments[lowered.index(root_name) + 1 :])
+        return text
+
+    def resolve(self, candidate: str) -> str | None:
+        """Return the repo-relative path a candidate unambiguously names, or ``None``."""
+        text = self._strip_root_prefix(normalize_path(candidate).strip("/"))
+        basename = text.rsplit("/", 1)[-1]
+        if not text or not _EXTENSION_RE.search(basename):
+            return None
+        # Checked before the exact-path branch on purpose: a root-level
+        # ``package.json`` makes the bare mention and the exact path the same
+        # string, and the bare mention is still almost always conceptual.
+        if "/" not in text and text.lower() in _AMBIGUOUS_BASENAMES:
+            return None
+        pool = self._by_basename.get(basename.lower(), [])
+        if not pool:
+            return None
+        if text in self._by_relpath:
+            return text
+        if "/" in text:
+            suffixed = [p for p in pool if p.endswith("/" + text)]
+            return suffixed[0] if len(suffixed) == 1 else None
+        return pool[0] if len(pool) == 1 else None
+
+
+def extract_path_candidates(text: str) -> tuple[str, ...]:
+    """Return path-like tokens from prose, in first-seen order, deduplicated.
+
+    Loose on purpose: :meth:`RepoIndex.resolve` is what decides truth. Trailing
+    prose punctuation is stripped so ``see src/cli.py.`` yields ``src/cli.py``.
+
+    Tokens with no plausible file extension are dropped here rather than left
+    for the resolver. Numbered-list markers and ordinary words ("1.", "it.",
+    "N/A") would otherwise dominate the rejected list and bury the near-misses
+    a human actually needs to look at.
+    """
+    seen: dict[str, None] = {}
+    for raw in _CANDIDATE_RE.findall(text):
+        token = raw.strip(".,;:!?()[]{}<>\"'`*").strip()
+        if not token or token in seen:
+            continue
+        if _EXTENSION_RE.search(normalize_path(token).rsplit("/", 1)[-1]):
+            seen[token] = None
+    return tuple(seen)
+
+
+def propose_anchors(text: str, index: RepoIndex) -> AnchorProposal:
+    """Extract path candidates from ``text`` and verify each against ``index``.
+
+    The one entry point a backfill should use. Every returned anchor has been
+    proven to name a real file; everything else is reported, never written.
+    """
+    anchors: dict[str, None] = {}
+    rejected: dict[str, None] = {}
+    for candidate in extract_path_candidates(text):
+        resolved = index.resolve(candidate)
+        if resolved is None:
+            rejected[candidate] = None
+        else:
+            anchors[resolved] = None
+    return AnchorProposal(
+        anchors=tuple(Anchor(path=path) for path in anchors),
+        rejected=tuple(rejected),
+    )

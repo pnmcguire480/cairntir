@@ -10,9 +10,12 @@ import pytest
 from cairntir.errors import AnchorError, RetrievalError
 from cairntir.memory.anchors import (
     Anchor,
+    RepoIndex,
+    extract_path_candidates,
     normalize_path,
     parse_anchors,
     paths_intersect,
+    propose_anchors,
     recall_for_change,
 )
 from cairntir.memory.embeddings import HashEmbeddingProvider
@@ -322,3 +325,130 @@ def test_recall_for_change_is_read_only(store: DrawerStore) -> None:
     assert after.layer == before.layer
     assert after.metadata == before.metadata
     assert after.belief_mass == before.belief_mass
+
+
+# --- Verified backfill -------------------------------------------------------
+#
+# The rule these tests exist to enforce: never write an unverified anchor. A
+# missing anchor costs one lost recall; a wrong one silently poisons every
+# recall for that file, which is strictly worse than having none.
+
+
+@pytest.fixture()
+def repo(tmp_path: Path) -> Path:
+    """A working tree with the shapes a real backfill has to get right."""
+    root = tmp_path / "repo"
+    for relative in (
+        "src/cairntir/cli.py",
+        "src/cairntir/memory/store.py",
+        "sim-core/src/tech.rs",
+        "Cargo.toml",
+        "package.json",
+        "app/index.ts",
+        "web/index.ts",
+        "docs/notes.md",
+        "node_modules/vendored/cli.py",  # build output: must never be indexed
+    ):
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("x", encoding="utf-8")
+    return root
+
+
+def test_backfilled_anchors_are_verified_against_disk(repo: Path) -> None:
+    """Every proposed anchor names a real file; invented paths are rejected, not written."""
+    prose = (
+        "Reworked src/cairntir/cli.py and src/cairntir/memory/store.py to fix the "
+        "regression. The Rust side lives in sim-core/src/tech.rs. Also touched "
+        "src/cairntir/does_not_exist.py and app/totally/invented.ts along the way."
+    )
+    proposal = propose_anchors(prose, RepoIndex(repo))
+
+    assert [a.path for a in proposal.anchors] == [
+        "src/cairntir/cli.py",
+        "src/cairntir/memory/store.py",
+        "sim-core/src/tech.rs",
+    ]
+    assert "src/cairntir/does_not_exist.py" in proposal.rejected
+    assert "app/totally/invented.ts" in proposal.rejected
+    assert all((repo / anchor.path).is_file() for anchor in proposal.anchors), (
+        "a proposed anchor did not resolve to a real file"
+    )
+
+
+def test_repo_index_resolves_a_unique_suffix(repo: Path) -> None:
+    """Prose writes 'src/tech.rs'; only one indexed file ends that way, so it resolves."""
+    assert RepoIndex(repo).resolve("src/tech.rs") == "sim-core/src/tech.rs"
+
+
+def test_repo_index_refuses_an_ambiguous_suffix(repo: Path) -> None:
+    """Two files end in 'index.ts'. Two matches is a guess, not a near-miss."""
+    assert RepoIndex(repo).resolve("index.ts") is None
+
+
+def test_repo_index_anchors_a_generic_name_when_the_path_is_spelled_out(repo: Path) -> None:
+    """'index.ts' alone is ambiguous; 'app/index.ts' states the intent exactly."""
+    assert RepoIndex(repo).resolve("app/index.ts") == "app/index.ts"
+
+
+def test_repo_index_refuses_generic_basenames_even_when_unique(repo: Path) -> None:
+    """One package.json exists, but a bare mention is about the concept, not the file."""
+    index = RepoIndex(repo)
+    assert index.resolve("package.json") is None
+    assert index.resolve("Cargo.toml") == "Cargo.toml"
+
+
+def test_repo_index_skips_build_output(repo: Path) -> None:
+    """node_modules holds a second cli.py; excluding it keeps the bare name unambiguous."""
+    assert RepoIndex(repo).resolve("cli.py") == "src/cairntir/cli.py"
+
+
+def test_repo_index_rejects_tokens_without_a_real_extension(repo: Path) -> None:
+    """'v1.2.0' is a version, not a file. A trailing extension must contain a letter."""
+    index = RepoIndex(repo)
+    assert index.resolve("v1.2.0") is None
+    assert index.resolve("1.3.0") is None
+
+
+def test_repo_index_strips_an_absolute_prefix_naming_the_repo_itself(repo: Path) -> None:
+    """Drawers write the absolute path. The repo's own name is a droppable prefix."""
+    index = RepoIndex(repo)
+    assert index.resolve(r"C:\Dev\repo\docs\notes.md") == "docs/notes.md"
+    assert index.resolve("/home/pat/code/repo/src/cairntir/cli.py") == "src/cairntir/cli.py"
+
+
+def test_repo_index_will_not_drop_a_prefix_the_author_asserted(repo: Path) -> None:
+    """'vendor/package.json' must not silently resolve to the root package.json.
+
+    Dropping a leading component the author wrote is an inference, not a
+    verification. Only the repo's own name may be stripped.
+    """
+    assert RepoIndex(repo).resolve("vendor/package.json") is None
+    assert RepoIndex(repo).resolve("third_party/docs/notes.md") is None
+
+
+def test_extract_path_candidates_ignores_tokens_without_an_extension() -> None:
+    """Numbered lists and ordinary prose must not crowd out real near-misses."""
+    found = extract_path_candidates("1. Merge it. 2. Then N/A, w/ care. See src/cli.py.")
+    assert found == ("src/cli.py",)
+
+
+def test_extract_path_candidates_strips_prose_punctuation() -> None:
+    """'(see src/cli.py).' must yield the path, not the punctuation around it."""
+    found = extract_path_candidates("Fixed it (see src/cli.py). Then `docs/notes.md`, too.")
+    assert "src/cli.py" in found
+    assert "docs/notes.md" in found
+
+
+def test_propose_anchors_deduplicates_repeated_mentions(repo: Path) -> None:
+    """A file named five times earns one anchor, not five."""
+    prose = "Cargo.toml. Cargo.toml again, and Cargo.toml once more."
+    proposal = propose_anchors(prose, RepoIndex(repo))
+    assert [a.path for a in proposal.anchors] == ["Cargo.toml"]
+
+
+def test_proposed_anchors_survive_parse_anchors(repo: Path) -> None:
+    """Whatever the backfill proposes must satisfy the reader's strict contract."""
+    proposal = propose_anchors("touched src/cairntir/cli.py today", RepoIndex(repo))
+    metadata = {"anchors": [{"path": a.path} for a in proposal.anchors]}
+    assert parse_anchors(metadata) == proposal.anchors

@@ -51,6 +51,39 @@ Semantic recall rewards whoever asks the best question. A weak model asks bad qu
 
 **Done when:** anchor coverage ≥ 60% of drawers that reference code, every wing with a repo has ≥1 anchored drawer, and `check_store_health.py` reports coverage as a tracked metric.
 
+### Item 1 — LANDED 2026-08-04
+
+Verified extraction lives in `cairntir.memory.anchors` (`RepoIndex`,
+`extract_path_candidates`, `propose_anchors`) and is driven by
+`scripts/backfill_anchors.py`. A candidate is written **only** when it names
+exactly one real file: an exact hit, a segment-boundary suffix matching one
+indexed file, or a bare filename matching one file whose basename is not
+generic. Two matches is a guess, not a near-miss, and is rejected. The only
+prefix that may be stripped is the repo's own directory name, so
+`C:\Dev\MinnieSweets\catering.html` resolves while `vendor/package.json` does
+not silently become the root `package.json`.
+
+Applied to the live store after a WAL-safe backup and a full sandbox rehearsal:
+
+| | before | after |
+|---|---|---|
+| Drawers carrying anchors | 31 / 278 (11.2%) | **113 / 278 (40.6%)** |
+| Wings with zero anchors | 19 of 22 | **9 of 22** |
+| Content hashes changed | — | **0** |
+| Drawers lost | — | **0** |
+
+80 drawers gained 382 anchors, every one independently confirmed to resolve to
+a real file by a checker that does not import Cairntir's own resolver. Probe
+files that returned 0 drawers before return 1–5 after.
+
+Two of the nine remaining zero-anchor wings (`transcript-capture`,
+`video-capture`) are correct zeroes — their drawers name no resolvable files.
+The other seven are **unmapped, not skipped**: `ground-zero` (two candidate
+directories exist), `codeglass` (two candidates), `getkith` (closest directory
+name does not match the wing), `agents` (probable but unconfirmed), and
+`dev` / `larder` / `quietpdf` (no directory found). Guessing any of these would
+break the rule this phase exists to enforce.
+
 ---
 
 ## P1 — HONEST: make the store able to be wrong
@@ -94,15 +127,25 @@ file   scripts/repair_leaked_metadata.py
 file   scripts/vault_sync.py
 symbol src/cairntir/memory/anchors.py recall_for_change
 symbol src/cairntir/memory/store.py repair_anchors
-```
-
-The assertions above are the ones **already true today** — they lock in the 2026-08-04 work so it cannot silently regress. Add these as each phase lands:
-
-```
-# P0
-param  src/cairntir/mcp/backend.py remember:anchors
-symbol src/cairntir/cli.py vault_sync_cmd
+file   scripts/backfill_anchors.py
+symbol src/cairntir/memory/anchors.py RepoIndex
+symbol src/cairntir/memory/anchors.py propose_anchors
 test   tests/unit/test_anchors.py test_backfilled_anchors_are_verified_against_disk
+test   tests/unit/test_anchors.py test_repo_index_will_not_drop_a_prefix_the_author_asserted
+```
+
+The block asserts only what has **actually landed**. The first five lines lock in
+the 2026-08-04 repair work; the last five lock in P0 item 1. Add the rest as each
+piece lands — and if a phase slips, the assertion stays out of the block rather
+than being written optimistically, because a green build must mean the code is
+there, not that someone intended it to be.
+
+```
+# P0 item 2 — make anchoring the default (NOT LANDED)
+param  src/cairntir/mcp/backend.py remember:anchors
+
+# P0 item 3 — wire vault_sync to the CLI (NOT LANDED)
+symbol src/cairntir/cli.py vault_sync_cmd
 
 # P1
 param  src/cairntir/mcp/backend.py remember:claim
