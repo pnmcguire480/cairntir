@@ -134,6 +134,89 @@ def _tool_specs() -> list[types.Tool]:
                             "State your own id, never guess another agent's."
                         ),
                     },
+                    "anchors": {
+                        "type": "array",
+                        "description": (
+                            "Code this drawer is about. PASS THIS whenever the drawer "
+                            "mentions a file -- it is the only retrieval path that works "
+                            "without anyone asking the right question, because it fires "
+                            "from the files a later change touches. Repo-relative paths "
+                            "you have actually seen; never guess a path, a wrong anchor "
+                            "is worse than none. Equivalent to metadata.anchors; pass one "
+                            "or the other, not both."
+                        ),
+                        "items": {
+                            "type": "object",
+                            "required": ["path"],
+                            "properties": {
+                                "path": {
+                                    "type": "string",
+                                    "description": (
+                                        "Repo-relative path, e.g. 'src/cairntir/cli.py'."
+                                    ),
+                                },
+                                "symbol": {
+                                    "type": "string",
+                                    "description": (
+                                        "Optional function or class name the drawer is about."
+                                    ),
+                                },
+                            },
+                        },
+                    },
+                    "claim": {
+                        "type": "string",
+                        "description": (
+                            "The load-bearing assertion this drawer makes, in one line. "
+                            "Pair it with predicted_outcome so the store can later be "
+                            "checked against reality."
+                        ),
+                    },
+                    "predicted_outcome": {
+                        "type": "string",
+                        "description": (
+                            "A FALSIFIABLE prediction: what you expect to observe if the "
+                            "claim is true, specific enough that a later session can tell "
+                            "whether it happened. Write one on any drawer recording a "
+                            "decision. Settle it later with cairntir_settle."
+                        ),
+                    },
+                },
+            },
+        ),
+        types.Tool(
+            name="cairntir_settle",
+            description=(
+                "Close an open prediction by recording what actually happened. Settles by "
+                "APPENDING an observation drawer that supersedes the prediction -- the "
+                "original is never rewritten, because a store that edits its own "
+                "predictions cannot be used to check whether it was right."
+            ),
+            inputSchema={
+                "type": "object",
+                "required": ["drawer_id", "observed_outcome"],
+                "properties": {
+                    "drawer_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "The drawer carrying the predicted_outcome to settle.",
+                    },
+                    "observed_outcome": {
+                        "type": "string",
+                        "description": "What actually happened. Be concrete and verifiable.",
+                    },
+                    "delta": {
+                        "type": "string",
+                        "description": (
+                            "The surprise: how reality differed from the prediction. Omit "
+                            "only when the prediction held exactly. This is the signal that "
+                            "lets the store learn, and it has never once been written."
+                        ),
+                    },
+                    "model": {
+                        "type": "string",
+                        "description": "The model id YOU are running as. Always pass it.",
+                    },
                 },
             },
         ),
@@ -274,6 +357,16 @@ def _tool_specs() -> list[types.Tool]:
                 "required": ["wing"],
                 "properties": {
                     "wing": {"type": "string"},
+                    "budget_chars": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": (
+                            "Optional hard ceiling on returned drawer content, in "
+                            "characters (roughly 4 chars per token). Whole drawers are "
+                            "dropped to stay under it and listed by id; none is ever cut "
+                            "in half. Unset means no ceiling, which is the expensive path."
+                        ),
+                    },
                 },
             },
         ),
@@ -557,6 +650,8 @@ def _dispatch(backend: CairntirBackend, name: str, args: dict[str, Any]) -> str:
     match name:
         case "cairntir_remember":
             return backend.remember(**args)
+        case "cairntir_settle":
+            return backend.settle(**args)
         case "cairntir_recall":
             return backend.recall(**args)
         case "cairntir_get":
