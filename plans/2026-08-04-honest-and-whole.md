@@ -157,6 +157,15 @@ param  src/cairntir/mcp/backend.py remember:model
 param  src/cairntir/memory/store.py add:model
 test   tests/integration/test_mcp_backend.py test_remember_records_the_authoring_model
 test   tests/integration/test_mcp_backend.py test_two_models_in_one_session_are_recorded_separately
+# P0 item 3 — LANDED 2026-08-04. `vault_sync.py` is no longer a loose script:
+# the logic is `cairntir.vault`, the command is `cairntir vault-sync`, and
+# `--check` exits non-zero on drift. Supersedes the staging entry further down.
+symbol src/cairntir/cli.py vault_sync_cmd
+symbol src/cairntir/vault.py plan_sync
+symbol src/cairntir/vault.py apply_sync
+param  src/cairntir/cli.py vault_sync_cmd:check
+test   tests/unit/test_vault_sync.py test_check_exits_nonzero_when_a_walkthrough_has_no_drawer
+test   tests/unit/test_vault_sync.py test_check_writes_nothing_even_when_it_finds_drift
 ```
 
 The block asserts only what has **actually landed**. The first five lines lock in
