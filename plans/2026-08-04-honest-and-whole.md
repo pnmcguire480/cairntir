@@ -157,6 +157,14 @@ param  src/cairntir/mcp/backend.py remember:model
 param  src/cairntir/memory/store.py add:model
 test   tests/integration/test_mcp_backend.py test_remember_records_the_authoring_model
 test   tests/integration/test_mcp_backend.py test_two_models_in_one_session_are_recorded_separately
+
+# P1 item 3 — handoff surfaces unsettled predictions (LANDED 2026-08-04)
+symbol src/cairntir/handoff.py is_open_prediction
+symbol src/cairntir/handoff.py open_prediction_count
+test   tests/unit/test_handoff.py test_an_unsettled_prediction_gets_its_own_section
+test   tests/unit/test_handoff.py test_a_settled_prediction_is_not_open
+test   tests/unit/test_handoff.py test_a_wing_with_no_predictions_spends_nothing_on_the_section
+test   tests/unit/test_handoff.py test_two_calls_with_open_predictions_are_byte_identical
 ```
 
 The block asserts only what has **actually landed**. The first five lines lock in

@@ -14,7 +14,13 @@ from pathlib import Path
 
 import pytest
 
-from cairntir.handoff import DEFAULT_BUDGET_CHARS, compose, estimate_tokens
+from cairntir.handoff import (
+    DEFAULT_BUDGET_CHARS,
+    OPEN_PREDICTIONS,
+    compose,
+    estimate_tokens,
+    is_open_prediction,
+)
 from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import HashEmbeddingProvider
 from cairntir.memory.store import DrawerStore
@@ -121,32 +127,7 @@ def test_identity_is_scoped_to_the_wing(store: DrawerStore) -> None:
     assert "theirs" not in contents
 
 
-def test_open_questions_are_unresolved_predictions(store: DrawerStore) -> None:
-    open_id = _add(
-        store,
-        room="predictions",
-        content="cordic exp is precise enough",
-        layer=Layer.ON_DEMAND,
-        claim="cordic exp is precise enough",
-        predicted_outcome="the B11 balance pass will not drift",
-    )
-    _add(
-        store,
-        room="predictions",
-        content="already answered",
-        layer=Layer.ON_DEMAND,
-        claim="already answered",
-        predicted_outcome="it would hold",
-        observed_outcome="it held",
-    )
-
-    brief = compose(store, wing="cairntir")
-
-    ids = [d.id for d in _sections(brief)["open_questions"].included]  # type: ignore[attr-defined]
-    assert ids == [open_id]
-
-
-def test_an_explicit_metadata_flag_also_counts_as_an_open_question(store: DrawerStore) -> None:
+def test_an_explicit_metadata_flag_counts_as_an_open_question(store: DrawerStore) -> None:
     flagged = _add(
         store,
         room="release",
@@ -168,6 +149,171 @@ def test_prose_is_never_mined_for_questions(store: DrawerStore) -> None:
     brief = compose(store, wing="cairntir")
 
     assert _sections(brief)["open_questions"].included == []  # type: ignore[attr-defined]
+
+
+# ------------------------------------------------------- open predictions
+#
+# `claim` / `predicted_outcome` / `observed_outcome` have been on every
+# drawer since v0.2 and were populated on 2 of 278 rows. These tests cover
+# the read side: a prediction nobody is ever reminded of is not a
+# prediction, it is a note.
+
+
+def _open_prediction(store: DrawerStore, *, content: str = "cordic exp is precise enough") -> int:
+    return _add(
+        store,
+        room="predictions",
+        content=content,
+        layer=Layer.ON_DEMAND,
+        claim=content,
+        predicted_outcome="the B11 balance pass will not drift",
+    )
+
+
+def test_an_unsettled_prediction_gets_its_own_section(store: DrawerStore) -> None:
+    open_id = _open_prediction(store)
+
+    brief = compose(store, wing="cairntir")
+
+    section = _sections(brief)[OPEN_PREDICTIONS]
+    assert [d.id for d in section.included] == [open_id]  # type: ignore[attr-defined]
+    assert brief.open_prediction_count == 1
+
+
+def test_a_settled_prediction_is_not_open(store: DrawerStore) -> None:
+    """An observed outcome closes the loop. That is the whole definition."""
+    _add(
+        store,
+        room="predictions",
+        content="already answered",
+        layer=Layer.ON_DEMAND,
+        claim="already answered",
+        predicted_outcome="it would hold",
+        observed_outcome="it held",
+    )
+
+    brief = compose(store, wing="cairntir")
+
+    assert brief.open_prediction_count == 0
+    assert _sections(brief)[OPEN_PREDICTIONS].included == []  # type: ignore[attr-defined]
+
+
+def test_a_blank_predicted_outcome_is_not_a_prediction(store: DrawerStore) -> None:
+    """Non-empty means non-empty. A whitespace field promised nothing."""
+    _add(
+        store,
+        room="predictions",
+        content="a claim with no prediction attached",
+        layer=Layer.ON_DEMAND,
+        claim="a claim with no prediction attached",
+        predicted_outcome="   ",
+    )
+
+    brief = compose(store, wing="cairntir")
+
+    assert brief.open_prediction_count == 0
+
+
+def test_a_wing_with_no_predictions_spends_nothing_on_the_section(store: DrawerStore) -> None:
+    """Nearly every wing today. It must cost no header and no characters."""
+    _add(store, content="an ordinary session delta")
+
+    brief = compose(store, wing="cairntir")
+    section = _sections(brief)[OPEN_PREDICTIONS]
+
+    assert brief.open_prediction_count == 0
+    assert section.included == []  # type: ignore[attr-defined]
+    assert section.omitted == []  # type: ignore[attr-defined]
+    assert section.chars == 0  # type: ignore[attr-defined]
+
+    rendered = CairntirBackend(store).handoff(wing="cairntir")
+    assert "Open predictions" not in rendered
+    assert "open prediction" not in rendered
+
+
+def test_the_count_includes_predictions_that_did_not_fit(store: DrawerStore) -> None:
+    """An undercount is the failure that matters.
+
+    Reporting only what fit would read like the loop is nearly closed
+    while three more sit omitted directly underneath.
+    """
+    for i in range(4):
+        _open_prediction(store, content=f"{i} " + "p" * 900)
+
+    brief = compose(store, wing="cairntir", budget_chars=1_000)
+    section = _sections(brief)[OPEN_PREDICTIONS]
+
+    assert len(section.included) == 1  # type: ignore[attr-defined]
+    assert len(section.omitted) == 3  # type: ignore[attr-defined]
+    assert brief.open_prediction_count == 4
+
+
+def test_the_honest_total_leads_the_section(store: DrawerStore) -> None:
+    """The plan's own words: the honest opening line of a session."""
+    for i in range(3):
+        _open_prediction(store, content=f"prediction {i}")
+
+    rendered = CairntirBackend(store).handoff(wing="cairntir")
+
+    assert "3 open predictions in this wing" in rendered
+
+
+def test_one_open_prediction_is_not_reported_in_the_plural(store: DrawerStore) -> None:
+    _open_prediction(store)
+
+    rendered = CairntirBackend(store).handoff(wing="cairntir")
+
+    assert "1 open prediction in this wing" in rendered
+
+
+def test_open_predictions_are_paid_for_out_of_the_same_budget(store: DrawerStore) -> None:
+    """Not smuggled in alongside the ceiling — counted against it."""
+    for i in range(20):
+        _open_prediction(store, content=f"{i} " + "p" * 800)
+
+    brief = compose(store, wing="cairntir", budget_chars=3_000)
+
+    assert brief.used_chars <= 3_000
+    assert _sections(brief)[OPEN_PREDICTIONS].chars > 0  # type: ignore[attr-defined]
+
+
+def test_an_included_prediction_still_comes_back_whole(store: DrawerStore) -> None:
+    body = "P" * 900
+    _open_prediction(store, content=body)
+
+    brief = compose(store, wing="cairntir")
+
+    assert [d.content for d in _sections(brief)[OPEN_PREDICTIONS].included] == [body]  # type: ignore[attr-defined]
+
+
+def test_a_prediction_superseded_by_an_observation_still_reads_as_open(
+    store: DrawerStore,
+) -> None:
+    """The documented ambiguity, pinned so the choice is not lost.
+
+    ``ReasonLoop.step`` settles a prediction by writing a *second*
+    drawer that supersedes it. The original is never touched, so under
+    the narrow reading it stays listed. Walking the chain instead would
+    make "open" depend on a traversal the caller cannot see and would
+    make the count disagree with the ids printed beside it. Settling in
+    place clears it.
+    """
+    predicted = _open_prediction(store)
+    _add(
+        store,
+        room="predictions",
+        content="and here is what actually happened",
+        layer=Layer.ON_DEMAND,
+        claim="cordic exp is precise enough",
+        predicted_outcome="the B11 balance pass will not drift",
+        observed_outcome="it drifted at the third decimal",
+        supersedes_id=predicted,
+    )
+
+    brief = compose(store, wing="cairntir")
+
+    assert brief.open_prediction_count == 1
+    assert [d.id for d in _sections(brief)[OPEN_PREDICTIONS].included] == [predicted]  # type: ignore[attr-defined]
 
 
 def test_a_drawer_is_paid_for_once_across_sections(store: DrawerStore) -> None:
@@ -274,6 +420,44 @@ def test_two_calls_are_byte_identical(store: DrawerStore) -> None:
     second = backend.handoff(wing="cairntir")
 
     assert first == second
+
+
+def test_two_calls_with_open_predictions_are_byte_identical(store: DrawerStore) -> None:
+    """The prediction count must not become the thing that moves the prefix.
+
+    It is derived from drawer fields only — no clock, no ranking, no dict
+    iteration order — so an unchanged store renders an unchanged brief.
+    """
+    for i in range(3):
+        _open_prediction(store, content=f"prediction {i}")
+    _add(store, content="a delta")
+    _add(store, room="project-identity", content="protocol", layer=Layer.IDENTITY)
+
+    backend = CairntirBackend(store)
+
+    assert backend.handoff(wing="cairntir") == backend.handoff(wing="cairntir")
+
+
+def test_the_open_prediction_rule_is_readable_on_a_single_drawer(store: DrawerStore) -> None:
+    """The predicate is public so the definition can be checked, not guessed."""
+    open_id = _open_prediction(store)
+    settled = _add(
+        store,
+        room="predictions",
+        content="settled in place",
+        layer=Layer.ON_DEMAND,
+        predicted_outcome="it would hold",
+        observed_outcome="it held",
+    )
+    plain = _add(store, content="no prediction at all")
+
+    opened = store.get(open_id)
+    closed = store.get(settled)
+    ordinary = store.get(plain)
+    assert opened is not None and closed is not None and ordinary is not None
+    assert is_open_prediction(opened)
+    assert not is_open_prediction(closed)
+    assert not is_open_prediction(ordinary)
 
 
 def test_an_unknown_wing_says_so_rather_than_inventing(store: DrawerStore) -> None:

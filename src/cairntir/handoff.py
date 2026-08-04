@@ -84,6 +84,23 @@ its 7,737 tokens on 51 stubs that could not answer anything; ``handoff``
 spends 4,261 on 9 whole drawers that can. Cheaper *and* usable is the
 only version of cheaper worth having.
 
+Open predictions
+----------------
+
+The first thing the brief says is what this wing claimed and never
+settled. ``claim`` / ``predicted_outcome`` / ``observed_outcome`` have
+existed on every drawer since v0.2 and were, on 2026-08-04, populated on
+**2 of 278** rows — a fully-built epistemic mechanism with no wire to it.
+The write side of that wire is being run separately; this is the read
+side. A prediction nobody is ever reminded of is not a prediction, it is
+a note.
+
+The section is deliberately small and deliberately first. "3 open
+predictions in this wing" is the honest opening line of a session,
+because closing one is worth more than making another. A wing with none
+— which is nearly every wing today — renders no header and spends no
+characters.
+
 Determinism
 -----------
 
@@ -219,6 +236,24 @@ class Handoff:
         return self.included_count == 0 and self.omitted_count == 0
 
     @property
+    def open_prediction_count(self) -> int:
+        """How many predictions this wing has left unsettled.
+
+        Counts the ones that did not fit the budget as well as the ones
+        that did, because an undercount is the failure mode that
+        matters: "2 open" when three more were omitted reads like the
+        loop is nearly closed. The omitted ones are named by id in the
+        section itself, so the number and the list agree.
+
+        Zero for the overwhelming majority of wings, and that is a
+        truthful answer rather than a missing one.
+        """
+        for section in self.sections:
+            if section.key == OPEN_PREDICTIONS:
+                return len(section.included) + len(section.omitted)
+        return 0
+
+    @property
     def wing_is_unknown(self) -> bool:
         """True when the wing holds no drawers at all — the alarming case."""
         return self.wing_total == 0
@@ -230,10 +265,27 @@ class Handoff:
 
 # --------------------------------------------------------------- composition
 
+OPEN_PREDICTIONS = "open_predictions"
+"""Key of the section holding predictions this wing never settled."""
+
 # Section order is the load policy, most load-bearing first. A section
 # earlier in this tuple gets its reserve before a later one, and takes
 # priority when leftover budget is redistributed.
+#
+# Open predictions lead. They are the cheapest section — nearly always
+# empty, and capped at a tenth of the budget when it is not — and they
+# are the one thing a session should see before it starts deciding
+# things, because a claim already on the record beats a fresh guess.
+# Its 10% comes out of the old 15% reserved for open questions, which
+# used to carry both shapes; the reserves still sum to 1.00, so nothing
+# else was quietly made smaller to pay for it.
 _SECTION_SPECS: tuple[tuple[str, str, str, float], ...] = (
+    (
+        OPEN_PREDICTIONS,
+        "Open predictions",
+        "Claims made here and never settled. Closing one is worth more than making another.",
+        0.10,
+    ),
     (
         "protocol",
         "Operating protocol and identity",
@@ -249,8 +301,8 @@ _SECTION_SPECS: tuple[tuple[str, str, str, float], ...] = (
     (
         "open_questions",
         "Open questions",
-        "Decisions with no recorded outcome yet. These are what a session should close.",
-        0.15,
+        "Questions flagged as unanswered. These are what a session should close.",
+        0.05,
     ),
     (
         "anchored",
@@ -310,6 +362,10 @@ def _gather(
     Deduplicated across sections by drawer id: a drawer that is both
     identity and an open question is paid for once, in the earlier
     section. Without this the budget silently buys the same tokens twice.
+
+    The wing is scanned once and the same list feeds every section that
+    needs it, so two sections can never disagree about what the store
+    holds or about what order it is in.
     """
     seen: set[int] = set()
 
@@ -322,12 +378,16 @@ def _gather(
             out.append(d)
         return out
 
+    wing_drawers = store.list_by(wing=wing, limit=_SCAN_LIMIT)
+
+    predictions = _fresh(_open_predictions(wing_drawers))
     protocol = _fresh(store.list_by(wing=wing, layer=Layer.IDENTITY, limit=_SCAN_LIMIT))
     deltas = _fresh(store.list_by(wing=wing, layer=Layer.ESSENTIAL, limit=max_deltas))
-    questions = _fresh(_open_questions(store, wing=wing))
+    questions = _fresh(_open_questions(wing_drawers))
     anchored = _fresh(_anchored(store, wing=wing, files=files))
 
     return {
+        OPEN_PREDICTIONS: predictions,
         "protocol": protocol,
         "deltas": deltas,
         "open_questions": questions,
@@ -335,27 +395,59 @@ def _gather(
     }
 
 
-def _open_questions(store: DrawerStore, *, wing: str) -> list[Drawer]:
-    """Drawers holding a question this wing has not answered yet.
+def is_open_prediction(drawer: Drawer) -> bool:
+    """True when ``drawer`` holds a prediction nobody has settled.
 
-    Two shapes count, and both are exact matches rather than guesses:
+    **The definition is the narrow, literal one:** a non-empty
+    ``predicted_outcome`` and no ``observed_outcome``, both read off
+    *this drawer*. Nothing else counts, and nothing is inferred.
 
-    * a **prediction-bound drawer** whose ``predicted_outcome`` is set and
-      whose ``observed_outcome`` is not — the loop is open by definition;
-    * a drawer whose metadata carries an explicit ``open_question`` key.
+    The ambiguous case, and the choice made
+    ---------------------------------------
+
+    A prediction can also be settled by a *second* drawer that supersedes
+    it — that is what :meth:`cairntir.reason.ReasonLoop.step` writes: a
+    prediction drawer, then an observation drawer carrying
+    ``supersedes_id`` and the ``observed_outcome``. Under the rule above
+    the original still reads as open, because the original is unchanged.
+
+    That is deliberate. Walking the supersedes chain to decide would make
+    "open" depend on a graph traversal the caller cannot see, and would
+    make the count disagree with the ids printed beside it. The simple
+    reading is auditable: every drawer named here can be checked with one
+    ``cairntir_get``, and settling it in place clears it.
+
+    The consequence is worth stating plainly rather than discovering
+    later: predictions settled by superseding observation drawers stay
+    listed until the original is settled too. Revisit this if the
+    reason-loop shape ever becomes the common way predictions are
+    written; today it is not.
+    """
+    predicted = (drawer.predicted_outcome or "").strip()
+    observed = (drawer.observed_outcome or "").strip()
+    return bool(predicted) and not observed
+
+
+def _open_predictions(wing_drawers: list[Drawer]) -> list[Drawer]:
+    """The unsettled predictions in a wing, in store order."""
+    return [d for d in wing_drawers if is_open_prediction(d)]
+
+
+def _open_questions(wing_drawers: list[Drawer]) -> list[Drawer]:
+    """Drawers explicitly flagged as an unanswered question.
+
+    One shape counts, and it is an exact match rather than a guess: a
+    drawer whose metadata carries a truthy ``open_question`` key.
+
+    Unsettled predictions used to land here too. They now have their own
+    section, ahead of this one, because a prediction is a stronger thing
+    than a question — it is falsifiable — and burying it among questions
+    lost that. See :func:`is_open_prediction`.
 
     Nothing is inferred from prose. A question nobody recorded as one is
     not surfaced here, which is the honest behaviour.
     """
-    out: list[Drawer] = []
-    for drawer in store.list_by(wing=wing, limit=_SCAN_LIMIT):
-        unresolved_prediction = (
-            drawer.predicted_outcome is not None and drawer.observed_outcome is None
-        )
-        flagged = bool(drawer.metadata.get("open_question"))
-        if unresolved_prediction or flagged:
-            out.append(drawer)
-    return out
+    return [d for d in wing_drawers if bool(d.metadata.get("open_question"))]
 
 
 def _anchored(
@@ -423,7 +515,7 @@ def _fit(
         Section(
             key=key,
             title=title,
-            why=why,
+            why=_rationale(key, why, len(staged[key][0]) + len(staged[key][1])),
             included=staged[key][0],
             omitted=[_omission(d) for d in staged[key][1]],
         )
@@ -465,6 +557,24 @@ def _take_while_fits(drawers: list[Drawer], allowance: int) -> tuple[list[Drawer
         taken.append(drawer)
         spent += cost
     return taken, left
+
+
+def _rationale(key: str, base: str, total: int) -> str:
+    """Lead the open-predictions rationale with its honest total.
+
+    The rendered section header can only show what fit; this line shows
+    what exists. ``total`` therefore counts the omitted ones too, and the
+    line reads the same whether or not the budget was tight.
+
+    An empty section returns ``base`` untouched and is dropped by the
+    renderer, so a wing with no predictions pays nothing — no header, no
+    count, no line saying zero. Depends only on the drawers, never on the
+    clock, so repeat calls stay byte-identical.
+    """
+    if key != OPEN_PREDICTIONS or total == 0:
+        return base
+    plural = "" if total == 1 else "s"
+    return f"{total} open prediction{plural} in this wing. {base}"
 
 
 def _omission(drawer: Drawer) -> Omission:
