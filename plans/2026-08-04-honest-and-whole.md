@@ -127,6 +127,40 @@ The `claim` / `predicted_outcome` / `observed_outcome` / `delta` fields exist on
 
 ---
 
+## P3 — CodeGlass runs alongside Cairntir again
+
+Added 2026-08-04 at Patrick's instruction: *"CodeGlass was meant to run
+alongside Cairntir, make it happen in P3."*
+
+The claim, in his words: *"the skill got sucked up into cairntir, when
+originally it was to ride along side cairntir, using obsidian to make a learning
+network for learning AND patterns that emerge from the vaults neural net."*
+Recorded verbatim in drawer #282.
+
+So the absorption was **not the design**. CodeGlass currently lives as
+`src/cairntir/codeglass.py` plus four `cairntir_codeglass_*` MCP tools. What it
+was supposed to be is a companion that uses the Obsidian vault as a learning
+network with two outputs, not one:
+
+1. **Learning** — walkthroughs, teach-back, retention. This part shipped.
+2. **Emergent pattern discovery** — patterns arising from the vault's own link
+   graph. **This part was never built.** Neither `obsidian.py` (projection out)
+   nor `vault_sync.py` (import in) does anything with the link structure.
+
+**Scope discipline:** the three-skill core is locked, and CodeGlass is not
+becoming a fourth. Separation here means a companion that *reads and writes the
+same Cairntir store through the public `Store` protocol* — exactly the seam
+v1.0 exists to provide — not a fork and not a new dependency inside Cairntir.
+
+**Open and deliberately unanswered:** Patrick asked *"how to make it marketable
+as a standalone"* and did not answer it. Do not invent an answer. Also
+unresolved: whether `codeglass-site` and `codeglass-dist` get a shared parent
+directory (drawer #282). Both are decisions for him.
+
+**Done when:** CodeGlass can be run without importing Cairntir's internals, the
+vault link graph produces at least one pattern Cairntir did not already know,
+and removing CodeGlass leaves Cairntir's 19 tools and three skills untouched.
+
 ## Explicit non-goals
 
 - Not touching the embedding model or vector schema. It works.
@@ -157,6 +191,14 @@ param  src/cairntir/mcp/backend.py remember:model
 param  src/cairntir/memory/store.py add:model
 test   tests/integration/test_mcp_backend.py test_remember_records_the_authoring_model
 test   tests/integration/test_mcp_backend.py test_two_models_in_one_session_are_recorded_separately
+param  src/cairntir/mcp/backend.py remember:anchors
+param  src/cairntir/mcp/backend.py remember:claim
+param  src/cairntir/mcp/backend.py remember:predicted_outcome
+symbol src/cairntir/mcp/backend.py settle
+param  src/cairntir/mcp/backend.py session_start:budget_chars
+test   tests/integration/test_mcp_backend.py test_settle_writes_delta
+test   tests/integration/test_mcp_backend.py test_session_start_honours_the_budget
+test   tests/unit/test_readme.py test_tool_surface_version_matches_the_server
 ```
 
 The block asserts only what has **actually landed**. The first five lines lock in
@@ -166,18 +208,13 @@ than being written optimistically, because a green build must mean the code is
 there, not that someone intended it to be.
 
 ```
-# P0 item 2 — make anchoring the default (NOT LANDED)
-param  src/cairntir/mcp/backend.py remember:anchors
-
 # P0 item 3 — wire vault_sync to the CLI (NOT LANDED)
 symbol src/cairntir/cli.py vault_sync_cmd
 
-# P1
-param  src/cairntir/mcp/backend.py remember:claim
-symbol src/cairntir/mcp/backend.py settle
-test   tests/unit/test_predictions.py test_settle_writes_delta
+# P1 item 3 — handoff surfaces open predictions (NOT LANDED)
 
-# P2
-param  src/cairntir/mcp/backend.py session_start:budget_chars
+# P1 item 4 — retire the untrusted migration stamp (NOT LANDED)
+
+# P2 item 1 — write-time guard in add() (NOT LANDED)
 test   tests/unit/test_store.py test_add_rejects_tool_call_markup
 ```

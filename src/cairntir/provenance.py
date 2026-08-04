@@ -15,7 +15,14 @@ from typing import Any, Final
 from uuid import uuid4
 
 _NEVER_EXPIRES: Final[str] = "9999-12-31T23:59:59.999999+00:00"
-TOOL_SURFACE_VERSION: Final[str] = "19"
+TOOL_SURFACE_VERSION: Final[str] = "20"
+"""How many MCP tools the surface exposes, recorded on every write receipt.
+
+Hand-maintained because deriving it would make :mod:`cairntir.provenance`
+import the server, and the server already imports this. The number is pinned
+by ``test_tool_surface_version_matches_the_server`` instead -- an unchecked
+constant that describes the code is the exact drift this project keeps finding.
+"""
 
 
 class TrustLevel(StrEnum):
