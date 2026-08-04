@@ -399,3 +399,51 @@ def test_cross_recall_empty_query_errors(backend: CairntirBackend) -> None:
 def test_cross_recall_no_hits_is_friendly(backend: CairntirBackend) -> None:
     out = backend.cross_recall(query="nothing like this was ever stored")
     assert "No drawers matched" in out
+
+
+# --- Authoring-model provenance ---------------------------------------------
+#
+# No host tells the MCP subprocess which model is running, so the writing agent
+# is the only party that knows. It is a per-write value, never per-process: a
+# model fixed at startup keeps asserting the first model after the user
+# switches, which is worse than "unknown" because it looks like data.
+
+
+def test_remember_records_the_authoring_model(backend: CairntirBackend) -> None:
+    """The model the agent declares must reach the immutable write receipt."""
+    backend.remember(
+        wing="cairntir",
+        room="journey",
+        content="wired per-write model provenance",
+        model="claude-opus-5",
+    )
+    receipt = backend._store.get_provenance(1)
+    assert receipt is not None
+    assert receipt.model == "claude-opus-5"
+
+
+def test_remember_without_a_model_stays_honestly_unknown(backend: CairntirBackend) -> None:
+    """Omitting it must record 'unknown', never a guess inherited from elsewhere."""
+    backend.remember(wing="cairntir", room="journey", content="no model declared")
+    receipt = backend._store.get_provenance(1)
+    assert receipt is not None
+    assert receipt.model == "unknown"
+
+
+def test_two_models_in_one_session_are_recorded_separately(backend: CairntirBackend) -> None:
+    """The point of per-write: one process, one session, two authoring models."""
+    backend.remember(wing="cairntir", room="journey", content="first", model="gpt-5")
+    backend.remember(wing="cairntir", room="journey", content="second", model="claude-opus-5")
+    first = backend._store.get_provenance(1)
+    second = backend._store.get_provenance(2)
+    assert first is not None and second is not None
+    assert (first.model, second.model) == ("gpt-5", "claude-opus-5")
+    assert first.session_id == second.session_id
+
+
+def test_blank_model_does_not_overwrite_the_receipt(backend: CairntirBackend) -> None:
+    """Whitespace is not a declaration. Fall back rather than store an empty string."""
+    backend.remember(wing="cairntir", room="journey", content="blank", model="   ")
+    receipt = backend._store.get_provenance(1)
+    assert receipt is not None
+    assert receipt.model == "unknown"

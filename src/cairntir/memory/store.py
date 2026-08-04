@@ -1025,8 +1025,15 @@ class DrawerStore:
         drawer: Drawer,
         *,
         provenance: WriteProvenance | None = None,
+        model: str | None = None,
     ) -> Drawer:
-        """Insert a drawer and return a copy with its assigned id."""
+        """Insert a drawer and return a copy with its assigned id.
+
+        ``model`` records which model authored this specific drawer. It is a
+        per-write argument because no host tells the MCP subprocess what it is
+        running; the agent doing the writing is the only party that knows.
+        Omitting it leaves the receipt's existing value, normally "unknown".
+        """
         status = self._require_embedding_space()
         vector = self._embedder.embed([drawer.content])[0]
         if len(vector) != status.stored_dimension:
@@ -1034,7 +1041,7 @@ class DrawerStore:
                 f"embedding dimension mismatch: expected {status.stored_dimension}, "
                 f"got {len(vector)}"
             )
-        receipt = (provenance or self._write_provenance).for_write()
+        receipt = (provenance or self._write_provenance).for_write(model=model)
         try:
             with self._write_scope():
                 cur = self._conn.execute(
