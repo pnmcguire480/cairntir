@@ -208,6 +208,13 @@ symbol src/cairntir/vault.py apply_sync
 param  src/cairntir/cli.py vault_sync_cmd:check
 test   tests/unit/test_vault_sync.py test_check_exits_nonzero_when_a_walkthrough_has_no_drawer
 test   tests/unit/test_vault_sync.py test_check_writes_nothing_even_when_it_finds_drift
+# P1 item 3 — handoff surfaces unsettled predictions (LANDED 2026-08-04)
+symbol src/cairntir/handoff.py is_open_prediction
+symbol src/cairntir/handoff.py open_prediction_count
+test   tests/unit/test_handoff.py test_an_unsettled_prediction_gets_its_own_section
+test   tests/unit/test_handoff.py test_a_settled_prediction_is_not_open
+test   tests/unit/test_handoff.py test_a_wing_with_no_predictions_spends_nothing_on_the_section
+test   tests/unit/test_handoff.py test_two_calls_with_open_predictions_are_byte_identical
 ```
 
 The block asserts only what has **actually landed**. The first five lines lock in
@@ -217,8 +224,6 @@ than being written optimistically, because a green build must mean the code is
 there, not that someone intended it to be.
 
 ```
-# P1 item 3 — handoff surfaces open predictions (NOT LANDED)
-
 # P1 item 4 — retire the untrusted migration stamp (NOT LANDED)
 
 # P2 item 1 — write-time guard in add() (NOT LANDED)
