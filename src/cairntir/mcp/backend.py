@@ -189,6 +189,13 @@ class CairntirBackend:
         prediction. Leaving it out asserts the prediction held. It has never
         been written once in the store's history, which is why calibration has
         nothing to work with.
+
+        The boolean verdict derivable from that contract — held, or not — is
+        persisted as ``metadata["success"]`` on the observation drawer, the
+        same field ``ReasonLoop.step`` has written since v0.6. Both sanctioned
+        settlement paths now share one shape, so ``cairntir_calibration``
+        counts MCP settlements without a schema change and the original
+        prediction stays immutable.
         """
         if not observed_outcome.strip():
             raise MCPError("observed_outcome must say what actually happened")
@@ -215,8 +222,11 @@ class CairntirBackend:
         # Carry the prediction's own anchors onto the observation. They were
         # validated when the prediction was written and describe the same code,
         # so the outcome stays reachable from a diff instead of going dark the
-        # moment it matters most.
-        metadata: dict[str, Any] = {"settles": drawer_id}
+        # moment it matters most. ``success`` is the verdict derivable from the
+        # delta contract — no delta means the prediction held — persisted in
+        # the exact field calibration already counts, which is how the reason
+        # loop has settled since v0.6. One shape for both settlement paths.
+        metadata: dict[str, Any] = {"settles": drawer_id, "success": held}
         if prediction.metadata.get(ANCHORS_KEY):
             metadata[ANCHORS_KEY] = prediction.metadata[ANCHORS_KEY]
 

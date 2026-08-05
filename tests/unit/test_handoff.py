@@ -286,17 +286,18 @@ def test_an_included_prediction_still_comes_back_whole(store: DrawerStore) -> No
     assert [d.content for d in _sections(brief)[OPEN_PREDICTIONS].included] == [body]  # type: ignore[attr-defined]
 
 
-def test_a_prediction_superseded_by_an_observation_still_reads_as_open(
+def test_a_prediction_settled_by_supersession_is_no_longer_open(
     store: DrawerStore,
 ) -> None:
-    """The documented ambiguity, pinned so the choice is not lost.
+    """The seam fix: a superseding observation closes the original.
 
-    ``ReasonLoop.step`` settles a prediction by writing a *second*
-    drawer that supersedes it. The original is never touched, so under
-    the narrow reading it stays listed. Walking the chain instead would
-    make "open" depend on a traversal the caller cannot see and would
-    make the count disagree with the ids printed beside it. Settling in
-    place clears it.
+    ``settle`` and ``ReasonLoop.step`` settle a prediction by writing a
+    *second* drawer that supersedes it, and the original is never touched —
+    a store that rewrote its own predictions could not be used to check
+    whether it had ever been right. The old narrow reading therefore
+    counted every settled prediction open forever; ``settled_prediction_ids``
+    now closes it during composition, still with no graph traversal, so the
+    count and the ids printed beside it keep agreeing.
     """
     predicted = _open_prediction(store)
     _add(
@@ -309,6 +310,31 @@ def test_a_prediction_superseded_by_an_observation_still_reads_as_open(
         observed_outcome="it drifted at the third decimal",
         supersedes_id=predicted,
     )
+
+    brief = compose(store, wing="cairntir")
+
+    assert brief.open_prediction_count == 0
+    assert _sections(brief)[OPEN_PREDICTIONS].included == []  # type: ignore[attr-defined]
+
+
+def test_two_divergent_observations_do_not_settle_a_prediction(store: DrawerStore) -> None:
+    """Contested settlements stay open: no silent winner, not even lowest id.
+
+    Two observations superseding the same prediction contradict each other.
+    Picking one would hide a branch — the lineage's lowest-id-wins walk is
+    exactly that defect — so the honest read keeps it listed.
+    """
+    predicted = _open_prediction(store)
+    for observed in ("it held", "it broke"):
+        _add(
+            store,
+            room="predictions",
+            content=observed,
+            layer=Layer.ON_DEMAND,
+            predicted_outcome="the B11 balance pass will not drift",
+            observed_outcome=observed,
+            supersedes_id=predicted,
+        )
 
     brief = compose(store, wing="cairntir")
 
