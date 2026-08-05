@@ -220,6 +220,13 @@ test   tests/unit/test_handoff.py test_an_unsettled_prediction_gets_its_own_sect
 test   tests/unit/test_handoff.py test_a_settled_prediction_is_not_open
 test   tests/unit/test_handoff.py test_a_wing_with_no_predictions_spends_nothing_on_the_section
 test   tests/unit/test_handoff.py test_two_calls_with_open_predictions_are_byte_identical
+# P1 item 4 — retire the untrusted migration stamp (LANDED 2026-08-05)
+symbol src/cairntir/provenance.py with_trust
+symbol src/cairntir/memory/store.py reattest_legacy_trust
+symbol src/cairntir/memory/store.py legacy_migration_drawer_ids
+file   scripts/reattest_legacy_trust.py
+test   tests/unit/test_reattest_trust.py test_reattest_moves_only_legacy_migration_drawers
+test   tests/unit/test_reattest_trust.py test_reattest_keeps_all_three_trust_copies_consistent
 ```
 
 The block asserts only what has **actually landed**. The first five lines lock in
@@ -229,8 +236,6 @@ than being written optimistically, because a green build must mean the code is
 there, not that someone intended it to be.
 
 ```
-# P1 item 4 — retire the untrusted migration stamp (NOT LANDED)
-
 # P2 item 1 — write-time guard in add() (NOT LANDED)
 test   tests/unit/test_store.py test_add_rejects_tool_call_markup
 ```

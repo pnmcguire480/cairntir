@@ -29,6 +29,7 @@ class TrustLevel(StrEnum):
     """How strongly Cairntir may rely on a drawer's asserted content."""
 
     UNTRUSTED = "untrusted"
+    LEGACY_MIGRATED = "legacy_migrated"
     USER_ASSERTED = "user_asserted"
     AGENT_GENERATED = "agent_generated"
     SYSTEM = "system"
@@ -144,6 +145,15 @@ class WriteProvenance:
             valid_from=valid_from if valid_from is not None else self.valid_from,
             valid_until=valid_until if valid_until is not None else self.valid_until,
         )
+
+    def with_trust(self, trust: TrustLevel) -> WriteProvenance:
+        """Return a copy re-attested to ``trust``, preserving everything else.
+
+        Unlike :meth:`for_write`, this does not refresh ``recorded_at``: a
+        re-attestation corrects the trust label on an existing write, it does
+        not re-record the write, so the original receipt timestamps stay.
+        """
+        return replace(self, trust=trust)
 
     @property
     def effective_valid_until(self) -> str:
