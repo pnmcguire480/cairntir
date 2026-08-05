@@ -84,6 +84,50 @@ name does not match the wing), `agents` (probable but unconfirmed), and
 `dev` / `larder` / `quietpdf` (no directory found). Guessing any of these would
 break the rule this phase exists to enforce.
 
+### The seven wings resolved — 2026-08-04
+
+Every one of the seven now has a recorded decision; four gained verified
+structural recall. Patrick delegated the call ("you know whats best. fix it
+all"), and every mapping below is verified **by the wing's own drawers**, not
+by directory-name guessing — recorded as drawer #286.
+
+**Mapped and backfilled** (+27 anchors across 21 drawers: agents 20, larder 6,
+quietpdf 1):
+
+| Wing | Tree | Evidence |
+|---|---|---|
+| `agents` | `C:\Dev\AGENTS` | #35 names the path and the wing |
+| `larder` | `C:\Dev\common-table` | #159: renamed COMMON TABLE; folder is common-table, wing stays `larder` |
+| `quietpdf` | `C:\Dev\Trending Projects\quietpdf` | #152/#155 name the repo |
+| `ground-zero` | `C:\Dev\ground-zero` | #284: "ANCHOR AGAINST THIS TREE" — and its 10 anchored drawers already confirm it |
+
+`ground-zero` gained 0 in this pass — a legitimate zero: the 8 still-unanchored
+drawers name no resolvable files. Rehearsed on a copy first, verified by a
+checker that does not import Cairntir's own resolver (285 drawers before and
+after, every content SHA-256 identical, all 27 anchors resolve to exactly one
+real file), applied beside backup `cairntir.db.backup-20260805T024413Z`.
+Probes that returned nothing before now fire: `deploy.sh` recalls 17 agents
+drawers, the larder privacy migration recalls #157/#159, `docs/PHASE_0.md`
+recalls quietpdf #154.
+
+**Deliberately unmapped** — decisions, not deferrals:
+
+- `dev` — the umbrella wing over `C:\Dev` itself (#98). No single working tree;
+  mapping it would index 45 projects as one repo and invite cross-project
+  false matches.
+- `getkith` — #281 records Patrick's ruling: getkith is the **future website**,
+  `C:\Dev\Kith` is the **app**. The wing's code drawers describe the app tree,
+  but anchoring the website wing to the app tree would poison the site's recall
+  the day it exists. Revisit when the site has a tree.
+- `codeglass` — #282 blocks backfill on the parent-folder question, and the
+  wing's walkthrough drawers are MyFirstApp teaching examples naming no real
+  files (a dry run against both trees confirmed zero anchors either way). The
+  parent-folder question is taken up in P3 below.
+
+Coverage after this pass: **148 / 285 drawers carry anchors (51.9%)**, up from
+113 / 278; zero-anchor wings are down to five, and each of the five is one of
+the documented decisions above.
+
 ---
 
 ## P1 — HONEST: make the store able to be wrong
