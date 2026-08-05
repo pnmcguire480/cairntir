@@ -41,7 +41,7 @@ from cairntir.learning import (
     record_discovery,
     transition_discovery,
 )
-from cairntir.memory.anchors import parse_anchors
+from cairntir.memory.anchors import ANCHORS_KEY, extract_path_candidates, parse_anchors
 from cairntir.memory.anchors import recall_for_change as anchors_recall_for_change
 from cairntir.memory.retrieval import RetrievalResult, Retriever
 from cairntir.memory.taxonomy import Drawer, Layer
@@ -70,6 +70,32 @@ writing agent is guaranteed to read, so it carries the contract.
 """
 
 
+def _anchor_nudge(content: str, metadata: dict[str, Any]) -> str:
+    """Return a reminder when a drawer names code files but carries no anchors.
+
+    Anchors are the only retrieval path that needs no good question from the
+    reader, and they were on 11% of the store because **nothing ever asked for
+    them**. The tool description states the contract, but a description is read
+    once and forgotten; this fires at the exact moment the omission happens,
+    naming the paths the drawer itself just mentioned.
+
+    Advisory only. The write already succeeded — a drawer stored without
+    anchors is worth more than a drawer refused over a nicety, and plenty of
+    drawers are legitimately about no file at all.
+    """
+    if metadata.get(ANCHORS_KEY):
+        return ""
+    candidates = extract_path_candidates(content)
+    if not candidates:
+        return ""
+    shown = ", ".join(candidates[:3])
+    return (
+        f"\nNOTE: this drawer mentions {shown} but carries no anchors, so "
+        "cairntir_recall_for_change will never surface it from a diff. "
+        f"Add them with: cairntir anchor {{id}} -p <path>"
+    )
+
+
 class CairntirBackend:
     """Transport-free implementation of Cairntir's MCP tools."""
 
@@ -89,6 +115,9 @@ class CairntirBackend:
         layer: str = "on_demand",
         metadata: dict[str, Any] | None = None,
         model: str | None = None,
+        anchors: list[dict[str, Any]] | None = None,
+        claim: str | None = None,
+        predicted_outcome: str | None = None,
     ) -> str:
         """Store a verbatim drawer. Returns a human-readable confirmation."""
         try:
@@ -97,27 +126,120 @@ class CairntirBackend:
             raise MCPError(
                 f"invalid layer {layer!r}; expected one of {[x.value for x in Layer]}"
             ) from exc
-        if metadata:
+
+        merged = dict(metadata or {})
+        if anchors is not None:
+            # Two ways to say the same thing is exactly the drift Cairntir
+            # exists to oppose, so refuse rather than silently pick a winner.
+            if ANCHORS_KEY in merged:
+                raise MCPError(
+                    "pass anchors either as the 'anchors' argument or as metadata.anchors, not both"
+                )
+            merged[ANCHORS_KEY] = anchors
+        if merged:
             # Fail here, not weeks later in recall_for_change. An agent that
             # guesses the anchor shape wrong gets a correctable error inside
             # the session that wrote it; the alternative is a silent bad row
             # and a warning in a different tool, in a different chat, about a
             # drawer nobody can reconstruct from memory.
             try:
-                parse_anchors(metadata)
+                parse_anchors(merged)
             except AnchorError as exc:
                 raise MCPError(f"{exc}. {ANCHOR_SHAPE_HINT}") from exc
+
+        if predicted_outcome is not None and not predicted_outcome.strip():
+            raise MCPError("predicted_outcome must be a falsifiable prediction, not empty")
+
         drawer = Drawer(
             wing=wing,
             room=room,
             content=content,
             layer=layer_enum,
-            metadata=metadata or {},
+            metadata=merged,
+            claim=claim,
+            predicted_outcome=predicted_outcome,
         )
         saved = self._store.add(drawer, model=model)
-        return (
+        reply = (
             f"Stored drawer #{saved.id} in {saved.wing}/{saved.room} "
             f"(layer={saved.layer.value}, ref={_drawer_ref(saved)})."
+        )
+        if predicted_outcome:
+            reply += f" Open prediction — settle it with cairntir_settle({saved.id}, ...)."
+        return reply + _anchor_nudge(content, merged)
+
+    def settle(
+        self,
+        *,
+        drawer_id: int,
+        observed_outcome: str,
+        delta: str | None = None,
+        model: str | None = None,
+    ) -> str:
+        """Close an open prediction by recording what actually happened.
+
+        Settles by **appending**, never by rewriting. The original prediction
+        is left exactly as written and a new observation drawer supersedes it,
+        which is the same contract ``ReasonLoop.step`` has used since v0.6 and
+        the reason verbatim content can be called a floor at all. A store that
+        edits its own predictions after the fact cannot be used to check
+        whether it was right.
+
+        ``delta`` is the surprise signal — how the world differed from the
+        prediction. Leaving it out asserts the prediction held. It has never
+        been written once in the store's history, which is why calibration has
+        nothing to work with.
+        """
+        if not observed_outcome.strip():
+            raise MCPError("observed_outcome must say what actually happened")
+        prediction = self._store.get(drawer_id)
+        if prediction is None:
+            raise MCPError(f"drawer {drawer_id} does not exist")
+        if not (prediction.predicted_outcome or "").strip():
+            raise MCPError(
+                f"drawer {drawer_id} carries no predicted_outcome, so there is "
+                "nothing to settle. Predictions are written with "
+                "cairntir_remember(predicted_outcome=...)"
+            )
+
+        held = delta is None or not delta.strip()
+        body = "\n".join(
+            [
+                f"SETTLED the prediction in drawer #{drawer_id}.",
+                f"CLAIM: {prediction.claim or '(none recorded)'}",
+                f"PREDICTED: {prediction.predicted_outcome}",
+                f"OBSERVED: {observed_outcome}",
+                f"DELTA: {'none - the prediction held' if held else delta}",
+            ]
+        )
+        # Carry the prediction's own anchors onto the observation. They were
+        # validated when the prediction was written and describe the same code,
+        # so the outcome stays reachable from a diff instead of going dark the
+        # moment it matters most.
+        metadata: dict[str, Any] = {"settles": drawer_id}
+        if prediction.metadata.get(ANCHORS_KEY):
+            metadata[ANCHORS_KEY] = prediction.metadata[ANCHORS_KEY]
+
+        saved = self._store.add(
+            Drawer(
+                wing=prediction.wing,
+                room=prediction.room,
+                content=body,
+                layer=prediction.layer,
+                metadata=metadata,
+                claim=prediction.claim,
+                predicted_outcome=prediction.predicted_outcome,
+                observed_outcome=observed_outcome,
+                delta=None if held else delta,
+                supersedes_id=drawer_id,
+            ),
+            model=model,
+        )
+        verdict = "held" if held else "did NOT hold"
+        return (
+            f"Settled drawer #{drawer_id}: the prediction {verdict}. "
+            f"Observation stored as drawer #{saved.id} (ref={_drawer_ref(saved)}), "
+            f"superseding #{drawer_id}. The original is unchanged."
         )
 
     def get(self, *, drawer_id: int) -> str:
@@ -294,10 +416,19 @@ class CairntirBackend:
             raise MCPError(str(exc)) from exc
         return _format_handoff(brief, store=self._store)
 
-    def session_start(self, *, wing: str, query: str | None = None) -> str:
-        """Load 4-layer context plus active learning signals for ``wing``."""
+    def session_start(
+        self, *, wing: str, query: str | None = None, budget_chars: int | None = None
+    ) -> str:
+        """Load 4-layer context plus active learning signals for ``wing``.
+
+        ``budget_chars`` caps the returned drawer content. Prefer
+        :meth:`handoff`, which is bounded by default and composes an actual
+        brief; this remains the exhaustive listing.
+        """
+        if budget_chars is not None and budget_chars < 1:
+            raise MCPError("budget_chars must be at least 1")
         result = self._retriever.load(wing=wing, query=query, include_deep=False)
-        context = _format_retrieval(wing, result, store=self._store)
+        context = _format_retrieval(wing, result, store=self._store, budget_chars=budget_chars)
         active = list_discoveries(self._store, wing=wing, active_only=True, limit=5)
         if not active:
             return context
@@ -768,9 +899,23 @@ def _format_retrieval(
     result: RetrievalResult,
     *,
     store: DrawerStore,
+    budget_chars: int | None = None,
 ) -> str:
+    """Render a session_start payload, optionally under a hard character ceiling.
+
+    The budget is the commitment the 2026-07-27 audit wrote into the v1.2 core
+    list and that v1.2 then shipped without -- see drawer #212. It behaves like
+    :mod:`cairntir.handoff`: a drawer is included whole or named and skipped,
+    never cut in half, because half a drawer is a misleading drawer.
+
+    Layers are spent in priority order, so identity survives a tight budget and
+    deep is dropped first. What did not fit is listed by id, so the reader can
+    spend one ``cairntir_get`` on exactly what they want instead of guessing.
+    """
     lines = [f"# Cairntir session_start — wing={wing!r}", ""]
     evidence: list[str] = []
+    omitted: list[int] = []
+    spent = 0
     for title, drawers in (
         ("Identity", result.identity),
         ("Essential", result.essential),
@@ -781,12 +926,26 @@ def _format_retrieval(
         if not drawers:
             lines.append("  (none)")
         for d in drawers:
-            lines.append(f"  #{d.id}  {d.room}  {_content_receipt(d)}")
             if d.id is None:
                 raise MCPError("stored drawer is missing its id")
             provenance = store.get_provenance(d.id)
             if provenance is None:
                 raise MCPError(f"drawer {d.id} is missing write provenance")
-            evidence.append(render_memory_evidence(d, provenance, content=_snippet(d.content)))
+            stub = f"  #{d.id}  {d.room}  {_content_receipt(d)}"
+            entry = render_memory_evidence(d, provenance, content=_snippet(d.content))
+            cost = len(stub) + len(entry)
+            if budget_chars is not None and spent + cost > budget_chars:
+                omitted.append(d.id)
+                continue
+            spent += cost
+            lines.append(stub)
+            evidence.append(entry)
         lines.append("")
+    if omitted:
+        lines.append(
+            f"## Omitted for budget ({len(omitted)})\n"
+            f"  {omitted}\n"
+            "  Fetch any of these whole with cairntir_get, or use cairntir_handoff "
+            "for a composed brief."
+        )
     return "\n".join(lines).rstrip() + "\n\n" + render_evidence_block(evidence) + "\n"

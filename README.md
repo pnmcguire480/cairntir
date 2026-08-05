@@ -166,7 +166,7 @@ measures its own overhead rather than asking you to trust it.
    provenance, durable workflow receipts, and backup-first migration/reindex.
    Contract-tested via
    [tests/contract/test_store_contract.py](tests/contract/test_store_contract.py).
-3. **MCP server** — **19 tools** over stdio: exact memory, scoped and
+3. **MCP server** — **20 tools** over stdio: exact memory, scoped and
    cross-wing recall, **structural recall for a set of changed files**,
    **the budgeted handoff brief**, session start, timeline, audit, Crucible,
    Discovery Ledger/calibration, and CodeGlass operations. Runs via
