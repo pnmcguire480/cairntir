@@ -1289,6 +1289,72 @@ class DrawerStore:
             ) from exc
         return repaired
 
+    def legacy_migration_drawer_ids(self) -> list[int]:
+        """Return the ids of drawers still carrying the v6-migration ``untrusted`` stamp.
+
+        Read-only. This is the dry-run surface for :meth:`reattest_legacy_trust`
+        -- the same targeting, no writes.
+        """
+        return [drawer_id for drawer_id, _ in self._legacy_migration_receipts()]
+
+    def _legacy_migration_receipts(self) -> list[tuple[int, WriteProvenance]]:
+        rows = self._conn.execute(
+            "SELECT id, provenance FROM drawers WHERE trust = ?",
+            (TrustLevel.UNTRUSTED.value,),
+        ).fetchall()
+        targets: list[tuple[int, WriteProvenance]] = []
+        for row in rows:
+            try:
+                receipt = WriteProvenance.from_json(str(row["provenance"]))
+            except ValueError as exc:
+                raise MemoryStoreError(
+                    f"drawer {int(row['id'])} has invalid provenance: {exc}"
+                ) from exc
+            if receipt.host == "legacy" and receipt.capture_path == "pre-v6-migration":
+                targets.append((int(row["id"]), receipt))
+        return targets
+
+    def reattest_legacy_trust(self) -> list[int]:
+        """Re-attest the v6-migration drawers from ``untrusted`` to ``legacy_migrated``.
+
+        The v6 migration (2026-07-29) stamped every pre-provenance row with
+        :func:`legacy_provenance`, whose trust is ``UNTRUSTED`` -- a migration
+        artifact, not a judgement. It renders a security banner over drawers
+        that are simply old, training every agent to ignore the banner. This
+        corrects the label on exactly those rows and no others: only receipts
+        that are the migration stamp itself move (``UNTRUSTED`` is also the
+        default for new writes, so genuinely untrusted drawers are not swept).
+
+        Keeps all three trust copies consistent -- the ``drawers.trust``
+        column, the ``provenance`` receipt, and the ``vec_drawers.trust``
+        prefilter column. Metadata-only and idempotent; verbatim content never
+        moves and no embedding is recomputed. Returns the re-attested ids.
+        """
+        targets = self._legacy_migration_receipts()
+        reattested: list[int] = []
+        if not targets:
+            return reattested
+        try:
+            with self.transaction():
+                for drawer_id, receipt in targets:
+                    updated = receipt.with_trust(TrustLevel.LEGACY_MIGRATED)
+                    self._conn.execute(
+                        "UPDATE drawers SET trust = ?, provenance = ? WHERE id = ?",
+                        (
+                            TrustLevel.LEGACY_MIGRATED.value,
+                            updated.to_json(),
+                            drawer_id,
+                        ),
+                    )
+                    self._conn.execute(
+                        "UPDATE vec_drawers SET trust = ? WHERE drawer_id = ?",
+                        (TrustLevel.LEGACY_MIGRATED.value, drawer_id),
+                    )
+                    reattested.append(drawer_id)
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"failed to re-attest legacy trust: {exc}") from exc
+        return reattested
+
     def reinforce(self, drawer_id: int, *, amount: float = 1.0) -> float:
         """Raise a drawer's ``belief_mass`` by ``amount``. Returns the new mass.
 
