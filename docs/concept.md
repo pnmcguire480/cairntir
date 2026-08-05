@@ -95,7 +95,7 @@ Pulled automatically when a session opens in a wing. Limited to ~20 drawers, ran
 The MCP surface is deliberately small.
 
 1. `cairntir_remember(wing, room, content, metadata?)` — store a drawer
-2. `cairntir_recall(query, wing?, room?, limit=10)` — semantic + metadata search
+2. `cairntir_recall(query, wing?, room?, limit=10, full_content=0)` — semantic + metadata search; `full_content=N` delivers the top N hits whole, skipping the `get` round trip
 3. `cairntir_cross_recall(query, limit=10)` — search every wing
 4. `cairntir_get(drawer_id)` — fetch one complete verbatim drawer
 5. `cairntir_session_start(wing)` — 4-layer context bootstrap (the amnesia killer)

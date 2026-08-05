@@ -222,7 +222,14 @@ def _tool_specs() -> list[types.Tool]:
         ),
         types.Tool(
             name="cairntir_recall",
-            description="Semantic search across stored drawers.",
+            description=(
+                "Semantic search across stored drawers. By default hits come back "
+                "as snippets — enough to route, not enough to answer. Pass "
+                "full_content=N to get the top N hits with COMPLETE content, and "
+                "skip the cairntir_get round trip for the drawer that actually "
+                "answers. Hits too large for whole delivery are named, never "
+                "truncated. One good drawer beats ten headlines."
+            ),
             inputSchema={
                 "type": "object",
                 "required": ["query"],
@@ -231,6 +238,15 @@ def _tool_specs() -> list[types.Tool]:
                     "wing": {"type": "string"},
                     "room": {"type": "string"},
                     "limit": {"type": "integer", "default": 10, "minimum": 1},
+                    "full_content": {
+                        "type": "integer",
+                        "default": 0,
+                        "minimum": 0,
+                        "description": (
+                            "Deliver the top N hits with complete content instead "
+                            "of snippets. 0 (default) keeps snippet-only output."
+                        ),
+                    },
                 },
             },
         ),

@@ -345,6 +345,13 @@ file   src/cairntir/health.py
 param  src/cairntir/cli.py doctor:gate
 test   tests/unit/test_doctor.py test_gate_fails_on_a_damaged_store
 test   tests/unit/test_doctor.py test_gate_skips_loudly_when_there_is_no_store
+# W3 of plans/2026-08-04-ultimate-improvement-plan.md — the faster read path
+# (LANDED 2026-08-05): recall can deliver its top hits whole, so one good
+# drawer answers without a get() round trip. Default 0 is byte-identical to
+# the old stub-only output.
+param  src/cairntir/mcp/backend.py recall:full_content
+test   tests/integration/test_mcp_backend.py test_recall_full_content_returns_whole_drawers
+test   tests/integration/test_mcp_backend.py test_recall_full_content_names_oversize_hits
 ```
 
 The block asserts only what has **actually landed**. The first five lines lock in
