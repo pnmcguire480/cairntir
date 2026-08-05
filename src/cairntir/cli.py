@@ -1471,7 +1471,7 @@ def init_cmd(
     host: str = typer.Option(
         "claude",
         "--host",
-        help="Agent host to configure: claude, codex, cursor, or all.",
+        help="Agent host to configure: claude, codex, cursor, qwen, or all.",
     ),
     user: bool = typer.Option(
         False,
@@ -1490,7 +1490,7 @@ def init_cmd(
         " remains as a backward-compatible alias.",
     ),
 ) -> None:
-    """Connect Claude Code, Codex, Cursor, or all three to one Cairntir store.
+    """Connect Claude Code, Codex, Cursor, Qwen Code, or all four to one Cairntir store.
 
     Existing JSON, TOML, and instruction-file content is preserved. Cairntir
     only replaces blocks carrying its own markers and refuses ambiguous

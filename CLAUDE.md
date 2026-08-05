@@ -887,6 +887,6 @@ If session start returns no memory for an established wing, report that the
 store may be new or misconfigured. Do not silently substitute model memory.
 
 This policy is host-neutral: every agent must read and write the same Cairntir
-store so work can move between Claude Code, Codex, and Cursor without a
-re-brief.
+store so work can move between Claude Code, Codex, Cursor, and Qwen Code
+without a re-brief.
 <!-- cairntir:end -->

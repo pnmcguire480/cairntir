@@ -38,6 +38,7 @@ def test_host_specs_share_server_but_identify_the_capture_host() -> None:
     }
     assert mcp_spec("codex")["args"] == ["--host", "codex"]
     assert mcp_spec("cursor")["args"] == ["--host", "cursor"]
+    assert mcp_spec("qwen")["args"] == ["--host", "qwen"]
 
 
 def test_load_json_object_rejects_invalid_and_non_object_json(tmp_path: Path) -> None:
@@ -89,7 +90,7 @@ def test_configure_cursor_project_creates_mcp_and_always_rule(tmp_path: Path) ->
     assert result.policy_path is not None
     policy = result.policy_path.read_text(encoding="utf-8")
     assert "alwaysApply: true" in policy
-    assert "Claude Code, Codex, and Cursor" in policy
+    assert "Claude Code, Codex, Cursor, and Qwen Code" in policy
 
     status = inspect_host("cursor", scope="project", root=tmp_path, home=tmp_path)
     assert status.mcp_configured is True
@@ -188,3 +189,53 @@ def test_inspect_host_reports_missing_project_files(tmp_path: Path) -> None:
     assert status.policy_configured is False
     assert "missing" in status.mcp_detail
     assert "missing" in status.policy_detail
+
+
+def test_configure_qwen_project_creates_settings_and_qwen_md(tmp_path: Path) -> None:
+    qwen_dir = tmp_path / ".qwen"
+    qwen_dir.mkdir()
+    (qwen_dir / "settings.json").write_text(
+        json.dumps({"model": {"name": "kept"}, "mcpServers": {"other": {"command": "x"}}}),
+        encoding="utf-8",
+    )
+
+    result = configure_host(
+        "qwen",
+        scope="project",
+        root=tmp_path,
+        home=tmp_path / "home",
+    )
+    assert result.registration == "updated"
+    assert result.registration_path == qwen_dir / "settings.json"
+    config = json.loads(result.registration_path.read_text(encoding="utf-8"))
+    assert config["model"] == {"name": "kept"}
+    assert config["mcpServers"]["other"] == {"command": "x"}
+    assert config["mcpServers"]["cairntir"] == {
+        "command": "cairntir-mcp",
+        "args": ["--host", "qwen"],
+    }
+    assert result.policy == "created"
+    assert result.policy_path == tmp_path / "QWEN.md"
+    assert "cairntir_session_start" in result.policy_path.read_text(encoding="utf-8")
+
+    status = inspect_host("qwen", scope="project", root=tmp_path, home=tmp_path)
+    assert status.mcp_configured is True
+    assert status.policy_configured is True
+
+
+def test_configure_qwen_user_targets_home_qwen_dir(tmp_path: Path) -> None:
+    home = tmp_path / "home"
+    result = configure_host(
+        "qwen",
+        scope="user",
+        root=tmp_path / "project",
+        home=home,
+    )
+    assert result.registration == "created"
+    assert result.registration_path == home / ".qwen" / "settings.json"
+    assert result.policy_path == home / ".qwen" / "QWEN.md"
+    assert result.policy_path is not None and result.policy_path.exists()
+
+    status = inspect_host("qwen", scope="user", root=tmp_path / "project", home=home)
+    assert status.mcp_configured is True
+    assert status.policy_configured is True
