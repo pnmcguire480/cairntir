@@ -13,6 +13,18 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-08-05
+
+The honesty release. Cairntir's oldest defect is infrastructure built correctly
+and never wired: commitments that quietly vanish, checks that run where their
+subject does not exist, loops that open but nobody closes. This release wires
+the enforcement layer. Settled predictions now actually close in the handoff
+and count in calibration. The store-integrity gate runs where the data lives —
+pre-commit, beside the bank — instead of on a CI runner that has no store. The
+release gate verifies PyPI presence, not just the tag. The write path asks for
+a prediction when you assert a claim. And a fourth host — Qwen Code — reads and
+writes the same store with full provenance.
+
 ### Added
 
 - `cairntir doctor --gate` — the store-integrity and vault-drift gates, run
@@ -37,6 +49,10 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   because nothing ever asked. Advisory only — the write succeeds either way.
   This is the anchor lesson applied to the epistemic core: publish a contract
   is not the same as asking for compliance.
+- **Qwen Code is the fourth supported host.** `cairntir init --host qwen` and
+  the doctor/host adapters wire `~/.qwen/settings.json` + `QWEN.md`, and the
+  four-host continuity fixture now covers Claude, Codex, Cursor, and Qwen
+  writing to one store with per-write provenance.
 
 ### Fixed
 
@@ -1099,7 +1115,8 @@ six-tool MCP surface that Claude Code can talk to directly.
 - `ruff check`, `ruff format`, `mypy --strict` clean
 - Every exception typed; no silent `except: pass`
 
-[Unreleased]: https://github.com/pnmcguire480/cairntir/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/pnmcguire480/cairntir/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/pnmcguire480/cairntir/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/pnmcguire480/cairntir/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/pnmcguire480/cairntir/compare/v1.1.2...v1.2.0
 [1.1.2]: https://github.com/pnmcguire480/cairntir/compare/v1.1.0...v1.1.2
