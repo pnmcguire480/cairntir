@@ -58,26 +58,38 @@ pre-W1 process, so they carry no `metadata.success` — they are
 modules in memory until it restarts. The open-count decrease becomes visible
 on the next host restart — that re-verification is owed (drawer #295).
 
-## Morning chores for Patrick (or the next integrator)
+## RESOLVED — finalization session, 2026-08-05 evening (Patrick present)
 
-1. **Restart the AI hosts** (or reboot) so `cairntir-mcp` reloads from the
-   checkout now on `main`. Then `cairntir_handoff(wing="cairntir")` should
-   show #288/#289/#290 closed — the owed re-verification of drawer #295.
-2. **Review and merge PR #43** (Qwen host) — rebased, CI green, four-host
-   fixture proven. After the merge, the stale local branches
-   (`feat/cost-accounting`, `feat/handoff`, `feat/landed-commitments`,
-   `fix/settlement-seam`) can be deleted.
-3. **Commit the untracked plan files** (this report, the audit, the ultimate
-   plan, the three older untracked plans) or decide which stay local.
-4. **Decide on the two skipping CI steps** — renamed loud, not deleted;
-   deletion was kept as Patrick's call.
-5. The `w1-settlement-seam` worktree at `C:\Dev\cairntir-wt\` is parked on a
-   merged branch; safe to remove (`git worktree remove`).
-6. **Embedder bake-off** is the highest-value item still standing and needs
-   Patrick present (live reindex). `cairntir cost` measures the problem: 29%
-   of `cairntir`-wing drawers exceed the ~2,048-char window.
-7. The three older `.claude/worktrees/` hold merged commits (vault-sync,
-   model-provenance, open-predictions) — audit and clear when convenient.
+Everything below shipped in one monitored session; the repo now stands clean.
+
+1. **PR #43 (Qwen host) merged** — `f6f45ad`. Four hosts (Claude, Codex,
+   Cursor, Qwen) on one store with per-write provenance.
+2. **All dead branches and worktrees removed** — 15 merged branches deleted,
+   4 worktrees removed (including the stale write-guard WIP in
+   `agent-a54cc2bf`, audited before force-removal; it was fully superseded by
+   the landed write guard).
+3. **Plan ledger committed** — this report, the audit, the ultimate plan, the
+   seams plan, the big plan, and the agents-routing research all landed in the
+   release PR.
+4. **Live seam proof delivered** — `cairntir handoff cairntir` on the new code
+   shows the open count dropped 5 → 2 (#293, #297). The legacy prediction #68
+   was settled on 2026-04-18 (drawer #69, `reason.observe`) and had simply been
+   invisible under the seam bug for four months.
+5. **v1.4.0 RELEASED.** Tag pushed by Patrick (his gate), release workflow
+   green (verify → build → attest → GitHub Release → PyPI), and `pip install
+   cairntir` now resolves to 1.4.0 — confirmed live: latest=1.4.0, 2 files.
+   The new PyPI-presence gate dogfooded itself the same hour.
+
+## Still open (Patrick-gated, non-blocking)
+
+1. **Restart the AI hosts** (or reboot) so running `cairntir-mcp` processes
+   reload the 1.4.0 modules. The CLI already proves the seam fix; this just
+   refreshes any long-lived MCP process still holding pre-1.4.0 code.
+2. **Decide on the two skipping CI steps** — renamed loud, not deleted;
+   deletion stays Patrick's call.
+3. **Embedder bake-off** — highest-value item still standing, needs Patrick
+   present (live reindex). `cairntir cost`: 29% of `cairntir`-wing drawers
+   exceed the ~2,048-char window.
 
 ## The diff between plan and reality
 
