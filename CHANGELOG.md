@@ -13,6 +13,28 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Added
+
+- `cairntir doctor --gate` — the store-integrity and vault-drift gates, run
+  where the data actually lives. The five health rules moved into
+  `src/cairntir/health.py`, one shared implementation behind both
+  `scripts/check_store_health.py` and the gate, so the two cannot drift apart.
+  Without a store the gate skips loudly and passes; with one, it exits 1 on
+  damage or drift. Wired into `.pre-commit-config.yaml`, because a check that
+  runs where its subject does not exist is worse than no check.
+- `scripts/check_release_tags.py` now verifies PyPI presence, not just the tag.
+  A tag is a claim, not a fact — `v1.1.1` was tagged, released on GitHub, and
+  never reached PyPI, unnoticed. Fails closed when pypi.org cannot be reached;
+  `0.1.0` and `1.1.1` are recorded as historical fact, not swept away.
+
+### Fixed
+
+- Settled predictions close in `cairntir_handoff`, and `cairntir_calibration`
+  counts settlements made through the MCP surface. Previously a prediction
+  settled via `cairntir_settle` stayed listed as open forever, and calibration
+  never saw it. Every declared seam now keeps a paired both-sides test,
+  registered in `scripts/check_seams.py`.
+
 ## [1.3.0] — 2026-08-02
 
 The context-budget release. Cairntir's oldest inherited idea is **controlled

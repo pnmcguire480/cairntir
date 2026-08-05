@@ -337,6 +337,14 @@ symbol src/cairntir/handoff.py settled_prediction_ids
 test   tests/integration/test_seams.py test_settling_a_prediction_closes_it_in_handoff
 file   scripts/check_seams.py
 test   tests/integration/test_seams.py test_settle_writes_a_delta_a_later_session_can_read
+# W2 of plans/2026-08-04-ultimate-improvement-plan.md — checks where the data
+# lives (LANDED 2026-08-05): the five store-integrity rules now have one
+# shared implementation, and `cairntir doctor --gate` runs them beside the
+# real store instead of on a runner that has none.
+file   src/cairntir/health.py
+param  src/cairntir/cli.py doctor:gate
+test   tests/unit/test_doctor.py test_gate_fails_on_a_damaged_store
+test   tests/unit/test_doctor.py test_gate_skips_loudly_when_there_is_no_store
 ```
 
 The block asserts only what has **actually landed**. The first five lines lock in

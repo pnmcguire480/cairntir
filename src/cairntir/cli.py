@@ -164,9 +164,33 @@ def status() -> None:
 
 
 @app.command()
-def doctor() -> None:
+def doctor(
+    gate: bool = typer.Option(
+        False,
+        "--gate",
+        help=(
+            "Also run the store-integrity and vault-drift gates. Exits 1 on "
+            "damage or drift; skips loudly when there is no store to gate."
+        ),
+    ),
+    vault: Path | None = typer.Option(  # noqa: B008 — Typer declares options at import time
+        None,
+        "--vault",
+        envvar="CAIRNTIR_VAULT",
+        help="Vault for the --gate drift check. Defaults to $CAIRNTIR_VAULT.",
+    ),
+) -> None:
     """Inspect semantic-index and agent-host wiring without modifying either."""
     path = db_path()
+    if gate and not path.exists():
+        # A gate that runs where its subject does not exist advertises
+        # protection it cannot provide. Without a store there is nothing to
+        # gate — say so loudly and pass, so pre-commit stays usable on a
+        # fresh clone while failing hard wherever the bank actually lives.
+        typer.echo(
+            f"SKIP: no store at {path} -- the gate runs where the data lives; nothing to gate here."
+        )
+        raise typer.Exit()
     provider = production_embedding_provider()
     try:
         report = inspect_embedding_space(path, provider)
@@ -227,6 +251,83 @@ def doctor() -> None:
                 typer.echo(f"           MCP: {status.mcp_detail}")
             if not status.policy_configured:
                 typer.echo(f"           policy: {status.policy_detail}")
+
+    if gate:
+        _run_gate(path, vault)
+
+
+def _run_gate(path: Path, vault: Path | None) -> None:
+    """The ``doctor --gate`` half: store integrity and vault drift.
+
+    Runs the same five rules as ``scripts/check_store_health.py`` — one
+    implementation in :mod:`cairntir.health`, so the script and the gate
+    agree by construction — and then the vault drift check that
+    ``vault-sync --check`` performs. A check that runs where its subject
+    does not exist is worse than no check; this function is the answer to
+    "where does it run instead" — here, beside the data.
+    """
+    import sqlite3
+
+    from cairntir.health import store_health
+
+    typer.echo()
+    conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+    try:
+        health = store_health(conn)
+    finally:
+        conn.close()
+
+    failed = False
+    if health.drawer_count == 0:
+        typer.echo("store gate: SKIP: store is empty -- nothing to gate.")
+    else:
+        typer.echo(f"store gate: {health.drawer_count} drawers, {health.anchored_count} anchored")
+        if health.failures:
+            failed = True
+            for failure in health.failures:
+                typer.echo(f"  FAIL: {failure}")
+        else:
+            typer.echo("  store is whole.")
+
+    if vault is None:
+        typer.echo(
+            "vault gate: SKIP: no vault given (pass --vault or set "
+            "CAIRNTIR_VAULT) -- drift not checked."
+        )
+    else:
+        from cairntir.vault import (
+            VaultSyncError,
+            plan_sync,
+            render_plan,
+            resolve_vault,
+        )
+
+        try:
+            resolved = resolve_vault(vault)
+        except VaultSyncError as exc:
+            typer.echo(f"cairntir: {exc}", err=True)
+            raise typer.Exit(code=1) from exc
+        store = _open_store(capture_path="cli.doctor-gate")
+        try:
+            try:
+                plan = plan_sync(store, resolved)
+            except (MemoryStoreError, VaultSyncError) as exc:
+                typer.echo(f"cairntir: {exc}", err=True)
+                raise typer.Exit(code=1) from exc
+        finally:
+            store.close()
+        typer.echo(render_plan(plan, check=True))
+        if plan.has_drift:
+            failed = True
+
+    if failed:
+        typer.echo(
+            "\ngate: FAIL -- repair before committing; the gate only runs "
+            "where the data lives, so this is real.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+    typer.echo("\ngate: ok")
 
 
 @app.command()

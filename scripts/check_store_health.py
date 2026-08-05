@@ -29,11 +29,15 @@ WHAT IT ASSERTS
 
 Exit 0 = healthy. Exit 1 = a real regression, with the offending ids named.
 Honours CAIRNTIR_HOME. Read-only: it never writes.
+
+The rules themselves live in `cairntir.health`, shared with `cairntir doctor
+--gate` so this script and the gate agree by construction. This script is the
+CI front-end; be honest about its reach — a hosted runner carries no store, so
+here it skips. The gate runs where the data lives.
 """
 
 from __future__ import annotations
 
-import json
 import sqlite3
 import sys
 
@@ -41,6 +45,7 @@ import sys
 def main() -> int:
     """Check the live store for silent degradation. Return a process exit code."""
     from cairntir.config import db_path
+    from cairntir.health import store_health
 
     path = db_path()
     print(f"store: {path}")
@@ -49,86 +54,22 @@ def main() -> int:
         return 0
 
     conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
-    failures: list[str] = []
-
-    rows = conn.execute(
-        "SELECT id, wing, room, content, metadata FROM drawers ORDER BY id"
-    ).fetchall()
-    if not rows:
-        print("SKIP: store is empty")
-        return 0
-    ids = [r[0] for r in rows]
-    print(f"drawers: {len(ids)} (ids {min(ids)}-{max(ids)})")
-
-    # 1. no gaps
-    gaps = [i for i in range(min(ids), max(ids) + 1) if i not in set(ids)]
-    if gaps:
-        failures.append(f"id gaps -- drawers vanished: {gaps}")
-
-    # 2. embedding coverage
-    try:
-        embedded = {r[0] for r in conn.execute("SELECT drawer_id FROM vec_drawers")}
-    except sqlite3.OperationalError:
-        import sqlite_vec
-
-        conn.enable_load_extension(True)
-        sqlite_vec.load(conn)
-        embedded = {r[0] for r in conn.execute("SELECT drawer_id FROM vec_drawers")}
-    stray = sorted(set(ids) - embedded)
-    if stray:
-        failures.append(f"unembedded drawers -- unreachable by recall: {stray}")
-
-    # 3. leaked tool-call envelopes (markup AND empty metadata -- both required)
-    leaked = [
-        r[0]
-        for r in rows
-        if ("</content>" in r[3] or "<parameter name=" in r[3]) and r[4].strip() in ("{}", "")
-    ]
-    if leaked:
-        failures.append(
-            f"tool-call envelope serialized into content, metadata lost: {leaked} "
-            "-- run scripts/repair_leaked_metadata.py"
-        )
-
-    # 4. anchor shape
-    malformed: list[int] = []
-    anchored = 0
-    for rid, _w, _r, _c, meta in rows:
-        try:
-            m = json.loads(meta)
-        except json.JSONDecodeError:
-            malformed.append(rid)
-            continue
-        if not isinstance(m, dict) or "anchors" not in m:
-            continue
-        anchored += 1
-        a = m["anchors"]
-        if not isinstance(a, list) or not all(
-            isinstance(x, dict) and isinstance(x.get("path"), str) and x["path"].strip() for x in a
-        ):
-            malformed.append(rid)
-    if malformed:
-        failures.append(
-            f"malformed metadata.anchors -- invisible to recall_for_change: {malformed} "
-            "-- run DrawerStore.repair_anchors"
-        )
-    print(f"drawers carrying anchors: {anchored}")
-
-    # 5. embedding space declared and verified
-    meta = dict(conn.execute("SELECT key, value FROM store_metadata").fetchall())
-    if not meta.get("embedding_space_id"):
-        failures.append("store_metadata has no embedding_space_id")
-    else:
-        print(
-            f"embedding space: {meta['embedding_space_id']} dim={meta.get('embedding_dimension')}"
-        )
-
+    report = store_health(conn)
     conn.close()
 
-    if failures:
-        print(f"\nFAIL: {len(failures)} store-integrity problem(s)")
-        for f in failures:
-            print(f"  - {f}")
+    if report.drawer_count == 0:
+        print("SKIP: store is empty")
+        return 0
+
+    print(f"drawers: {report.drawer_count} (ids {report.first_id}-{report.last_id})")
+    print(f"drawers carrying anchors: {report.anchored_count}")
+    if report.embedding_space_id:
+        print(f"embedding space: {report.embedding_space_id} dim={report.embedding_dimension}")
+
+    if report.failures:
+        print(f"\nFAIL: {len(report.failures)} store-integrity problem(s)")
+        for failure in report.failures:
+            print(f"  - {failure}")
         return 1
     print("\nok: store is whole -- no gaps, no strays, no leaked envelopes, anchors well-formed.")
     return 0

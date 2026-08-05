@@ -56,6 +56,34 @@ def test_known_unreleased_records_the_versions_that_never_shipped() -> None:
     assert all(reason.strip() for reason in known.values())
 
 
+def test_known_unpublished_records_the_versions_that_never_reached_pypi() -> None:
+    known = _load_script().KNOWN_UNPUBLISHED
+    assert set(known) == {"0.1.0", "1.1.1"}
+    assert all(reason.strip() for reason in known.values())
+
+
+def test_pypi_published_versions_counts_only_releases_with_files() -> None:
+    module = _load_script()
+    payload = (
+        '{"releases": {"1.3.0": [{"filename": "cairntir-1.3.0.tar.gz"}], '
+        '"1.1.1": [], "1.2.0": [{"filename": "cairntir-1.2.0-py3-none-any.whl"}]}}'
+    )
+    published = module.pypi_published_versions(fetch=lambda _url: payload)
+    assert published == {"1.3.0", "1.2.0"}
+
+
+def test_pypi_published_versions_rejects_an_unexpected_shape() -> None:
+    module = _load_script()
+    with pytest.raises(TypeError, match="releases"):
+        module.pypi_published_versions(fetch=lambda _url: '{"releases": "wrong"}')
+
+
+def test_unpublished_flags_only_the_missing_versions() -> None:
+    module = _load_script()
+    missing = module.unpublished(["1.3.0", "1.2.0", "1.1.2"], {"1.3.0", "1.2.0"})
+    assert missing == ["1.1.2"]
+
+
 def test_the_check_runs_as_a_release_gate_with_tags_fetched() -> None:
     release = (WORKFLOWS / "release.yml").read_text(encoding="utf-8")
     assert "scripts/check_release_tags.py" in release

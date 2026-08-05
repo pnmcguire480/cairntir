@@ -46,3 +46,12 @@ repos:
         language: system
         pass_filenames: false
         files: ^src/.*\.py$
+      # Runs the store-integrity and vault-drift gates where the data lives.
+      # On a machine without a store it skips loudly and passes; with one, it
+      # fails hard on damage or drift. That is the point: the CI twins of this
+      # check run where no store exists and can only ever skip.
+      - id: doctor-gate
+        name: store health gate (cairntir doctor --gate)
+        entry: python -m cairntir doctor --gate
+        language: system
+        pass_filenames: false

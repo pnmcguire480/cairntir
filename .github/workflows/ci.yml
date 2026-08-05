@@ -41,14 +41,19 @@ jobs:
         run: uv run python scripts/check_landed_commitments.py
       - name: Seam check
         run: uv run python scripts/check_seams.py
-      - name: Store integrity check
+      # Honest about its own reach: the skip is in the step NAME, not in a log
+      # line nobody reads. The real gate runs where the data lives —
+      # `cairntir doctor --gate` (pre-commit, local, self-hosted). The rules
+      # themselves are shared: one implementation in src/cairntir/health.py.
+      - name: Store integrity check (SKIP on hosted runners - no store here)
         run: uv run python scripts/check_store_health.py
       # Honest about its own reach: a GitHub-hosted runner has no Obsidian vault
       # and no store, so this step cannot fail here and does not pretend to. It
       # fires on a self-hosted runner or locally, where CAIRNTIR_VAULT is real.
       # The gate's *behaviour* — exit 1 when a vault walkthrough has no drawer —
-      # is proven on every CI run by tests/unit/test_vault_sync.py.
-      - name: Vault drift check
+      # is proven on every CI run by tests/unit/test_vault_sync.py and
+      # tests/unit/test_doctor.py.
+      - name: Vault drift check (SKIP on hosted runners - no vault here)
         run: |
           if [ -n "${CAIRNTIR_VAULT:-}" ]; then
             uv run cairntir vault-sync --check
