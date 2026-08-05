@@ -41,7 +41,6 @@ from cairntir.errors import (
     ProvenanceError,
     WorkflowError,
 )
-from cairntir.memory.anchors import parse_anchors
 from cairntir.memory.belief import rerank_results
 from cairntir.memory.embeddings import embedding_space_id
 from cairntir.memory.taxonomy import Drawer, Layer
@@ -505,6 +504,11 @@ def _guard_write_integrity(drawer: Drawer) -> None:
             "swallowed tool call. If the markup is quoted deliberately, "
             "attach metadata so the store can tell the difference."
         )
+    # Local import: ``anchors`` type-checks against ``DrawerStore``, so a
+    # module-level import here would close a cycle. ``daemon/capture.py``
+    # breaks the same shape the same way.
+    from cairntir.memory.anchors import parse_anchors
+
     try:
         parse_anchors(drawer.metadata)
     except AnchorError as exc:
