@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.2.0 published** 2026-08-01 (PyPI + GitHub release, both artifacts attested). Latest on PyPI is `1.2.0`; the four live releases are 1.0.0, 1.1.0, 1.1.2, 1.2.0. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`, which now fails the build if that happens again.
+- **Stage:** **v1.3.0 published** 2026-08-02 (PyPI + GitHub release, both artifacts attested). Latest on PyPI is `1.3.0`; the five live releases are 1.0.0, 1.1.0, 1.1.2, 1.2.0, 1.3.0. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`, which now fails the build if that happens again. (Note: `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.)
 
 ---
 
@@ -118,6 +118,36 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-08-05 (**full audit + the stacked work finally merged — #36 and #37 landed**)
+- **What was accomplished:** Patrick commissioned a fresh-eyes full audit. The
+  headline finding: **the build on `main` is fully green** — ruff, `ruff
+  format`, `mypy --strict` (49 files), silent-except, release-tags,
+  landed-commitments, store-health, `uv build`, and 563 tests at 82.26%
+  coverage all pass locally and in CI, and **v1.3.0 is published on both PyPI
+  and GitHub**. The build was never broken; the work was *stuck*. Two green
+  pull requests — **#36 (`cairntir vault-sync`) and #37 (handoff surfaces
+  unsettled predictions)** — passed all 14 checks but were `CONFLICTING` on one
+  file, `plans/2026-08-04-honest-and-whole.md`, because each predated PR #35
+  and a naive merge would have deleted #35's landed commitments from the
+  ledger. Resolved by reconciling the `cairntir-commitments` block to the
+  **union** (47 commitments across 3 documents, all landed), re-basing each
+  branch onto `main`, re-running the full gate green, and merging both. Also
+  closed the five stale failing dependabot PRs (#1–#5, from April) and
+  corrected this stale session block. **The record also skips the 2026-08-02 →
+  08-04 sessions that were never logged here**: PRs #33–#35 merged and v1.3.0
+  shipped in that gap. The recurring failure mode to watch is *work lands green
+  but never merges*.
+- **Next session:**
+  1. **The embedder bake-off** remains the highest-value open item; it needs
+     Patrick awake for the live reindex.
+  2. **Still-not-landed in the plan ledger:** P1 item 4 (retire the `untrusted`
+     migration stamp) and P2 item 1 (write-time guard in `DrawerStore.add()`).
+     See the staging block in `plans/2026-08-04-honest-and-whole.md`.
+  3. **Housekeeping:** remove the redundant pipx `cairntir 0.1.0` install
+     (shadowed by the healthy system editable install); decide whether to
+     re-open the GitHub Actions dependabot bumps that were just closed.
+
+- **Prior session — 2026-08-02 (the research landed as code — four PRs opened):**
 - **Date:** 2026-08-02, overnight (**the research landed as code — four PRs open, none merged**)
 - **What was accomplished:** Patrick commissioned the research, read it, then
   went to sleep asking for the fixes and upgrades to be implemented and a
