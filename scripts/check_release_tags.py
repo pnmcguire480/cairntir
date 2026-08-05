@@ -16,16 +16,28 @@ matching git tag, with two deliberate exemptions:
   fact. They are recorded here rather than hidden, and retagging them now would
   re-trigger the publish workflow against a stale commit.
 
+A tag, in turn, is a claim, not a fact. The second half of this check verifies
+every released tag actually published to PyPI, because that is the exact class
+of miss the tag half cannot see: ``v1.1.1`` was tagged and released on GitHub
+and never reached PyPI, unnoticed. Versions in :data:`KNOWN_UNPUBLISHED` are
+historical fact, recorded rather than hidden. This half requires network
+access to pypi.org and fails closed when it cannot verify — a gate that cannot
+check is not a gate.
+
 Exit code 1 if any violations are found. Used as a CI check and a release gate.
 """
 
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import subprocess
 import sys
 import tomllib
+import urllib.error
+import urllib.request
+from collections.abc import Callable
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -42,6 +54,20 @@ KNOWN_UNRELEASED = {
     "1.1.3": "changelogged 2026-05-03, never tagged; the cold-start fix it "
     "describes shipped inside 1.2.0 on 2026-08-01",
 }
+
+# Versions that were tagged but never published to PyPI. Documented, not swept
+# away. Do not add to this set to silence a new failure -- publish the release
+# instead. Retagging would re-trigger the publish workflow against a stale
+# commit, so these are recorded as historical fact.
+KNOWN_UNPUBLISHED = {
+    "0.1.0": "tagged 2026-04-08 as the bootstrap release with a GitHub "
+    "Release, never published to PyPI",
+    "1.1.1": "tagged 2026-04-25, released on GitHub, never reached PyPI -- "
+    "the miss that proved tags alone are not enough",
+}
+
+PYPI_PACKAGE_URL = "https://pypi.org/pypi/cairntir/json"
+"""The JSON endpoint listing every published release of this package."""
 
 
 def changelog_versions() -> list[str]:
@@ -74,6 +100,31 @@ def existing_tags() -> set[str]:
     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
 
+def fetch_pypi_json(url: str) -> str:
+    """Fetch the package JSON from PyPI. Raises on any network failure."""
+    request = urllib.request.Request(url, headers={"User-Agent": "cairntir-release-gate"})  # noqa: S310
+    with urllib.request.urlopen(request, timeout=30) as response:  # noqa: S310
+        return str(response.read().decode("utf-8"))
+
+
+def pypi_published_versions(fetch: Callable[[str], str] = fetch_pypi_json) -> set[str]:
+    """Return the versions PyPI actually serves files for.
+
+    A version key with an empty file list was yanked into the index without
+    artefacts and does not count as published.
+    """
+    payload = json.loads(fetch(PYPI_PACKAGE_URL))
+    releases = payload.get("releases", {})
+    if not isinstance(releases, dict):
+        raise TypeError(f"PyPI returned an unexpected releases shape: {type(releases)}")
+    return {version for version, files in releases.items() if files}
+
+
+def unpublished(versions: list[str], published: set[str]) -> list[str]:
+    """Return the tagged versions missing from PyPI, in the order given."""
+    return [version for version in versions if version not in published]
+
+
 def main() -> int:
     """Entry point. Returns 1 if a released changelog version has no tag."""
     try:
@@ -92,6 +143,7 @@ def main() -> int:
 
     in_flight = current_version()
     violations: list[str] = []
+    released: list[str] = []
 
     for version in changelog_versions():
         if version == in_flight:
@@ -100,9 +152,13 @@ def main() -> int:
             continue
         if f"v{version}" not in tags:
             violations.append(version)
+        else:
+            released.append(version)
 
     for version in KNOWN_UNRELEASED:
         print(f"note: {version} is a known-unreleased version ({KNOWN_UNRELEASED[version]})")
+    for version in KNOWN_UNPUBLISHED:
+        print(f"note: {version} is a known-unpublished version ({KNOWN_UNPUBLISHED[version]})")
 
     if violations:
         print(file=sys.stderr)
@@ -119,7 +175,37 @@ def main() -> int:
         )
         return 1
 
-    print(f"ok: every released changelog version is tagged (in-flight: {in_flight})")
+    # A tag is a claim, not a fact: verify it published. Versions in
+    # KNOWN_UNPUBLISHED are historical fact and stay exempt.
+    to_verify = [v for v in released if v not in KNOWN_UNPUBLISHED]
+    try:
+        published = pypi_published_versions()
+    except (urllib.error.URLError, TimeoutError, TypeError, json.JSONDecodeError, OSError) as exc:
+        print(
+            f"ERROR: could not verify PyPI presence: {exc}\n"
+            "Failing closed: a gate that cannot check is not a gate. If you "
+            "believe this is a transient network failure, re-run.",
+            file=sys.stderr,
+        )
+        return 1
+
+    missing = unpublished(to_verify, published)
+    if missing:
+        print(file=sys.stderr)
+        for version in missing:
+            print(
+                f"tag v{version} exists but PyPI serves no files for {version}.",
+                file=sys.stderr,
+            )
+        print(
+            f"\n{len(missing)} tagged version(s) never published to PyPI.\n"
+            "Cairntir policy: a tag is not a release until `pip install "
+            "cairntir` can resolve it.",
+            file=sys.stderr,
+        )
+        return 1
+
+    print(f"ok: every released changelog version is tagged and published (in-flight: {in_flight})")
     return 0
 
 
