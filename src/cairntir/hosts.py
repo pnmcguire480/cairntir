@@ -2,7 +2,8 @@
 
 The database and MCP server are host-neutral.  This module contains the
 small amount of host-specific wiring needed to make that same server visible
-to Claude Code, Codex, and Cursor without overwriting unrelated user config.
+to Claude Code, Codex, Cursor, and Qwen Code without overwriting unrelated
+user config.
 """
 
 from __future__ import annotations
@@ -15,10 +16,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final, Literal
 
-HostName = Literal["claude", "codex", "cursor"]
+HostName = Literal["claude", "codex", "cursor", "qwen"]
 HostScope = Literal["project", "user"]
 
-SUPPORTED_HOSTS: Final[tuple[HostName, ...]] = ("claude", "codex", "cursor")
+SUPPORTED_HOSTS: Final[tuple[HostName, ...]] = ("claude", "codex", "cursor", "qwen")
 MCP_SERVER_NAME: Final[str] = "cairntir"
 MCP_SERVER_COMMAND: Final[str] = "cairntir-mcp"
 
@@ -51,8 +52,8 @@ If session start returns no memory for an established wing, report that the
 store may be new or misconfigured. Do not silently substitute model memory.
 
 This policy is host-neutral: every agent must read and write the same Cairntir
-store so work can move between Claude Code, Codex, and Cursor without a
-re-brief.
+store so work can move between Claude Code, Codex, Cursor, and Qwen Code
+without a re-brief.
 """
 
 _CURSOR_RULE_HEADER: Final[str] = """---
@@ -187,6 +188,13 @@ def _json_mcp_path(host: HostName, scope: HostScope, root: Path, home: Path) -> 
         return root / ".mcp.json"
     if host == "cursor":
         return home / ".cursor" / "mcp.json" if scope == "user" else root / ".cursor" / "mcp.json"
+    if host == "qwen":
+        # Qwen Code reads mcpServers from settings.json at both scopes.
+        return (
+            home / ".qwen" / "settings.json"
+            if scope == "user"
+            else root / ".qwen" / "settings.json"
+        )
     raise HostConfigurationError(f"{host} does not use a JSON MCP configuration")
 
 
@@ -195,6 +203,9 @@ def _policy_path(host: HostName, scope: HostScope, root: Path, home: Path) -> Pa
         return home / ".claude" / "CLAUDE.md" if scope == "user" else root / "CLAUDE.md"
     if host == "codex":
         return home / ".codex" / "AGENTS.md" if scope == "user" else root / "AGENTS.md"
+    if host == "qwen":
+        # Qwen Code loads QWEN.md at user level and from the project root.
+        return home / ".qwen" / "QWEN.md" if scope == "user" else root / "QWEN.md"
     if scope == "project":
         return root / ".cursor" / "rules" / "cairntir.mdc"
     return None

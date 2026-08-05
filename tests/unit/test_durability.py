@@ -155,10 +155,10 @@ def test_provenance_round_trips_and_expired_memory_is_hidden(tmp_path: Path) -> 
         assert [drawer.id for drawer, _ in hits] == [current_drawer.id]
 
 
-def test_codex_cursor_claude_share_memory_without_losing_origin(tmp_path: Path) -> None:
+def test_all_four_hosts_share_memory_without_losing_origin(tmp_path: Path) -> None:
     path = tmp_path / "shared.db"
     ids: dict[str, int] = {}
-    for host in ("codex", "cursor", "claude"):
+    for host in ("codex", "cursor", "claude", "qwen"):
         provenance = WriteProvenance.create(
             host=host,
             capture_path="mcp",
