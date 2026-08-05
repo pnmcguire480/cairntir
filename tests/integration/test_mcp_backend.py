@@ -232,6 +232,51 @@ def test_recall_empty_query_errors(backend: CairntirBackend) -> None:
         backend.recall(query="   ")
 
 
+def test_recall_full_content_default_is_byte_identical(backend: CairntirBackend) -> None:
+    """0 is today's behaviour: adding the argument must change nothing."""
+    backend.remember(wing="cairntir", room="journey", content="the default path stays put")
+    assert backend.recall(query="default path") == backend.recall(
+        query="default path", full_content=0
+    )
+
+
+def test_recall_full_content_returns_whole_drawers(backend: CairntirBackend) -> None:
+    """One good drawer beats ten headlines — and kills the get() round trip."""
+    content = "The settlement seam, explained properly. " + ("detail " * 40) + "TAIL-MARKER"
+    backend.remember(wing="cairntir", room="architecture", content=content)
+
+    stubs = backend.recall(query="settlement seam explained")
+    assert "TAIL-MARKER" not in stubs  # the snippet cannot carry the tail
+
+    whole = backend.recall(query="settlement seam explained", full_content=1)
+    assert content in whole  # the complete drawer, verbatim
+    assert "full=true" in whole
+
+
+def test_recall_full_content_only_applies_to_the_top_n(backend: CairntirBackend) -> None:
+    backend.remember(wing="cairntir", room="journey", content="first drawer about anchors")
+    backend.remember(wing="cairntir", room="journey", content="second drawer about anchors")
+
+    reply = backend.recall(query="drawer about anchors", limit=2, full_content=1)
+    assert reply.count("full=true") == 1  # one whole, one stub
+
+
+def test_recall_full_content_names_oversize_hits(backend: CairntirBackend) -> None:
+    """Whole drawers or none: oversize hits are named, never cut."""
+    content = "k" * 12_000 + "UNIQUETAIL"
+    backend.remember(wing="cairntir", room="deep", content=content)
+
+    reply = backend.recall(query="k", full_content=1)
+    assert "too large for full delivery" in reply
+    assert "UNIQUETAIL" not in reply  # not truncated either — just named
+    assert "cairntir://drawer/1" in reply
+
+
+def test_recall_rejects_negative_full_content(backend: CairntirBackend) -> None:
+    with pytest.raises(MCPError, match="zero or positive"):
+        backend.recall(query="anything", full_content=-1)
+
+
 def test_remember_rejects_bad_layer(backend: CairntirBackend) -> None:
     with pytest.raises(MCPError):
         backend.remember(wing="cairntir", room="x", content="y", layer="nope")

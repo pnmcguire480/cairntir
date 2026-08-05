@@ -290,26 +290,46 @@ class CairntirBackend:
         wing: str | None = None,
         room: str | None = None,
         limit: int = 10,
+        full_content: int = 0,
     ) -> str:
-        """Semantic search. Returns a formatted list of hits."""
+        """Semantic search. Returns a formatted list of hits.
+
+        ``full_content`` returns the top N hits with their **complete**
+        content in the evidence block instead of a snippet. One good drawer
+        beats ten headlines, and it removes the ``get`` round trip for the
+        hits that actually answer the question. Whole drawers or none: a hit
+        too large to deliver whole is named, never truncated. The default of
+        0 keeps today's stub-only output byte-identical.
+        """
         if not query.strip():
             raise MCPError("recall requires a non-empty query")
+        if full_content < 0:
+            raise MCPError("full_content must be zero or positive")
         hits = self._store.search(query, wing=wing, room=room, limit=limit)
         if not hits:
             return f"No drawers matched {query!r}."
         lines = [f"{len(hits)} hit(s) for {query!r}:"]
         evidence: list[str] = []
-        for drawer, distance in hits:
+        for index, (drawer, distance) in enumerate(hits):
+            wants_full = index < full_content
+            fits = len(drawer.content) <= DEFAULT_BUDGET_CHARS
+            served_full = wants_full and fits
+            note = ""
+            if wants_full and not fits:
+                note = (
+                    f"  (too large for full delivery: {len(drawer.content)} "
+                    f"chars — {_drawer_ref(drawer)} via cairntir_get)"
+                )
             lines.append(
                 f"  #{drawer.id}  {drawer.wing}/{drawer.room}  "
                 f"[{drawer.layer.value}]  d={distance:.4f}  "
-                f"{_content_receipt(drawer)}"
+                f"{_content_receipt(drawer, full=served_full)}{note}"
             )
             evidence.append(
                 render_memory_evidence(
                     drawer,
                     self._required_provenance(drawer.id),
-                    content=_snippet(drawer.content),
+                    content=drawer.content if served_full else _snippet(drawer.content),
                 )
             )
         return "\n".join(lines) + "\n\n" + render_evidence_block(evidence)
@@ -807,11 +827,13 @@ def _drawer_ref(drawer: Drawer) -> str:
     return f"cairntir://drawer/{drawer.id}"
 
 
-def _content_receipt(drawer: Drawer, *, snippet_limit: int = 100) -> str:
+def _content_receipt(drawer: Drawer, *, snippet_limit: int = 100, full: bool = False) -> str:
     truncated = len(" ".join(drawer.content.split())) > snippet_limit
+    suffix = " full=true" if full else ""
     return (
         f"ref={_drawer_ref(drawer)} len={len(drawer.content)} "
         f"sha256={_content_hash(drawer.content)} truncated={str(truncated).lower()}"
+        f"{suffix}"
     )
 
 

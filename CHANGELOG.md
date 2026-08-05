@@ -26,6 +26,11 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   A tag is a claim, not a fact — `v1.1.1` was tagged, released on GitHub, and
   never reached PyPI, unnoticed. Fails closed when pypi.org cannot be reached;
   `0.1.0` and `1.1.1` are recorded as historical fact, not swept away.
+- `cairntir_recall(..., full_content=N)` — deliver the top N hits with their
+  COMPLETE content instead of snippets, so one good drawer answers the
+  question without a `cairntir_get` round trip. Hits too large for whole
+  delivery are named, never truncated. Default 0 keeps the old stub-only
+  output byte-identical.
 
 ### Fixed
 
