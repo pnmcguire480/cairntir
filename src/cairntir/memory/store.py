@@ -32,6 +32,8 @@ from cairntir.durability import (
     request_hash,
 )
 from cairntir.errors import (
+    AnchorError,
+    ContentIntegrityError,
     EmbeddingError,
     EmbeddingSpaceError,
     IdempotencyConflictError,
@@ -89,6 +91,26 @@ _META_EMBEDDING_GENERATION = "embedding_generation"
 _META_EMBEDDING_VERIFIED_AT = "embedding_verified_at"
 _VECTOR_DIMENSION_RE = re.compile(r"\bembedding\s+FLOAT\[(\d+)\]", re.IGNORECASE)
 _VECTOR_FILTER_COLUMNS = frozenset({"wing", "room", "layer", "trust", "valid_until"})
+
+_ENVELOPE_MARKERS: tuple[str, ...] = ("</content>", "<parameter name=")
+"""Byte substrings identifying a host's serialized tool-call envelope.
+
+The same shapes ``scripts/check_store_health.py`` rule 3 hunts for after the
+fact. The write-time guard in :meth:`DrawerStore.add` uses them to refuse the
+damage before it is stored.
+"""
+
+_TRAILING_ENVELOPE = re.compile(
+    r"</content>\s*<parameter\s+name=\"[^\"]*\">\s*(?P<json>\{.*\})\s*\Z",
+    re.DOTALL,
+)
+"""The exact end-anchored shape of a swallowed tool call.
+
+Same silhouette as ``scripts/repair_leaked_metadata.py`` repairs, generalized
+to any parameter name. A trailing envelope with a parseable JSON payload is
+the fingerprint of a broken write in every observed case; no legitimate
+content ends this way.
+"""
 
 
 @dataclass(frozen=True)
@@ -440,6 +462,57 @@ def reindex_database(
                 raise MemoryStoreError(
                     f"failed to remove temporary reindex database {temporary}: {exc}"
                 ) from exc
+
+
+def _guard_write_integrity(drawer: Drawer) -> None:
+    """Reject damaged writes before they are stored.
+
+    Two content rules, one per observed damage shape:
+
+    * A trailing tool-call envelope with a parseable JSON payload is a
+      swallowed write in every case ever observed — the real content ends
+      where the envelope begins. Rejected regardless of metadata.
+    * Envelope markers anywhere in the content plus an empty metadata column
+      is exactly the fingerprint ``scripts/check_store_health.py`` rule 3
+      reports as a leaked envelope. A swallowed tool call never carries
+      metadata, because the metadata parameter was the thing that got
+      swallowed; a deliberate quote of the pattern can be written with some
+      metadata attached, which is what tells the two apart.
+
+    The guard refuses; it never rewrites. Repairing rows that predate it is
+    ``scripts/repair_leaked_metadata.py``'s job. Anchors are held to the same
+    shape :func:`~cairntir.memory.anchors.recall_for_change` reads, on every
+    write path, not only the MCP one.
+    """
+    content = drawer.content
+    trailing = _TRAILING_ENVELOPE.search(content)
+    if trailing is not None:
+        try:
+            json.loads(trailing.group("json"))
+        except json.JSONDecodeError:
+            pass  # unparseable tail: left to the marker-and-metadata rule below
+        else:
+            raise ContentIntegrityError(
+                "write rejected: content ends with a serialized tool-call "
+                "envelope (</content> + <parameter ...>). The host swallowed "
+                "the tool call; retry the write with the real content."
+            )
+    if any(marker in content for marker in _ENVELOPE_MARKERS) and not drawer.metadata:
+        raise ContentIntegrityError(
+            "write rejected: content contains tool-call envelope markup and "
+            "the write carries no metadata — the exact fingerprint of a "
+            "swallowed tool call. If the markup is quoted deliberately, "
+            "attach metadata so the store can tell the difference."
+        )
+    # Local import: ``anchors`` type-checks against ``DrawerStore``, so a
+    # module-level import here would close a cycle. ``daemon/capture.py``
+    # breaks the same shape the same way.
+    from cairntir.memory.anchors import parse_anchors
+
+    try:
+        parse_anchors(drawer.metadata)
+    except AnchorError as exc:
+        raise AnchorError(f"write rejected: {exc}") from exc
 
 
 class DrawerStore:
@@ -1033,7 +1106,18 @@ class DrawerStore:
         per-write argument because no host tells the MCP subprocess what it is
         running; the agent doing the writing is the only party that knows.
         Omitting it leaves the receipt's existing value, normally "unknown".
+
+        Raises:
+            ContentIntegrityError: when the content carries the fingerprint
+                of a swallowed tool-call envelope. This is the write-time half
+                of what ``scripts/check_store_health.py`` rule 3 detects after
+                the fact; refusing here is what stops the recurrence instead
+                of repairing it months later.
+            AnchorError: when ``metadata.anchors`` is present but malformed.
+                Every write path is held to the shape ``recall_for_change``
+                reads, not only the MCP one.
         """
+        _guard_write_integrity(drawer)
         status = self._require_embedding_space()
         vector = self._embedder.embed([drawer.content])[0]
         if len(vector) != status.stored_dimension:

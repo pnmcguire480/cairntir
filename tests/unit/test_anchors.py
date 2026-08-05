@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -243,14 +244,14 @@ def test_recall_for_change_reports_only_matching_anchors(store: DrawerStore) -> 
 def test_recall_for_change_surfaces_malformed_rather_than_raising(store: DrawerStore) -> None:
     """One bad anchor must not blind the whole recall — but must stay visible."""
     good = store.add(_anchored("architecture", "good", "src/cairntir/cli.py"))
-    bad = store.add(
-        Drawer(
-            wing="cairntir",
-            room="architecture",
-            content="bad anchor",
-            metadata={"anchors": [{"symbol": "no path here"}]},
-        )
+    # The malformed row cannot be written through add() since the P2 guard;
+    # stage it the way the live store acquired such rows, before the guard.
+    bad = store.add(Drawer(wing="cairntir", room="architecture", content="bad anchor"))
+    store._conn.execute(
+        "UPDATE drawers SET metadata = ? WHERE id = ?",
+        (json.dumps({"anchors": [{"symbol": "no path here"}]}), bad.id),
     )
+    store._conn.commit()
 
     result = recall_for_change(store, ["src/cairntir/cli.py"], wing="cairntir")
 

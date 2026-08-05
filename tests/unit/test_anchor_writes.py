@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -26,6 +27,24 @@ def _drawer(store: DrawerStore, **kwargs: object) -> int:
     )
     assert saved.id is not None
     return saved.id
+
+
+def _legacy_drawer(store: DrawerStore, metadata: dict[str, object]) -> int:
+    """Stage a row the way the live store acquired its legacy damage.
+
+    ``add()`` has refused malformed anchors since the P2 write-time guard,
+    but the corpus it protects still carries rows written before that guard
+    existed. ``repair_anchors`` and the recall-side warnings exist for those
+    rows, so tests must keep reaching them — staged as a clean write whose
+    metadata column is then rewritten behind the guard.
+    """
+    drawer_id = _drawer(store)
+    store._conn.execute(
+        "UPDATE drawers SET metadata = ? WHERE id = ?",
+        (json.dumps(metadata), drawer_id),
+    )
+    store._conn.commit()
+    return drawer_id
 
 
 def test_add_anchors_makes_an_existing_drawer_recallable(store: DrawerStore) -> None:
@@ -173,16 +192,14 @@ def test_add_anchors_cannot_repair_legacy_string_anchors(store: DrawerStore) -> 
     entries and refuses before it can append. The repair tool was blocked by
     exactly the damage it needed to repair.
     """
-    drawer_id = _drawer(store, metadata={"anchors": ["sim-core/src/tech.rs"]})
+    drawer_id = _legacy_drawer(store, {"anchors": ["sim-core/src/tech.rs"]})
 
     with pytest.raises(MemoryStoreError, match="must be objects"):
         store.add_anchors(drawer_id, [{"path": "sim-core/src/tech.rs"}])
 
 
 def test_repair_anchors_coerces_legacy_string_form(store: DrawerStore) -> None:
-    drawer_id = _drawer(
-        store, metadata={"anchors": ["sim-core/src/tech.rs", "data/tech-tree.toml"]}
-    )
+    drawer_id = _legacy_drawer(store, {"anchors": ["sim-core/src/tech.rs", "data/tech-tree.toml"]})
 
     repaired = store.repair_anchors(drawer_id)
 
@@ -194,7 +211,7 @@ def test_repair_anchors_coerces_legacy_string_form(store: DrawerStore) -> None:
 
 def test_repair_anchors_makes_the_drawer_recallable(store: DrawerStore) -> None:
     """The whole point: a drawer dead to structural recall becomes reachable."""
-    drawer_id = _drawer(store, metadata={"anchors": ["sim-core/src/tech.rs"]})
+    drawer_id = _legacy_drawer(store, {"anchors": ["sim-core/src/tech.rs"]})
     before = recall_for_change(store, ["sim-core/src/tech.rs"])
     assert before.matches == ()
     assert before.malformed_drawer_ids == (drawer_id,)
@@ -207,7 +224,7 @@ def test_repair_anchors_makes_the_drawer_recallable(store: DrawerStore) -> None:
 
 
 def test_repair_anchors_is_idempotent(store: DrawerStore) -> None:
-    drawer_id = _drawer(store, metadata={"anchors": ["src/cairntir/cli.py"]})
+    drawer_id = _legacy_drawer(store, {"anchors": ["src/cairntir/cli.py"]})
 
     once = store.repair_anchors(drawer_id)
     twice = store.repair_anchors(drawer_id)
@@ -224,9 +241,9 @@ def test_repair_anchors_leaves_healthy_anchors_untouched(store: DrawerStore) -> 
 
 def test_repair_anchors_handles_a_mixed_list(store: DrawerStore) -> None:
     """Half-repaired drawers are a real state; finish the job rather than refuse."""
-    drawer_id = _drawer(
+    drawer_id = _legacy_drawer(
         store,
-        metadata={"anchors": [{"path": "src/cairntir/cli.py"}, "src/cairntir/config.py"]},
+        {"anchors": [{"path": "src/cairntir/cli.py"}, "src/cairntir/config.py"]},
     )
 
     assert store.repair_anchors(drawer_id) == [
@@ -236,15 +253,15 @@ def test_repair_anchors_handles_a_mixed_list(store: DrawerStore) -> None:
 
 
 def test_repair_anchors_collapses_duplicates_created_by_coercion(store: DrawerStore) -> None:
-    drawer_id = _drawer(
-        store, metadata={"anchors": [{"path": "src/cairntir/cli.py"}, "src/cairntir/cli.py"]}
+    drawer_id = _legacy_drawer(
+        store, {"anchors": [{"path": "src/cairntir/cli.py"}, "src/cairntir/cli.py"]}
     )
 
     assert store.repair_anchors(drawer_id) == [{"path": "src/cairntir/cli.py"}]
 
 
 def test_repair_anchors_preserves_unrelated_metadata(store: DrawerStore) -> None:
-    drawer_id = _drawer(store, metadata={"topic": "release", "anchors": ["src/cairntir/cli.py"]})
+    drawer_id = _legacy_drawer(store, {"topic": "release", "anchors": ["src/cairntir/cli.py"]})
 
     store.repair_anchors(drawer_id)
 
@@ -255,7 +272,7 @@ def test_repair_anchors_preserves_unrelated_metadata(store: DrawerStore) -> None
 
 def test_repair_anchors_never_touches_content(store: DrawerStore) -> None:
     """The verbatim floor does not move. Repair is a metadata operation."""
-    drawer_id = _drawer(store, metadata={"anchors": ["src/cairntir/cli.py"]})
+    drawer_id = _legacy_drawer(store, {"anchors": ["src/cairntir/cli.py"]})
     before = store.get(drawer_id)
     assert before is not None
 
@@ -268,14 +285,14 @@ def test_repair_anchors_never_touches_content(store: DrawerStore) -> None:
 
 def test_repair_anchors_rejects_entries_it_cannot_coerce(store: DrawerStore) -> None:
     """Coercion is only safe for a plain path string. Anything else is a guess."""
-    drawer_id = _drawer(store, metadata={"anchors": [{"symbol": "no path"}]})
+    drawer_id = _legacy_drawer(store, {"anchors": [{"symbol": "no path"}]})
 
     with pytest.raises(MemoryStoreError, match="cannot be repaired"):
         store.repair_anchors(drawer_id)
 
 
 def test_repair_anchors_rejects_a_non_list_anchors_value(store: DrawerStore) -> None:
-    drawer_id = _drawer(store, metadata={"anchors": "src/cairntir/cli.py"})
+    drawer_id = _legacy_drawer(store, {"anchors": "src/cairntir/cli.py"})
 
     with pytest.raises(MemoryStoreError, match="must be a list"):
         store.repair_anchors(drawer_id)
@@ -296,7 +313,7 @@ def test_repair_anchors_rejects_a_missing_drawer(store: DrawerStore) -> None:
 def test_repair_anchors_rejects_without_partial_write(store: DrawerStore) -> None:
     """An uncoercible entry must leave the drawer exactly as it was."""
     original = ["src/cairntir/cli.py", {"symbol": "bad"}]
-    drawer_id = _drawer(store, metadata={"anchors": list(original)})
+    drawer_id = _legacy_drawer(store, {"anchors": list(original)})
 
     with pytest.raises(MemoryStoreError):
         store.repair_anchors(drawer_id)
