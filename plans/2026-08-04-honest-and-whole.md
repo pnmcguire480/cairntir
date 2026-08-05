@@ -92,6 +92,7 @@ The `claim` / `predicted_outcome` / `observed_outcome` / `delta` fields exist on
 
 1. **Make prediction-bound writes reachable.** `cairntir_remember` does not expose `claim`/`predicted_outcome` at all. Nothing can populate them through the MCP surface. Expose them, and document when to use them: any drawer asserting a load-bearing decision should carry a falsifiable prediction.
 2. **Add `cairntir_settle`** — the missing other half. Given a drawer id and an observation, write `observed_outcome` and `delta`. A prediction nobody can settle is not a prediction.
+
 3. **Surface unsettled predictions in `handoff`.** "3 open predictions in this wing" is the honest opening line of a session.
 4. **Retire the `untrusted` migration stamp.** 123 drawers carry it because of the v6 migration on 2026-07-29, not because anything is suspect. Either re-attest them as `legacy_migrated` or document the meaning where a reader will see it. Right now the banner cries wolf on 45% of the bank, which trains every agent to ignore it.
 
@@ -116,14 +117,64 @@ The `claim` / `predicted_outcome` / `observed_outcome` / `delta` fields exist on
    Host attribution was already working and needs nothing: `claude` 87,
    `legacy` 123, `cli` 36, `codex` 15, `unknown` 18, `cursor` 1.
 
-**Done when:** predictions can be written and settled through the MCP surface, and `handoff` shows open ones.
+**Items 1–2 — LANDED 2026-08-04** in `6c3760a`. `cairntir_remember` now takes
+`claim`, `predicted_outcome`, and `anchors` as first-class arguments with the
+contract stated in the tool description, and refuses an empty
+`predicted_outcome` — a prediction must be falsifiable or it is not one.
+`cairntir_settle` closes the other half by **appending**: the original
+prediction is left exactly as written and a new observation drawer supersedes
+it carrying `observed_outcome` and `delta` — the first write path in the
+store's history that can ever populate `delta`. It also carries the
+prediction's anchors onto the observation, so the outcome stays structurally
+recallable from the same diff. Settling a drawer that carries no prediction
+fails loudly rather than inventing one. Covered by `test_settle_writes_delta`
+and the remember-side tests in `tests/integration/test_mcp_backend.py`.
+
+**Done when:** predictions can be written and settled through the MCP surface, and `handoff` shows open ones. **(Met — all five items landed 2026-08-04.)**
 
 ---
 
 ## P2 — Close the two verified regressions
 
 1. **Write-time guard in `DrawerStore.add()`.** Reject content containing tool-call markup; validate `metadata.anchors` via the existing `parse_anchors`. `check_store_health.py` catches this *after* the fact; nothing prevents it. The bug fired 2026-04-26, 2026-05-08, and five times on 2026-08-02.
+
+   **LANDED 2026-08-04.** `add()` is the single insertion chokepoint for every
+   write path — MCP, CLI, daemon capture, vault import, settle, consolidate —
+   so the guard sits there and nowhere else. Two content rules, one per
+   observed damage shape, plus anchor validation:
+
+   - A trailing envelope with a parseable JSON payload (the exact silhouette
+     `repair_leaked_metadata.py` repairs, generalized to any parameter name)
+     is refused regardless of metadata. No legitimate content ends that way.
+   - Envelope markers anywhere in the content plus an empty metadata column —
+     the precise fingerprint `check_store_health.py` rule 3 reports — is
+     refused. This is deliberately **not** a blanket ban on the markers:
+     drawers that document this defect quote them, and a quote written with
+     any metadata attached stays writable. Health check and write guard now
+     enforce the same line.
+   - `metadata.anchors` is validated with the existing `parse_anchors`, so
+     every writer is held to the shape `recall_for_change` reads, not only
+     the MCP one.
+
+   Refusals raise typed exceptions — new `ContentIntegrityError` for content
+   damage, `AnchorError` for anchor shape — and the guard refuses rather than
+   rewrites; repair of pre-guard rows stays the repair scripts' job. The
+   daemon quarantines a refused capture instead of looping. Six new tests in
+   `tests/unit/test_store.py` cover both rules, the false-positive guard, and
+   the anchor shape; the tests that used to *manufacture* legacy damage
+   through `add()` now stage it the only way such rows can still arise —
+   behind the guard, like the rows that predate it. Recurrence of the
+   2026-04/05/08 damage is now structurally impossible through the store API.
+
 2. **`session_start` context budget.** Still absent, still the v1.2 commitment from #212. `handoff` already has `budget_chars`; `session_start` should honour one too, or be documented as deprecated in favour of `handoff`.
+
+   **LANDED 2026-08-04** in `6c3760a` — landed together with P1 items 1–2,
+   which is why it shared that commit. `session_start` now accepts
+   `budget_chars` and caps returned drawer content the same way `handoff`
+   does, closing the v1.2 commitment from #212. Covered by
+   `test_session_start_honours_the_budget`.
+
+**Both items landed — P2 is closed.**
 
 ---
 
@@ -227,6 +278,13 @@ symbol src/cairntir/memory/store.py legacy_migration_drawer_ids
 file   scripts/reattest_legacy_trust.py
 test   tests/unit/test_reattest_trust.py test_reattest_moves_only_legacy_migration_drawers
 test   tests/unit/test_reattest_trust.py test_reattest_keeps_all_three_trust_copies_consistent
+# P2 item 1 — write-time guard in DrawerStore.add() (LANDED 2026-08-04).
+# Supersedes the staging entry that used to sit below this block.
+symbol src/cairntir/errors.py ContentIntegrityError
+test   tests/unit/test_store.py test_add_rejects_tool_call_markup
+test   tests/unit/test_store.py test_add_rejects_trailing_envelope_even_with_metadata
+test   tests/unit/test_store.py test_add_allows_quoted_markup_when_metadata_present
+test   tests/unit/test_store.py test_add_rejects_malformed_anchors
 ```
 
 The block asserts only what has **actually landed**. The first five lines lock in
@@ -234,8 +292,3 @@ the 2026-08-04 repair work; the last five lock in P0 item 1. Add the rest as eac
 piece lands — and if a phase slips, the assertion stays out of the block rather
 than being written optimistically, because a green build must mean the code is
 there, not that someone intended it to be.
-
-```
-# P2 item 1 — write-time guard in add() (NOT LANDED)
-test   tests/unit/test_store.py test_add_rejects_tool_call_markup
-```
