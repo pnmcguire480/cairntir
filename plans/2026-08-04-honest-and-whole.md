@@ -199,6 +199,15 @@ param  src/cairntir/mcp/backend.py session_start:budget_chars
 test   tests/integration/test_mcp_backend.py test_settle_writes_delta
 test   tests/integration/test_mcp_backend.py test_session_start_honours_the_budget
 test   tests/unit/test_readme.py test_tool_surface_version_matches_the_server
+# P0 item 3 — LANDED 2026-08-04. `vault_sync.py` is no longer a loose script:
+# the logic is `cairntir.vault`, the command is `cairntir vault-sync`, and
+# `--check` exits non-zero on drift. Supersedes the staging entry further down.
+symbol src/cairntir/cli.py vault_sync_cmd
+symbol src/cairntir/vault.py plan_sync
+symbol src/cairntir/vault.py apply_sync
+param  src/cairntir/cli.py vault_sync_cmd:check
+test   tests/unit/test_vault_sync.py test_check_exits_nonzero_when_a_walkthrough_has_no_drawer
+test   tests/unit/test_vault_sync.py test_check_writes_nothing_even_when_it_finds_drift
 ```
 
 The block asserts only what has **actually landed**. The first five lines lock in
@@ -208,9 +217,6 @@ than being written optimistically, because a green build must mean the code is
 there, not that someone intended it to be.
 
 ```
-# P0 item 3 — wire vault_sync to the CLI (NOT LANDED)
-symbol src/cairntir/cli.py vault_sync_cmd
-
 # P1 item 3 — handoff surfaces open predictions (NOT LANDED)
 
 # P1 item 4 — retire the untrusted migration stamp (NOT LANDED)
