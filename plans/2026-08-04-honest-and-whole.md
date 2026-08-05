@@ -152,10 +152,15 @@ becoming a fourth. Separation here means a companion that *reads and writes the
 same Cairntir store through the public `Store` protocol* — exactly the seam
 v1.0 exists to provide — not a fork and not a new dependency inside Cairntir.
 
-**Open and deliberately unanswered:** Patrick asked *"how to make it marketable
-as a standalone"* and did not answer it. Do not invent an answer. Also
-unresolved: whether `codeglass-site` and `codeglass-dist` get a shared parent
-directory (drawer #282). Both are decisions for him.
+**Answered 2026-08-05 by Patrick.** To *"how to make it marketable as a
+standalone"*: *"maybe someone just wants codeglass only."* The standalone angle
+is real — CodeGlass as its own thing for people who want walkthroughs +
+emergent-pattern discovery without the Cairntir memory layer. But the priority
+is explicit: *"i want it to be functional with cairntir is the priority."* So
+the build order is **companion-first** (runs alongside Cairntir through the
+public `Store` protocol), **standalone-packaging second**. Still unresolved and
+Patrick's to decide: whether `codeglass-site` and `codeglass-dist` get a shared
+parent directory (drawer #282).
 
 **Done when:** CodeGlass can be run without importing Cairntir's internals, the
 vault link graph produces at least one pattern Cairntir did not already know,
