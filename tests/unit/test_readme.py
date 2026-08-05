@@ -19,9 +19,24 @@ from pathlib import Path
 import pytest
 
 from cairntir.mcp.server import _tool_specs
+from cairntir.provenance import TOOL_SURFACE_VERSION
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 README = REPO_ROOT / "README.md"
+
+
+def test_tool_surface_version_matches_the_server() -> None:
+    """Every write receipt records this number. A stale one misdescribes history.
+
+    ``TOOL_SURFACE_VERSION`` is hand-maintained because deriving it would make
+    ``provenance`` import ``server``, which already imports ``provenance``. That
+    makes it precisely the kind of unchecked constant this repo keeps finding
+    rotted, so it gets a check instead of a convention.
+    """
+    assert str(len(_tool_specs())) == TOOL_SURFACE_VERSION, (
+        f"TOOL_SURFACE_VERSION is {TOOL_SURFACE_VERSION} but the server exposes "
+        f"{len(_tool_specs())} tools; bump it in src/cairntir/provenance.py"
+    )
 
 
 @pytest.fixture(scope="module")

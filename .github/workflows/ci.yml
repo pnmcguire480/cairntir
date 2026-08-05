@@ -41,6 +41,19 @@ jobs:
         run: uv run python scripts/check_landed_commitments.py
       - name: Store integrity check
         run: uv run python scripts/check_store_health.py
+      # Honest about its own reach: a GitHub-hosted runner has no Obsidian vault
+      # and no store, so this step cannot fail here and does not pretend to. It
+      # fires on a self-hosted runner or locally, where CAIRNTIR_VAULT is real.
+      # The gate's *behaviour* — exit 1 when a vault walkthrough has no drawer —
+      # is proven on every CI run by tests/unit/test_vault_sync.py.
+      - name: Vault drift check
+        run: |
+          if [ -n "${CAIRNTIR_VAULT:-}" ]; then
+            uv run cairntir vault-sync --check
+          else
+            echo "SKIP: CAIRNTIR_VAULT is unset; a hosted runner has no vault to compare."
+            echo "Enforcement of this gate on CI is tests/unit/test_vault_sync.py."
+          fi
 
   test:
     name: Test (${{ matrix.os }} / Python ${{ matrix.python }})

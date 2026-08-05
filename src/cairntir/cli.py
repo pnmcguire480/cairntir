@@ -635,6 +635,83 @@ def obsidian_project_cmd(
     typer.echo("SQLite remains authoritative; text outside generated markers was preserved.")
 
 
+@app.command("vault-sync")
+def vault_sync_cmd(
+    vault: Path | None = typer.Option(  # noqa: B008 — Typer declares options at import time
+        None,
+        "--vault",
+        envvar="CAIRNTIR_VAULT",
+        help="Path to the Obsidian vault. Defaults to $CAIRNTIR_VAULT.",
+    ),
+    apply: bool = typer.Option(
+        False,
+        "--apply",
+        help="Write the missing drawers. Without it this is a dry run.",
+    ),
+    check: bool = typer.Option(
+        False,
+        "--check",
+        help="Read-only drift gate: exit 1 if a vault walkthrough has no drawer.",
+    ),
+    model: str | None = typer.Option(
+        None,
+        "--model",
+        help="Which model is running this import, recorded on every write.",
+    ),
+) -> None:
+    """Import Obsidian vault walkthroughs into the store — the other half of the sync.
+
+    `obsidian-project` writes Cairntir OUT to a vault. This reads it back IN.
+    That direction was missing for four months while the export half ran fine,
+    and nothing noticed, so `--check` exists to make the gap fail loudly instead
+    of quietly: it writes nothing and exits 1 when a vault walkthrough has no
+    drawer.
+
+    Idempotent — a wing/room already in the store is skipped. Retroactive —
+    `created_at` comes from the note's own filename date, so the store gains
+    real history rather than a wall of drawers stamped at import time.
+    """
+    from cairntir.vault import VaultSyncError, apply_sync, plan_sync, render_plan, resolve_vault
+
+    if apply and check:
+        typer.echo(
+            "cairntir: --check is read-only and --apply writes. Run them separately.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+    try:
+        resolved = resolve_vault(vault)
+    except VaultSyncError as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=2) from exc
+
+    store = _open_store(capture_path="cli.vault-sync")
+    try:
+        try:
+            plan = plan_sync(store, resolved)
+        except (MemoryStoreError, VaultSyncError) as exc:
+            typer.echo(f"cairntir: {exc}", err=True)
+            raise typer.Exit(code=1) from exc
+        typer.echo(f"store: {db_path()}")
+        typer.echo(render_plan(plan, check=check))
+
+        if check:
+            raise typer.Exit(code=1 if plan.has_drift else 0)
+        if not apply:
+            typer.echo("\n--- DRY RUN, nothing written. Pass --apply to import. ---")
+            return
+        try:
+            written = apply_sync(store, plan, model=model)
+        except (MemoryStoreError, EmbeddingError) as exc:
+            typer.echo(f"cairntir: {exc}", err=True)
+            raise typer.Exit(code=1) from exc
+    finally:
+        store.close()
+    for drawer in written:
+        typer.echo(f"  + #{drawer.id} {drawer.wing}/{drawer.room}")
+    typer.echo(f"\nwrote {len(written)} drawer(s)")
+
+
 _VALID_PROPOSERS = ("manual", "ollama")
 _DEFAULT_OLLAMA_MODEL = "gemma2:2b"
 _DEFAULT_OLLAMA_ENDPOINT = "http://localhost:11434"

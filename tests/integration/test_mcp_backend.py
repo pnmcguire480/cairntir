@@ -441,6 +441,235 @@ def test_two_models_in_one_session_are_recorded_separately(backend: CairntirBack
     assert first.session_id == second.session_id
 
 
+# --- session_start context budget (P2 item 2) -------------------------------
+#
+# The 2026-07-27 audit wrote "restore explicit context budgets in the v1.2 core"
+# into the plan. v1.2 then shipped, was verified across three hosts, released to
+# PyPI and attested WITHOUT it, and nobody noticed for five days (drawer #212).
+
+
+def _fill(backend: CairntirBackend, count: int) -> None:
+    for index in range(count):
+        backend.remember(
+            wing="cairntir",
+            room="journey",
+            content=f"drawer number {index} " + ("padding text " * 40),
+            layer="essential",
+        )
+
+
+def test_session_start_without_a_budget_returns_everything(backend: CairntirBackend) -> None:
+    _fill(backend, 6)
+    out = backend.session_start(wing="cairntir")
+    for index in range(1, 7):
+        assert f"#{index}" in out
+    assert "Omitted for budget" not in out
+
+
+def test_session_start_honours_the_budget(backend: CairntirBackend) -> None:
+    _fill(backend, 6)
+    unbounded = backend.session_start(wing="cairntir")
+    bounded = backend.session_start(wing="cairntir", budget_chars=1200)
+    assert len(bounded) < len(unbounded)
+    assert "Omitted for budget" in bounded
+
+
+def test_session_start_names_what_it_omitted(backend: CairntirBackend) -> None:
+    """Naming the id lets a reader spend one cairntir_get instead of guessing."""
+    _fill(backend, 6)
+    bounded = backend.session_start(wing="cairntir", budget_chars=1200)
+    assert "cairntir_get" in bounded
+    assert "cairntir_handoff" in bounded
+
+
+def test_session_start_rejects_a_nonsense_budget(backend: CairntirBackend) -> None:
+    with pytest.raises(MCPError, match="at least 1"):
+        backend.session_start(wing="cairntir", budget_chars=0)
+
+
+# --- Anchors as a first-class argument (P0 item 2) --------------------------
+#
+# The anchor contract was published and validated months ago and coverage was
+# still 11%, because nothing ever ASKED for anchors -- they were buried inside a
+# free-form metadata blob. A named argument is asked for; a nested key is not.
+
+
+def test_remember_accepts_anchors_as_a_first_class_argument(backend: CairntirBackend) -> None:
+    backend.remember(
+        wing="cairntir",
+        room="architecture",
+        content="the gdext bridge decision",
+        anchors=[{"path": "src/cairntir/cli.py", "symbol": "main"}],
+    )
+    reply = backend.recall_for_change(files=["src/cairntir/cli.py"])
+    assert "1 anchored drawer(s)" in reply
+    assert "WARNING" not in reply
+
+
+def test_remember_rejects_anchors_given_two_ways(backend: CairntirBackend) -> None:
+    """Two spellings of one thing is the drift Cairntir exists to oppose."""
+    with pytest.raises(MCPError, match="not both"):
+        backend.remember(
+            wing="cairntir",
+            room="architecture",
+            content="ambiguous",
+            anchors=[{"path": "src/cairntir/cli.py"}],
+            metadata={"anchors": [{"path": "src/cairntir/handoff.py"}]},
+        )
+
+
+def test_remember_validates_first_class_anchors_too(backend: CairntirBackend) -> None:
+    """The named argument must not be a way around the shape contract."""
+    with pytest.raises(MCPError, match="must be an object"):
+        backend.remember(
+            wing="cairntir",
+            room="architecture",
+            content="wrong shape",
+            anchors=["src/cairntir/cli.py"],  # type: ignore[list-item]
+        )
+
+
+def test_remember_nudges_when_a_drawer_names_files_but_has_no_anchors(
+    backend: CairntirBackend,
+) -> None:
+    """Fire at the moment of omission, naming the paths the drawer just mentioned."""
+    reply = backend.remember(
+        wing="cairntir",
+        room="architecture",
+        content="rewrote src/cairntir/handoff.py to honour the budget",
+    )
+    assert "Stored drawer #1" in reply
+    assert "no anchors" in reply
+    assert "src/cairntir/handoff.py" in reply
+
+
+def test_remember_does_not_nudge_when_anchors_are_present(backend: CairntirBackend) -> None:
+    reply = backend.remember(
+        wing="cairntir",
+        room="architecture",
+        content="rewrote src/cairntir/handoff.py",
+        anchors=[{"path": "src/cairntir/handoff.py"}],
+    )
+    assert "no anchors" not in reply
+
+
+def test_remember_does_not_nudge_a_drawer_about_no_file(backend: CairntirBackend) -> None:
+    """Plenty of drawers are legitimately about nothing on disk. Stay quiet."""
+    reply = backend.remember(
+        wing="cairntir", room="working-preferences", content="Patrick prefers one path, not a menu"
+    )
+    assert "NOTE:" not in reply
+
+
+# --- Predictions: writable, and settleable (P1) ------------------------------
+#
+# claim/predicted_outcome/observed_outcome/delta have existed since v0.2 and
+# were used twice in 278 rows; delta had never been written once. Nothing in the
+# write path asked for a prediction, and nothing could close one.
+
+
+def test_remember_writes_a_falsifiable_prediction(backend: CairntirBackend) -> None:
+    reply = backend.remember(
+        wing="cairntir",
+        room="predictions",
+        content="anchor backfill will raise coverage",
+        claim="verified backfill lifts structural recall above 40%",
+        predicted_outcome="coverage exceeds 40% after the run",
+    )
+    assert "Open prediction" in reply
+    stored = backend._store.get(1)
+    assert stored is not None
+    assert stored.claim == "verified backfill lifts structural recall above 40%"
+    assert stored.predicted_outcome == "coverage exceeds 40% after the run"
+    assert stored.observed_outcome is None
+
+
+def test_remember_rejects_an_empty_prediction(backend: CairntirBackend) -> None:
+    with pytest.raises(MCPError, match="falsifiable"):
+        backend.remember(
+            wing="cairntir", room="predictions", content="hollow", predicted_outcome="   "
+        )
+
+
+def test_settle_appends_and_leaves_the_original_untouched(backend: CairntirBackend) -> None:
+    """A store that rewrites its own predictions cannot check whether it was right."""
+    backend.remember(
+        wing="cairntir",
+        room="predictions",
+        content="the prediction",
+        claim="c",
+        predicted_outcome="coverage exceeds 40%",
+    )
+    before = backend._store.get(1)
+    assert before is not None
+
+    reply = backend.settle(drawer_id=1, observed_outcome="coverage reached 40.6%")
+
+    after = backend._store.get(1)
+    assert after is not None
+    assert after.content == before.content, "the original prediction must not be rewritten"
+    assert after.observed_outcome is None
+
+    observation = backend._store.get(2)
+    assert observation is not None
+    assert observation.supersedes_id == 1
+    assert observation.observed_outcome == "coverage reached 40.6%"
+    assert observation.wing == before.wing and observation.room == before.room
+    assert "held" in reply
+
+
+def test_settle_writes_delta(backend: CairntirBackend) -> None:
+    """The surprise signal. Never written once in the store's entire history."""
+    backend.remember(
+        wing="cairntir",
+        room="predictions",
+        content="the prediction",
+        predicted_outcome="coverage exceeds 60%",
+    )
+    reply = backend.settle(
+        drawer_id=1,
+        observed_outcome="coverage reached 40.6%",
+        delta="overestimated by 20 points; most wings had no repo mapping",
+    )
+    observation = backend._store.get(2)
+    assert observation is not None
+    assert observation.delta == "overestimated by 20 points; most wings had no repo mapping"
+    assert "did NOT hold" in reply
+
+
+def test_settle_carries_the_predictions_anchors_forward(backend: CairntirBackend) -> None:
+    """The outcome must stay reachable from a diff, not go dark when it matters most."""
+    backend.remember(
+        wing="cairntir",
+        room="predictions",
+        content="the prediction",
+        predicted_outcome="the guard rejects tool-call markup",
+        anchors=[{"path": "src/cairntir/memory/store.py", "symbol": "add"}],
+    )
+    backend.settle(drawer_id=1, observed_outcome="it does")
+    reply = backend.recall_for_change(files=["src/cairntir/memory/store.py"])
+    assert "2 anchored drawer(s)" in reply
+
+
+def test_settle_rejects_a_drawer_carrying_no_prediction(backend: CairntirBackend) -> None:
+    backend.remember(wing="cairntir", room="journey", content="just a note")
+    with pytest.raises(MCPError, match="nothing to settle"):
+        backend.settle(drawer_id=1, observed_outcome="whatever")
+
+
+def test_settle_rejects_a_missing_drawer(backend: CairntirBackend) -> None:
+    with pytest.raises(MCPError, match="does not exist"):
+        backend.settle(drawer_id=999, observed_outcome="whatever")
+
+
+def test_settle_rejects_an_empty_observation(backend: CairntirBackend) -> None:
+    backend.remember(
+        wing="cairntir", room="predictions", content="p", predicted_outcome="something"
+    )
+    with pytest.raises(MCPError, match="what actually happened"):
+        backend.settle(drawer_id=1, observed_outcome="  ")
+
+
 def test_blank_model_does_not_overwrite_the_receipt(backend: CairntirBackend) -> None:
     """Whitespace is not a declaration. Fall back rather than store an empty string."""
     backend.remember(wing="cairntir", room="journey", content="blank", model="   ")
