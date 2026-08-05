@@ -24,6 +24,18 @@ class ProvenanceError(MemoryStoreError):
     """Raised when stored write provenance is missing or malformed."""
 
 
+class ContentIntegrityError(MemoryStoreError):
+    """Raised when a write is rejected because its shape is damaged.
+
+    The recurring failure this guards against: a host's tool-call envelope is
+    serialized into ``content`` (the ``</content>`` and ``<parameter
+    name=...>`` markup) while the real metadata never reaches the metadata
+    column. It fired on 2026-04-26, 2026-05-08, and five times on 2026-08-02
+    before a write-time guard existed. Raising at write time is cheaper than
+    repairing the row months later in a different tool, in a different chat.
+    """
+
+
 class WorkflowError(CairntirError):
     """Raised when a durable workflow cannot be prepared or completed."""
 

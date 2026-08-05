@@ -70,15 +70,20 @@ def test_recall_for_change_reports_no_match_without_failing(backend: CairntirBac
 
 
 def _write_legacy_drawer(backend: CairntirBackend, metadata: dict[str, object]) -> None:
-    """Write straight to the store, bypassing ``remember``'s anchor validation.
+    """Simulate a drawer that entered the store before write-time validation.
 
-    Reproduces a drawer that entered the store before write-time validation
-    existed. Those rows are real — #199 and #204-#207 in the live store — so
-    the reader must keep tolerating them after the writer is guarded.
+    Those rows are real — #199 and #204-#207 in the live store — so the
+    reader must keep tolerating them after the writer is guarded. ``add()``
+    now refuses the damaged shape (that is the P2 guard), so a legacy row is
+    staged the only way one can still arise: a clean write, then the metadata
+    column rewritten behind the guard, exactly like the rows that predate it.
     """
-    backend._store.add(
-        Drawer(wing="cairntir", room="architecture", content="bad", metadata=metadata)
+    saved = backend._store.add(Drawer(wing="cairntir", room="architecture", content="bad"))
+    backend._store._conn.execute(
+        "UPDATE drawers SET metadata = ? WHERE id = ?",
+        (json.dumps(metadata), saved.id),
     )
+    backend._store._conn.commit()
 
 
 def test_recall_for_change_warns_about_malformed_anchors(backend: CairntirBackend) -> None:

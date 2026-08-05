@@ -11,7 +11,13 @@ from pathlib import Path
 import pytest
 import sqlite_vec
 
-from cairntir.errors import EmbeddingError, EmbeddingSpaceError, MemoryStoreError
+from cairntir.errors import (
+    AnchorError,
+    ContentIntegrityError,
+    EmbeddingError,
+    EmbeddingSpaceError,
+    MemoryStoreError,
+)
 from cairntir.memory.embeddings import (
     FastEmbedProvider,
     HashEmbeddingProvider,
@@ -50,6 +56,80 @@ def test_add_assigns_id_and_roundtrips(store: DrawerStore) -> None:
 
 def test_get_returns_none_when_missing(store: DrawerStore) -> None:
     assert store.get(9999) is None
+
+
+# The write-time guard (P2 of plans/2026-08-04-honest-and-whole.md). The
+# leaked envelope below is the exact shape repaired by
+# scripts/repair_leaked_metadata.py: real content, then a swallowed tool call.
+_LEAKED_ENVELOPE_CONTENT = (
+    "the real memory ends here.</content>\n"
+    '<parameter name="metadata">{"anchors": [{"path": "src/cairntir/cli.py"}]}'
+)
+
+
+def test_add_rejects_tool_call_markup(store: DrawerStore) -> None:
+    """The recurring 2026-04/05/08 damage shape must be refused at write time."""
+    with pytest.raises(ContentIntegrityError, match="tool-call envelope"):
+        store.add(_drawer(_LEAKED_ENVELOPE_CONTENT))
+    assert store.get(1) is None  # nothing stored, no id consumed silently
+
+
+def test_add_rejects_trailing_envelope_even_with_metadata(store: DrawerStore) -> None:
+    drawer = Drawer(
+        wing="cairntir",
+        room="phase-1",
+        content=_LEAKED_ENVELOPE_CONTENT,
+        metadata={"note": "metadata arrived, but the tail is still a swallowed call"},
+    )
+    with pytest.raises(ContentIntegrityError, match="swallowed"):
+        store.add(drawer)
+
+
+def test_add_rejects_markup_mid_content_with_empty_metadata(store: DrawerStore) -> None:
+    """check_store_health rule 3 parity: markers plus empty metadata is a leak."""
+    marker = "<" + "/content>"
+    with pytest.raises(ContentIntegrityError, match="fingerprint"):
+        store.add(_drawer(f"a broken write left {marker} markup mid-content"))
+
+
+def test_add_allows_quoted_markup_when_metadata_present(store: DrawerStore) -> None:
+    """Documenting the damage pattern must stay writable — the guard's own
+    history drawers quote these markers. Metadata is what tells a quote from
+    a swallowed call."""
+    marker = "<" + "/content>"
+    drawer = Drawer(
+        wing="cairntir",
+        room="phase-1",
+        content=f"the 2026-08-02 leaks serialized the envelope: {marker} markup in content",
+        metadata={"note": "deliberate quote of the leak pattern"},
+    )
+    saved = store.add(drawer)
+    assert saved.id is not None
+
+
+def test_add_rejects_malformed_anchors(store: DrawerStore) -> None:
+    """Legacy string-form anchors are rejected at write, not found at recall."""
+    drawer = Drawer(
+        wing="cairntir",
+        room="phase-1",
+        content="anchors written in the legacy bare-string shape",
+        metadata={"anchors": ["src/cairntir/cli.py"]},
+    )
+    with pytest.raises(AnchorError, match="write rejected"):
+        store.add(drawer)
+
+
+def test_add_stores_well_formed_anchors(store: DrawerStore) -> None:
+    drawer = Drawer(
+        wing="cairntir",
+        room="phase-1",
+        content="anchors in the object shape recall_for_change reads",
+        metadata={"anchors": [{"path": "src/cairntir/cli.py", "symbol": "app"}]},
+    )
+    saved = store.add(drawer)
+    fetched = store.get(saved.id)
+    assert fetched is not None
+    assert fetched.metadata["anchors"] == [{"path": "src/cairntir/cli.py", "symbol": "app"}]
 
 
 def test_list_by_filters_wing_room_layer(store: DrawerStore) -> None:

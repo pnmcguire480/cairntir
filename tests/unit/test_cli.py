@@ -1068,9 +1068,14 @@ def test_anchor_repair_revives_a_legacy_drawer(tmp_path: Path, monkeypatch: obje
             wing="detroit-clone",
             room="phase-0-bites",
             content="B07 IS DONE, the static data crate landed",
-            metadata={"anchors": ["sim-core/src/tech.rs", "data/tech-tree.toml"]},
         )
     )
+    # The legacy string shape cannot be written through add() anymore — the
+    # P2 guard refuses it — so stage it the way the live store acquired it:
+    # the row already existed before the guard did.
+    legacy = json.dumps({"anchors": ["sim-core/src/tech.rs", "data/tech-tree.toml"]})
+    store._conn.execute("UPDATE drawers SET metadata = ? WHERE id = ?", (legacy, saved.id))
+    store._conn.commit()
     store.close()
     assert saved.id is not None
 
