@@ -611,6 +611,43 @@ def test_remember_does_not_nudge_a_drawer_about_no_file(backend: CairntirBackend
     assert "NOTE:" not in reply
 
 
+def test_remember_nudges_when_a_claim_has_no_prediction(backend: CairntirBackend) -> None:
+    """A claim with no prediction can never be settled. Ask, like the anchor fix."""
+    reply = backend.remember(
+        wing="cairntir",
+        room="decisions",
+        content="the gate moves to where the data lives",
+        claim="doctor --gate catches a damaged store before commit",
+    )
+    assert "Stored drawer #1" in reply  # advisory only — the write succeeded
+    assert "predicted_outcome" in reply
+    assert "what would prove it wrong" in reply.lower()
+
+
+def test_remember_does_not_nudge_when_the_prediction_is_present(
+    backend: CairntirBackend,
+) -> None:
+    reply = backend.remember(
+        wing="cairntir",
+        room="decisions",
+        content="the gate moves to where the data lives",
+        claim="doctor --gate catches a damaged store before commit",
+        predicted_outcome="a staged leak fails the pre-commit gate",
+    )
+    assert "Open prediction" in reply
+    assert "nothing can ever settle it" not in reply  # the nudge stayed quiet
+
+
+def test_remember_does_not_nudge_a_claimless_drawer_about_predictions(
+    backend: CairntirBackend,
+) -> None:
+    """No claim means nothing is asserted, so nothing needs a prediction."""
+    reply = backend.remember(
+        wing="cairntir", room="journey", content="session notes from the audit"
+    )
+    assert "predicted_outcome" not in reply
+
+
 # --- Predictions: writable, and settleable (P1) ------------------------------
 #
 # claim/predicted_outcome/observed_outcome/delta have existed since v0.2 and

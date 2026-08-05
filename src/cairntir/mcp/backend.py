@@ -96,6 +96,26 @@ def _anchor_nudge(content: str, metadata: dict[str, Any]) -> str:
     )
 
 
+def _prediction_nudge(claim: str | None, predicted_outcome: str | None) -> str:
+    """Return a reminder when a drawer asserts a claim but carries no prediction.
+
+    The claim says what the drawer asserts; ``predicted_outcome`` says what
+    would prove it wrong. The second is what lets ``cairntir_settle`` ever
+    measure the first — and deltas were still 0/292 eight days after settle
+    landed, for the exact reason anchors were at 11%: **nothing ever asked**.
+    Same fix shape as :func:`_anchor_nudge`: fire at the moment of the
+    omission, advisory only, never fatal.
+    """
+    if predicted_outcome or not (claim and claim.strip()):
+        return ""
+    return (
+        "\nNOTE: this drawer asserts a claim without a predicted_outcome, so "
+        "nothing can ever settle it or write a delta for it. When the claim "
+        "is load-bearing, pass predicted_outcome too: what would prove it "
+        "wrong?"
+    )
+
+
 class CairntirBackend:
     """Transport-free implementation of Cairntir's MCP tools."""
 
@@ -166,7 +186,7 @@ class CairntirBackend:
         )
         if predicted_outcome:
             reply += f" Open prediction — settle it with cairntir_settle({saved.id}, ...)."
-        return reply + _anchor_nudge(content, merged)
+        return reply + _anchor_nudge(content, merged) + _prediction_nudge(claim, predicted_outcome)
 
     def settle(
         self,

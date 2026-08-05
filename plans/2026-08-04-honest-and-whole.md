@@ -352,6 +352,13 @@ test   tests/unit/test_doctor.py test_gate_skips_loudly_when_there_is_no_store
 param  src/cairntir/mcp/backend.py recall:full_content
 test   tests/integration/test_mcp_backend.py test_recall_full_content_returns_whole_drawers
 test   tests/integration/test_mcp_backend.py test_recall_full_content_names_oversize_hits
+# W5 of plans/2026-08-04-ultimate-improvement-plan.md — make the write path ask
+# (LANDED 2026-08-05): a claim stored without a predicted_outcome can never be
+# settled, and delta was still 0/292 eight days after settle landed because
+# nothing ever asked. The anchor lesson, applied to predictions.
+symbol src/cairntir/mcp/backend.py _prediction_nudge
+test   tests/integration/test_mcp_backend.py test_remember_nudges_when_a_claim_has_no_prediction
+test   tests/integration/test_mcp_backend.py test_remember_does_not_nudge_a_claimless_drawer_about_predictions
 ```
 
 The block asserts only what has **actually landed**. The first five lines lock in

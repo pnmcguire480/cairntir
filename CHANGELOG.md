@@ -31,6 +31,12 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   question without a `cairntir_get` round trip. Hits too large for whole
   delivery are named, never truncated. Default 0 keeps the old stub-only
   output byte-identical.
+- `cairntir_remember` now nudges when a drawer carries a `claim` but no
+  `predicted_outcome`. A claim nothing can prove wrong is not a prediction,
+  and `delta` was still 0/292 eight days after `cairntir_settle` landed
+  because nothing ever asked. Advisory only — the write succeeds either way.
+  This is the anchor lesson applied to the epistemic core: publish a contract
+  is not the same as asking for compliance.
 
 ### Fixed
 
