@@ -39,6 +39,8 @@ jobs:
         run: uv run python scripts/check_release_tags.py
       - name: Landed commitment check
         run: uv run python scripts/check_landed_commitments.py
+      - name: Seam check
+        run: uv run python scripts/check_seams.py
       - name: Store integrity check
         run: uv run python scripts/check_store_health.py
       # Honest about its own reach: a GitHub-hosted runner has no Obsidian vault

@@ -329,6 +329,14 @@ test   tests/unit/test_store.py test_add_rejects_tool_call_markup
 test   tests/unit/test_store.py test_add_rejects_trailing_envelope_even_with_metadata
 test   tests/unit/test_store.py test_add_allows_quoted_markup_when_metadata_present
 test   tests/unit/test_store.py test_add_rejects_malformed_anchors
+# W1 of plans/2026-08-04-ultimate-improvement-plan.md — the settlement seam
+# (LANDED 2026-08-05): settled predictions close in handoff, calibration sees
+# MCP settlements, and every declared seam keeps a paired test via
+# scripts/check_seams.py. Promoted from the seams plan's staged block.
+symbol src/cairntir/handoff.py settled_prediction_ids
+test   tests/integration/test_seams.py test_settling_a_prediction_closes_it_in_handoff
+file   scripts/check_seams.py
+test   tests/integration/test_seams.py test_settle_writes_a_delta_a_later_session_can_read
 ```
 
 The block asserts only what has **actually landed**. The first five lines lock in

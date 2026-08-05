@@ -402,35 +402,77 @@ def is_open_prediction(drawer: Drawer) -> bool:
     ``predicted_outcome`` and no ``observed_outcome``, both read off
     *this drawer*. Nothing else counts, and nothing is inferred.
 
-    The ambiguous case, and the choice made
-    ---------------------------------------
+    Scope of the predicate, and where the rest lives
+    ------------------------------------------------
 
     A prediction can also be settled by a *second* drawer that supersedes
-    it — that is what :meth:`cairntir.reason.ReasonLoop.step` writes: a
-    prediction drawer, then an observation drawer carrying
-    ``supersedes_id`` and the ``observed_outcome``. Under the rule above
-    the original still reads as open, because the original is unchanged.
+    it — the shape :meth:`cairntir.mcp.backend.CairntirBackend.settle` and
+    :meth:`cairntir.reason.ReasonLoop.step` both write: a prediction
+    drawer, then an observation drawer carrying ``supersedes_id`` and the
+    ``observed_outcome``, with the original left untouched. Under the rule
+    above the original still reads as open, and that is deliberate **at
+    this level**: the predicate stays per-drawer so every drawer it names
+    can be audited with one ``cairntir_get``.
 
-    That is deliberate. Walking the supersedes chain to decide would make
-    "open" depend on a graph traversal the caller cannot see, and would
-    make the count disagree with the ids printed beside it. The simple
-    reading is auditable: every drawer named here can be checked with one
-    ``cairntir_get``, and settling it in place clears it.
-
-    The consequence is worth stating plainly rather than discovering
-    later: predictions settled by superseding observation drawers stay
-    listed until the original is settled too. Revisit this if the
-    reason-loop shape ever becomes the common way predictions are
-    written; today it is not.
+    Settlement by supersession is accounted for one level up:
+    :func:`compose` subtracts :func:`settled_prediction_ids` over the same
+    single wing scan, so predictions settled that way drop out of the open
+    count without a graph traversal, and the count still agrees with the
+    ids printed beside it. The original drawer never changes — a store
+    that rewrote its own predictions could not be used to check whether it
+    had ever been right; see ``settle``. Only the reading of it moves.
     """
     predicted = (drawer.predicted_outcome or "").strip()
     observed = (drawer.observed_outcome or "").strip()
     return bool(predicted) and not observed
 
 
+def settled_prediction_ids(scanned: Sequence[Drawer]) -> set[int]:
+    """Prediction ids settled by exactly one observation within ``scanned``.
+
+    A prediction counts as settled here when one — and only one — drawer in
+    the scanned set supersedes it carrying a non-empty
+    ``observed_outcome``. That is the shape
+    :meth:`cairntir.mcp.backend.CairntirBackend.settle` writes and the
+    shape :meth:`cairntir.reason.ReasonLoop.step` has written since v0.6,
+    detected in one pass over drawers already in hand: no per-drawer graph
+    traversal, no second query, nothing for determinism to hide in.
+
+    Two limits, stated here so they are discovered in the docstring and not
+    in a bug report:
+
+    * **Contested settlements stay open.** When two or more observations
+      supersede the same prediction they contradict each other, and this
+      seam refuses to pick a winner — silently taking the lowest id is
+      exactly the lineage defect the temporal walk has, and it hides a
+      branch. Counting a contested prediction as open is the honest read
+      until an adjudication exists.
+    * **An observation drawer outside the scanned set will not clear its
+      prediction** — one stored in another wing, beyond the scan limit, or
+      back-dated behind the scan window. Sometimes stale beats never
+      clears; the alternative is an unbounded walk, and the count would
+      stop agreeing with the ids printed beside it.
+    """
+    observations: dict[int, int] = {}
+    for drawer in scanned:
+        target = drawer.supersedes_id
+        if target is None or not (drawer.observed_outcome or "").strip():
+            continue
+        observations[target] = observations.get(target, 0) + 1
+    return {prediction_id for prediction_id, count in observations.items() if count == 1}
+
+
 def _open_predictions(wing_drawers: list[Drawer]) -> list[Drawer]:
-    """The unsettled predictions in a wing, in store order."""
-    return [d for d in wing_drawers if is_open_prediction(d)]
+    """The unsettled predictions in a wing, in store order.
+
+    Open means :func:`is_open_prediction` **and** not settled by a
+    superseding observation in the same scan — see
+    :func:`settled_prediction_ids`. The two halves are computed together
+    here because testing them separately is exactly how the seam between
+    them shipped green on both sides while disagreeing in the middle.
+    """
+    settled = settled_prediction_ids(wing_drawers)
+    return [d for d in wing_drawers if is_open_prediction(d) and d.id not in settled]
 
 
 def _open_questions(wing_drawers: list[Drawer]) -> list[Drawer]:
