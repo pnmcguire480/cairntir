@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import Final
 
@@ -46,6 +47,28 @@ def _is_disabled() -> bool:
 
 def _checkpoint_path() -> Path:
     return cairntir_home() / _CHECKPOINT_FILENAME
+
+
+def _write_checkpoint(path: Path) -> bool:
+    """Record that registration is done. Return whether the write landed.
+
+    Best-effort by design — a failure here costs a ``claude mcp list``
+    subprocess on the next invocation, not correctness — but it is *said*
+    rather than swallowed. A silently unwritable checkpoint turns the fast
+    path off forever and looks like nothing at all from the outside.
+    """
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("ok\n", encoding="utf-8")
+    except OSError as exc:
+        print(
+            f"cairntir: could not write the registration checkpoint {path}: {exc}. "
+            "Registration itself is fine; every command will re-check until "
+            "this path is writable.",
+            file=sys.stderr,
+        )
+        return False
+    return True
 
 
 def _claude_path() -> str | None:
@@ -152,19 +175,11 @@ def ensure_registered(*, force: bool = False) -> str:
     listing = _list_user_mcps(claude)
     if listing is not None and _listing_contains_cairntir(listing):
         # Already registered — record the fact for the next invocation.
-        try:
-            checkpoint.parent.mkdir(parents=True, exist_ok=True)
-            checkpoint.write_text("ok\n", encoding="utf-8")
-        except OSError:
-            pass
+        _write_checkpoint(checkpoint)
         return "present"
 
     if _add_user_mcp(claude):
-        try:
-            checkpoint.parent.mkdir(parents=True, exist_ok=True)
-            checkpoint.write_text("ok\n", encoding="utf-8")
-        except OSError:
-            pass
+        _write_checkpoint(checkpoint)
         return "registered"
 
     return "failed"
@@ -176,9 +191,19 @@ def clear_checkpoint() -> None:
     Useful after an uninstall, after a manual ``claude mcp remove``,
     or before a forced re-registration. Best-effort; missing file is
     not an error.
+
+    A failed *unlink* is not silent, though. The checkpoint surviving means
+    the next invocation takes the fast path and skips the re-registration
+    the caller just asked for — the opposite of what was requested, and
+    invisible unless it is said out loud.
     """
     path = _checkpoint_path()
     try:
         path.unlink(missing_ok=True)
-    except OSError:
-        return
+    except OSError as exc:
+        print(
+            f"cairntir: could not clear the registration checkpoint {path}: {exc}. "
+            "The next invocation will still take the fast path; remove the file "
+            "by hand to force a re-check.",
+            file=sys.stderr,
+        )

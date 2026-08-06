@@ -311,6 +311,7 @@ class CairntirBackend:
         room: str | None = None,
         limit: int = 10,
         full_content: int = 0,
+        budget_chars: int = DEFAULT_BUDGET_CHARS,
     ) -> str:
         """Semantic search. Returns a formatted list of hits.
 
@@ -320,26 +321,52 @@ class CairntirBackend:
         hits that actually answer the question. Whole drawers or none: a hit
         too large to deliver whole is named, never truncated. The default of
         0 keeps today's stub-only output byte-identical.
+
+        ``budget_chars`` is a **cumulative** ceiling across everything
+        delivered whole, the same contract
+        :func:`cairntir.handoff.compose` has always kept. It is the whole
+        point of the v1.3 context-budget release, and full content shipped
+        without it: the size test used to be per drawer against the same
+        constant, so ``full_content=10`` over ten 11,900-character drawers
+        delivered ~119,000 characters while every drawer individually
+        "fit". Once the budget is spent the remaining hits fall back to
+        snippets and are named with their ids, exactly as an oversize hit is.
+
+        The parameter is deliberately **not** published in the
+        ``cairntir_recall`` tool schema yet. The ceiling is what fixes the
+        defect; the tunable is new surface, and new surface makes a MINOR
+        under ``docs/release-cadence.md``. It exists here so the bound is
+        testable at small sizes, and so the next MINOR can expose it by
+        adding the property and nothing else.
         """
         if not query.strip():
             raise MCPError("recall requires a non-empty query")
         if full_content < 0:
             raise MCPError("full_content must be zero or positive")
+        if budget_chars < 1:
+            raise MCPError("budget_chars must be positive")
         hits = self._store.search(query, wing=wing, room=room, limit=limit)
         if not hits:
             return f"No drawers matched {query!r}."
         lines = [f"{len(hits)} hit(s) for {query!r}:"]
         evidence: list[str] = []
+        spent = 0
         for index, (drawer, distance) in enumerate(hits):
             wants_full = index < full_content
-            fits = len(drawer.content) <= DEFAULT_BUDGET_CHARS
+            size = len(drawer.content)
+            remaining = budget_chars - spent
+            fits = size <= remaining
             served_full = wants_full and fits
+            if served_full:
+                spent += size
             note = ""
             if wants_full and not fits:
-                note = (
-                    f"  (too large for full delivery: {len(drawer.content)} "
-                    f"chars — {_drawer_ref(drawer)} via cairntir_get)"
+                reason = (
+                    f"too large for full delivery: {size} chars"
+                    if size > budget_chars
+                    else f"budget spent: needs {size} chars, {remaining} left"
                 )
+                note = f"  ({reason} — {_drawer_ref(drawer)} via cairntir_get)"
             lines.append(
                 f"  #{drawer.id}  {drawer.wing}/{drawer.room}  "
                 f"[{drawer.layer.value}]  d={distance:.4f}  "
@@ -352,6 +379,8 @@ class CairntirBackend:
                     content=drawer.content if served_full else _snippet(drawer.content),
                 )
             )
+        if full_content:
+            lines.insert(1, f"  full content: {spent:,}/{budget_chars:,} chars used.")
         return "\n".join(lines) + "\n\n" + render_evidence_block(evidence)
 
     def cross_recall(self, *, query: str, limit: int = 10) -> str:

@@ -227,8 +227,9 @@ def _tool_specs() -> list[types.Tool]:
                 "as snippets — enough to route, not enough to answer. Pass "
                 "full_content=N to get the top N hits with COMPLETE content, and "
                 "skip the cairntir_get round trip for the drawer that actually "
-                "answers. Hits too large for whole delivery are named, never "
-                "truncated. One good drawer beats ten headlines."
+                "answers. Full content is served under a cumulative budget_chars "
+                "ceiling; hits that do not fit are named, never truncated. One "
+                "good drawer beats ten headlines."
             ),
             inputSchema={
                 "type": "object",
@@ -244,9 +245,18 @@ def _tool_specs() -> list[types.Tool]:
                         "minimum": 0,
                         "description": (
                             "Deliver the top N hits with complete content instead "
-                            "of snippets. 0 (default) keeps snippet-only output."
+                            "of snippets. 0 (default) keeps snippet-only output. "
+                            "A large N cannot flood the context — delivery stops "
+                            "when the budget is spent and the rest come back as "
+                            "named snippets."
                         ),
                     },
+                    # No `budget_chars` property here on purpose. The ceiling is
+                    # enforced (see CairntirBackend.recall), but exposing a new
+                    # tunable would make this a MINOR under
+                    # docs/release-cadence.md's tiebreak, and 1.4.1 is a
+                    # fixes-only patch. The knob rides the next MINOR, alongside
+                    # the matching parameters handoff and session_start expose.
                 },
             },
         ),

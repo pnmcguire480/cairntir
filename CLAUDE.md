@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.3.0 published** 2026-08-02 (PyPI + GitHub release, both artifacts attested). Latest on PyPI is `1.3.0`; the five live releases are 1.0.0, 1.1.0, 1.1.2, 1.2.0, 1.3.0. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`, which now fails the build if that happens again. (Note: `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.)
+- **Stage:** **v1.4.0 published** 2026-08-05 (PyPI + GitHub release, both artifacts attested). Latest on PyPI is `1.4.0`; the six live releases are 1.0.0, 1.1.0, 1.1.2, 1.2.0, 1.3.0, 1.4.0. **`1.4.1` is prepared and merged but not yet tagged** — the tag is the human gate, see `docs/publish-checklist.md`. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`, which now fails the build if that happens again. (Note: `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.)
 
 ---
 
@@ -118,6 +118,58 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-08-06 (**post-1.4.0 hardening sweep — the silent-except gate was a no-op**)
+- **What was accomplished:** Patrick asked for a check of hot fixes, bugs and
+  recent work, a hardening sweep, and a 1.4.1 release. **Nothing was broken** —
+  the baseline was green across ruff, `ruff format`, `mypy --strict` (51 files),
+  all six gate scripts, `cairntir doctor --gate` against the live 337-drawer
+  store, and 637 tests at 82.26% coverage, with `1.4.0` confirmed present on
+  PyPI. The sweep found two real defects anyway, and they are **the same defect
+  in different clothes: a guard that reports success without doing its job.**
+  Full write-up in `plans/2026-08-06-hardening-sweep.md`.
+  - **The silent-exception gate was close to a no-op.** Three of
+    `check_no_silent_except.py`'s four regexes required `pass` on the *same
+    line* as `except` — a one-liner `ruff format` never emits — so they could
+    not fire on this repository's own formatted source, and the fourth only
+    caught bare `except:`, which ruff's E722 already rejects. It was blind to
+    the form the pattern actually takes: a **typed** handler swallowing on the
+    next line. **Three live violations sat in `src/` while it exited 0** — two
+    in `register.py`, and one in `memory/store.py` that the AST rewrite found
+    and no hand review had. Root cause: it was **the only gate script in the
+    repository with no test**, so nothing noticed when formatting made it
+    unreachable. Now AST-based, with `tests/unit/test_silent_except.py`.
+  - **`cairntir_recall(full_content=N)` had no cumulative budget.** The size
+    test ran per drawer against a shared 12,000-char constant with no
+    accumulator, so ten 11,900-char drawers each "fit" and `full_content=10`
+    delivered ~119,000 chars — about 30,000 tokens. A regression against the
+    point of 1.3.0, and the **fourth** time the controlled-context invariant has
+    had to be re-landed. The budget now accumulates, same contract `handoff`
+    keeps. Tool schema unchanged on purpose: the ceiling is the fix, the
+    tunable is new surface and would make it a MINOR.
+  - **The three swallows were fixed by surfacing, not suppressing.**
+    `register.py` now reports failed checkpoint writes and a failed unlink;
+    `store.py` gained `_parses_as_json`, turning the exception into the value it
+    always meant.
+  - **Status:** 664 tests (+27) at 83.02% coverage, every gate green,
+    `mkdocs --strict` clean, `uv build` clean, 84 commitments across 4 documents
+    all landed, LongMemEval R@5 gate passing.
+- **Next session:**
+  1. **The tag is the only thing left for 1.4.1.** Everything else is merged and
+     green. `docs/publish-checklist.md` makes the tag an explicit human gate.
+  2. **The repo does not dogfood its own fourth host.** `cairntir doctor` reports
+     `project qwen MCP=missing policy=missing` — 1.4.0 added Qwen Code but this
+     repo has no `.qwen/settings.json` and no `QWEN.md`, while claude, codex and
+     cursor are all wired at project scope. A Qwen agent opening this repo gets
+     no policy.
+  3. **Two commits reached `main` without a pull request** (`2829ef3`,
+     `77ee341`) — the admin bypass `docs/release-cadence.md` warns against. Not
+     retroactively fixable; watch for the pattern.
+  4. **The embedder bake-off** is still the highest-value open item and still
+     needs Patrick awake for the live reindex.
+  5. **`budget_chars` on `cairntir_recall`** is built and tested but unpublished;
+     exposing it in the next MINOR is adding one schema property.
+
+- **Prior session — 2026-08-05 (full audit + the stacked work finally merged):**
 - **Date:** 2026-08-05 (**full audit + the stacked work finally merged — #36 and #37 landed**)
 - **What was accomplished:** Patrick commissioned a fresh-eyes full audit. The
   headline finding: **the build on `main` is fully green** — ruff, `ruff
