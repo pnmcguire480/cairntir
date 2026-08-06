@@ -13,6 +13,45 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.4.1] — 2026-08-06
+
+A hardening patch. Both fixes are the same defect in different clothes: a guard
+that reports success without doing its job. One of them was guarding the oldest
+governance principle in the project, and had been unreachable for four minor
+releases.
+
+### Fixed
+
+- **The silent-exception gate was close to a no-op.**
+  `scripts/check_no_silent_except.py` is the check written against
+  BrainStormer's 224 `except: pass` blocks. Three of its four regexes required
+  `pass` on the *same line* as `except` — a one-liner `ruff format` never emits
+  — so they could not fire on this repository's own formatted source, and the
+  fourth only caught a bare `except:`, which ruff's E722 already rejects. The
+  gate was blind to the form the pattern actually takes: a **typed** handler
+  swallowing on the next line. Three live violations sat in `src/` while it
+  exited 0. It is now an AST check with no type list to maintain — a handler is
+  silent when its body does nothing at all, whatever it catches — and a file it
+  cannot read or parse is a violation rather than a skip. It was the only gate
+  script in the repository with no test, which is precisely why nothing noticed;
+  `tests/unit/test_silent_except.py` closes that.
+- **Three swallowed exceptions, now surfaced.** Two failed-checkpoint writes and
+  a failed unlink in `cairntir/register.py` reported nothing at all; an
+  unwritable checkpoint silently disables the registration fast path forever,
+  and a failed unlink silently skips the re-registration the caller just asked
+  for. Both now say so on stderr. In `cairntir/memory/store.py` the write
+  guard's JSON probe became `_parses_as_json`, turning the exception into the
+  value it always meant.
+- **`cairntir_recall(full_content=N)` could blow the context budget it claimed
+  to respect.** The size test ran per drawer against a shared 12,000-character
+  constant with no accumulator, so ten 11,900-character drawers each "fit" and
+  `full_content=10` delivered roughly 119,000 characters — about 30,000 tokens.
+  The budget is now cumulative across everything delivered whole, the same
+  contract `cairntir_handoff` has kept since 1.3.0: once it is spent the
+  remaining hits fall back to named snippets, whole drawers or none. Budget
+  exhaustion is reported distinctly from a genuinely oversize drawer, and the
+  call states what it spent. The tool schema is unchanged.
+
 ## [1.4.0] — 2026-08-05
 
 The honesty release. Cairntir's oldest defect is infrastructure built correctly
