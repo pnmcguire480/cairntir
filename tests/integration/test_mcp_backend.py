@@ -277,6 +277,68 @@ def test_recall_rejects_negative_full_content(backend: CairntirBackend) -> None:
         backend.recall(query="anything", full_content=-1)
 
 
+def test_recall_full_content_budget_is_cumulative(backend: CairntirBackend) -> None:
+    """THE REGRESSION: the size test used to run per drawer, not per call.
+
+    Three drawers of 5,000 characters each individually "fit" a 12,000
+    ceiling, so ``full_content=3`` shipped 15,000 characters whole while
+    claiming to respect a 12,000-character budget. Two fit; the third must
+    fall back to a snippet and be named.
+    """
+    for index in range(3):
+        backend.remember(
+            wing="cairntir",
+            room="deep",
+            content=f"budgeted drawer {index} " + ("filler " * 700),
+        )
+
+    reply = backend.recall(
+        query="budgeted drawer filler", limit=3, full_content=3, budget_chars=12_000
+    )
+
+    assert reply.count("full=true") == 2
+    assert "budget spent" in reply
+    assert "via cairntir_get" in reply
+
+
+def test_recall_full_content_reports_what_it_spent(backend: CairntirBackend) -> None:
+    backend.remember(wing="cairntir", room="journey", content="a modest drawer about budgets")
+
+    reply = backend.recall(query="modest drawer about budgets", full_content=1, budget_chars=9_000)
+
+    assert "/9,000 chars used." in reply
+
+
+def test_recall_budget_exhaustion_is_not_reported_as_oversize(backend: CairntirBackend) -> None:
+    """A drawer that would fit an empty budget is not 'too large' — say why."""
+    for index in range(2):
+        backend.remember(
+            wing="cairntir",
+            room="deep",
+            content=f"distinguishable reason drawer {index} " + ("filler " * 200),
+        )
+
+    reply = backend.recall(
+        query="distinguishable reason drawer filler", limit=2, full_content=2, budget_chars=1_500
+    )
+
+    assert "budget spent" in reply
+    assert "too large for full delivery" not in reply
+
+
+def test_recall_rejects_non_positive_budget(backend: CairntirBackend) -> None:
+    with pytest.raises(MCPError, match="budget_chars must be positive"):
+        backend.recall(query="anything", full_content=1, budget_chars=0)
+
+
+def test_recall_budget_is_inert_without_full_content(backend: CairntirBackend) -> None:
+    """full_content=0 is the untouched path — the budget must not show up."""
+    backend.remember(wing="cairntir", room="journey", content="snippets only, please")
+    assert backend.recall(query="snippets only") == backend.recall(
+        query="snippets only", budget_chars=50
+    )
+
+
 def test_remember_rejects_bad_layer(backend: CairntirBackend) -> None:
     with pytest.raises(MCPError):
         backend.remember(wing="cairntir", room="x", content="y", layer="nope")

@@ -464,6 +464,21 @@ def reindex_database(
                 ) from exc
 
 
+def _parses_as_json(text: str) -> bool:
+    """True when ``text`` is valid JSON.
+
+    The failure is the answer here, not an error: an unparseable tail simply
+    is not the swallowed-tool-call shape, and falls through to the
+    marker-and-metadata rule. Converting the exception into a value keeps
+    that intent on the page instead of hiding it in a bare handler.
+    """
+    try:
+        json.loads(text)
+    except json.JSONDecodeError:
+        return False
+    return True
+
+
 def _guard_write_integrity(drawer: Drawer) -> None:
     """Reject damaged writes before they are stored.
 
@@ -486,17 +501,12 @@ def _guard_write_integrity(drawer: Drawer) -> None:
     """
     content = drawer.content
     trailing = _TRAILING_ENVELOPE.search(content)
-    if trailing is not None:
-        try:
-            json.loads(trailing.group("json"))
-        except json.JSONDecodeError:
-            pass  # unparseable tail: left to the marker-and-metadata rule below
-        else:
-            raise ContentIntegrityError(
-                "write rejected: content ends with a serialized tool-call "
-                "envelope (</content> + <parameter ...>). The host swallowed "
-                "the tool call; retry the write with the real content."
-            )
+    if trailing is not None and _parses_as_json(trailing.group("json")):
+        raise ContentIntegrityError(
+            "write rejected: content ends with a serialized tool-call "
+            "envelope (</content> + <parameter ...>). The host swallowed "
+            "the tool call; retry the write with the real content."
+        )
     if any(marker in content for marker in _ENVELOPE_MARKERS) and not drawer.metadata:
         raise ContentIntegrityError(
             "write rejected: content contains tool-call envelope markup and "
