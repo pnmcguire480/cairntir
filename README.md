@@ -402,6 +402,117 @@ Either way, we build.
 
 ---
 
+## Addendum — where the stack stands (2026-08-05)
+
+_Added at Patrick's request immediately after v1.4.0 shipped. The body above
+says what Cairntir is; this section records where it currently stands — recent
+releases, how the pieces fit end to end, what it concretely helps with, and
+what just changed and why._
+
+### Recent releases, briefly
+
+| Release | Date | Theme |
+|---|---|---|
+| **1.4.0** | 2026-08-05 | The honesty release — wiring the enforcement layer |
+| **1.3.0** | 2026-08-02 | Context budget + structural recall |
+| **1.2.0** | 2026-07-28 | Foundation hardening + multi-host continuity |
+
+- **1.4.0** — Settled predictions now actually close in the handoff and count
+  in calibration. `cairntir doctor --gate` runs the store-integrity check
+  pre-commit, beside the bank, instead of on a CI runner that has no store.
+  The release gate verifies PyPI presence, not just the tag.
+  `cairntir_remember` nudges when a claim carries no prediction. And Qwen Code
+  joins Claude Code, Codex, and Cursor as the fourth supported host.
+- **1.3.0** — `cairntir_handoff`: one composed brief under a hard budget,
+  whole drawers or nothing, replacing hand-maintained HANDOFF.md files.
+  `cairntir cost`: the read path measuring its own overhead. And structural
+  recall — `cairntir_recall_for_change(files)` surfaces the drawers anchored
+  to the files a change touches, with append-only retroactive anchoring.
+- **1.2.0** — Embedding-space identity with fail-closed reads, `doctor` and
+  backup-first `reindex`, exact `get`, host adapters
+  (`cairntir init --host <host|all>`), the Discovery Ledger, immutable write
+  provenance, and prompt-safe evidence rendering.
+
+The full notes live in [CHANGELOG.md](CHANGELOG.md) — each entry is written as
+a claim with its evidence, in the same spirit as the store itself.
+
+### How it works, end to end
+
+Four verbs: **write, store, read, close.**
+
+1. **Write.** `cairntir_remember` stores a *drawer*: verbatim content, a
+   retrieval layer, immutable provenance (host, model, session, trust),
+   optionally structural anchors to code locations, optionally a bound claim
+   with a predicted outcome. No summarization at write time — verbatim is the
+   floor, not the ceiling.
+2. **Store.** One SQLite + sqlite-vec database per machine. Wings per project,
+   rooms per topic, four retrieval layers (identity / essential / on-demand /
+   deep). Forward-only migrations, backup-first, embedding identity stamped
+   and checked. The bank is auditable: `cairntir status`, `cairntir doctor`,
+   `cairntir export`.
+3. **Read.** Start with `cairntir_handoff(wing)`: the operating protocol, the
+   most recent session deltas in full text, open questions, and the memory
+   anchored to the files in play — all under a character budget, deterministic
+   and prompt-cache friendly. Have a question? `cairntir_recall` answers it
+   semantically, with top hits optionally delivered whole. Have a diff instead
+   of a question? `cairntir_recall_for_change(files)` needs no question at
+   all. Nothing is ever truncated: a drawer comes back complete or is named so
+   you can fetch it deliberately.
+4. **Close.** Predictions are settled by appending an observation
+   (`cairntir_settle`) — the original is never rewritten, because a store that
+   edits its own predictions cannot be used to check whether it was right.
+   `cairntir_calibration` reports how often the store's claims actually held.
+   The Discovery Ledger records emergent patterns with an explicit lifecycle.
+   Memory you cannot check is just confidence.
+
+### What it helps with, concretely
+
+- **Reopening a project three weeks later** and walking into a lit room — the
+  decisions, the reasons behind them, and what was left blocked, each with a
+  drawer id you can cite.
+- **Moving work between hosts and agents.** Claude Code, Codex, Cursor, and
+  Qwen Code read and write one store with per-write provenance; the handoff is
+  the re-brief, so work moves without re-explaining.
+- **Budget-constrained continuity.** The handoff and the cost command exist so
+  a $20/month model can carry real context — never return a token the model
+  cannot use.
+- **A decision journal that scores itself.** Claim → predicted → observed →
+  delta. Not just what you decided; whether you were right, and by how much
+  reality surprised you.
+- **Auditability.** Local-first, append-only, exportable, and every drawer
+  carries its trust level and provenance. Nobody else's server, nobody else's
+  say.
+
+### What just changed, and why
+
+The short version: **enforcement caught up with infrastructure.** The repo's
+oldest defect class is infrastructure built correctly and never wired —
+commitments that quietly vanish, checks that run where their subject does not
+exist, loops that open but nobody closes. v1.4.0 wired the layer that catches
+that class instead of discovering it months later:
+
+- **Anchors went from ~11% to over 40% of the live store**, and
+  `cairntir_remember` now asks for them as a first-class argument instead of a
+  key buried in free-form metadata. Reason: structural recall is the only read
+  path that requires no good question from the reader — the mechanism that
+  makes the "even a free model can follow the pieces" goal reachable.
+  Publishing a contract is not the same as asking for compliance.
+- **Settled predictions actually close.** An open-prediction list that never
+  shrinks is noise; the handoff was lying by omission.
+- **The integrity gate moved to where the data lives** — pre-commit
+  (`cairntir doctor --gate`) instead of a CI runner that has no store.
+- **The release gate verifies PyPI presence.** v1.1.1 was tagged, released on
+  GitHub, and never reached PyPI — unnoticed for three months. That class of
+  miss now fails the build.
+- **Qwen Code became the fourth host.** Continuity is host-neutral or it is a
+  lie; the same store, the same provenance, one more front door.
+- **Next, already planned:** [transcript
+  recovery](plans/2026-08-05-transcript-recovery.md) — no memory loss between
+  chats even when a session dies before it can write. Born the day a final
+  request was recovered from a host transcript because the store never saw it.
+
+---
+
 ## Links
 
 - **Why I built this (blog post):** [docs/blog/amnesia-problem.md](docs/blog/amnesia-problem.md)
