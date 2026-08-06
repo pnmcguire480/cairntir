@@ -157,18 +157,27 @@ under `docs/recipes/` and earn their place by use, not by governance.
     `v1.4.1` (`ae80610`) points at `095fe78`, the merge of PR #50. Live on PyPI
     and as a GitHub release, both artifacts attested. Fresh-install smoke test
     passed all three checklist commands.
-  - **The tag push did not trigger the release workflow — a new failure mode.**
-    `git push origin refs/tags/v1.4.1` succeeded and the tag is verifiably on
-    the remote, but GitHub created **zero** workflow runs for it and emitted no
-    `CreateEvent`, confirmed against the workflow-runs API over ~8 minutes. The
-    workflow was active and `on: push: tags: ["v*.*.*"]` matches. v1.2.0,
-    v1.3.0 and v1.4.0 all fired on push normally. Shipped instead via
+  - **The tag push did not trigger the release workflow — and the cause was a
+    GitHub outage, not this repository.** `git push origin refs/tags/v1.4.1`
+    succeeded and the tag is verifiably on the remote, but GitHub created
+    **zero** workflow runs for it and emitted no `CreateEvent`, confirmed
+    against the workflow-runs API over ~8 minutes. Shipped instead via
     `gh workflow run release.yml --ref v1.4.1`, which is legitimate rather than
     a bypass: the publish jobs gate on the ref, `verify` still ran first, and
     deleting/re-pushing the tag was refused because the publish checklist calls
-    that non-negotiable. **If a future tag push looks like it did nothing,
-    check the workflow-runs API before assuming the tag failed — the tag was
-    fine; the event was not.**
+    that non-negotiable.
+    - **ROOT CAUSE, found afterwards and recorded because the first diagnosis
+      was wrong:** GitHub Actions was in a **critical incident** opened
+      2026-08-06T15:22Z. Its own status update: *"Webhook triggers remain
+      throttled to support recovery. Many push and pull request events are not
+      yet triggering new workflow runs."* `workflow_dispatch` kept working
+      throughout because a manual dispatch is not a webhook-delivered event —
+      which is exactly why the escape hatch was available. **Nothing is wrong
+      with `release.yml`, the tag, or the trigger pattern.** My first read
+      called this "a new failure mode for this repository"; it was not, and a
+      future session must not go hunting through the workflow config for a bug
+      that does not exist. **Check https://www.githubstatus.com before
+      diagnosing a missing workflow run as a repo defect.**
   - **Two corrections recorded, not quietly edited away.** The 2026-07-29
     claim that "manual dispatch cannot publish" is false (see that session
     block, annotated). And PyPI's aggregate `/pypi/cairntir/json` still
