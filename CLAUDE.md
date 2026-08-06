@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.4.0 published** 2026-08-05 (PyPI + GitHub release, both artifacts attested). Latest on PyPI is `1.4.0`; the six live releases are 1.0.0, 1.1.0, 1.1.2, 1.2.0, 1.3.0, 1.4.0. **`1.4.1` is prepared and merged but not yet tagged** — the tag is the human gate, see `docs/publish-checklist.md`. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`, which now fails the build if that happens again. (Note: `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.)
+- **Stage:** **v1.4.1 published** 2026-08-06 (PyPI + GitHub release, both artifacts attested). Latest on PyPI is `1.4.1`; the seven live releases are 1.0.0, 1.1.0, 1.1.2, 1.2.0, 1.3.0, 1.4.0, 1.4.1. Note: 1.4.1's tag push did **not** trigger the release workflow and it shipped via `gh workflow run release.yml --ref v1.4.1` — see Last Session. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`, which now fails the build if that happens again. (Note: `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.)
 
 ---
 
@@ -153,9 +153,37 @@ under `docs/recipes/` and earn their place by use, not by governance.
   - **Status:** 664 tests (+27) at 83.02% coverage, every gate green,
     `mkdocs --strict` clean, `uv build` clean, 84 commitments across 4 documents
     all landed, LongMemEval R@5 gate passing.
+  - **1.4.1 SHIPPED the same day.** Patrick approved the tag; annotated
+    `v1.4.1` (`ae80610`) points at `095fe78`, the merge of PR #50. Live on PyPI
+    and as a GitHub release, both artifacts attested. Fresh-install smoke test
+    passed all three checklist commands.
+  - **The tag push did not trigger the release workflow — a new failure mode.**
+    `git push origin refs/tags/v1.4.1` succeeded and the tag is verifiably on
+    the remote, but GitHub created **zero** workflow runs for it and emitted no
+    `CreateEvent`, confirmed against the workflow-runs API over ~8 minutes. The
+    workflow was active and `on: push: tags: ["v*.*.*"]` matches. v1.2.0,
+    v1.3.0 and v1.4.0 all fired on push normally. Shipped instead via
+    `gh workflow run release.yml --ref v1.4.1`, which is legitimate rather than
+    a bypass: the publish jobs gate on the ref, `verify` still ran first, and
+    deleting/re-pushing the tag was refused because the publish checklist calls
+    that non-negotiable. **If a future tag push looks like it did nothing,
+    check the workflow-runs API before assuming the tag failed — the tag was
+    fine; the event was not.**
+  - **Two corrections recorded, not quietly edited away.** The 2026-07-29
+    claim that "manual dispatch cannot publish" is false (see that session
+    block, annotated). And PyPI's aggregate `/pypi/cairntir/json` still
+    reported `1.4.0` for about a minute after the publish job succeeded, while
+    `/pypi/cairntir/1.4.1/json` already served the release — checking only the
+    aggregate right after publishing would have produced a false "PyPI failed"
+    verdict, the v1.1.1 shape read backwards.
 - **Next session:**
-  1. **The tag is the only thing left for 1.4.1.** Everything else is merged and
-     green. `docs/publish-checklist.md` makes the tag an explicit human gate.
+  1. **`cairntir_settle` conflates "the prediction was wrong" with "something
+     surprised me."** The verdict is derived from delta presence alone
+     (`held = not delta`) and that is what calibration counts, so writing an
+     honest path-level delta records a correct prediction as a miss — exactly
+     what happened to #337. The incentive is backwards: it punishes the
+     surprise signal `delta` was built to capture. Drawer #342 has the
+     candidate fix; it is new MCP surface, so a MINOR, and worth designing.
   2. **The repo does not dogfood its own fourth host.** `cairntir doctor` reports
      `project qwen MCP=missing policy=missing` — 1.4.0 added Qwen Code but this
      repo has no `.qwen/settings.json` and no `QWEN.md`, while claude, codex and
@@ -411,9 +439,22 @@ under `docs/recipes/` and earn their place by use, not by governance.
     because current hosts do not disclose it to the MCP subprocess.
   - **Release engineering:** all external GitHub Actions are pinned to immutable
     commits; release verification now precedes build; provenance attestation
-    and PyPI trusted publishing are wired; manual dispatch cannot publish.
+    and PyPI trusted publishing are wired; ~~manual dispatch cannot publish~~.
     Version metadata, lockfile, plugin manifest, changelog, and release notes
     agree on `1.2.0`.
+    - **CORRECTED 2026-08-06 — "manual dispatch cannot publish" is false, and
+      was never true.** Both publishing jobs in `release.yml` gate on
+      `if: startsWith(github.ref, 'refs/tags/v')`. That is false for a *branch*
+      ref, which is all the original claim actually established. Dispatching
+      against a **tag** — `gh workflow run release.yml --ref v1.4.1` — sets
+      `github.ref` to `refs/tags/v1.4.1`, satisfies the guard, and publishes to
+      PyPI exactly as a push does. This is not hypothetical: **that is how
+      1.4.1 shipped**, after `git push origin refs/tags/v1.4.1` succeeded but
+      GitHub created no workflow run for the tag at all. The guard prevents
+      publishing *from a branch*; it does not prevent publishing. Do not treat
+      dispatch as a safety property, and do not add one on the strength of this
+      sentence without reading the `if:` conditions. See drawer #342 and the
+      settlement on #337.
   - **Installed-wheel acceptance:** found and fixed a real Windows
     `cp1252` help-rendering crash. A fresh isolated install imports as 1.2.0,
     renders redirected help, and discovers all three bundled recipes outside
