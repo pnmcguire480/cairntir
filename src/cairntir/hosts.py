@@ -47,6 +47,15 @@ At the start of every conversation:
    method that differs from the prior baseline, call `cairntir_discover` and
    tell the user. Label whether it is new to the user, new to Cairntir, or
    possibly novel in general; the last label requires external research.
+7. Capture-on-arrival: when the user makes a request that may not be fully
+   executed within the current turn — work that starts later, a deferred task,
+   a session about to end, restart, or compact — record it with
+   `cairntir_remember` IMMEDIATELY, before doing any other work on it, in the
+   user's exact wording. Never defer that write to the end of the turn or the
+   session: a session can die between the request and the write, and capture
+   that waits for a quiet moment never happens. Conversely, when resuming,
+   treat open requests surfaced by the handoff as first-class owed work, not
+   background noise.
 
 If session start returns no memory for an established wing, report that the
 store may be new or misconfigured. Do not silently substitute model memory.
