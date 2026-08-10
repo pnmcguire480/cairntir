@@ -17,11 +17,13 @@ import pytest
 from cairntir.handoff import (
     DEFAULT_BUDGET_CHARS,
     OPEN_PREDICTIONS,
+    RECENT_ACTIVITY,
     compose,
     estimate_tokens,
     is_open_prediction,
 )
 from cairntir.mcp.backend import CairntirBackend
+from cairntir.mcp.server import _tool_specs
 from cairntir.memory.embeddings import HashEmbeddingProvider
 from cairntir.memory.store import DrawerStore
 from cairntir.memory.taxonomy import Drawer, Layer
@@ -497,27 +499,124 @@ def test_an_unknown_wing_says_so_rather_than_inventing(store: DrawerStore) -> No
     assert "do not substitute model memory" in rendered
 
 
-def test_a_populated_wing_with_nothing_to_brief_is_not_reported_as_broken(
+def test_on_demand_drawers_are_briefed_when_the_budget_has_room(
     store: DrawerStore,
 ) -> None:
-    """A healthy store must never be described as possibly misconfigured.
+    """THE regression test for the 2026-08-10 blind spot.
 
-    ``on_demand`` drawers are, by the layer taxonomy, loaded when a query
-    makes them relevant — and handoff runs no query. So a wing can hold
-    plenty and still brief to nothing. Saying "the store may be new or
-    misconfigured" there sends someone to debug something that works.
+    ``cairntir_remember`` defaults to ``layer="on_demand"``, and handoff
+    used to read only IDENTITY and ESSENTIAL. So a user who followed the
+    documented policy and took the defaults stored memory perfectly and
+    got an empty brief back next session — the exact cross-chat amnesia
+    Cairntir exists to kill, reproduced by its own defaults.
+
+    Verbatim reproduction from the clean-room run that found it: three
+    decisions written on day 1, and on day 2 handoff said "none are
+    identity, essential, an open question, or anchored to the files
+    given. Nothing here is broken."
+
+    The previous behaviour was not an oversight — it was asserted by a
+    test that read the layer taxonomy as permission to drop the default
+    write layer on the floor. Leaving spare budget unspent while the
+    answer sits in the store is not a taxonomy decision, it is a bug.
     """
-    _add(store, content="searchable but not briefing material", layer=Layer.ON_DEMAND)
+    for text in (
+        "We chose PostgreSQL over MongoDB because our data is relational.",
+        "The auth service must never log raw tokens.",
+        "Deploys go out Tuesday mornings only. Never on Friday.",
+    ):
+        _add(store, content=text, layer=Layer.ON_DEMAND)
+
+    brief = compose(store, wing="cairntir")
+
+    assert not brief.is_empty, "default-layer memory must reach the brief"
+    briefed = [d.content for d in brief.all_drawers()]
+    assert "We chose PostgreSQL over MongoDB because our data is relational." in briefed
+    assert len(briefed) == 3
+
+    rendered = CairntirBackend(store).handoff(wing="cairntir")
+    assert "Never on Friday" in rendered
+
+
+def test_on_demand_never_displaces_identity_or_essential(store: DrawerStore) -> None:
+    """The fallback spends leftovers only. It must never outbid real briefing material.
+
+    This is the guard on the other half of the defect: promoting the
+    default layer to first-class would starve the budget that identity
+    and essential drawers depend on.
+    """
+    _add(store, content="I" * 300, layer=Layer.IDENTITY)
+    _add(store, content="E" * 300, layer=Layer.ESSENTIAL)
+    _add(store, content="O" * 300, layer=Layer.ON_DEMAND)
+
+    brief = compose(store, wing="cairntir", budget_chars=700)
+    briefed = [d.content for d in brief.all_drawers()]
+
+    assert "I" * 300 in briefed
+    assert "E" * 300 in briefed
+    assert "O" * 300 not in briefed, "on_demand must yield to identity and essential"
+
+    sections = _sections(brief)
+    assert [d.drawer_id for d in sections[RECENT_ACTIVITY].omitted] != []
+
+
+def test_the_default_write_layer_is_a_layer_handoff_loads(store: DrawerStore) -> None:
+    """SEAM: cairntir_remember's default layer must be one handoff actually reads.
+
+    Both sides in one test, on purpose. This seam failed silently from
+    v1.3.0 to 2026-08-10: ``cairntir_remember`` declared
+    ``"default": "on_demand"`` in its MCP schema while ``handoff``
+    gathered only IDENTITY and ESSENTIAL. Each side was individually
+    correct and individually tested. Together they meant the default
+    path stored memory that the documented entry point could not see.
+
+    The previous unit test asserted the broken behaviour as intended,
+    which is *why* this went unfixed for so long — a future session
+    reading only the layer taxonomy can talk itself into the same
+    conclusion again. This test is the ratchet against that: it reads
+    the declared default off the live tool schema rather than hardcoding
+    it, so changing either side without the other fails the build.
+    """
+    layer_schema = next(
+        spec.inputSchema["properties"]["layer"]
+        for spec in _tool_specs()
+        if spec.name == "cairntir_remember"
+    )
+    declared_default = layer_schema["default"]
+
+    _add(store, content="a decision written the default way", layer=Layer(declared_default))
+    brief = compose(store, wing="cairntir")
+
+    assert [d.content for d in brief.all_drawers()] == ["a decision written the default way"], (
+        f"cairntir_remember defaults to layer={declared_default!r}, but handoff did not "
+        "return a drawer written that way. Either handoff must load that layer or the "
+        "tool must stop defaulting to it — silently dropping the default write layer is "
+        "the amnesia this project exists to prevent."
+    )
+
+
+def test_a_wing_of_only_deep_drawers_names_what_it_skipped(store: DrawerStore) -> None:
+    """A healthy store must never be called misconfigured — but it must say what it did.
+
+    DEEP is the one layer genuinely never auto-loaded. When that is the
+    whole wing, the brief is legitimately empty; the message then has to
+    name the reason instead of asserting that nothing is wrong. The old
+    string said "Nothing here is broken" at the exact moment the caller
+    got nothing, which is how the blind spot survived this long.
+    """
+    _add(store, content="archived detail", layer=Layer.DEEP)
 
     brief = compose(store, wing="cairntir")
     assert brief.is_empty
     assert not brief.wing_is_unknown
     assert brief.wing_total == 1
+    assert brief.deep_total == 1
 
     rendered = CairntirBackend(store).handoff(wing="cairntir")
-    assert "Nothing here is broken" in rendered
-    assert "cairntir_recall" in rendered
     assert "misconfigured" not in rendered
+    assert "Nothing here is broken" not in rendered, "never claim health while returning nothing"
+    assert "deep" in rendered.lower()
+    assert "cairntir_recall" in rendered
 
 
 def test_estimate_tokens_is_the_documented_divisor() -> None:

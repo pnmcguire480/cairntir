@@ -118,6 +118,59 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-08-10 (**"cairntir is beyond broke" — two real defects, one fixed, one gated**)
+- **What was accomplished:** Patrick opened with *"i think cairntir is beyond
+  broke. it snot working for others. it doesnt seem to be working too well here
+  either."* Both halves were true, and neither was visible to any existing gate.
+  Full write-up in `plans/2026-08-10-the-default-layer-blind-spot.md`.
+  - **FIXED — the default write layer was invisible to the documented read
+    path.** `cairntir_remember` declares `"default": "on_demand"`; `handoff`
+    gathered only IDENTITY and ESSENTIAL. Reproduced on a clean
+    `pip install cairntir==1.4.1` from PyPI: three decisions stored on day 1
+    with three success receipts, and on day 2 `handoff` answered *"none are
+    identity, essential, an open question, or anchored to the files given.
+    Nothing here is broken."* **That is this project's own north-star failure,
+    reproduced by its own defaults**, and it explains the zero GitHub issues
+    ever filed — nothing crashes, so nobody has anything to report. Fixed with
+    a zero-reserve `Recent activity` section that spends only leftover budget,
+    so it can never outbid identity or essential material. The default was
+    deliberately **not** flipped to `essential`.
+  - **Why it survived from v1.3.0, and the part worth remembering:** the
+    behaviour was not merely untested, it was **asserted as correct** by a unit
+    test reasoning from the layer taxonomy. A test encoding that argument turns
+    a bug into a specification, and any future session can re-derive it. So the
+    fix ships with a **sixth seam guard** that reads the declared default off
+    the live tool schema. It was verified to fail when the fix is removed —
+    this repo keeps finding guards nobody ever watched fail.
+  - **NOT FIXED, needs Patrick — the embedder truncates at 128 tokens (~500
+    chars).** Read directly off the live model: `truncation: {'max_length':
+    128}`. Confirmed twice by binary search, and `cosine(full_content,
+    first_1500_chars) = 1.000000` exactly for the five longest drawers.
+    **73.4% of the 407-drawer corpus is invisible to semantic recall**; only
+    66/407 drawers are fully searchable. This is the answer to the long-open
+    Finding 3 ("ranked 7th, all distances 1.03–1.15") — every drawer is being
+    compared on its opening boilerplate. `cairntir cost` reports against a
+    "~2,048-char window", **4x too generous**. See drawer #408. Needs chunked
+    embedding or a longer-window model **plus a live reindex**, which per
+    drawers #182/#210 is rehearse-on-snapshot with explicit approval.
+  - **Status:** 668 tests (+4) at 83.84% coverage, ruff, `ruff format`,
+    `mypy --strict` (51 files), `mkdocs --strict`, and all six gate scripts
+    green. `check_landed_commitments.py` now counts module constants as
+    symbols, matching `check_seams.py` — they had disagreed about what a symbol
+    is.
+- **Next session:**
+  1. **The embedder bake-off is now the whole ballgame**, and it is no longer a
+     performance nicety — it is a correctness bug with a measured 73.4% loss.
+     Needs Patrick awake for the live reindex.
+  2. **`session_start` has the identical blind spot** and was left unchanged;
+     fixing the composer first was the smaller move.
+  3. **`cairntir cost`'s 2,048-char assumption is wrong** and should be
+     corrected alongside the embedder work so the number and the behaviour
+     change together.
+  4. **Watch for the pattern, not the bug:** five of the last six defects here
+     are a guard that reports success without doing its job.
+
+- **Prior session — 2026-08-06 (post-1.4.0 hardening sweep — the silent-except gate was a no-op):**
 - **Date:** 2026-08-06 (**post-1.4.0 hardening sweep — the silent-except gate was a no-op**)
 - **What was accomplished:** Patrick asked for a check of hot fixes, bugs and
   recent work, a hardening sweep, and a 1.4.1 release. **Nothing was broken** —

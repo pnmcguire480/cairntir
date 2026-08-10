@@ -115,6 +115,29 @@ SEAMS: tuple[Seam, ...] = (
         test_path=Path("tests/integration/test_seams.py"),
         test_name="test_vault_check_and_apply_agree_about_drift",
     ),
+    # Found 2026-08-10 by reproducing a stranger's first two days on a
+    # clean PyPI install. The tool defaulted writes to on_demand; the
+    # composer gathered only IDENTITY and ESSENTIAL. Both sides green,
+    # both sides tested, and between them the documented happy path
+    # returned an empty brief over memory that was sitting right there.
+    #
+    # This one earns a permanent guard more than any other seam here,
+    # because the old behaviour was not merely untested — it was
+    # *asserted* by a unit test that reasoned from the layer taxonomy
+    # that dropping the default write layer was correct. Anyone can
+    # re-derive that argument. The seam test reads the declared default
+    # off the live schema so the argument has to survive contact with
+    # both sides at once.
+    Seam(
+        name="the default write layer is a layer handoff loads",
+        sides=(
+            Side(Path("src/cairntir/mcp/server.py"), "_tool_specs"),
+            Side(Path("src/cairntir/handoff.py"), "_gather"),
+            Side(Path("src/cairntir/handoff.py"), "RECENT_ACTIVITY"),
+        ),
+        test_path=Path("tests/unit/test_handoff.py"),
+        test_name="test_the_default_write_layer_is_a_layer_handoff_loads",
+    ),
 )
 
 

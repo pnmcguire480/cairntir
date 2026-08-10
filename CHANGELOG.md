@@ -13,6 +13,45 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`handoff` could not see the layer `cairntir_remember` writes by default.**
+  The tool declares `"default": "on_demand"` in its MCP schema; the composer
+  gathered only `IDENTITY` and `ESSENTIAL`. A user who followed the documented
+  policy and took the defaults stored memory perfectly and got an empty brief
+  back next session — the cross-chat amnesia Cairntir exists to kill,
+  reproduced by its own defaults. Found by rehearsing a stranger's first two
+  days on a clean `pip install cairntir` from PyPI: three decisions written on
+  day 1, and on day 2 `handoff` answered *"none are identity, essential, an
+  open question, or anchored to the files given. Nothing here is broken."*
+
+  `on_demand` drawers now fill a **`Recent activity`** section with a zero
+  reserve — skipped entirely in the first budgeting pass, fillable only from
+  budget no higher-priority section wanted, so it can never outbid identity or
+  essential material. `DEEP` stays excluded: *"skipped unless explicitly
+  requested"* is a real decision, whereas `on_demand`'s exclusion was an
+  accident of running no query. The default was deliberately **not** flipped to
+  `essential` — that starves the budget every drawer competes for.
+
+- **The empty-brief message claimed health while returning nothing.** It said
+  "Nothing here is broken" at the exact moment the caller got nothing back.
+  It now reports how many drawers sit in the deep layer and states plainly
+  that the brief is not evidence the wing is empty.
+
+- **`scripts/check_landed_commitments.py` did not count module constants as
+  symbols**, so a truthful commitment naming one reported as UNLANDED. Its
+  sibling `check_seams.py` had always counted them; the two read the same
+  plans and disagreed about what a symbol is. They now agree.
+
+### Added
+
+- **Seam guard: the default write layer is a layer `handoff` loads.** The
+  previous behaviour was not merely untested — it was *asserted* as correct by
+  a unit test reasoning from the layer taxonomy, which is why it survived from
+  v1.3.0. The new test reads the declared default off the live tool schema
+  rather than hardcoding it, so changing either side alone fails the build. It
+  was verified to fail when the fix is removed.
+
 ## [1.4.1] — 2026-08-06
 
 A hardening patch. Both fixes are the same defect in different clothes: a guard
