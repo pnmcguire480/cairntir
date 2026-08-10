@@ -944,10 +944,23 @@ def _format_handoff(brief: Handoff, *, store: DrawerStore) -> str:
             # The store is healthy; these drawers are simply not briefing
             # material. Saying "nothing is recorded" here would send someone
             # to debug a store that is working exactly as designed.
+            #
+            # But it must not claim health either. The string this replaces
+            # read "Nothing here is broken" and printed at the exact moment
+            # the caller got nothing back — reassurance in place of a
+            # reason, which is how the on_demand blind spot survived from
+            # v1.3.0 to 2026-08-10. Name what was skipped and why.
+            skipped = (
+                f"all {brief.deep_total} are in the deep layer"
+                if brief.deep_total == brief.wing_total
+                else f"{brief.deep_total} of them are in the deep layer"
+            )
             lines.append(
-                f"Wing {brief.wing!r} holds {brief.wing_total} drawer(s), but none are "
-                "identity, essential, an open question, or anchored to the files given. "
-                "Nothing here is broken — use cairntir_recall to search them by meaning."
+                f"Wing {brief.wing!r} holds {brief.wing_total} drawer(s) and this brief "
+                f"returned none of them: {skipped}, which is the one layer handoff never "
+                "loads on its own. That is a deliberate exclusion, not a fault — but it "
+                "does mean this brief is not evidence the wing is empty. Reach them with "
+                "cairntir_recall, or cairntir_get if you already have an id."
             )
         return "\n".join(lines) + "\n"
 
