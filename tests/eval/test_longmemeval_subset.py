@@ -122,3 +122,47 @@ def test_longmemeval_subset_recall_at_5_sentence_transformers(tmp_path: Path) ->
         f"R@5 = {recall:.2%} ({hits}/{total}) — below the 80% Phase 1 bar.\n"
         f"Misses:\n  - " + "\n  - ".join(misses)
     )
+
+
+@pytest.mark.eval
+@pytest.mark.slow
+def test_longmemeval_subset_recall_at_5_production_embedder(tmp_path: Path) -> None:
+    """The same bar, against the embedder Cairntir actually ships.
+
+    Added 2026-08-10. The gate above pins
+    ``SentenceTransformerProvider("all-MiniLM-L6-v2")`` — a different
+    model *and* a different runtime from production, which is
+    ``FastEmbedProvider`` over ONNX. So the project's only retrieval-
+    quality bar had never once measured what users run.
+
+    That is why swapping the production model could not regress this
+    suite, and it is why the 128-token truncation defect sailed through:
+    the gate exercised short benchmark drawers on an embedder nobody
+    shipped. A quality gate that does not test the shipping path is the
+    same "guard that reports success without doing its job" this
+    repository keeps rediscovering.
+    """
+    from cairntir.memory.embeddings import production_embedding_provider
+
+    store = DrawerStore(tmp_path / "eval-production.db", production_embedding_provider())
+
+    for _q, relevant in _RELEVANT:
+        store.add(Drawer(wing="eval", room="longmemeval", content=relevant))
+    for d in _DISTRACTORS:
+        store.add(Drawer(wing="eval", room="longmemeval", content=d))
+
+    hits = 0
+    misses: list[str] = []
+    for question, relevant in _RELEVANT:
+        results = store.search(question, wing="eval", limit=5)
+        if relevant in [drawer.content for drawer, _ in results]:
+            hits += 1
+        else:
+            misses.append(question)
+
+    total = len(_RELEVANT)
+    recall = hits / total
+    assert recall >= 0.80, (
+        f"production R@5 = {recall:.2%} ({hits}/{total}) — below the 80% Phase 1 bar.\n"
+        f"Misses:\n  - " + "\n  - ".join(misses)
+    )

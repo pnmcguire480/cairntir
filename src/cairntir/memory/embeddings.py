@@ -82,6 +82,40 @@ class HashEmbeddingProvider:
         return out
 
 
+PRODUCTION_MODEL = "jinaai/jina-embeddings-v2-small-en"
+"""The production embedding model.
+
+Replaced ``all-MiniLM-L6-v2`` on 2026-08-10 because MiniLM's configured
+truncation is **128 tokens** — roughly 500 characters — which made 73.4%
+of the live 407-drawer corpus invisible to semantic recall. Only 66 of
+407 drawers were fully searchable; the median drawer was 3.2x the
+window. Every drawer was being compared on its opening boilerplate,
+which is why recall clustered every hit between distance 1.03 and 1.15.
+
+This model's window is 8,192 tokens. The longest drawer in the live
+store is 2,377 tokens, so the entire corpus now fits in one vector —
+no chunking, no multi-vector schema, one row per drawer preserved.
+
+**Read the tokenizer, never the description.** fastembed advertises
+MiniLM as "256 input tokens truncation" while configuring 128, and
+advertised this model correctly at 8192. The description string is not
+load-bearing; ``PRODUCTION_TOKEN_WINDOW`` is checked against the live
+tokenizer by a seam test.
+"""
+
+PRODUCTION_TOKEN_WINDOW = 8192
+"""Input window of :data:`PRODUCTION_MODEL`, in tokens.
+
+Verified against ``tokenizer.truncation['max_length']`` on the real
+model by ``test_declared_embedder_window_matches_the_model``. Hardcoding
+this number is what let ``cost.py`` report a window 4x too generous for
+months, so it gets a check rather than a comment.
+"""
+
+PRODUCTION_DIMENSION = 512
+"""Output dimension of :data:`PRODUCTION_MODEL`. MiniLM was 384."""
+
+
 class FastEmbedProvider:
     """Production embedder backed by ``fastembed`` (ONNX Runtime).
 
@@ -112,7 +146,7 @@ class FastEmbedProvider:
     inside the MCP stdio server.
     """
 
-    DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+    DEFAULT_MODEL = PRODUCTION_MODEL
 
     def __init__(self, model_name: str = DEFAULT_MODEL) -> None:
         """Create a provider; the model is loaded on first use."""

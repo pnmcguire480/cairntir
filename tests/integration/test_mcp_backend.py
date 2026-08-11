@@ -778,12 +778,96 @@ def test_settle_writes_delta(backend: CairntirBackend) -> None:
     reply = backend.settle(
         drawer_id=1,
         observed_outcome="coverage reached 40.6%",
+        held=False,
         delta="overestimated by 20 points; most wings had no repo mapping",
     )
     observation = backend._store.get(2)
     assert observation is not None
     assert observation.delta == "overestimated by 20 points; most wings had no repo mapping"
+    assert observation.metadata["success"] is False
     assert "did NOT hold" in reply
+
+
+def test_a_correct_prediction_with_a_surprising_path_is_not_a_miss(
+    backend: CairntirBackend,
+) -> None:
+    """THE regression test for drawer #342, fixed 2026-08-10.
+
+    The verdict used to be derived from delta presence alone
+    (``held = not delta``), so writing an honest note about a surprising
+    *route* to a correct outcome recorded that correct prediction as a
+    miss. The incentive ran backwards: an agent wanting good calibration
+    numbers was pushed to omit exactly the surprise signal the store most
+    wants. It did this to a real settlement — see drawers #341 and #414.
+
+    ``held`` and ``delta`` answer different questions. This test pins that.
+    """
+    backend.remember(
+        wing="cairntir",
+        room="predictions",
+        content="the prediction",
+        claim="the release ships today",
+        predicted_outcome="a pushed tag, a PyPI release, and a changelog entry",
+    )
+    reply = backend.settle(
+        drawer_id=1,
+        observed_outcome="all three happened exactly as predicted",
+        held=True,
+        delta="the tag push did not trigger the workflow; shipped via manual dispatch instead",
+    )
+
+    observation = backend._store.get(2)
+    assert observation is not None
+    assert observation.metadata["success"] is True, "a correct prediction must score as correct"
+    assert observation.delta, "and the surprise must still be recorded, not suppressed"
+    assert "held" in reply
+    assert "did NOT hold" not in reply
+
+
+def test_a_delta_without_a_verdict_is_not_scored_rather_than_guessed(
+    backend: CairntirBackend,
+) -> None:
+    """Ambiguity stays ambiguous on the record. Not counting beats counting wrong.
+
+    Drawer #342 made one constraint binding: never infer the verdict from
+    prose. So when a delta arrives with no ``held``, ``success`` is omitted
+    entirely and calibration skips the observation instead of scoring a
+    fabricated one.
+    """
+    backend.remember(
+        wing="cairntir",
+        room="predictions",
+        content="the prediction",
+        predicted_outcome="coverage exceeds 60%",
+    )
+    reply = backend.settle(
+        drawer_id=1,
+        observed_outcome="coverage reached 61%",
+        delta="it got there by deleting a module, which nobody expected",
+    )
+
+    observation = backend._store.get(2)
+    assert observation is not None
+    assert "success" not in observation.metadata, "an unknown verdict must not be invented"
+    assert observation.delta, "the surprise is still recorded"
+    assert "not scored" in reply
+    assert "held=True or held=False" in reply
+
+
+def test_settling_with_no_delta_still_means_it_held(backend: CairntirBackend) -> None:
+    """The common case must not have changed. Silence still asserts success."""
+    backend.remember(
+        wing="cairntir",
+        room="predictions",
+        content="the prediction",
+        predicted_outcome="coverage exceeds 40%",
+    )
+    backend.settle(drawer_id=1, observed_outcome="coverage reached 40.6%")
+
+    observation = backend._store.get(2)
+    assert observation is not None
+    assert observation.metadata["success"] is True
+    assert observation.delta is None
 
 
 def test_settle_carries_the_predictions_anchors_forward(backend: CairntirBackend) -> None:
