@@ -115,6 +115,62 @@ SEAMS: tuple[Seam, ...] = (
         test_path=Path("tests/integration/test_seams.py"),
         test_name="test_vault_check_and_apply_agree_about_drift",
     ),
+    # Found 2026-08-10 by reproducing a stranger's first two days on a
+    # clean PyPI install. The tool defaulted writes to on_demand; the
+    # composer gathered only IDENTITY and ESSENTIAL. Both sides green,
+    # both sides tested, and between them the documented happy path
+    # returned an empty brief over memory that was sitting right there.
+    #
+    # This one earns a permanent guard more than any other seam here,
+    # because the old behaviour was not merely untested — it was
+    # *asserted* by a unit test that reasoned from the layer taxonomy
+    # that dropping the default write layer was correct. Anyone can
+    # re-derive that argument. The seam test reads the declared default
+    # off the live schema so the argument has to survive contact with
+    # both sides at once.
+    Seam(
+        name="the default write layer is a layer handoff loads",
+        sides=(
+            Side(Path("src/cairntir/mcp/server.py"), "_tool_specs"),
+            Side(Path("src/cairntir/handoff.py"), "_gather"),
+            Side(Path("src/cairntir/handoff.py"), "RECENT_ACTIVITY"),
+        ),
+        test_path=Path("tests/unit/test_handoff.py"),
+        test_name="test_the_default_write_layer_is_a_layer_handoff_loads",
+    ),
+    # Found 2026-08-10, same day and same shape as the seam above.
+    # cost.py hardcoded a 512-token window, all-MiniLM-L6-v2 actually
+    # truncated at 128, and fastembed's own description advertised 256.
+    # Three numbers, no two agreeing, and the one the tool reported was
+    # the most flattering — so a module built to measure this exact risk
+    # under-reported it fourfold while 73.4% of the corpus sat invisible
+    # to semantic recall.
+    #
+    # The guard has to read the live tokenizer, because every other
+    # source of this number has already been wrong once.
+    # Found 2026-08-06 (drawer #342), fixed 2026-08-10. settle derived the
+    # verdict from delta presence while calibration counted
+    # metadata["success"], so an honest delta beside a CORRECT prediction
+    # recorded a miss. Each side was individually right; together they
+    # punished the one signal the store exists to collect.
+    Seam(
+        name="settle's verdict is what calibration scores",
+        sides=(
+            Side(Path("src/cairntir/mcp/backend.py"), "settle"),
+            Side(Path("src/cairntir/calibration.py"), "calibration_report"),
+        ),
+        test_path=Path("tests/integration/test_seams.py"),
+        test_name="test_settle_verdict_and_calibration_count_the_same_thing",
+    ),
+    Seam(
+        name="the declared embedder window matches the real model",
+        sides=(
+            Side(Path("src/cairntir/memory/embeddings.py"), "PRODUCTION_TOKEN_WINDOW"),
+            Side(Path("src/cairntir/cost.py"), "EMBEDDER_TOKEN_LIMIT"),
+        ),
+        test_path=Path("tests/eval/test_embedder_window.py"),
+        test_name="test_declared_embedder_window_matches_the_model",
+    ),
 )
 
 

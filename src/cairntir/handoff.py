@@ -210,6 +210,15 @@ class Handoff:
     the second as the first sends people to debug a healthy store.
     """
 
+    deep_total: int = 0
+    """How many of ``wing_total`` sit in the DEEP layer.
+
+    DEEP is the one layer this composer legitimately never loads. When it
+    accounts for the whole wing, an empty brief is correct — and the
+    message has to *say so* rather than assert that nothing is wrong.
+    Carried so the renderer can name the reason without a second query.
+    """
+
     @property
     def used_chars(self) -> int:
         """Characters of drawer content actually included."""
@@ -268,6 +277,23 @@ class Handoff:
 OPEN_PREDICTIONS = "open_predictions"
 """Key of the section holding predictions this wing never settled."""
 
+RECENT_ACTIVITY = "recent_activity"
+"""Key of the fallback section holding recent ``on_demand`` drawers.
+
+Exists because ``cairntir_remember`` **defaults** to ``on_demand``, and
+this composer runs no query. Reading the layer taxonomy as permission to
+drop the default write layer meant a user who followed the documented
+policy and took the defaults got an empty brief back — the exact
+cross-chat amnesia Cairntir exists to kill, reproduced by its own
+defaults. Measured 2026-08-10 on a clean install; see drawer #409.
+
+The section carries a **zero reserve on purpose**. It is skipped
+entirely in pass 1 and can only ever be filled from budget that no
+higher-priority section wanted, so it cannot outbid identity or
+essential material. Leftover budget spent on a real decision beats
+leftover budget returned unspent; that is the whole of the fix.
+"""
+
 # Section order is the load policy, most load-bearing first. A section
 # earlier in this tuple gets its reserve before a later one, and takes
 # priority when leftover budget is redistributed.
@@ -310,6 +336,12 @@ _SECTION_SPECS: tuple[tuple[str, str, str, float], ...] = (
         "Memory attached to the code this change touches.",
         0.10,
     ),
+    (
+        RECENT_ACTIVITY,
+        "Recent activity",
+        "Default-layer drawers written here lately. Shown because budget was left over.",
+        0.00,
+    ),
 )
 
 
@@ -341,12 +373,13 @@ def compose(
         raise ValueError(f"budget_chars must be positive, got {budget_chars}")
 
     candidates = _gather(store, wing=wing, files=files, max_deltas=max_deltas)
-    wing_total = len(store.list_by(wing=wing, limit=_SCAN_LIMIT))
+    wing_drawers = store.list_by(wing=wing, limit=_SCAN_LIMIT)
     return _fit(
         wing=wing,
         candidates=candidates,
         budget_chars=budget_chars,
-        wing_total=wing_total,
+        wing_total=len(wing_drawers),
+        deep_total=sum(1 for d in wing_drawers if d.layer is Layer.DEEP),
     )
 
 
@@ -385,6 +418,12 @@ def _gather(
     deltas = _fresh(store.list_by(wing=wing, layer=Layer.ESSENTIAL, limit=max_deltas))
     questions = _fresh(_open_questions(wing_drawers))
     anchored = _fresh(_anchored(store, wing=wing, files=files))
+    # Gathered last so _fresh() has already claimed every drawer another
+    # section wants: this is a fallback, never a competitor. DEEP stays
+    # out — "skipped unless explicitly requested" is a real decision,
+    # unlike on_demand's exclusion, which was an accident of running no
+    # query.
+    recent = _fresh(store.list_by(wing=wing, layer=Layer.ON_DEMAND, limit=max_deltas))
 
     return {
         OPEN_PREDICTIONS: predictions,
@@ -392,6 +431,7 @@ def _gather(
         "deltas": deltas,
         "open_questions": questions,
         "anchored": anchored,
+        RECENT_ACTIVITY: recent,
     }
 
 
@@ -520,6 +560,7 @@ def _fit(
     candidates: dict[str, list[Drawer]],
     budget_chars: int,
     wing_total: int,
+    deep_total: int = 0,
 ) -> Handoff:
     """Fit candidates into the budget, whole drawers only.
 
@@ -568,6 +609,7 @@ def _fit(
         sections=sections,
         budget_chars=budget_chars,
         wing_total=wing_total,
+        deep_total=deep_total,
     )
 
 

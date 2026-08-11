@@ -51,21 +51,31 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from cairntir.handoff import CHARS_PER_TOKEN, DEFAULT_BUDGET_CHARS
+from cairntir.memory.embeddings import PRODUCTION_TOKEN_WINDOW
 
 if TYPE_CHECKING:
     from cairntir.memory.store import DrawerStore
 
-EMBEDDER_TOKEN_LIMIT = 512
-"""Hard input window of the default embedder, ``all-MiniLM-L6-v2``.
+EMBEDDER_TOKEN_LIMIT = PRODUCTION_TOKEN_WINDOW
+"""Hard input window of the production embedder, in tokens.
 
 Anything past this is never vectorised. The drawer is stored whole — the
 verbatim floor is not at risk — but the part beyond the window is
 invisible to semantic search, which is a silent retrieval defect rather
 than a storage one.
+
+**This was a hardcoded 512 until 2026-08-10, and it was wrong twice
+over.** The real embedder truncated at 128 tokens, so this module —
+built specifically to measure that risk — reported a window 4x too
+generous and told every reader the corpus was healthier than it was.
+It now derives from :data:`~cairntir.memory.embeddings.PRODUCTION_TOKEN_WINDOW`,
+which is itself checked against the live tokenizer by a seam test. A
+number this module exists to report is not allowed to be a literal
+somebody has to remember to update.
 """
 
 EMBEDDER_CHAR_WINDOW = EMBEDDER_TOKEN_LIMIT * CHARS_PER_TOKEN
-"""Approximate character equivalent of the embedder window (~2,048)."""
+"""Approximate character equivalent of the embedder window."""
 
 _SCAN_LIMIT = 10_000
 
