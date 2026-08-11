@@ -138,6 +138,25 @@ SEAMS: tuple[Seam, ...] = (
         test_path=Path("tests/unit/test_handoff.py"),
         test_name="test_the_default_write_layer_is_a_layer_handoff_loads",
     ),
+    # Found 2026-08-10, same day and same shape as the seam above.
+    # cost.py hardcoded a 512-token window, all-MiniLM-L6-v2 actually
+    # truncated at 128, and fastembed's own description advertised 256.
+    # Three numbers, no two agreeing, and the one the tool reported was
+    # the most flattering — so a module built to measure this exact risk
+    # under-reported it fourfold while 73.4% of the corpus sat invisible
+    # to semantic recall.
+    #
+    # The guard has to read the live tokenizer, because every other
+    # source of this number has already been wrong once.
+    Seam(
+        name="the declared embedder window matches the real model",
+        sides=(
+            Side(Path("src/cairntir/memory/embeddings.py"), "PRODUCTION_TOKEN_WINDOW"),
+            Side(Path("src/cairntir/cost.py"), "EMBEDDER_TOKEN_LIMIT"),
+        ),
+        test_path=Path("tests/eval/test_embedder_window.py"),
+        test_name="test_declared_embedder_window_matches_the_model",
+    ),
 )
 
 

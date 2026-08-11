@@ -87,16 +87,67 @@ test   tests/unit/test_handoff.py test_on_demand_never_displaces_identity_or_ess
 test   tests/unit/test_handoff.py test_the_default_write_layer_is_a_layer_handoff_loads
 test   tests/unit/test_handoff.py test_a_wing_of_only_deep_drawers_names_what_it_skipped
 file   scripts/check_seams.py
+
+# Bug 2 — the embedder window, landed the same session
+symbol src/cairntir/memory/embeddings.py PRODUCTION_MODEL
+symbol src/cairntir/memory/embeddings.py PRODUCTION_TOKEN_WINDOW
+symbol src/cairntir/memory/embeddings.py PRODUCTION_DIMENSION
+symbol src/cairntir/cost.py EMBEDDER_TOKEN_LIMIT
+file   tests/eval/test_embedder_window.py
+test   tests/eval/test_embedder_window.py test_declared_embedder_window_matches_the_model
+test   tests/eval/test_embedder_window.py test_the_tail_of_a_long_document_changes_its_vector
+test   tests/eval/test_longmemeval_subset.py test_longmemeval_subset_recall_at_5_production_embedder
 ```
+
+---
+
+# Bug 2 — the embedder window (same session, approved and landed)
+
+Patrick approved the reindex explicitly: *"Bug 2 is now the whole ballgame.
+Complete the fix!"*
+
+## What was wrong
+
+`all-MiniLM-L6-v2` truncates at **128 tokens (~500 chars)**, read off the live
+model as `truncation: {'max_length': 128}`. On 407 drawers that hid **73.4% of
+all stored text** from semantic recall; only 66 drawers were fully searchable.
+`cosine(full_content, first_1500_chars)` was exactly `1.000000` for the five
+longest drawers — their tails contributed literally nothing.
+
+Three numbers described this window and no two agreed: `cost.py` hardcoded
+512, fastembed's description advertised 256, the tokenizer was configured to
+128. **The number the tool reported was the most flattering one.**
+
+## Why a model swap, not chunking
+
+Chunking means multiple vectors per drawer, which breaks the
+`vector_count == drawer_count` invariant that `vec_drawers` and every health
+check are built on — a schema migration on a live store, for a problem a
+bigger window solves outright. `jina-embeddings-v2-small-en` has an
+**8,192-token** window; the longest drawer in the store is **2,377 tokens**.
+The whole corpus fits in one vector. One row per drawer, unchanged.
+
+Verified empirically rather than from the model card, because the model card
+is what lied last time: `tokenizer.truncation['max_length'] == 8192`, and
+appending a sentence to a long document now moves its vector (cosine 0.9999
+instead of 1.0000000000).
+
+## Rehearsal, then live
+
+Rehearsed on a `backup_database` snapshot before touching the live store, per
+drawers #182 and #210:
+
+- 414 drawers before and after, ids identical
+- **0 content SHA-256 mismatches** — every drawer byte-identical
+- index state `verified`, dimension 512, new generation stamped
+- **Acceptance test: a query using text found only at character 8,624 of an
+  8,924-char drawer returned that drawer at rank 1.** Under MiniLM that text
+  was never embedded at all.
 
 ## Still open after this
 
-- **The 128-token embedder truncation (drawer #408).** 73.4% of the live corpus
-  is invisible to semantic recall. Needs chunked embedding or a longer-window
-  model, plus a live reindex. Gated on Patrick's explicit approval.
-- **`cairntir cost` reports against a ~2,048-char window** that is 4x too
-  generous. Correcting it is cheap and should ride with the embedder work so
-  the number and the behaviour change together.
-- **`session_start` has the same blind spot** and is unchanged here. Its
-  description already points at `handoff`; fixing the composer first is the
-  smaller, safer move.
+- **`session_start` has the same on_demand blind spot** as `handoff` did and is
+  unchanged. Its description already points at `handoff`; fixing the composer
+  first was the smaller, safer move.
+- **The `untrusted` migration stamp** and the write-time guard in
+  `DrawerStore.add()` remain from the 2026-08-04 ledger.
