@@ -13,7 +13,44 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Changed
+
+- **The production embedder is now `jinaai/jina-embeddings-v2-small-en`
+  (8,192-token window, 512 dimensions), replacing `all-MiniLM-L6-v2`.**
+  MiniLM's configured truncation is **128 tokens — about 500 characters** —
+  read directly off the live model as
+  `truncation: {'max_length': 128, ...}` and confirmed twice by binary search.
+  On a 407-drawer corpus that left **73.4% of all stored text invisible to
+  semantic recall**: only 66 of 407 drawers were fully searchable, 244 were
+  more than half invisible, and `cosine(full_content, first_1500_chars)` was
+  exactly `1.000000` for the five longest drawers. Every drawer was being
+  compared on its opening boilerplate, which is why recall clustered every hit
+  between distance 1.03 and 1.15.
+
+  The longest drawer in the live store is 2,377 tokens, so the new window
+  covers the entire corpus in a single vector — **no chunking, no multi-vector
+  schema, one row per drawer preserved.** Existing stores need one
+  `cairntir reindex`, which backs up first and is refused automatically if the
+  dimension does not match.
+
+  **Existing installs must run `cairntir reindex`.** The store detects the
+  dimension change and refuses to serve a mismatched index rather than
+  returning wrong results.
+
 ### Fixed
+
+- **`cairntir cost` reported an embedder window 4x too generous.**
+  `EMBEDDER_TOKEN_LIMIT` was a hardcoded `512` while the real embedder
+  truncated at 128, so the one module built to measure this exact risk
+  under-reported it fourfold. It now derives from
+  `PRODUCTION_TOKEN_WINDOW`, which a seam test checks against the live
+  tokenizer.
+
+- **The LongMemEval R@5 gate never tested the shipping embedder.** It pinned
+  `SentenceTransformerProvider("all-MiniLM-L6-v2")` — a different model *and* a
+  different runtime from production's ONNX `FastEmbedProvider`. That is why the
+  truncation defect passed the quality gate at full strength. A second gate now
+  runs the same bar against `production_embedding_provider()`.
 
 - **`handoff` could not see the layer `cairntir_remember` writes by default.**
   The tool declares `"default": "on_demand"` in its MCP schema; the composer
