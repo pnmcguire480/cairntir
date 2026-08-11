@@ -946,6 +946,60 @@ def _content_receipt(drawer: Drawer, *, snippet_limit: int = 100, full: bool = F
     )
 
 
+_WING_SCAN_LIMIT = 10_000
+
+
+def _unknown_wing_notice(store: DrawerStore, wing: str) -> str | None:
+    """Warn — and name the real wings — when ``wing`` holds nothing.
+
+    Returns None when the wing exists, so the common path is unchanged.
+
+    Why this is not a nicety. IDENTITY is deliberately cross-wing, so
+    ``session_start`` on a wing that does not exist still returns a stack of
+    identity drawers belonging to *other* projects, with Essential, On-demand
+    and Deep all at zero and nothing anywhere saying the wing was never real.
+    On 2026-08-11 a Cursor session asked for wing ``'workspace'`` — a name
+    that has never existed — and reported back to the user: *"store is empty
+    (no identity/essential/on-demand/deep drawers)."* The store held 424
+    drawers across 24 wings at that moment.
+
+    **Falsely reporting emptiness is the worst failure this product has.** It
+    is indistinguishable from data loss to the person reading it, and it
+    teaches them not to trust the tool meant to be their backbone.
+    ``handoff`` has warned on an unknown wing since 1.3.0; ``session_start``
+    never did, which is the same asymmetry that hid the on_demand blind spot.
+
+    The notice names the actual wings because "no such wing" alone still
+    leaves the caller guessing, and a guessing caller writes to a new wing
+    and splits the project's memory in two.
+    """
+    if store.list_by(wing=wing, limit=1):
+        return None
+    counts: dict[str, int] = {}
+    for drawer in store.list_by(limit=_WING_SCAN_LIMIT):
+        counts[drawer.wing] = counts.get(drawer.wing, 0) + 1
+    if not counts:
+        return (
+            f"WING {wing!r} DOES NOT EXIST, and neither does any other — this store is "
+            "genuinely empty. If that is unexpected, it may be new or misconfigured. "
+            "Do not substitute model memory."
+        )
+    total = sum(counts.values())
+    ranked = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+    listed = ", ".join(f"{name} ({n})" for name, n in ranked[:12])
+    more = "" if len(ranked) <= 12 else f", and {len(ranked) - 12} more"
+    return (
+        f"WING {wing!r} DOES NOT EXIST. **This store is not empty** — it holds "
+        f"{total:,} drawers across {len(ranked)} wings, and any identity drawers "
+        "listed below belong to other wings, because identity is cross-wing by "
+        "design.\n\n"
+        f"Existing wings: {listed}{more}.\n\n"
+        "Do not report this as an empty or broken store, and do not start writing "
+        "to a new wing without asking — that splits a project's memory in two. Pick "
+        "the wing that matches this project, or ask the user which one is right."
+    )
+
+
 def _snippet(content: str, limit: int = 100) -> str:
     single = " ".join(content.split())
     return single if len(single) <= limit else single[: limit - 1] + "…"
@@ -1067,6 +1121,9 @@ def _format_retrieval(
     spend one ``cairntir_get`` on exactly what they want instead of guessing.
     """
     lines = [f"# Cairntir session_start — wing={wing!r}", ""]
+    notice = _unknown_wing_notice(store, wing)
+    if notice:
+        lines.extend([notice, ""])
     evidence: list[str] = []
     omitted: list[int] = []
     spent = 0
