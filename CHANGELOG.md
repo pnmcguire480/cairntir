@@ -13,6 +13,21 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.5.0] — 2026-08-10
+
+The session that started with *"i think cairntir is beyond broke."* It was,
+in two independent ways, and neither was visible to any gate the project had.
+Both are the same shape — **an assurance mechanism reporting success without
+doing its job** — which is now five of the last six defects here.
+
+**A MINOR, not a patch**, by this project's own tiebreak: a user has to read
+this entry to know they need `cairntir reindex`. A patch number would tell
+them there is nothing to learn, which is false.
+
+**Upgrading from 1.4.x: run `cairntir reindex` once.** It backs up first. The
+store detects the dimension change and refuses to serve a mismatched index
+rather than returning wrong results.
+
 ### Changed
 
 - **The production embedder is now `jinaai/jina-embeddings-v2-small-en`
