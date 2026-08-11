@@ -163,10 +163,27 @@ def collect() -> list[Assertion]:
 
 
 def _defined_names(tree: ast.AST) -> set[str]:
+    """Names a plan may promise: functions, classes, and module constants.
+
+    Assignments count because a module-level constant is a real promise —
+    ``RECENT_ACTIVITY`` is the section key the 2026-08-10 handoff fix turns
+    on, and a plan naming it is making exactly the kind of claim this script
+    exists to check. Leaving them out meant a truthful commitment reported
+    as UNLANDED, and the tempting repair is to delete the assertion, which
+    is the defect this script guards against wearing a disguise.
+
+    ``scripts/check_seams.py`` has always counted assignments here. The two
+    scripts read the same plans and disagreed about what a symbol is; this
+    makes them agree.
+    """
     names: set[str] = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
             names.add(node.name)
+        elif isinstance(node, ast.Assign):
+            names.update(target.id for target in node.targets if isinstance(target, ast.Name))
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            names.add(node.target.id)
     return names
 
 

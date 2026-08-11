@@ -136,6 +136,7 @@ def test_settle_writes_a_delta_a_later_session_can_read(backend: CairntirBackend
     backend.settle(
         drawer_id=1,
         observed_outcome="coverage reached 40.6%",
+        held=False,
         delta="overestimated by 20 points; seven wings had no repo mapping",
     )
 
@@ -149,6 +150,46 @@ def test_settle_writes_a_delta_a_later_session_can_read(backend: CairntirBackend
     assert report.resolved == 1
     assert report.failed == 1
     assert report.unresolved == 0
+
+
+def test_settle_verdict_and_calibration_count_the_same_thing(
+    backend: CairntirBackend,
+) -> None:
+    """SEAM: what ``settle`` records as the verdict is what ``calibration`` scores.
+
+    Both sides in one test, because they disagreed for months in the way
+    that mattered most. ``settle`` derived ``held`` from delta presence and
+    ``calibration`` counted ``metadata["success"]``, so an honest delta
+    beside a correct prediction produced a recorded miss — punishing the
+    one signal the store was built to collect (drawer #342).
+
+    Three settlements, three different shapes, one arithmetic check.
+    """
+    for i, predicted in enumerate(("A happens", "B happens", "C happens"), start=1):
+        backend.remember(
+            wing="calib",
+            room="predictions",
+            content=f"prediction {i}",
+            claim=f"claim {i}",
+            predicted_outcome=predicted,
+        )
+
+    # 1. Correct, but the route surprised us. Must count as CONFIRMED.
+    backend.settle(
+        drawer_id=1, observed_outcome="A happened", held=True, delta="via an unexpected path"
+    )
+    # 2. Genuinely wrong. Must count as FAILED.
+    backend.settle(
+        drawer_id=2, observed_outcome="B did not happen", held=False, delta="the claim was wrong"
+    )
+    # 3. Delta, no verdict. Must not be counted at all rather than guessed.
+    backend.settle(drawer_id=3, observed_outcome="C happened somehow", delta="unclear why")
+
+    report = calibration_report(backend._store, wing="calib")
+    assert report.confirmed == 1, "a correct prediction with a delta must score as confirmed"
+    assert report.failed == 1, "only the genuinely-wrong one may score as failed"
+    assert report.resolved == 2, "the unscored settlement must not enter the denominator"
+    assert report.success_rate == 0.5
 
 
 # ------------------------- write guard <-> store-health rule 3 (P4.3)

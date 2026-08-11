@@ -188,11 +188,21 @@ class CairntirBackend:
             reply += f" Open prediction — settle it with cairntir_settle({saved.id}, ...)."
         return reply + _anchor_nudge(content, merged) + _prediction_nudge(claim, predicted_outcome)
 
+    @staticmethod
+    def _verdict_phrase(verdict: bool | None) -> str:
+        """Render the three-state verdict without ever guessing the third."""
+        if verdict is True:
+            return "held"
+        if verdict is False:
+            return "did NOT hold"
+        return "was not scored (a delta was written with no verdict)"
+
     def settle(
         self,
         *,
         drawer_id: int,
         observed_outcome: str,
+        held: bool | None = None,
         delta: str | None = None,
         model: str | None = None,
     ) -> str:
@@ -205,17 +215,32 @@ class CairntirBackend:
         edits its own predictions after the fact cannot be used to check
         whether it was right.
 
-        ``delta`` is the surprise signal — how the world differed from the
-        prediction. Leaving it out asserts the prediction held. It has never
-        been written once in the store's history, which is why calibration has
-        nothing to work with.
+        ``held`` is the verdict and ``delta`` is the surprise. They are
+        **different questions**, and conflating them was a real defect
+        (drawer #342, fixed 2026-08-10). Until this fix the verdict was
+        derived from delta presence alone — ``held = not delta`` — so writing
+        an honest note about a surprising *route* to a correct outcome
+        silently recorded that correct prediction as a miss. The incentive
+        ran backwards: an agent wanting good calibration numbers was pushed to
+        omit exactly the surprise signal ``delta`` exists to capture, and which
+        the v0.4 design calls "the gradient when there are no weights."
 
-        The boolean verdict derivable from that contract — held, or not — is
-        persisted as ``metadata["success"]`` on the observation drawer, the
-        same field ``ReasonLoop.step`` has written since v0.6. Both sanctioned
-        settlement paths now share one shape, so ``cairntir_calibration``
-        counts MCP settlements without a schema change and the original
-        prediction stays immutable.
+        Resolution order, and none of it infers a verdict from prose:
+
+        * ``held`` given — authoritative. Write a delta freely; a correct
+          prediction reached by a surprising path stays correct.
+        * ``held`` omitted, no delta — the prediction held. Unchanged
+          behaviour, and still the common case.
+        * ``held`` omitted, delta given — **the verdict is unknown and is not
+          recorded.** ``metadata["success"]`` is left off entirely rather than
+          guessed, so ``cairntir_calibration`` skips the observation instead of
+          counting a fabricated one. The reply says so and asks for ``held``.
+          Not counting beats counting wrong.
+
+        The verdict, when known, is persisted as ``metadata["success"]`` — the
+        same field ``ReasonLoop.step`` has written since v0.6 and the one
+        calibration already reads, so both sanctioned settlement paths keep one
+        shape, the original prediction stays immutable, and no schema changes.
         """
         if not observed_outcome.strip():
             raise MCPError("observed_outcome must say what actually happened")
@@ -229,14 +254,19 @@ class CairntirBackend:
                 "cairntir_remember(predicted_outcome=...)"
             )
 
-        held = delta is None or not delta.strip()
+        has_delta = bool(delta and delta.strip())
+        # The verdict is only ever stated, never inferred from prose — the one
+        # constraint drawer #342 made binding. `held is None and has_delta` is
+        # the genuinely ambiguous case, and it stays ambiguous on the record.
+        verdict: bool | None = held if held is not None else (None if has_delta else True)
         body = "\n".join(
             [
                 f"SETTLED the prediction in drawer #{drawer_id}.",
                 f"CLAIM: {prediction.claim or '(none recorded)'}",
                 f"PREDICTED: {prediction.predicted_outcome}",
                 f"OBSERVED: {observed_outcome}",
-                f"DELTA: {'none - the prediction held' if held else delta}",
+                f"DELTA: {delta if has_delta else 'none'}",
+                f"VERDICT: the prediction {self._verdict_phrase(verdict)}.",
             ]
         )
         # Carry the prediction's own anchors onto the observation. They were
@@ -246,7 +276,14 @@ class CairntirBackend:
         # delta contract — no delta means the prediction held — persisted in
         # the exact field calibration already counts, which is how the reason
         # loop has settled since v0.6. One shape for both settlement paths.
-        metadata: dict[str, Any] = {"settles": drawer_id, "success": held}
+        #
+        # `success` is omitted entirely when the verdict is unknown. Calibration
+        # counts only observations whose `success` is a bool, so an omitted key
+        # is skipped rather than scored — the honest answer, and the reason this
+        # fix needs no calibration change at all.
+        metadata: dict[str, Any] = {"settles": drawer_id}
+        if verdict is not None:
+            metadata["success"] = verdict
         if prediction.metadata.get(ANCHORS_KEY):
             metadata[ANCHORS_KEY] = prediction.metadata[ANCHORS_KEY]
 
@@ -260,17 +297,24 @@ class CairntirBackend:
                 claim=prediction.claim,
                 predicted_outcome=prediction.predicted_outcome,
                 observed_outcome=observed_outcome,
-                delta=None if held else delta,
+                delta=delta if has_delta else None,
                 supersedes_id=drawer_id,
             ),
             model=model,
         )
-        verdict = "held" if held else "did NOT hold"
-        return (
-            f"Settled drawer #{drawer_id}: the prediction {verdict}. "
+        reply = (
+            f"Settled drawer #{drawer_id}: the prediction {self._verdict_phrase(verdict)}. "
             f"Observation stored as drawer #{saved.id} (ref={_drawer_ref(saved)}), "
             f"superseding #{drawer_id}. The original is unchanged."
         )
+        if verdict is None:
+            reply += (
+                " The delta was recorded but the verdict was not, because a delta means"
+                " 'something surprised me', not 'the prediction was wrong' — a correct"
+                " prediction reached by a surprising path is still correct. Calibration"
+                " skips this observation. Pass held=True or held=False to score it."
+            )
+        return reply
 
     def get(self, *, drawer_id: int) -> str:
         """Return one complete drawer as stable, structured JSON."""
@@ -944,10 +988,23 @@ def _format_handoff(brief: Handoff, *, store: DrawerStore) -> str:
             # The store is healthy; these drawers are simply not briefing
             # material. Saying "nothing is recorded" here would send someone
             # to debug a store that is working exactly as designed.
+            #
+            # But it must not claim health either. The string this replaces
+            # read "Nothing here is broken" and printed at the exact moment
+            # the caller got nothing back — reassurance in place of a
+            # reason, which is how the on_demand blind spot survived from
+            # v1.3.0 to 2026-08-10. Name what was skipped and why.
+            skipped = (
+                f"all {brief.deep_total} are in the deep layer"
+                if brief.deep_total == brief.wing_total
+                else f"{brief.deep_total} of them are in the deep layer"
+            )
             lines.append(
-                f"Wing {brief.wing!r} holds {brief.wing_total} drawer(s), but none are "
-                "identity, essential, an open question, or anchored to the files given. "
-                "Nothing here is broken — use cairntir_recall to search them by meaning."
+                f"Wing {brief.wing!r} holds {brief.wing_total} drawer(s) and this brief "
+                f"returned none of them: {skipped}, which is the one layer handoff never "
+                "loads on its own. That is a deliberate exclusion, not a fault — but it "
+                "does mean this brief is not evidence the wing is empty. Reach them with "
+                "cairntir_recall, or cairntir_get if you already have an id."
             )
         return "\n".join(lines) + "\n"
 
