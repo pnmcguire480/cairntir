@@ -213,7 +213,12 @@ def test_recall_receipt_links_to_complete_verbatim_get(backend: CairntirBackend)
     assert "ref=cairntir://drawer/1" in hits
     assert f"len={len(content)}" in hits
     assert f"sha256={hashlib.sha256(content.encode()).hexdigest()}" in hits
-    assert "truncated=true" in hits
+    # Named `snippet_shortened`, not `truncated`: it describes the preview
+    # line, not the stored drawer and not the embedding. The old name read as
+    # "this drawer was cut", which is exactly the wrong conclusion to invite
+    # next to a sha256 over the complete content.
+    assert "snippet_shortened=true" in hits
+    assert "truncated=" not in hits
 
     payload = json.loads(backend.get(drawer_id=1))
     assert payload["resource"] == "cairntir://drawer/1"

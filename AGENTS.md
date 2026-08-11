@@ -7,8 +7,9 @@
 > the way it did between 2026-07-29 and 2026-08-02.
 
 This file is host-neutral by design. Cairntir's whole purpose is that work moves
-between Claude Code, Codex, and Cursor without a re-brief, so there is one
-project brief, not three.
+between Claude Code, Codex, Cursor and Qwen Code without a re-brief, so there is
+one project brief, not four. Qwen Code reads `QWEN.md`, which is the same kind of
+thin pointer as this file.
 
 ---
 

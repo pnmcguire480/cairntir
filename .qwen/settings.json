@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "cairntir": {
+      "args": [
+        "--host",
+        "qwen"
+      ],
+      "command": "cairntir-mcp"
+    }
+  }
+}

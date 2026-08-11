@@ -921,11 +921,27 @@ def _drawer_ref(drawer: Drawer) -> str:
 
 
 def _content_receipt(drawer: Drawer, *, snippet_limit: int = 100, full: bool = False) -> str:
-    truncated = len(" ".join(drawer.content.split())) > snippet_limit
+    """Render the per-hit receipt: what this drawer is, and what you are seeing of it.
+
+    The field is ``snippet_shortened``, not ``truncated``. It says only that
+    the preview line above it was cut for display; the drawer is stored
+    whole and ``sha256`` is over the complete content, so the reader can
+    verify that for themselves.
+
+    The old name was ``truncated``, and it was actively dangerous in the one
+    situation where it mattered most. On 2026-08-10 the embedder was found
+    to be cutting every drawer at 128 tokens, hiding 73.4% of the corpus
+    from search. Proving the fix meant retrieving a drawer by text from its
+    tail — and the receipt on that very hit read ``truncated=true``, which
+    reads as "the defect is still here" and is about something else
+    entirely. A field name that invites the wrong conclusion about the
+    defect it sits next to is a bug in the receipt, not a nitpick.
+    """
+    shortened = len(" ".join(drawer.content.split())) > snippet_limit
     suffix = " full=true" if full else ""
     return (
         f"ref={_drawer_ref(drawer)} len={len(drawer.content)} "
-        f"sha256={_content_hash(drawer.content)} truncated={str(truncated).lower()}"
+        f"sha256={_content_hash(drawer.content)} snippet_shortened={str(shortened).lower()}"
         f"{suffix}"
     )
 
