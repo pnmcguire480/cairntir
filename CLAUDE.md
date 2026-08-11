@@ -118,6 +118,30 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-08-10 (**"cairntir is beyond broke" — both defects fixed, v1.5.0 SHIPPED**)
+- **v1.5.0 IS LIVE.** Tag `v1.5.0` → `813c9df`. Release run 31450442466 green across
+  all four jobs; the tag push triggered it normally (no repeat of the 1.4.1 outage).
+  On PyPI with both artifacts attested and as a published GitHub release.
+  **The aggregate `/pypi/cairntir/json` still read 1.4.1 for minutes after
+  `/pypi/cairntir/1.5.0/json` served the release — the documented lag from
+  drawer #341. Do not call that a failed publish.**
+- **It is a MINOR, not the 1.4.2 Patrick asked for**, by `docs/release-cadence.md`'s
+  own tiebreak: a user must read the changelog to learn they need
+  `cairntir reindex`. A patch number asserts "nothing to learn," which is false.
+- **Clean-room proof from the published wheel:** `pip install cairntir==1.5.0`,
+  three decisions on day 1 → day-2 `handoff` returns all three; and "who owns
+  rollback", answered only at char 2,881 of a 2,921-char drawer, returns it at
+  **rank 1**. Both defects fixed in the artifact a stranger actually gets.
+- **THE LIVE STORE IS REINDEXED.** 414 drawers, **zero content SHA-256 mismatches**
+  against the pre-reindex backup, 414/414 vectors at dimension 512, state
+  `verified`. Backups kept at `cairntir.backup-20260811T013019Z.db` and
+  `...T013417Z.db`. Tail-probes on the three longest live drawers now return
+  them at ranks 1, 1, 2. Rehearsed on a snapshot first, per drawers #182/#210.
+  **The reindex needs every Cairntir client stopped** — Windows cannot do the
+  atomic swap while `cairntir-mcp` holds the file; the CLI says so and refuses
+  rather than corrupting.
+
+- **Prior entry for the same day, kept for the detail:**
 - **Date:** 2026-08-10 (**"cairntir is beyond broke" — two real defects, one fixed, one gated**)
 - **What was accomplished:** Patrick opened with *"i think cairntir is beyond
   broke. it snot working for others. it doesnt seem to be working too well here
