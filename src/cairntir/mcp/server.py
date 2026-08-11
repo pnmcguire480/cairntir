@@ -205,12 +205,25 @@ def _tool_specs() -> list[types.Tool]:
                         "type": "string",
                         "description": "What actually happened. Be concrete and verifiable.",
                     },
+                    "held": {
+                        "type": "boolean",
+                        "description": (
+                            "THE VERDICT: did the prediction come true? Pass it explicitly "
+                            "whenever you also write a delta. held and delta answer DIFFERENT "
+                            "questions -- a prediction can land exactly while the route to it "
+                            "surprises you, and that is the case most worth a delta. Omitted "
+                            "with no delta means it held; omitted WITH a delta means the "
+                            "verdict is unknown and calibration will skip this settlement "
+                            "rather than guess."
+                        ),
+                    },
                     "delta": {
                         "type": "string",
                         "description": (
-                            "The surprise: how reality differed from the prediction. Omit "
-                            "only when the prediction held exactly. This is the signal that "
-                            "lets the store learn, and it has never once been written."
+                            "The surprise: how reality differed from the prediction, including "
+                            "when the outcome was right but the path was not. This is the "
+                            "signal that lets the store learn. Writing one NEVER counts against "
+                            "your calibration by itself -- pass held to say what the verdict was."
                         ),
                     },
                     "model": {
