@@ -13,6 +13,31 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.6.1] — 2026-08-11
+
+Closes the 2026-08-10 arc. Both items were the last things reported open, and
+nothing is open behind them.
+
+### Fixed
+
+- **The recall receipt's `truncated` flag is now `snippet_shortened`.** It only
+  ever described the preview line being cut for display — the drawer is stored
+  whole and the `sha256` beside it is over the complete content. But the old
+  name was actively dangerous in the one place it mattered: proving the
+  128-token embedder fix meant retrieving a drawer by text from its tail, and
+  the receipt on that exact hit read `truncated=true`, which reads as "the
+  defect is still here." A field name that invites the wrong conclusion about
+  the defect sitting next to it is a bug in the receipt, not a nitpick.
+
+### Changed
+
+- **This repository now wires Qwen Code at project scope**, via `QWEN.md` and
+  `.qwen/settings.json`, written by Cairntir's own `configure_host` rather than
+  by hand. Qwen support shipped in 1.4.0 and `cairntir doctor` had reported
+  `project qwen MCP=missing policy=missing` ever since — the project did not
+  dogfood its own fourth host. `QWEN.md` is a thin pointer to `CLAUDE.md`, the
+  same shape as `AGENTS.md`, so it cannot drift into a stale second brief.
+
 ## [1.6.0] — 2026-08-10
 
 Closes the last of the "assurance mechanism that lies" defects found this day.
