@@ -148,6 +148,20 @@ SEAMS: tuple[Seam, ...] = (
     #
     # The guard has to read the live tokenizer, because every other
     # source of this number has already been wrong once.
+    # Found 2026-08-06 (drawer #342), fixed 2026-08-10. settle derived the
+    # verdict from delta presence while calibration counted
+    # metadata["success"], so an honest delta beside a CORRECT prediction
+    # recorded a miss. Each side was individually right; together they
+    # punished the one signal the store exists to collect.
+    Seam(
+        name="settle's verdict is what calibration scores",
+        sides=(
+            Side(Path("src/cairntir/mcp/backend.py"), "settle"),
+            Side(Path("src/cairntir/calibration.py"), "calibration_report"),
+        ),
+        test_path=Path("tests/integration/test_seams.py"),
+        test_name="test_settle_verdict_and_calibration_count_the_same_thing",
+    ),
     Seam(
         name="the declared embedder window matches the real model",
         sides=(

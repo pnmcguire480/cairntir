@@ -13,6 +13,47 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.6.0] — 2026-08-10
+
+Closes the last of the "assurance mechanism that lies" defects found this day.
+`cairntir_settle` was scoring correct predictions as misses.
+
+**A MINOR, not the 1.5.1 that was asked for.** `cairntir_settle` gains a `held`
+parameter, and by `docs/release-cadence.md`'s tiebreak a change an agent must
+read the changelog to use is a MINOR. Drawer #342 — written 2026-08-06, before
+the fix existed — reached the same conclusion independently: *"This is new MCP
+surface, so it is a MINOR."*
+
+### Added
+
+- **`cairntir_settle(held=...)` — the verdict, stated rather than inferred.**
+  `held` answers "did the prediction come true?"; `delta` answers "what
+  surprised me?". They are different questions.
+
+### Fixed
+
+- **`cairntir_settle` recorded a correct prediction as a miss whenever a delta
+  was written.** The verdict was derived from delta presence alone
+  (`held = not delta`) and persisted to `metadata["success"]`, which is what
+  `cairntir_calibration` counts. So an honest note about a *surprising route to
+  a correct outcome* silently scored as a failure. **The incentive ran exactly
+  backwards**: an agent wanting good calibration numbers was pushed to omit the
+  surprise signal `delta` exists to capture — the thing the v0.4 design calls
+  "the gradient when there are no weights." It did this to real settlements;
+  see drawers #341 and #414.
+
+  Resolution order, and none of it reads a verdict out of prose:
+  `held` given is authoritative; `held` omitted with no delta still means it
+  held; `held` omitted **with** a delta leaves `metadata["success"]` off
+  entirely, so calibration skips the settlement rather than scoring a guess.
+  Not counting beats counting wrong.
+
+- **A seam guard now ties `settle`'s verdict to what `calibration` scores.**
+  Each side was individually correct and individually tested for months while
+  together they punished the one signal the store was built to collect.
+  Verified to fail when the fix is removed: under the old logic three
+  settlements score 0 confirmed and 3 failed.
+
 ## [1.5.0] — 2026-08-10
 
 The session that started with *"i think cairntir is beyond broke."* It was,
