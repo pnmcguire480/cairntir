@@ -745,6 +745,55 @@ def test_remember_rejects_an_empty_prediction(backend: CairntirBackend) -> None:
         )
 
 
+def test_session_start_on_an_unknown_wing_says_so_and_names_the_real_ones(
+    backend: CairntirBackend,
+) -> None:
+    """THE regression test for the 2026-08-11 false-empty report.
+
+    IDENTITY is cross-wing by design, so asking for a wing that does not
+    exist returned other projects' identity drawers with every other layer
+    at zero and no indication the wing was never real. A Cursor session
+    asked for wing 'workspace' and told the user *"store is empty"* while
+    the store held 424 drawers across 24 wings.
+
+    Falsely reporting emptiness is the worst failure this product has: it is
+    indistinguishable from data loss to whoever reads it.
+    """
+    backend.remember(
+        wing="realproject", room="decisions", content="we chose sqlite", layer="identity"
+    )
+    backend.remember(wing="otherproject", room="notes", content="something else")
+
+    out = backend.session_start(wing="workspace")
+
+    assert "DOES NOT EXIST" in out
+    assert "not empty" in out
+    assert "realproject" in out, "the caller must be told which wings are real"
+    assert "otherproject" in out
+    # And it must not tempt the reader into forking the project's memory.
+    assert "without asking" in out
+
+
+def test_session_start_on_a_real_wing_is_unchanged(backend: CairntirBackend) -> None:
+    """The common path must not grow a warning. Silence when the wing exists."""
+    backend.remember(wing="realproject", room="decisions", content="we chose sqlite")
+
+    out = backend.session_start(wing="realproject")
+
+    assert "DOES NOT EXIST" not in out
+
+
+def test_session_start_on_a_genuinely_empty_store_still_alarms(
+    backend: CairntirBackend,
+) -> None:
+    """The one case where 'empty' is the truth must still be said plainly."""
+    out = backend.session_start(wing="anything")
+
+    assert "DOES NOT EXIST" in out
+    assert "genuinely empty" in out
+    assert "Do not substitute model memory" in out
+
+
 def test_settle_appends_and_leaves_the_original_untouched(backend: CairntirBackend) -> None:
     """A store that rewrites its own predictions cannot check whether it was right."""
     backend.remember(

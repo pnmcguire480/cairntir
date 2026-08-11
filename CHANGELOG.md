@@ -13,6 +13,33 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.6.2] — 2026-08-11
+
+### Fixed
+
+- **`cairntir_session_start` reported an unknown wing as an empty store.**
+  IDENTITY is cross-wing by design, so asking for a wing that does not exist
+  returned a stack of *other* projects' identity drawers with Essential,
+  On-demand and Deep all at zero — and nothing anywhere saying the wing was
+  never real. A Cursor session asked for wing `'workspace'`, a name that has
+  never existed, and told the user *"store is empty (no
+  identity/essential/on-demand/deep drawers)."* **The store held 424 drawers
+  across 24 wings at that moment.**
+
+  Falsely reporting emptiness is the worst failure this product has: it is
+  indistinguishable from data loss to whoever reads it, and it teaches them
+  not to trust the tool that is supposed to be their backbone. `handoff` has
+  warned on an unknown wing since 1.3.0; `session_start` never did — the same
+  asymmetry between the two entry points that hid the `on_demand` blind spot
+  in 1.5.0.
+
+  `session_start` now leads with `WING '<name>' DOES NOT EXIST`, states
+  plainly that the store is not empty, gives the drawer and wing totals, and
+  **names the wings that actually exist** — because "no such wing" alone still
+  leaves the caller guessing, and a guessing caller invents a new wing and
+  splits a project's memory in two. When the store is genuinely empty it still
+  says so, and still says not to substitute model memory.
+
 ## [1.6.1] — 2026-08-11
 
 Closes the 2026-08-10 arc. Both items were the last things reported open, and
