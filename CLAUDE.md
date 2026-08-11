@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.4.0 published** 2026-08-05 (PyPI + GitHub release, both artifacts attested). Latest on PyPI is `1.4.0`; the six live releases are 1.0.0, 1.1.0, 1.1.2, 1.2.0, 1.3.0, 1.4.0. **`1.4.1` is prepared and merged but not yet tagged** — the tag is the human gate, see `docs/publish-checklist.md`. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`, which now fails the build if that happens again. (Note: `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.)
+- **Stage:** **v1.4.1 published** 2026-08-06 (PyPI + GitHub release, both artifacts attested). Latest on PyPI is `1.4.1`; the seven live releases are 1.0.0, 1.1.0, 1.1.2, 1.2.0, 1.3.0, 1.4.0, 1.4.1. Note: 1.4.1's tag push did **not** trigger the release workflow and it shipped via `gh workflow run release.yml --ref v1.4.1` — see Last Session. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`, which now fails the build if that happens again. (Note: `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.)
 
 ---
 
@@ -118,6 +118,83 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-08-10 (**"cairntir is beyond broke" — both defects fixed, v1.5.0 SHIPPED**)
+- **v1.5.0 IS LIVE.** Tag `v1.5.0` → `813c9df`. Release run 31450442466 green across
+  all four jobs; the tag push triggered it normally (no repeat of the 1.4.1 outage).
+  On PyPI with both artifacts attested and as a published GitHub release.
+  **The aggregate `/pypi/cairntir/json` still read 1.4.1 for minutes after
+  `/pypi/cairntir/1.5.0/json` served the release — the documented lag from
+  drawer #341. Do not call that a failed publish.**
+- **It is a MINOR, not the 1.4.2 Patrick asked for**, by `docs/release-cadence.md`'s
+  own tiebreak: a user must read the changelog to learn they need
+  `cairntir reindex`. A patch number asserts "nothing to learn," which is false.
+- **Clean-room proof from the published wheel:** `pip install cairntir==1.5.0`,
+  three decisions on day 1 → day-2 `handoff` returns all three; and "who owns
+  rollback", answered only at char 2,881 of a 2,921-char drawer, returns it at
+  **rank 1**. Both defects fixed in the artifact a stranger actually gets.
+- **THE LIVE STORE IS REINDEXED.** 414 drawers, **zero content SHA-256 mismatches**
+  against the pre-reindex backup, 414/414 vectors at dimension 512, state
+  `verified`. Backups kept at `cairntir.backup-20260811T013019Z.db` and
+  `...T013417Z.db`. Tail-probes on the three longest live drawers now return
+  them at ranks 1, 1, 2. Rehearsed on a snapshot first, per drawers #182/#210.
+  **The reindex needs every Cairntir client stopped** — Windows cannot do the
+  atomic swap while `cairntir-mcp` holds the file; the CLI says so and refuses
+  rather than corrupting.
+
+- **Prior entry for the same day, kept for the detail:**
+- **Date:** 2026-08-10 (**"cairntir is beyond broke" — two real defects, one fixed, one gated**)
+- **What was accomplished:** Patrick opened with *"i think cairntir is beyond
+  broke. it snot working for others. it doesnt seem to be working too well here
+  either."* Both halves were true, and neither was visible to any existing gate.
+  Full write-up in `plans/2026-08-10-the-default-layer-blind-spot.md`.
+  - **FIXED — the default write layer was invisible to the documented read
+    path.** `cairntir_remember` declares `"default": "on_demand"`; `handoff`
+    gathered only IDENTITY and ESSENTIAL. Reproduced on a clean
+    `pip install cairntir==1.4.1` from PyPI: three decisions stored on day 1
+    with three success receipts, and on day 2 `handoff` answered *"none are
+    identity, essential, an open question, or anchored to the files given.
+    Nothing here is broken."* **That is this project's own north-star failure,
+    reproduced by its own defaults**, and it explains the zero GitHub issues
+    ever filed — nothing crashes, so nobody has anything to report. Fixed with
+    a zero-reserve `Recent activity` section that spends only leftover budget,
+    so it can never outbid identity or essential material. The default was
+    deliberately **not** flipped to `essential`.
+  - **Why it survived from v1.3.0, and the part worth remembering:** the
+    behaviour was not merely untested, it was **asserted as correct** by a unit
+    test reasoning from the layer taxonomy. A test encoding that argument turns
+    a bug into a specification, and any future session can re-derive it. So the
+    fix ships with a **sixth seam guard** that reads the declared default off
+    the live tool schema. It was verified to fail when the fix is removed —
+    this repo keeps finding guards nobody ever watched fail.
+  - **NOT FIXED, needs Patrick — the embedder truncates at 128 tokens (~500
+    chars).** Read directly off the live model: `truncation: {'max_length':
+    128}`. Confirmed twice by binary search, and `cosine(full_content,
+    first_1500_chars) = 1.000000` exactly for the five longest drawers.
+    **73.4% of the 407-drawer corpus is invisible to semantic recall**; only
+    66/407 drawers are fully searchable. This is the answer to the long-open
+    Finding 3 ("ranked 7th, all distances 1.03–1.15") — every drawer is being
+    compared on its opening boilerplate. `cairntir cost` reports against a
+    "~2,048-char window", **4x too generous**. See drawer #408. Needs chunked
+    embedding or a longer-window model **plus a live reindex**, which per
+    drawers #182/#210 is rehearse-on-snapshot with explicit approval.
+  - **Status:** 668 tests (+4) at 83.84% coverage, ruff, `ruff format`,
+    `mypy --strict` (51 files), `mkdocs --strict`, and all six gate scripts
+    green. `check_landed_commitments.py` now counts module constants as
+    symbols, matching `check_seams.py` — they had disagreed about what a symbol
+    is.
+- **Next session:**
+  1. **The embedder bake-off is now the whole ballgame**, and it is no longer a
+     performance nicety — it is a correctness bug with a measured 73.4% loss.
+     Needs Patrick awake for the live reindex.
+  2. **`session_start` has the identical blind spot** and was left unchanged;
+     fixing the composer first was the smaller move.
+  3. **`cairntir cost`'s 2,048-char assumption is wrong** and should be
+     corrected alongside the embedder work so the number and the behaviour
+     change together.
+  4. **Watch for the pattern, not the bug:** five of the last six defects here
+     are a guard that reports success without doing its job.
+
+- **Prior session — 2026-08-06 (post-1.4.0 hardening sweep — the silent-except gate was a no-op):**
 - **Date:** 2026-08-06 (**post-1.4.0 hardening sweep — the silent-except gate was a no-op**)
 - **What was accomplished:** Patrick asked for a check of hot fixes, bugs and
   recent work, a hardening sweep, and a 1.4.1 release. **Nothing was broken** —
@@ -153,9 +230,46 @@ under `docs/recipes/` and earn their place by use, not by governance.
   - **Status:** 664 tests (+27) at 83.02% coverage, every gate green,
     `mkdocs --strict` clean, `uv build` clean, 84 commitments across 4 documents
     all landed, LongMemEval R@5 gate passing.
+  - **1.4.1 SHIPPED the same day.** Patrick approved the tag; annotated
+    `v1.4.1` (`ae80610`) points at `095fe78`, the merge of PR #50. Live on PyPI
+    and as a GitHub release, both artifacts attested. Fresh-install smoke test
+    passed all three checklist commands.
+  - **The tag push did not trigger the release workflow — and the cause was a
+    GitHub outage, not this repository.** `git push origin refs/tags/v1.4.1`
+    succeeded and the tag is verifiably on the remote, but GitHub created
+    **zero** workflow runs for it and emitted no `CreateEvent`, confirmed
+    against the workflow-runs API over ~8 minutes. Shipped instead via
+    `gh workflow run release.yml --ref v1.4.1`, which is legitimate rather than
+    a bypass: the publish jobs gate on the ref, `verify` still ran first, and
+    deleting/re-pushing the tag was refused because the publish checklist calls
+    that non-negotiable.
+    - **ROOT CAUSE, found afterwards and recorded because the first diagnosis
+      was wrong:** GitHub Actions was in a **critical incident** opened
+      2026-08-06T15:22Z. Its own status update: *"Webhook triggers remain
+      throttled to support recovery. Many push and pull request events are not
+      yet triggering new workflow runs."* `workflow_dispatch` kept working
+      throughout because a manual dispatch is not a webhook-delivered event —
+      which is exactly why the escape hatch was available. **Nothing is wrong
+      with `release.yml`, the tag, or the trigger pattern.** My first read
+      called this "a new failure mode for this repository"; it was not, and a
+      future session must not go hunting through the workflow config for a bug
+      that does not exist. **Check https://www.githubstatus.com before
+      diagnosing a missing workflow run as a repo defect.**
+  - **Two corrections recorded, not quietly edited away.** The 2026-07-29
+    claim that "manual dispatch cannot publish" is false (see that session
+    block, annotated). And PyPI's aggregate `/pypi/cairntir/json` still
+    reported `1.4.0` for about a minute after the publish job succeeded, while
+    `/pypi/cairntir/1.4.1/json` already served the release — checking only the
+    aggregate right after publishing would have produced a false "PyPI failed"
+    verdict, the v1.1.1 shape read backwards.
 - **Next session:**
-  1. **The tag is the only thing left for 1.4.1.** Everything else is merged and
-     green. `docs/publish-checklist.md` makes the tag an explicit human gate.
+  1. **`cairntir_settle` conflates "the prediction was wrong" with "something
+     surprised me."** The verdict is derived from delta presence alone
+     (`held = not delta`) and that is what calibration counts, so writing an
+     honest path-level delta records a correct prediction as a miss — exactly
+     what happened to #337. The incentive is backwards: it punishes the
+     surprise signal `delta` was built to capture. Drawer #342 has the
+     candidate fix; it is new MCP surface, so a MINOR, and worth designing.
   2. **The repo does not dogfood its own fourth host.** `cairntir doctor` reports
      `project qwen MCP=missing policy=missing` — 1.4.0 added Qwen Code but this
      repo has no `.qwen/settings.json` and no `QWEN.md`, while claude, codex and
@@ -411,9 +525,22 @@ under `docs/recipes/` and earn their place by use, not by governance.
     because current hosts do not disclose it to the MCP subprocess.
   - **Release engineering:** all external GitHub Actions are pinned to immutable
     commits; release verification now precedes build; provenance attestation
-    and PyPI trusted publishing are wired; manual dispatch cannot publish.
+    and PyPI trusted publishing are wired; ~~manual dispatch cannot publish~~.
     Version metadata, lockfile, plugin manifest, changelog, and release notes
     agree on `1.2.0`.
+    - **CORRECTED 2026-08-06 — "manual dispatch cannot publish" is false, and
+      was never true.** Both publishing jobs in `release.yml` gate on
+      `if: startsWith(github.ref, 'refs/tags/v')`. That is false for a *branch*
+      ref, which is all the original claim actually established. Dispatching
+      against a **tag** — `gh workflow run release.yml --ref v1.4.1` — sets
+      `github.ref` to `refs/tags/v1.4.1`, satisfies the guard, and publishes to
+      PyPI exactly as a push does. This is not hypothetical: **that is how
+      1.4.1 shipped**, after `git push origin refs/tags/v1.4.1` succeeded but
+      GitHub created no workflow run for the tag at all. The guard prevents
+      publishing *from a branch*; it does not prevent publishing. Do not treat
+      dispatch as a safety property, and do not add one on the strength of this
+      sentence without reading the `if:` conditions. See drawer #342 and the
+      settlement on #337.
   - **Installed-wheel acceptance:** found and fixed a real Windows
     `cp1252` help-rendering crash. A fresh isolated install imports as 1.2.0,
     renders redirected help, and discovers all three bundled recipes outside
