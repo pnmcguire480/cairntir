@@ -13,6 +13,126 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.7.0] — 2026-08-12
+
+Eight findings from an external upgrade review against a live 3,586-drawer
+store — 8.7x the corpus this project develops against. Seven were real. The
+1.5.0 embedder diagnosis replicated and worsened at that scale: 78.2% of
+drawers exceeded the old 128-token window and 80.5% of stored text was never
+vectorised.
+
+A MINOR rather than a patch, by this project's own tiebreak: the model cache
+moves, so the model downloads once more, and `cairntir reindex` can now
+refuse where it previously succeeded. Both are things a user must read the
+changelog to know.
+
+### Fixed
+
+- **The 1.5.0 upgrade could strand a store in a state its own error message
+  could not clear.** `cairntir reindex` runs from a shell that carries none
+  of the MCP server's environment, and fastembed's `define_cache_dir` falls
+  back to `tempfile.gettempdir()/fastembed_cache` when `FASTEMBED_CACHE_PATH`
+  is unset. So reindex downloaded the model to a temp directory, rebuilt
+  every vector, and stamped the store to the jina 512-dimension space — after
+  which the server resolved a *different* cache, found no model, and
+  `HF_HUB_OFFLINE=1` forbade fetching it. `_require_embedding_space` gates
+  both `add()` and `search()`, so reads and writes failed closed, **and the
+  error told the user to run `cairntir reindex` — the command that had just
+  done this.**
+
+  The cache is now anchored to `cairntir_home()`, the same root that already
+  makes the CLI and the server agree about the database path: if a client can
+  find the store, it can find the model beside it. `reindex` also preflights
+  the model *before* touching the store and echoes the cache it resolved, so
+  a stamp is never written for a vector space that cannot be loaded back.
+  **One-time effect: the model downloads again into the new location.**
+
+- **The reindex concurrency guard could not fire on a WAL-mode store,** which
+  is the only mode this store runs in. It compared `(st_size, st_mtime_ns)`
+  on the main database file before and after the rebuild; a committing writer
+  in WAL mode appends to `<db>-wal` and leaves the main file untouched until
+  checkpoint. Measured on the reviewer's store, the main file's mtime was 34
+  hours older than the `-wal` beside it, with 2.1 MB accumulated. Now uses
+  `PRAGMA data_version` read from a connection held open across the window —
+  the documented, WAL-aware detector for "another connection committed."
+
+- **Stale `-wal`/`-shm` files survived the atomic swap.** A write-ahead log
+  carries no identity binding to its database, so frames belonging to the
+  *old* file could be recovered onto the rebuilt one — replaying old page
+  images over a store whose vec table may not share their vector dimension.
+  Removing them is now part of the swap.
+
+- **`reindex` had no per-drawer window check.** `cost.py` has reported the
+  over-window ratio since 1.3.0, but nothing on the write path compared
+  content length to the window, so a rebuild would silently re-truncate any
+  drawer wider than it — reintroducing the exact partial-vector defect 1.5.0
+  existed to remove, and reporting success. It now refuses, naming the worst
+  offender. Both sites read one constant, `PRODUCTION_CHAR_WINDOW`.
+
+- **`_unknown_wing_notice` built a wing→count dict by materialising
+  `list_by(limit=10_000)`** — a `GROUP BY` written as a Python loop, on an
+  error path, inside a stdio call — then summed that *capped* result to
+  report a total. Past ten thousand drawers it under-reported with complete
+  confidence, which is the same "confidently wrong about what is here"
+  failure the notice exists to prevent. Now `DrawerStore.wing_counts()`.
+
+- **The update notifier went silent during a release.** `_is_newer` compared
+  plain numeric tuples, and `_parse_version_tuple` discards everything after
+  the first non-digit, so an in-prep `1.7.0.dev0` rated *equal* to the
+  published `1.7.0`: anyone installed from git during the prep window was
+  never told the real release landed, and `pip install -U` would not move
+  them. A suffixed version now ranks below its own final release.
+
+### Changed
+
+- **`tests/eval/test_embedder_window.py` no longer asserts against a frozen
+  literal.** `test_the_window_covers_the_whole_live_corpus` compared
+  `PRODUCTION_TOKEN_WINDOW` to `LONGEST_LIVE_DRAWER_TOKENS * 2` — two module
+  constants, `8192 > 4754`. It opened no store, loaded no model, and could
+  not fail for any reason other than someone editing a literal, despite
+  carrying `eval` and `slow` markers for work it never did. Its ground truth
+  was a snapshot of a corpus 8.7x smaller than the reviewer's, where the real
+  longest drawer is 6,414 tokens and the true headroom is 1.28x, not 3.4x.
+  It now measures the store under test with the real tokenizer and fails
+  loudly when the recorded floor is stale.
+
+### Documentation
+
+- **`FastEmbedProvider`'s docstring described the wrong model.** It still
+  advertised itself as a drop-in replacement "using the same
+  `all-MiniLM-L6-v2` model under the hood" with "the same output dimension"
+  — both untrue since 2026-08-10, when the model became jina and the
+  dimension went 384 → 512. `cairntir setup` likewise still promised "the
+  ONNX MiniLM model (~25 MB)" cached under `~/.cache/fastembed`.
+
+- **Model provenance is now written down.** `PRODUCTION_MODEL` reads
+  `jinaai/jina-embeddings-v2-small-en`, but fastembed's registry resolves it
+  to `ModelSource(hf="xenova/jina-embeddings-v2-small-en")` — a third-party
+  ONNX re-conversion. `ModelSource` carries no revision field, so a download
+  takes that repository's `HEAD` and integrity checking is size-only: two
+  machines provisioned a month apart can hold different weights under the
+  same name. Pinning needs a fastembed API that does not exist yet, so the
+  exposure is recorded rather than implied — the same "read the tokenizer,
+  never the description" rule applied to where the bytes come from.
+
+```cairntir-commitments
+# The cache both processes must agree on, or a reindex strands the store.
+file   tests/unit/test_model_cache.py
+symbol src/cairntir/config.py model_cache_dir
+# One window constant, read by the report *and* the write path.
+symbol src/cairntir/memory/embeddings.py PRODUCTION_CHAR_WINDOW
+symbol src/cairntir/memory/store.py _drawers_over_window
+# WAL correctness: the guard, and the sidecars the swap must not leave behind.
+symbol src/cairntir/memory/store.py _discard_sidecars
+symbol src/cairntir/memory/store.py wing_counts
+symbol src/cairntir/update.py _release_key
+test   tests/unit/test_store.py test_reindex_refuses_to_replace_a_database_written_during_the_rebuild
+test   tests/unit/test_store.py test_reindex_discards_stale_write_ahead_sidecars
+test   tests/unit/test_store.py test_reindex_refuses_drawers_wider_than_the_embedder_window
+test   tests/unit/test_update.py test_a_published_release_is_newer_than_its_own_prep_version
+test   tests/integration/test_mcp_backend.py test_unknown_wing_total_is_not_capped_by_a_scan_limit
+```
+
 ## [1.6.2] — 2026-08-11
 
 ### Fixed

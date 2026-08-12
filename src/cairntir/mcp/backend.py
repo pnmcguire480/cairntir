@@ -946,9 +946,6 @@ def _content_receipt(drawer: Drawer, *, snippet_limit: int = 100, full: bool = F
     )
 
 
-_WING_SCAN_LIMIT = 10_000
-
-
 def _unknown_wing_notice(store: DrawerStore, wing: str) -> str | None:
     """Warn — and name the real wings — when ``wing`` holds nothing.
 
@@ -975,9 +972,7 @@ def _unknown_wing_notice(store: DrawerStore, wing: str) -> str | None:
     """
     if store.list_by(wing=wing, limit=1):
         return None
-    counts: dict[str, int] = {}
-    for drawer in store.list_by(limit=_WING_SCAN_LIMIT):
-        counts[drawer.wing] = counts.get(drawer.wing, 0) + 1
+    counts = store.wing_counts()
     if not counts:
         return (
             f"WING {wing!r} DOES NOT EXIST, and neither does any other — this store is "
