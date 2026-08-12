@@ -74,9 +74,28 @@ def _parse_version_tuple(version: str) -> tuple[int, ...]:
     return tuple(parts)
 
 
+def _is_final_release(version: str) -> bool:
+    """True when ``version`` is plain numeric — no ``.dev``/``rc``/``+local``."""
+    return all(ch.isdigit() or ch == "." for ch in version.strip())
+
+
+def _release_key(version: str) -> tuple[tuple[int, ...], int]:
+    """Sort key placing a pre-release *before* the final of the same number."""
+    return (_parse_version_tuple(version), 1 if _is_final_release(version) else 0)
+
+
 def _is_newer(latest: str, current: str) -> bool:
-    """Return True iff ``latest`` is strictly newer than ``current``."""
-    return _parse_version_tuple(latest) > _parse_version_tuple(current)
+    """Return True iff ``latest`` is strictly newer than ``current``.
+
+    The suffix rank matters during a release. ``_parse_version_tuple``
+    discards everything after the first non-digit, so a plain tuple compare
+    rated an in-prep ``1.6.3.dev0`` *equal* to the published ``1.6.3`` —
+    meaning anyone installed from git during the prep window would never be
+    told the real release had landed, and ``pip install -U`` would not move
+    them either. Ranking a suffixed version below its own final release is
+    what makes a ``.dev`` marker actually work.
+    """
+    return _release_key(latest) > _release_key(current)
 
 
 def _load_cache() -> dict[str, str]:

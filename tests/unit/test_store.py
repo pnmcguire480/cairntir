@@ -19,6 +19,7 @@ from cairntir.errors import (
     MemoryStoreError,
 )
 from cairntir.memory.embeddings import (
+    PRODUCTION_CHAR_WINDOW,
     FastEmbedProvider,
     HashEmbeddingProvider,
     embedding_space_id,
@@ -701,6 +702,111 @@ def test_offline_reindex_changes_dimension_via_verified_sidecar(tmp_path: Path) 
     assert report.vector_dimension == 64
     with DrawerStore(path, HashEmbeddingProvider(dimension=64)) as reopened:
         assert reopened.search("sidecar rebuild")[0][0].content == "sidecar rebuild"
+
+
+class _WritingDuringReindexProvider:
+    """Commits to the source database from a second connection mid-rebuild.
+
+    This is the concurrent holder the guard exists to refuse, and it is the
+    shape that actually happens: an MCP server that was idle at checkpoint
+    time (so ``wal_checkpoint(TRUNCATE)`` reported not-busy) waking up and
+    writing while a long rebuild runs in the sidecar.
+    """
+
+    dimension = 32
+    embedding_space_id = "cairntir/hash-sha256-cyclic-v1/dimension=32"
+
+    def __init__(self, source: Path) -> None:
+        self._source = source
+        self._written = False
+        self._inner = HashEmbeddingProvider(dimension=32)
+        self.intruder: sqlite3.Connection | None = None
+
+    def embed(self, texts: Sequence[str]) -> list[list[float]]:
+        if not self._written:
+            self._written = True
+            # Held open on purpose, and this is the whole point. A client
+            # that connects, writes and *closes* becomes the last connection,
+            # so SQLite checkpoints the WAL back into the main file on close
+            # and the old mtime guard would notice. A real MCP server does
+            # not close — it stays connected across the rebuild, its frames
+            # stay in `-wal`, and the main file's size and mtime never move.
+            # That is the case the old guard could not see.
+            self.intruder = sqlite3.connect(self._source)
+            self.intruder.execute(
+                "UPDATE drawers SET content = content || ' (edited by another client)'"
+            )
+            self.intruder.commit()
+        return self._inner.embed(texts)
+
+    def close_intruder(self) -> None:
+        if self.intruder is not None:
+            self.intruder.close()
+            self.intruder = None
+
+
+def test_reindex_refuses_to_replace_a_database_written_during_the_rebuild(
+    tmp_path: Path,
+) -> None:
+    """The WAL-mode concurrency guard, which had no test until 1.6.3.
+
+    The previous guard compared ``(st_size, st_mtime_ns)`` on the *main*
+    database file. In WAL mode a committing writer appends to ``<db>-wal``
+    and leaves the main file untouched until checkpoint, so those two stats
+    were identical across a window in which another connection had committed
+    — the guard could not fire on the one condition it was written for.
+    """
+    path = tmp_path / "concurrent.db"
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as store:
+        store.add(_drawer("original content"))
+
+    provider = _WritingDuringReindexProvider(path)
+    try:
+        with pytest.raises(MemoryStoreError, match="changed while reindex was running"):
+            reindex_database(path, provider, batch_size=1)
+        assert provider._written, "the test did not actually write during the window"
+        # The write landed in the WAL and left the main file untouched — the
+        # precondition that made the pre-1.6.3 stat comparison unable to fire.
+        assert path.with_name(f"{path.name}-wal").exists()
+    finally:
+        provider.close_intruder()
+
+    # The intruder's write survives; the rebuild is discarded, not half-applied.
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as reopened:
+        assert "edited by another client" in reopened.list_by()[0].content
+
+
+def test_reindex_discards_stale_write_ahead_sidecars(tmp_path: Path) -> None:
+    """A surviving ``-wal`` must never outlive the file it belonged to.
+
+    A write-ahead log has no identity binding to its database. Left beside a
+    swapped-in rebuild, its frames can be recovered onto the new file — old
+    page images replayed over a store whose vec table may have a different
+    vector dimension.
+    """
+    path = tmp_path / "sidecars.db"
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as store:
+        store.add(_drawer("sidecar hygiene"))
+
+    wal, shm = path.with_name(f"{path.name}-wal"), path.with_name(f"{path.name}-shm")
+    wal.write_bytes(b"stale frames from the pre-rebuild database")
+
+    reindex_database(path, HashEmbeddingProvider(dimension=64), batch_size=1)
+
+    assert not wal.exists(), "stale -wal survived the swap"
+    assert not shm.exists(), "stale -shm survived the swap"
+    with DrawerStore(path, HashEmbeddingProvider(dimension=64)) as reopened:
+        assert reopened.list_by()[0].content == "sidecar hygiene"
+
+
+def test_reindex_refuses_drawers_wider_than_the_embedder_window(tmp_path: Path) -> None:
+    """A rebuild must not silently re-truncate what it cannot embed whole."""
+    path = tmp_path / "oversized.db"
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as store:
+        store.add(_drawer("x" * (PRODUCTION_CHAR_WINDOW + 1)))
+
+    with pytest.raises(EmbeddingSpaceError, match="exceed the embedder"):
+        reindex_database(path, HashEmbeddingProvider(dimension=64), batch_size=1)
 
 
 class _FailingReindexProvider:

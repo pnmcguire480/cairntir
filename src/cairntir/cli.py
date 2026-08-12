@@ -13,7 +13,7 @@ from typing import Any
 import typer
 
 from cairntir import __version__
-from cairntir.config import cairntir_home, db_path
+from cairntir.config import cairntir_home, db_path, model_cache_dir
 from cairntir.cost import measure as measure_cost
 from cairntir.cost import render as render_cost
 from cairntir.errors import EmbeddingError, MCPError, MemoryStoreError, ProjectionError
@@ -31,7 +31,11 @@ from cairntir.hosts import (
     upsert_marked_policy,
 )
 from cairntir.mcp.backend import CairntirBackend
-from cairntir.memory.embeddings import production_embedding_provider
+from cairntir.memory.embeddings import (
+    PRODUCTION_MODEL,
+    embedding_space_id,
+    production_embedding_provider,
+)
 from cairntir.memory.store import (
     SCHEMA_VERSION,
     DrawerStore,
@@ -352,6 +356,28 @@ def reindex(
         raise typer.Exit(code=1)
 
     provider = production_embedding_provider()
+
+    # Preflight: load the model *before* touching the store. A reindex stamps
+    # the store to the provider's vector space, and `_require_embedding_space`
+    # gates both add() and search() on that stamp — so stamping a space whose
+    # model cannot be loaded again fails the store closed for reads *and*
+    # writes, and the resulting error tells the user to run reindex, which is
+    # what did it. Failing here costs nothing; failing after the swap strands
+    # the store. The cache is echoed because a mismatch between this shell's
+    # cache and the MCP server's was the original mechanism.
+    cache = model_cache_dir()
+    typer.echo(f"model cache: {cache}")
+    try:
+        dimension = provider.dimension
+    except EmbeddingError as exc:
+        typer.echo(f"cairntir: reindex preflight failed: {exc}", err=True)
+        typer.echo(
+            "cairntir: the store was NOT modified. Resolve the model above, then retry.",
+            err=True,
+        )
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"model:       {embedding_space_id(provider)} (dim {dimension})")
+
     try:
         before = inspect_embedding_space(path, provider)
     except MemoryStoreError as exc:
@@ -1718,9 +1744,10 @@ def setup_cmd(
     # ---- Step 7: pre-warm the production embedder ------------------------
     _emoji_step(7, total, "Pre-warming the embedder model (one-time download)")
     _emoji_tip(
-        "this downloads the ONNX MiniLM model used for semantic search "
-        "(~25 MB) and caches it under ~/.cache/fastembed/. After this, "
-        "every fresh MCP server boot starts in seconds instead of minutes."
+        f"this downloads the ONNX model used for semantic search "
+        f"({PRODUCTION_MODEL}) and caches it under {model_cache_dir()}. "
+        "After this, every fresh MCP server boot starts in seconds "
+        "instead of minutes."
     )
     try:
         provider = production_embedding_provider()

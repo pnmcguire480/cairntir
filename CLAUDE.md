@@ -118,6 +118,89 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-08-12 (**external upgrade review — 7 of 8 findings real, v1.7.0 prepared**)
+- **What happened:** A tester (Jarvis, for Lou) evaluated 1.4.1 → 1.6.2 against a
+  live **3,586-drawer** store — 8.7x the corpus this project develops against —
+  and read the `v1.4.1..main` diff line by line. Eight findings, **seven
+  confirmed against source**, all fixed on `fix/upgrade-review-findings`.
+  The 1.5.0 embedder diagnosis replicated and worsened at scale: 78.2% of
+  drawers over the old window, 80.5% of stored text never vectorised.
+- **CAIRNTIR WAS DISABLED FOR THE WHOLE SESSION AT PATRICK'S REQUEST** — removed
+  from both MCP scopes and the live `cairntir-mcp` process killed, because the
+  editable install means the running server holds the code under repair. **No
+  drawers were written. This session is not in the store**; it must be caught up
+  from this block and the changelog. `.mcp.json` was restored so the disable did
+  not leak into the PR; the user-scope removal in `~/.claude.json` is still in
+  effect and needs re-adding.
+- **The two that could bite a user mid-upgrade:**
+  - **The 1.5.0 upgrade could strand a store in a state its own error could not
+    clear.** `reindex` runs from a shell carrying none of the server's env, and
+    fastembed falls back to `tempfile.gettempdir()/fastembed_cache`. So reindex
+    downloaded the model to a temp dir, stamped the store to jina's 512-dim
+    space, and the server then resolved a *different* cache, found nothing, and
+    `HF_HUB_OFFLINE=1` forbade fetching. Both `add()` and `search()` failed
+    closed **and the error said to run `cairntir reindex` — the command that
+    did it.** Fixed by anchoring the cache to `cairntir_home()`, the same root
+    that already makes both processes agree about the DB path, plus a preflight
+    so a stamp is never written for a space that cannot be loaded back.
+  - **The WAL concurrency guard could not fire.** It compared
+    `(st_size, st_mtime_ns)` on the main DB file; WAL writes land in `<db>-wal`
+    and leave the main file untouched until checkpoint. **Verified empirically
+    this session**: on a WAL commit from a second connection, `db changed?
+    False / wal changed? True / data_version changed? True`. Now uses
+    `PRAGMA data_version` from a connection held open across the window. Stale
+    `-wal`/`-shm` are also unlinked as part of the swap — a WAL has no identity
+    binding to its database and could be replayed onto the rebuilt file.
+- **The finding worth internalising — #3, and it is the pattern again.**
+  `test_the_window_covers_the_whole_live_corpus` asserted
+  `PRODUCTION_TOKEN_WINDOW > LONGEST_LIVE_DRAWER_TOKENS * 2` — **two module
+  constants, `8192 > 4754`.** It opened no store and loaded no model despite
+  carrying `eval` and `slow` markers, and could not fail unless someone edited
+  a literal. Its ground truth was a snapshot of a corpus 8.7x smaller; on the
+  reviewer's store the real longest drawer is 6,414 tokens and the true
+  headroom is **1.28x, not 3.4x** — so the property it named was already false
+  while it stayed green. That is now **six** consecutive defects of the form
+  *a guard that reports success without doing its job*. Assume it is present
+  in any guard you have not personally watched fail.
+- **A methodology note that cost real time and should not be re-learned.** The
+  first concurrent-holder test *passed against a deliberately reintroduced old
+  guard* — i.e. it did not discriminate. Cause: `sqlite3.connect()` is **lazy**
+  and opens no file handle until first use, so the intruder became the last
+  connection, checkpointed on close, and moved the main file's mtime. A real
+  MCP server **stays open**. The test now holds the intruder connection open,
+  which is both faithful and the only version that fails against the old guard.
+  **Mutation-check every new guard; a guard whose failure you have not seen is
+  not yet evidence.**
+- **Corrected the reviewer on two points.** His #1 omitted `store.py:433`
+  `_checkpoint_database`, which *is* a real guard — point-in-time, and
+  `wal_checkpoint(TRUNCATE)` reports busy only for an *active* reader, so an
+  idle connection passes; his conclusion survives but the mechanism is
+  narrower. And his `.dev0` suggestion for #6 would not have worked:
+  `_parse_version_tuple` discards everything after the first non-digit, so
+  `1.7.0.dev0` compared *equal* to `1.7.0`. Fixed at the comparator instead.
+- **#6 was already stale when read** — `v1.6.2` was tagged 2026-08-12 00:20:23,
+  about an hour after the email was sent, and is on the remote pointing at HEAD.
+- **Version is 1.7.0, a MINOR, not the patch this looks like.** By the cadence
+  doc's own tiebreak: the model cache moves (one re-download) and `reindex` can
+  now refuse where it previously succeeded. Both require reading the changelog.
+- **Status:** 683 tests (+15) at 83.13% coverage; ruff, `ruff format`,
+  `mypy --strict` (51 files), `mkdocs --strict`, `uv build`, and all five
+  `check_*` gates green; **112 commitments across 6 documents all landed.**
+- **Next session:**
+  1. **Re-enable Cairntir and catch it up.** It is still removed from user
+     scope in `~/.claude.json`. Nothing from 2026-08-12 is in the store.
+  2. **Answer the reviewer's two questions** — he offered to file the findings
+     as individual GitHub issues, and asked whether to hold at PyPI 1.6.1 until
+     a tag lands. Neither was actioned; both are Patrick's call.
+  3. **Tag and ship 1.7.0** once the PR merges. Check
+     https://www.githubstatus.com first if a tag push creates no workflow run.
+  4. **`.mypy_cache/` is committed under `src/cairntir/daemon/`** and breaks
+     recursive greps of `src/`. Should be gitignored and removed.
+  5. **The `10_000` scan-limit pattern survives in eight other places** —
+     `cli.py:154`, `codeglass.py:308`, `learning.py` (x3), `anchors.py`,
+     `obsidian.py`, `cost.py`. #7 was one instance of a shape, not a one-off.
+
+- **Prior session — 2026-08-10 ("cairntir is beyond broke" — both defects fixed, v1.5.0 SHIPPED):**
 - **Date:** 2026-08-10 (**"cairntir is beyond broke" — both defects fixed, v1.5.0 SHIPPED**)
 - **v1.5.0 IS LIVE.** Tag `v1.5.0` → `813c9df`. Release run 31450442466 green across
   all four jobs; the tag push triggered it normally (no repeat of the 1.4.1 outage).

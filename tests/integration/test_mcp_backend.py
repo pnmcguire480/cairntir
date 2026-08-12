@@ -794,6 +794,29 @@ def test_session_start_on_a_genuinely_empty_store_still_alarms(
     assert "Do not substitute model memory" in out
 
 
+def test_unknown_wing_total_is_not_capped_by_a_scan_limit(
+    backend: CairntirBackend,
+) -> None:
+    """The reported total must be a real count, not a truncated scan.
+
+    The notice built its wing→count dict by materialising
+    ``list_by(limit=10_000)`` and summing the *capped* result, so past the
+    cap it under-reported with full confidence — the same "confidently wrong
+    about what is here" failure the notice exists to prevent. It is a
+    ``GROUP BY`` now, so the ceiling is gone; this asserts the count is
+    exact and sourced from the aggregate.
+    """
+    for index in range(25):
+        backend.remember(wing="bulk", room="notes", content=f"drawer {index}")
+    backend.remember(wing="other", room="notes", content="one more")
+
+    counts = backend._store.wing_counts()
+    assert counts == {"bulk": 25, "other": 1}
+
+    out = backend.session_start(wing="nosuchwing")
+    assert "26 drawers across 2 wings" in out
+
+
 def test_settle_appends_and_leaves_the_original_untouched(backend: CairntirBackend) -> None:
     """A store that rewrites its own predictions cannot check whether it was right."""
     backend.remember(

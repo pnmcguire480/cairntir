@@ -51,7 +51,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from cairntir.handoff import CHARS_PER_TOKEN, DEFAULT_BUDGET_CHARS
-from cairntir.memory.embeddings import PRODUCTION_TOKEN_WINDOW
+from cairntir.memory.embeddings import PRODUCTION_CHAR_WINDOW, PRODUCTION_TOKEN_WINDOW
 
 if TYPE_CHECKING:
     from cairntir.memory.store import DrawerStore
@@ -74,8 +74,14 @@ number this module exists to report is not allowed to be a literal
 somebody has to remember to update.
 """
 
-EMBEDDER_CHAR_WINDOW = EMBEDDER_TOKEN_LIMIT * CHARS_PER_TOKEN
-"""Approximate character equivalent of the embedder window."""
+EMBEDDER_CHAR_WINDOW = PRODUCTION_CHAR_WINDOW
+"""Approximate character equivalent of the embedder window.
+
+Re-exported from :mod:`cairntir.memory.embeddings` rather than recomputed
+here so the number this module *reports* is the identical number the
+reindex path *enforces*. They were computed independently until 1.6.3, and
+only one of them was ever checked.
+"""
 
 _SCAN_LIMIT = 10_000
 

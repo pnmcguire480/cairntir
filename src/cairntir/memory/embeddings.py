@@ -101,6 +101,20 @@ MiniLM as "256 input tokens truncation" while configuring 128, and
 advertised this model correctly at 8192. The description string is not
 load-bearing; ``PRODUCTION_TOKEN_WINDOW`` is checked against the live
 tokenizer by a seam test.
+
+**The bytes are not Jina's.** Applying that same rule to provenance: this
+identifier is what fastembed's registry is *keyed* by, not where the
+weights come from. The registry resolves it to
+``ModelSource(hf="xenova/jina-embeddings-v2-small-en")`` — a third-party
+ONNX re-conversion — and ``ModelSource`` carries no revision field, so a
+download takes that repository's ``HEAD`` at the moment it runs and
+integrity checking is size-only. Two machines provisioned a month apart
+can therefore hold different weights under this same name, with nothing in
+the store recording which. Pinning needs a fastembed API that does not
+exist yet; until then the exposure is written down rather than implied,
+and :meth:`FastEmbedProvider.embedding_space_id` deliberately keys the
+stored embedding space to this string, so a *dimension* change is caught
+even when a silent weight change is not.
 """
 
 PRODUCTION_TOKEN_WINDOW = 8192
@@ -112,6 +126,15 @@ this number is what let ``cost.py`` report a window 4x too generous for
 months, so it gets a check rather than a comment.
 """
 
+PRODUCTION_CHAR_WINDOW = PRODUCTION_TOKEN_WINDOW * 4
+"""Character budget for :data:`PRODUCTION_TOKEN_WINDOW`, at 4 chars/token.
+
+Lives here, beside the token window it derives from, so the write path and
+the cost report cannot drift apart: ``cost.py`` measured over-window drawers
+while ``reindex_embeddings`` did not check at all, which let a rebuild
+silently re-truncate the very drawers 1.5.0 widened the window to fit.
+"""
+
 PRODUCTION_DIMENSION = 512
 """Output dimension of :data:`PRODUCTION_MODEL`. MiniLM was 384."""
 
@@ -119,10 +142,16 @@ PRODUCTION_DIMENSION = 512
 class FastEmbedProvider:
     """Production embedder backed by ``fastembed`` (ONNX Runtime).
 
-    Drop-in replacement for :class:`SentenceTransformerProvider` with the
-    same output dimension and embedding quality (uses the same
-    ``all-MiniLM-L6-v2`` model under the hood, served via ONNX Runtime
-    instead of PyTorch).
+    Serves :data:`PRODUCTION_MODEL` at :data:`PRODUCTION_DIMENSION` (512)
+    via ONNX Runtime instead of PyTorch.
+
+    **Not** a drop-in replacement for :class:`SentenceTransformerProvider`.
+    This docstring claimed exactly that until 1.6.3 — "same output dimension
+    and embedding quality (uses the same ``all-MiniLM-L6-v2`` model under the
+    hood)" — and both halves stopped being true on 2026-08-10, when the model
+    became jina and the dimension went 384 → 512. A vector written by one
+    provider is not comparable to a vector written by the other, and mixing
+    them requires a full reindex.
 
     Why this exists: ``import sentence_transformers`` triggers a torch
     import that takes 1-2 minutes on CPU-only machines because torch
@@ -133,11 +162,14 @@ class FastEmbedProvider:
 
     Lazy-loads the model on first :meth:`embed` call so importing this
     module is free even on machines without ``fastembed`` installed.
-    The first :meth:`embed` of a brand-new install will trigger a small
-    ONNX file download from Hugging Face Hub and cache it under
-    ``~/.cache/fastembed/``; subsequent loads on the same machine are
-    near-instant. ``cairntir setup`` pre-warms this cache so the first
-    user-facing call after install is never the slow one.
+    The first :meth:`embed` of a brand-new install downloads the ONNX file
+    from Hugging Face Hub into :func:`~cairntir.config.model_cache_dir`;
+    subsequent loads on the same machine are near-instant. ``cairntir setup``
+    pre-warms that cache so the first user-facing call after install is never
+    the slow one. The cache is passed to ``TextEmbedding`` explicitly rather
+    than left to fastembed's ambient default — see
+    :func:`~cairntir.config.model_cache_dir` for why that default could
+    strand a store.
 
     All model loading and inference happens with ``stdout`` and ``stderr``
     silenced for the same reason documented on
@@ -167,9 +199,29 @@ class FastEmbedProvider:
             raise EmbeddingError(
                 "fastembed is not installed; reinstall Cairntir's core dependencies"
             ) from exc
-        _embed_trace("fastembed imported; constructing TextEmbedding()")
-        with _silence_io():
-            model = TextEmbedding(model_name=self._model_name)
+        from cairntir.config import model_cache_dir
+
+        cache = model_cache_dir()
+        _embed_trace(f"fastembed imported; constructing TextEmbedding() cache={cache}")
+        try:
+            with _silence_io():
+                model = TextEmbedding(model_name=self._model_name, cache_dir=str(cache))
+        except Exception as exc:
+            # Name the model *and* the cache. The generic fastembed error here
+            # is indistinguishable from "no network", which sent users to
+            # `cairntir reindex` — the one command that cannot help, because
+            # reindex is what stamped the store to this model in the first
+            # place. See config.model_cache_dir.
+            offline = os.environ.get("HF_HUB_OFFLINE") == "1"
+            hint = (
+                "offline mode is on (HF_HUB_OFFLINE=1), so it will not be fetched. "
+                "Run `cairntir setup` to download it into that directory."
+                if offline
+                else "it will be downloaded on first use if the network allows."
+            )
+            raise EmbeddingError(
+                f"embedding model {self._model_name!r} is not available in cache {cache}; {hint}"
+            ) from exc
         _embed_trace("fastembed TextEmbedding constructed; reading dimension via probe")
         # fastembed doesn't expose dimension directly. Embed a tiny probe
         # to read it. The probe also forces the ONNX session to warm up,

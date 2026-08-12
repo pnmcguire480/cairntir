@@ -120,6 +120,24 @@ def test_is_newer_strict_inequality() -> None:
     assert not update._is_newer("0.9.9", "1.0.0")
 
 
+def test_a_published_release_is_newer_than_its_own_prep_version() -> None:
+    """The notifier must fire for someone installed from git during prep.
+
+    ``_parse_version_tuple`` discards everything after the first non-digit,
+    so a plain tuple compare rated ``1.6.3.dev0`` *equal* to the released
+    ``1.6.3``: the update notice never fired and ``pip install -U`` would
+    not move them either. A ``.dev`` marker only helps if the comparator
+    ranks it below its own final release.
+    """
+    assert update._is_newer("1.6.3", "1.6.3.dev0")
+    assert update._is_newer("1.6.3", "1.6.3rc1")
+    assert update._is_newer("1.6.3", "1.6.3+local")
+    # ...and a prep version is still ahead of the last real release.
+    assert not update._is_newer("1.6.2", "1.6.3.dev0")
+    # A final release is never "newer" than itself.
+    assert not update._is_newer("1.6.3", "1.6.3")
+
+
 def test_failed_pypi_fetch_does_not_write_cache(
     _tmp_home: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

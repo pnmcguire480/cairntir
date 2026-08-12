@@ -42,7 +42,7 @@ from cairntir.errors import (
     WorkflowError,
 )
 from cairntir.memory.belief import rerank_results
-from cairntir.memory.embeddings import embedding_space_id
+from cairntir.memory.embeddings import PRODUCTION_CHAR_WINDOW, embedding_space_id
 from cairntir.memory.taxonomy import Drawer, Layer
 from cairntir.provenance import TrustLevel, WriteProvenance, legacy_provenance
 
@@ -415,6 +415,47 @@ def _checkpoint_database(path: Path) -> None:
         )
 
 
+def _drawers_over_window(rows: Sequence[sqlite3.Row]) -> list[tuple[int, int]]:
+    """Return ``(drawer_id, chars)`` for rows too long to embed whole.
+
+    Sorted worst-first. ``cost.py`` has reported this ratio since 1.3.0, but
+    nothing on the *write* path ever checked it, so a rebuild would re-embed
+    an over-window drawer into a vector that ignores its own tail — exactly
+    the defect the 1.5.0 model swap existed to remove — and report success.
+    """
+    over = [
+        (int(row["id"]), len(str(row["content"])))
+        for row in rows
+        if len(str(row["content"])) > PRODUCTION_CHAR_WINDOW
+    ]
+    return sorted(over, key=lambda item: item[1], reverse=True)
+
+
+def _sidecar_paths(path: Path) -> tuple[Path, Path]:
+    """Return the ``-wal`` and ``-shm`` companions of ``path``."""
+    return path.with_name(f"{path.name}-wal"), path.with_name(f"{path.name}-shm")
+
+
+def _discard_sidecars(path: Path) -> None:
+    """Remove a database's ``-wal``/``-shm`` companions.
+
+    A write-ahead log carries **no identity binding to its database**. After
+    ``os.replace`` swaps a rebuilt file into place, a surviving ``-wal`` from
+    the *old* file is still adjacent to the new one, and the next open will
+    happily recover those frames onto it — replaying old page images over a
+    freshly rebuilt store whose vec table may not even have the same vector
+    dimension. Deleting them is part of the swap, not cleanup after it.
+    """
+    for sidecar in _sidecar_paths(path):
+        try:
+            sidecar.unlink(missing_ok=True)
+        except OSError as exc:
+            raise MemoryStoreError(
+                f"failed to remove stale write-ahead sidecar {sidecar}; "
+                f"stop Cairntir clients and retry: {exc}"
+            ) from exc
+
+
 def reindex_database(
     path: Path,
     embedder: EmbeddingProvider,
@@ -427,26 +468,44 @@ def reindex_database(
     index. This is the recovery path when the provider changes vector
     dimension, because sqlite-vec virtual-table DDL is not transactionally
     reversible on every supported SQLite build.
+
+    Concurrent writes are detected with ``PRAGMA data_version`` read from a
+    connection held open across the whole window. Comparing ``st_mtime_ns``
+    on the database file — what this did until 1.6.3 — cannot work in WAL
+    mode, which is the only mode this store ever runs in: a committing
+    writer appends to ``<db>-wal`` and leaves the main file untouched until
+    checkpoint, so the guard could not fire on the exact concurrency it
+    existed to refuse. ``data_version`` is the documented detector for
+    "another connection committed", and it is WAL-aware.
     """
     if not path.exists():
         raise MemoryStoreError(f"cannot reindex missing database at {path}")
     _checkpoint_database(path)
-    before = path.stat()
     temporary = path.with_name(f".{path.name}.reindex-{uuid4().hex}.tmp")
     try:
-        backup_database(path, temporary)
-        with DrawerStore(temporary, embedder, backup_migrations=False) as store:
-            result = store.reindex_embeddings(
-                batch_size=batch_size,
-                _allow_dimension_change=True,
-            )
-            store.checkpoint()
-        after = path.stat()
-        if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
+        # Held open for the whole rebuild: data_version only reports commits
+        # by *other* connections when read twice from the same one. Closed
+        # before the swap because Windows refuses to replace an open file.
+        sentinel = sqlite3.connect(path)
+        try:
+            before = sentinel.execute("PRAGMA data_version").fetchone()[0]
+            backup_database(path, temporary)
+            with DrawerStore(temporary, embedder, backup_migrations=False) as store:
+                result = store.reindex_embeddings(
+                    batch_size=batch_size,
+                    _allow_dimension_change=True,
+                )
+                store.checkpoint()
+            after = sentinel.execute("PRAGMA data_version").fetchone()[0]
+        finally:
+            sentinel.close()
+        if before != after:
             raise MemoryStoreError(
                 "database changed while reindex was running; refusing to replace it. "
                 "Stop Cairntir clients and retry."
             )
+        _discard_sidecars(temporary)
+        _discard_sidecars(path)
         try:
             os.replace(temporary, path)
         except OSError as exc:
@@ -462,6 +521,7 @@ def reindex_database(
                 raise MemoryStoreError(
                     f"failed to remove temporary reindex database {temporary}: {exc}"
                 ) from exc
+            _discard_sidecars(temporary)
 
 
 def _parses_as_json(text: str) -> bool:
@@ -996,6 +1056,19 @@ class DrawerStore:
             )
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"failed to prepare embedding reindex: {exc}") from exc
+
+        oversized = _drawers_over_window(rows)
+        if oversized:
+            worst_id, worst_chars = oversized[0]
+            raise EmbeddingSpaceError(
+                f"{len(oversized)} drawer(s) exceed the embedder's "
+                f"~{PRODUCTION_CHAR_WINDOW:,}-char input window and would be silently "
+                f"truncated by this rebuild — worst is drawer #{worst_id} at "
+                f"{worst_chars:,} chars. Re-embedding them would reintroduce the "
+                "partial-vector defect fixed in 1.5.0, where the tail of a drawer "
+                "is invisible to semantic recall. Split them or widen the window; "
+                "do not rebuild over them."
+            )
 
         try:
             for start in range(0, len(rows), batch_size):
@@ -1544,6 +1617,26 @@ class DrawerStore:
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"list_by failed: {exc}") from exc
         return [_row_to_drawer(r) for r in rows]
+
+    def wing_counts(self, *, include_expired: bool = False) -> dict[str, int]:
+        """Return ``{wing: drawer_count}`` for every wing in the store.
+
+        A ``GROUP BY``, not a scan. The caller that needed this was building
+        the same dict in Python from ``list_by(limit=10_000)`` — materialising
+        up to ten thousand full drawers, content and all, on an error path
+        inside a stdio call, and then summing the *capped* result to report a
+        total. Past the cap it under-reported with complete confidence, which
+        is the same "confidently wrong about how much is here" failure the
+        caller exists to prevent.
+        """
+        clauses = "" if include_expired else "WHERE valid_until > ?"
+        params: list[Any] = [] if include_expired else [datetime.now(UTC).isoformat()]
+        sql = f"SELECT wing, COUNT(*) AS n FROM drawers {clauses} GROUP BY wing"  # noqa: S608
+        try:
+            rows = self._conn.execute(sql, params).fetchall()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"wing_counts failed: {exc}") from exc
+        return {str(row["wing"]): int(row["n"]) for row in rows}
 
     def search(
         self,
