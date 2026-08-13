@@ -79,11 +79,9 @@ EMBEDDER_CHAR_WINDOW = PRODUCTION_CHAR_WINDOW
 
 Re-exported from :mod:`cairntir.memory.embeddings` rather than recomputed
 here so the number this module *reports* is the identical number the
-reindex path *enforces*. They were computed independently until 1.6.3, and
+reindex path *enforces*. They were computed independently until 1.7.0, and
 only one of them was ever checked.
 """
-
-_SCAN_LIMIT = 10_000
 
 
 def estimate_tokens(chars: int) -> int:
@@ -144,7 +142,7 @@ def _percentile(values: list[int], pct: int) -> int:
 
 def corpus_stats(store: DrawerStore, *, wing: str | None = None) -> CorpusStats:
     """Measure drawer sizes against the embedder's input window."""
-    lengths = sorted(len(d.content) for d in store.list_by(wing=wing, limit=_SCAN_LIMIT))
+    lengths = store.content_lengths(wing=wing)
     if not lengths:
         return CorpusStats(0, 0, 0, 0, 0, 0, 100)
     longest = lengths[-1]

@@ -89,7 +89,7 @@ def _is_newer(latest: str, current: str) -> bool:
 
     The suffix rank matters during a release. ``_parse_version_tuple``
     discards everything after the first non-digit, so a plain tuple compare
-    rated an in-prep ``1.6.3.dev0`` *equal* to the published ``1.6.3`` —
+    rated an in-prep ``1.7.0.dev0`` *equal* to the published ``1.7.0`` —
     meaning anyone installed from git during the prep window would never be
     told the real release had landed, and ``pip install -U`` would not move
     them either. Ranking a suffixed version below its own final release is

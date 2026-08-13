@@ -66,9 +66,6 @@ if TYPE_CHECKING:
 ANCHORS_KEY = "anchors"
 """Key under which anchors live in a drawer's metadata."""
 
-_SCAN_LIMIT = 10_000
-"""Upper bound on drawers examined in one call. Tier 1 does a scan, not an index."""
-
 _CANDIDATE_RE = re.compile(r"[A-Za-z0-9_.\-/\\]*[A-Za-z0-9_\-][/\\.][A-Za-z0-9_.\-/\\]*")
 """Loose prefilter for path-like tokens in prose.
 
@@ -339,9 +336,7 @@ def _candidates(store: DrawerStore, *, wing: str | None) -> list[Drawer]:
     :func:`recall_for_change` rejects anything the prefilter lets through.
     """
     return [
-        drawer
-        for drawer in store.list_by(wing=wing, limit=_SCAN_LIMIT)
-        if ANCHORS_KEY in drawer.metadata
+        drawer for drawer in store.list_by(wing=wing, limit=None) if ANCHORS_KEY in drawer.metadata
     ]
 
 

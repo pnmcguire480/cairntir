@@ -155,14 +155,15 @@ def status() -> None:
         typer.echo("store: (not yet initialized — no drawers written)")
         return
     backend = _backend()
-    drawers = backend._store.list_by(limit=10_000)
-    if not drawers:
+    # A GROUP BY, not a capped scan. `cairntir status` exists to report how
+    # much is in the store; counting the newest ten thousand and printing the
+    # result as the total made it wrong on exactly the stores big enough to
+    # need the command.
+    counts = backend._store.wing_counts()
+    if not counts:
         typer.echo("store: empty")
         return
-    counts: dict[str, int] = {}
-    for d in drawers:
-        counts[d.wing] = counts.get(d.wing, 0) + 1
-    typer.echo(f"wings: {len(counts)}  drawers: {len(drawers)}")
+    typer.echo(f"wings: {len(counts)}  drawers: {sum(counts.values())}")
     for wing, count in sorted(counts.items()):
         typer.echo(f"  {wing}  ({count} drawers)")
 

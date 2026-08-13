@@ -704,6 +704,39 @@ def test_offline_reindex_changes_dimension_via_verified_sidecar(tmp_path: Path) 
         assert reopened.search("sidecar rebuild")[0][0].content == "sidecar rebuild"
 
 
+def test_list_by_limit_none_returns_everything(tmp_path: Path) -> None:
+    """`limit=None` means all. A number standing in for "all" is the defect."""
+    path = tmp_path / "unbounded.db"
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as store:
+        for index in range(150):
+            store.add(_drawer(f"drawer {index}"))
+
+        assert len(store.list_by()) == 100, "the default cap still applies"
+        assert len(store.list_by(limit=None)) == 150
+
+
+def test_content_lengths_counts_the_whole_corpus(tmp_path: Path) -> None:
+    """`cairntir cost` must measure every drawer, not the newest N.
+
+    It read sizes off `list_by(limit=10_000)` and reported percentages over
+    that truncated sample as if they described the corpus — the module whose
+    only job is honest measurement, wrong in the flattering direction on
+    exactly the stores large enough to care.
+    """
+    path = tmp_path / "lengths.db"
+    with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as store:
+        for index in range(120):
+            store.add(_drawer("x" * (index + 1)))
+
+        lengths = store.content_lengths()
+        assert len(lengths) == 120
+        assert lengths == sorted(lengths), "must come back ascending"
+        assert lengths[-1] == 120
+        # Scoped by wing, and never a materialised drawer in sight.
+        store.add(Drawer(wing="other", room="room", content="zz", layer=Layer.ON_DEMAND))
+        assert len(store.content_lengths(wing="other")) == 1
+
+
 class _WritingDuringReindexProvider:
     """Commits to the source database from a second connection mid-rebuild.
 
