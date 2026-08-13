@@ -5,13 +5,15 @@ semantic search via ``sqlite-vec``. This module defines a minimal
 :class:`EmbeddingProvider` protocol plus three concrete implementations:
 
 * :class:`FastEmbedProvider` — the production default. Lazy-loads
-  the same ``all-MiniLM-L6-v2`` model used by ``sentence-transformers``,
-  but served via ONNX Runtime instead of PyTorch so cold start drops
-  from ~2 minutes to ~5 seconds on CPU-only machines.
-* :class:`SentenceTransformerProvider` — legacy production embedder kept
-  for opt-in fallback. Embeds with the same model and dimension; the only
-  difference is the runtime (PyTorch). Slower to import; use only if
-  ``fastembed`` cannot be installed in your environment.
+  :data:`PRODUCTION_MODEL` at :data:`PRODUCTION_DIMENSION`, served via ONNX
+  Runtime instead of PyTorch so cold start drops from ~2 minutes to ~5
+  seconds on CPU-only machines.
+* :class:`SentenceTransformerProvider` — legacy embedder kept for opt-in
+  fallback. It embeds with ``all-MiniLM-L6-v2`` at 384 dimensions, so it is
+  **not** interchangeable with the default: the two write incompatible
+  vector spaces and switching between them requires a full reindex. Until
+  1.7.0 this file claimed they shared a model and dimension, which stopped
+  being true on 2026-08-10.
 * :class:`HashEmbeddingProvider` — a deterministic, dependency-free fallback
   used by the unit tests so they never touch the network or load a 90 MB
   model on every CI run.
@@ -146,7 +148,7 @@ class FastEmbedProvider:
     via ONNX Runtime instead of PyTorch.
 
     **Not** a drop-in replacement for :class:`SentenceTransformerProvider`.
-    This docstring claimed exactly that until 1.6.3 — "same output dimension
+    This docstring claimed exactly that until 1.7.0 — "same output dimension
     and embedding quality (uses the same ``all-MiniLM-L6-v2`` model under the
     hood)" — and both halves stopped being true on 2026-08-10, when the model
     became jina and the dimension went 384 → 512. A vector written by one

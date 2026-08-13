@@ -190,7 +190,7 @@ def transition_discovery(
     if not clean_note:
         raise ValueError("a discovery transition requires a non-empty note")
     current_ids = {
-        item.drawer_id for item in list_discoveries(store, wing=discovery.wing, limit=10_000)
+        item.drawer_id for item in list_discoveries(store, wing=discovery.wing, limit=None)
     }
     if drawer_id not in current_ids:
         raise ValueError(
@@ -241,7 +241,7 @@ def propose_multi_episode_discoveries(
         raise ValueError("confidence_threshold must be above 0.5 and at most 1.0")
 
     episodes: dict[str, list[Drawer]] = defaultdict(list)
-    for drawer in store.list_by(wing=wing, limit=10_000):
+    for drawer in store.list_by(wing=wing, limit=None):
         if (
             drawer.id is not None
             and drawer.claim
@@ -252,7 +252,7 @@ def propose_multi_episode_discoveries(
 
     current_by_pattern = {
         item.pattern_key: item
-        for item in list_discoveries(store, wing=wing, limit=10_000)
+        for item in list_discoveries(store, wing=wing, limit=None)
         if item.pattern_key is not None
     }
     proposed: list[Discovery] = []
@@ -326,14 +326,21 @@ def list_discoveries(
     wing: str | None = None,
     state: DiscoveryState | None = None,
     active_only: bool = False,
-    limit: int = 100,
+    limit: int | None = 100,
 ) -> list[Discovery]:
-    """Return only the current leaf of each append-only discovery chain."""
-    if limit < 1:
+    """Return only the current leaf of each append-only discovery chain.
+
+    ``limit=None`` walks every chain. Callers that need a complete picture —
+    deduplicating pattern keys, projecting to a vault, validating that a
+    drawer id is a live discovery — must not settle for the newest N, which
+    is what passing ``10_000`` amounted to.
+    """
+    if limit is not None and limit < 1:
         raise ValueError("limit must be positive")
     if state is not None and state not in DISCOVERY_STATES:
         raise ValueError(f"invalid discovery state {state!r}")
-    drawers = store.list_by(wing=wing, room=DISCOVERY_ROOM, limit=max(limit * 10, 100))
+    scan = None if limit is None else max(limit * 10, 100)
+    drawers = store.list_by(wing=wing, room=DISCOVERY_ROOM, limit=scan)
     discovery_drawers = [
         drawer for drawer in drawers if drawer.metadata.get("kind") == _DISCOVERY_KIND
     ]

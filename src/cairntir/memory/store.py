@@ -471,7 +471,7 @@ def reindex_database(
 
     Concurrent writes are detected with ``PRAGMA data_version`` read from a
     connection held open across the whole window. Comparing ``st_mtime_ns``
-    on the database file — what this did until 1.6.3 — cannot work in WAL
+    on the database file — what this did until 1.7.0 — cannot work in WAL
     mode, which is the only mode this store ever runs in: a committing
     writer appends to ``<db>-wal`` and leaves the main file untouched until
     checkpoint, so the guard could not fire on the exact concurrency it
@@ -1590,10 +1590,17 @@ class DrawerStore:
         wing: str | None = None,
         room: str | None = None,
         layer: Layer | None = None,
-        limit: int = 100,
+        limit: int | None = 100,
         include_expired: bool = False,
     ) -> list[Drawer]:
-        """Return drawers filtered by wing/room/layer, most recent first."""
+        """Return drawers filtered by wing/room/layer, most recent first.
+
+        ``limit=None`` returns every match. Several callers used to pass a
+        bare ``10_000`` to mean "all", which silently became "the newest ten
+        thousand" on a bigger store — an incomplete answer delivered with the
+        confidence of a complete one. Completeness is now something a caller
+        asks for explicitly.
+        """
         clauses: list[str] = []
         params: list[Any] = []
         if not include_expired:
@@ -1610,13 +1617,44 @@ class DrawerStore:
             params.append(layer.value)
         # clauses are static strings; user values are bound as parameters below.
         where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
-        sql = f"SELECT * FROM drawers {where} ORDER BY id DESC LIMIT ?"  # noqa: S608
-        params.append(limit)
+        sql = f"SELECT * FROM drawers {where} ORDER BY id DESC"  # noqa: S608
+        if limit is not None:
+            sql += " LIMIT ?"
+            params.append(limit)
         try:
             rows = self._conn.execute(sql, params).fetchall()
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"list_by failed: {exc}") from exc
         return [_row_to_drawer(r) for r in rows]
+
+    def content_lengths(
+        self, *, wing: str | None = None, include_expired: bool = False
+    ) -> list[int]:
+        """Return every drawer's content length, ascending.
+
+        ``LENGTH(content)`` in SQL rather than ``len(d.content)`` over
+        materialised drawers. ``cost.py`` — the module whose entire job is
+        honest measurement — was loading up to ten thousand full drawers to
+        read their sizes, then reporting percentages over that truncated
+        sample as if they described the corpus. On a store past the cap the
+        headline "N of M drawers exceed the window" was simply wrong, and
+        wrong in the flattering direction.
+        """
+        clauses: list[str] = []
+        params: list[Any] = []
+        if not include_expired:
+            clauses.append("valid_until > ?")
+            params.append(datetime.now(UTC).isoformat())
+        if wing is not None:
+            clauses.append("wing = ?")
+            params.append(wing)
+        where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+        sql = f"SELECT LENGTH(content) AS n FROM drawers {where} ORDER BY n"  # noqa: S608
+        try:
+            rows = self._conn.execute(sql, params).fetchall()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"content_lengths failed: {exc}") from exc
+        return [int(row["n"]) for row in rows]
 
     def wing_counts(self, *, include_expired: bool = False) -> dict[str, int]:
         """Return ``{wing: drawer_count}`` for every wing in the store.

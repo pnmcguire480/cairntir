@@ -44,7 +44,7 @@ def project_to_obsidian(
     if not (vault / ".obsidian").is_dir():
         raise ProjectionError(f"{vault} is not an Obsidian vault (missing .obsidian)")
     root = vault / "cairntir-sync"
-    discoveries = list_discoveries(store, wing=wing, limit=10_000)
+    discoveries = list_discoveries(store, wing=wing, limit=None)
     visible_discoveries = [
         item
         for item in discoveries

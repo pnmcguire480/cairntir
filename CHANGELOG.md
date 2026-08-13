@@ -76,6 +76,27 @@ changelog to know.
   confidence, which is the same "confidently wrong about what is here"
   failure the notice exists to prevent. Now `DrawerStore.wing_counts()`.
 
+- **The same silent cap was in seven other places, and `10_000` was standing
+  in for "all" in every one of them.** It was one instance of a shape, not a
+  one-off. `list_by` and `list_discoveries` now accept `limit=None`, so a
+  caller that needs completeness has to say so instead of guessing a number
+  large enough to feel safe:
+
+  - `cairntir status` counted the newest ten thousand drawers and printed the
+    result as the store's total — wrong on precisely the stores big enough to
+    warrant running it. Now a `GROUP BY`.
+  - `cairntir cost` read drawer sizes off a capped scan and reported
+    percentages over that truncated sample as corpus-wide. New
+    `DrawerStore.content_lengths()` measures every drawer with `LENGTH()` in
+    SQL, which also stops it materialising ten thousand full drawers to read
+    their sizes.
+  - `transition_discovery` validated a drawer id against a capped set and
+    would have rejected a legitimate discovery past the cap; the discovery
+    scanner, the CodeGlass retention lookup and the Obsidian projection could
+    each miss existing records and duplicate them. All unbounded now.
+  - `handoff`'s `_SCAN_LIMIT = 500` is deliberately left alone: it is a
+    recency window for a budgeted brief, not a stand-in for "everything".
+
 - **The update notifier went silent during a release.** `_is_newer` compared
   plain numeric tuples, and `_parse_version_tuple` discards everything after
   the first non-digit, so an in-prep `1.7.0.dev0` rated *equal* to the
@@ -105,6 +126,12 @@ changelog to know.
   dimension went 384 → 512. `cairntir setup` likewise still promised "the
   ONNX MiniLM model (~25 MB)" cached under `~/.cache/fastembed`.
 
+- **The module docstring carried the same stale model claim as the class.**
+  `embeddings.py` still introduced `FastEmbedProvider` as loading
+  "`all-MiniLM-L6-v2`" and described `SentenceTransformerProvider` as using
+  "the same model and dimension". They write incompatible vector spaces;
+  switching between them requires a full reindex.
+
 - **Model provenance is now written down.** `PRODUCTION_MODEL` reads
   `jinaai/jina-embeddings-v2-small-en`, but fastembed's registry resolves it
   to `ModelSource(hf="xenova/jina-embeddings-v2-small-en")` — a third-party
@@ -126,6 +153,10 @@ symbol src/cairntir/memory/store.py _drawers_over_window
 symbol src/cairntir/memory/store.py _discard_sidecars
 symbol src/cairntir/memory/store.py wing_counts
 symbol src/cairntir/update.py _release_key
+# "all" is a thing a caller asks for, never a big number they hope covers it.
+symbol src/cairntir/memory/store.py content_lengths
+test   tests/unit/test_store.py test_list_by_limit_none_returns_everything
+test   tests/unit/test_store.py test_content_lengths_counts_the_whole_corpus
 test   tests/unit/test_store.py test_reindex_refuses_to_replace_a_database_written_during_the_rebuild
 test   tests/unit/test_store.py test_reindex_discards_stale_write_ahead_sidecars
 test   tests/unit/test_store.py test_reindex_refuses_drawers_wider_than_the_embedder_window

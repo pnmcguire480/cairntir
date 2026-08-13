@@ -305,7 +305,7 @@ def _record_retention_discovery(store: Store, delayed: Drawer) -> None:
     previous = next(
         (
             discovery
-            for discovery in list_discoveries(store, wing=delayed.wing, limit=10_000)
+            for discovery in list_discoveries(store, wing=delayed.wing, limit=None)
             if discovery.pattern_key == pattern_key
         ),
         None,

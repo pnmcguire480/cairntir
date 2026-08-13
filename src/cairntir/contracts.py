@@ -58,9 +58,15 @@ class Store(Protocol):
         wing: str | None = None,
         room: str | None = None,
         layer: Layer | None = None,
-        limit: int = 100,
+        limit: int | None = 100,
+        include_expired: bool = False,
     ) -> list[Drawer]:
-        """Return drawers filtered by wing/room/layer, most recent first."""
+        """Return drawers filtered by wing/room/layer, most recent first.
+
+        ``limit=None`` returns every match. Callers that need completeness
+        must say so: an arbitrary cap standing in for "all" is how a count
+        came back confidently short.
+        """
         ...
 
     def search(
