@@ -186,19 +186,49 @@ under `docs/recipes/` and earn their place by use, not by governance.
 - **Status:** 683 tests (+15) at 83.13% coverage; ruff, `ruff format`,
   `mypy --strict` (51 files), `mkdocs --strict`, `uv build`, and all five
   `check_*` gates green; **112 commitments across 6 documents all landed.**
+- **Second pass, same day — both "leftovers" closed (PR #65).**
+  - **The `10_000` scan limit was a shape, not a one-off, and it was in eight
+    places.** `list_by` and `list_discoveries` now take `limit=None`, so
+    completeness is something a caller *asks for* rather than a number they
+    hope is big enough. `cairntir status` and `cairntir cost` were the two
+    that reported wrong numbers confidently — `cost` especially, being the
+    module whose only job is honest measurement. New
+    `DrawerStore.content_lengths()` measures with `LENGTH()` in SQL and stops
+    it materialising ten thousand drawers to read their sizes.
+    `handoff`'s `_SCAN_LIMIT = 500` was deliberately left: a recency window
+    for a budgeted brief, not a stand-in for "everything".
+  - **CORRECTION — `.mypy_cache` was never committed.** The previous entry
+    said it was. It is in `.gitignore` and zero files were tracked; the raw
+    `grep -rn` that "found" it simply does not respect ignores, unlike the
+    Grep tool. There *were* ~1.6 GB of stray cache dirs in seven non-root
+    locations, now deleted from disk. **Use the Grep tool, not `grep -r`, or
+    you will diagnose ignored files as repo problems.**
+  - Also caught the `embeddings.py` **module** docstring carrying the same
+    stale MiniLM/384 claim already fixed on the class in #64 — same defect,
+    missed on the first pass — and four docstrings reading `1.6.3` from
+    before the number settled at `1.7.0`.
+- **v1.7.0 SHIPPED 2026-08-13.** Evidence in `docs/release/v1.7.0.md`.
+  685 tests, 83.13% coverage, 114 commitments, 14/14 CI on both PRs.
+  **No reindex needed** — the embedding space is unchanged; only the cache
+  location moved. Live store verified at 425 drawers, `dim=512`, before
+  tagging.
+- **One unexplained observation, recorded not explained:** the first
+  invocation of a fresh smoke venv inside the source tree printed
+  `UnicodeDecodeError: 'charmap' codec ... byte 0x8f` to stderr while stdout
+  was correct. Not reproducible in four attempts including a forced cold
+  update check, and absent outside the source tree. If it recurs, start with
+  the update-notifier thread: it catches `OSError`, `URLError`,
+  `JSONDecodeError`, `TimeoutError` — but **not** `UnicodeDecodeError`.
 - **Next session:**
-  1. **Re-enable Cairntir and catch it up.** It is still removed from user
-     scope in `~/.claude.json`. Nothing from 2026-08-12 is in the store.
-  2. **Answer the reviewer's two questions** — he offered to file the findings
-     as individual GitHub issues, and asked whether to hold at PyPI 1.6.1 until
-     a tag lands. Neither was actioned; both are Patrick's call.
-  3. **Tag and ship 1.7.0** once the PR merges. Check
-     https://www.githubstatus.com first if a tag push creates no workflow run.
-  4. **`.mypy_cache/` is committed under `src/cairntir/daemon/`** and breaks
-     recursive greps of `src/`. Should be gitignored and removed.
-  5. **The `10_000` scan-limit pattern survives in eight other places** —
-     `cli.py:154`, `codeglass.py:308`, `learning.py` (x3), `anchors.py`,
-     `obsidian.py`, `cost.py`. #7 was one instance of a shape, not a one-off.
+  1. **Re-enable Cairntir and catch it up.** Still removed from user scope in
+     `~/.claude.json`; re-add with
+     `claude mcp add --scope user cairntir cairntir-mcp -- --host claude`.
+     **Nothing from 2026-08-12/13 is in the store** — catch it up from this
+     block, `CHANGELOG.md`, and `docs/release/v1.7.0.md`.
+  2. **The reviewer's loose ends are closed** — Patrick handled them directly.
+  3. **Model weights are still unpinned** — `ModelSource` has no revision
+     field, so two machines can hold different weights under one name.
+     Needs a fastembed API that does not exist yet.
 
 - **Prior session — 2026-08-10 ("cairntir is beyond broke" — both defects fixed, v1.5.0 SHIPPED):**
 - **Date:** 2026-08-10 (**"cairntir is beyond broke" — both defects fixed, v1.5.0 SHIPPED**)

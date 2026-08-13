@@ -13,7 +13,7 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
-## [1.7.0] — 2026-08-12
+## [1.7.0] — 2026-08-13
 
 Eight findings from an external upgrade review against a live 3,586-drawer
 store — 8.7x the corpus this project develops against. Seven were real. The
@@ -1489,7 +1489,13 @@ six-tool MCP surface that Claude Code can talk to directly.
 - `ruff check`, `ruff format`, `mypy --strict` clean
 - Every exception typed; no silent `except: pass`
 
-[Unreleased]: https://github.com/pnmcguire480/cairntir/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/pnmcguire480/cairntir/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/pnmcguire480/cairntir/compare/v1.6.2...v1.7.0
+[1.6.2]: https://github.com/pnmcguire480/cairntir/compare/v1.6.1...v1.6.2
+[1.6.1]: https://github.com/pnmcguire480/cairntir/compare/v1.6.0...v1.6.1
+[1.6.0]: https://github.com/pnmcguire480/cairntir/compare/v1.5.0...v1.6.0
+[1.5.0]: https://github.com/pnmcguire480/cairntir/compare/v1.4.1...v1.5.0
+[1.4.1]: https://github.com/pnmcguire480/cairntir/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/pnmcguire480/cairntir/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/pnmcguire480/cairntir/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/pnmcguire480/cairntir/compare/v1.1.2...v1.2.0
