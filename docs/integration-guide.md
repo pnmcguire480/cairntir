@@ -10,10 +10,12 @@ plugin, you want [how-to-use.md](how-to-use.md) instead.
 from cairntir import Drawer, Layer, Store
 from cairntir.impl import DrawerStore, HashEmbeddingProvider
 
-# Open a store. Any path; any embedder that satisfies EmbeddingProvider.
+# HashEmbeddingProvider is a test embedder — any dimension, no model
+# download. Production is `production_embedding_provider()` (jina,
+# 512-dim, 8192-token window). Do not copy 384 from an old MiniLM note.
 store: Store = DrawerStore(
     "/path/to/cairntir.db",
-    HashEmbeddingProvider(dimension=384),
+    HashEmbeddingProvider(dimension=32),
 )
 
 # Write a verbatim drawer.

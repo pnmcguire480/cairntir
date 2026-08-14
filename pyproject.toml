@@ -26,7 +26,7 @@ keywords = [
     "governance",
 ]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
@@ -174,7 +174,11 @@ asyncio_mode = "auto"
 source = ["src/cairntir"]
 branch = true
 omit = [
-    # Phase 2+ surfaces — covered by their own phase tests.
+    # Thin entrypoints. mcp/server.py is the stdio adapter; tool
+    # behaviour is tested via backend + test_mcp_server.py. Omitting
+    # it hides transport-layer coverage from the 80% gate on purpose
+    # — do not read a green coverage number as "the stdio loop is
+    # tested."
     "src/cairntir/__main__.py",
     "src/cairntir/mcp/server.py",
     "src/cairntir/daemon/__main__.py",

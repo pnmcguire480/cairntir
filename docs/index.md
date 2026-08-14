@@ -28,7 +28,7 @@ Live on [PyPI](https://pypi.org/project/cairntir/). Source on [GitHub](https://g
 
 ## Status
 
-✅ **v1.0 shipped.** Library extraction, protocol seam locked, contract suite, public-API snapshot, every prior schema version migration-tested. Published to [PyPI](https://pypi.org/project/cairntir/) on 2026-05-03. Now on the Road to 2.0.
+**v1.7.0** is current (2026-08-13). Live on [PyPI](https://pypi.org/project/cairntir/). Full notes in the [changelog](https://github.com/pnmcguire480/cairntir/blob/main/CHANGELOG.md).
 
 ## License
 

@@ -37,9 +37,11 @@ memory layer does not need to know the difference.
 
 ## Status
 
-**Scaffold only.** The directory exists so the reference impl has a
-home. v1.1 ships the design document; v1.2 or v1.3 ships the
-working code. Pull requests welcome.
+**Scaffold only.** This directory is the design home for a
+Blender-as-MCP-server idea. The **working** Blender client is
+[`addons/cairntir_blender/`](../../addons/cairntir_blender/) — a
+Blender add-on with tests, not this scaffold. Do not install this
+folder expecting a plugin.
 
 ## What a working version looks like
 

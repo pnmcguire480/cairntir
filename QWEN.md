@@ -21,11 +21,14 @@ next run — edit `src/cairntir/hosts.py`, not here.
 You have access to persistent memory through the `cairntir_*` MCP tools.
 At the start of every conversation:
 
-1. Call `cairntir_session_start` with the wing matching the current project.
+1. Call `cairntir_handoff(wing)` with the wing matching the current project.
    Use the lowercase folder name in the working directory as the wing. If the
-   correct wing is ambiguous, ask the user.
-2. Read the returned identity and essential drawers before answering anything
-   substantive.
+   correct wing is ambiguous, ask the user. Prefer this over
+   `cairntir_session_start`: handoff returns whole drawers under a budget,
+   including recent default-layer memories. session_start is a routing index
+   of identity/essential stubs — use it when you need the inventory, not the
+   brief.
+2. Read the returned drawers before answering anything substantive.
 3. Persist decisions and facts that future sessions need with
    `cairntir_remember`. Preserve the user's wording when it is load-bearing.
 4. Call `cairntir_recall` before reasoning from scratch about past decisions,
@@ -47,7 +50,7 @@ At the start of every conversation:
    treat open requests surfaced by the handoff as first-class owed work, not
    background noise.
 
-If session start returns no memory for an established wing, report that the
+If handoff returns no memory for an established wing, report that the
 store may be new or misconfigured. Do not silently substitute model memory.
 
 This policy is host-neutral: every agent must read and write the same Cairntir

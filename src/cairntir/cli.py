@@ -19,6 +19,7 @@ from cairntir.cost import render as render_cost
 from cairntir.errors import EmbeddingError, MCPError, MemoryStoreError, ProjectionError
 from cairntir.handoff import DEFAULT_BUDGET_CHARS
 from cairntir.hosts import (
+    CURSOR_USER_RULE_PASTE_HINT,
     MEMORY_POLICY,
     POLICY_BEGIN_MARKER,
     POLICY_END_MARKER,
@@ -1418,70 +1419,6 @@ def _load_or_init_json(path: Path) -> dict[str, Any]:
     return loaded
 
 
-def _run_claude(claude: str, *args: str) -> tuple[int, str, str]:
-    """Invoke the claude CLI. Returns ``(returncode, stdout, stderr)``."""
-    import subprocess
-
-    try:
-        result = subprocess.run(  # noqa: S603 — argv is fully constructed, no shell
-            [claude, *args],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-    except OSError as exc:
-        return 1, "", f"failed to invoke `claude`: {exc}"
-    return result.returncode, (result.stdout or "").strip(), (result.stderr or "").strip()
-
-
-def _register_user_via_claude_cli(*, force: bool) -> tuple[bool, str]:
-    """Call ``claude mcp add -s user ...`` to register Cairntir user-level.
-
-    Returns ``(ok, message)``. The registered command is the stable
-    ``cairntir-mcp`` console script — pip's launcher hard-pins the
-    interpreter that installed Cairntir, so we do not have to. If
-    ``force`` is true and a prior registration already exists, runs
-    ``claude mcp remove -s user cairntir`` first so the new spec
-    replaces the old one cleanly. Idempotent on "already exists" when
-    ``force`` is false.
-    """
-    import shutil
-
-    claude = shutil.which("claude")
-    if claude is None:
-        return (
-            False,
-            "could not find the `claude` CLI on PATH. Install Claude Code or "
-            "register manually:\n  claude mcp add -s user cairntir -- cairntir-mcp",
-        )
-
-    add_args = ("mcp", "add", "-s", "user", "cairntir", "--", "cairntir-mcp")
-
-    if force:
-        # Best-effort remove. Failure here is not fatal — the add below
-        # will either succeed or report the real reason.
-        _run_claude(claude, "mcp", "remove", "-s", "user", "cairntir")
-        # The checkpoint is bound to the prior registration; clear it
-        # so the next CLI invocation re-verifies through `claude mcp
-        # list` rather than trusting a stale flag.
-        clear_checkpoint()
-
-    code, stdout, stderr = _run_claude(claude, *add_args)
-    if code == 0:
-        return True, stdout or "registered"
-
-    combined = (stderr or stdout).lower()
-    if "already exists" in combined and not force:
-        return (
-            True,
-            "cairntir is already registered at user scope. "
-            "If it is pointing at the wrong launcher, re-register with:\n"
-            "  cairntir init --user --force",
-        )
-
-    return False, f"`claude mcp add` exited {code}: {stderr or stdout}"
-
-
 GREETING_BEGIN_MARKER: str = POLICY_BEGIN_MARKER
 GREETING_END_MARKER: str = POLICY_END_MARKER
 GREETING_BODY: str = MEMORY_POLICY
@@ -1567,6 +1504,8 @@ def init_cmd(
             typer.echo(f"greeting preamble {result.policy} at {result.policy_path}")
         elif result.policy_path is None:
             typer.echo(f"{selected}: policy {result.policy}")
+            if selected == "cursor":
+                _echo_manual_cursor_rule()
         else:
             typer.echo(f"{selected}: policy {result.policy} at {result.policy_path}")
         if selected == "claude" and force:
@@ -1620,6 +1559,42 @@ def _emoji_tip(message: str) -> None:
     typer.echo(typer.style(f"  tip  {message}", fg=typer.colors.BLUE))
 
 
+def _echo_manual_cursor_rule() -> None:
+    """Print the paste-ready User Rule Cursor cannot install from a file."""
+    typer.echo(f"  {CURSOR_USER_RULE_PASTE_HINT}")
+    typer.echo()
+    for line in MEMORY_POLICY.strip().splitlines():
+        typer.echo(f"  {line}")
+    typer.echo()
+
+
+def _setup_wire_user_hosts(*, force: bool) -> None:
+    """Register every supported host at user scope. Missing CLIs are skipped."""
+    home = Path.home()
+    root = Path.cwd()
+    for selected in SUPPORTED_HOSTS:
+        try:
+            result = configure_host(
+                selected,
+                scope="user",
+                root=root,
+                home=home,
+                force=force,
+                install_policy=True,
+            )
+        except HostConfigurationError as exc:
+            _emoji_warn(f"{selected}: {exc}")
+            continue
+        location = f" in {result.registration_path}" if result.registration_path else ""
+        _emoji_ok(f"{selected} MCP {result.registration}{location}")
+        if result.policy_path is None:
+            _emoji_warn(f"{selected}: {result.policy}")
+        else:
+            _emoji_ok(f"{selected} policy {result.policy} at {result.policy_path}")
+        if selected == "claude" and force:
+            clear_checkpoint()
+
+
 @app.command("setup")
 def setup_cmd(
     yes: bool = typer.Option(
@@ -1632,11 +1607,12 @@ def setup_cmd(
 ) -> None:
     """Interactive setup wizard. The one command a new user ever types.
 
-    Walks you through: checking Claude Code is installed, confirming which
-    Python interpreter will be pinned, choosing where Cairntir's memory
-    lives, registering the MCP server at user scope, installing the
-    greeting preamble so every session actually uses the memory, running
-    a smoke test, and telling you exactly what to do next.
+    Walks you through: confirming which Python interpreter will be pinned,
+    choosing where Cairntir's memory lives, registering every supported
+    host at user scope (Claude Code, Codex, Cursor, Qwen Code — missing
+    CLIs are skipped, not fatal), printing the Cursor User Rule that
+    Cursor cannot install from a file, running a smoke test, and telling
+    you exactly what to do next.
 
     This is the command the docs and the README both point at. If you
     only ever run one Cairntir command in your life, this is it.
@@ -1648,25 +1624,24 @@ def setup_cmd(
 
     total = 8
 
-    # ---- Step 1: claude CLI ------------------------------------------------
-    _emoji_step(1, total, "Checking Claude Code is installed")
-    claude = shutil.which("claude")
-    if claude is None:
-        _emoji_fail("the `claude` CLI is not on your PATH")
-        _emoji_tip("install Claude Code from https://claude.com/claude-code")
-        _emoji_tip("then run `cairntir setup` again")
-        raise typer.Exit(code=1)
-    try:
-        version = subprocess.run(  # noqa: S603
-            [claude, "--version"],
-            capture_output=True,
-            text=True,
-            check=False,
-        ).stdout.strip()
-    except OSError as exc:
-        _emoji_fail(f"could not run `claude --version`: {exc}")
-        raise typer.Exit(code=1) from exc
-    _emoji_ok(f"found {version or 'claude CLI'}")
+    # ---- Step 1: detect hosts — never fail --------------------------------
+    _emoji_step(1, total, "Looking for agent hosts")
+    for name in ("claude", "codex"):
+        path = shutil.which(name)
+        if path is None:
+            _emoji_warn(f"`{name}` is not on PATH — {name} user-scope MCP will be skipped")
+        else:
+            try:
+                version = subprocess.run(  # noqa: S603
+                    [path, "--version"],
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                ).stdout.strip()
+            except OSError:
+                version = name
+            _emoji_ok(f"found {version or name}")
+    _emoji_ok("Cursor and Qwen Code are wired via config files; no CLI required")
 
     # ---- Step 2: Python interpreter ---------------------------------------
     _emoji_step(2, total, "Confirming Python interpreter")
@@ -1676,7 +1651,7 @@ def setup_cmd(
     if in_venv:
         _emoji_warn("this Python lives inside a virtual environment")
         _emoji_tip(
-            "Cairntir will register this exact absolute path, so Claude Code "
+            "Cairntir will register this exact absolute path, so every host "
             "will find it regardless of which venv is active. If you delete or "
             "move this venv, re-run `cairntir setup`."
         )
@@ -1695,43 +1670,30 @@ def setup_cmd(
     else:
         _emoji_tip(
             "to move this later, set the CAIRNTIR_HOME environment variable "
-            "before launching Claude Code."
+            "before launching your agent host."
         )
 
-    # ---- Step 4: register MCP server user-level ---------------------------
-    _emoji_step(4, total, "Registering the MCP server at user scope")
+    # ---- Step 4: register every host at user scope ------------------------
+    _emoji_step(4, total, "Registering MCP servers at user scope")
     if not yes:
         confirm = typer.confirm(
-            "This will run `claude mcp add -s user cairntir` (replacing any "
-            "existing entry). Proceed?",
+            "This will register Cairntir for Claude Code, Codex, Cursor, and "
+            "Qwen Code at user scope (skipping any host whose CLI is missing). "
+            "Proceed?",
             default=True,
         )
         if not confirm:
-            _emoji_warn("skipped MCP registration — you can run `cairntir init --user` later.")
+            _emoji_warn("skipped host registration — run `cairntir init --host all --user` later.")
         else:
-            ok, message = _register_user_via_claude_cli(force=True)
-            if not ok:
-                _emoji_fail(message)
-                raise typer.Exit(code=1)
-            _emoji_ok("registered")
-            for line in message.splitlines():
-                typer.echo(f"       {line}")
+            _setup_wire_user_hosts(force=True)
     else:
-        ok, message = _register_user_via_claude_cli(force=True)
-        if not ok:
-            _emoji_fail(message)
-            raise typer.Exit(code=1)
-        _emoji_ok("registered")
+        _setup_wire_user_hosts(force=True)
 
-    # ---- Step 5: greeting preamble ----------------------------------------
-    _emoji_step(5, total, "Installing the greeting preamble")
-    greeting_path = Path.home() / ".claude" / "CLAUDE.md"
-    action = _upsert_greeting(greeting_path)
-    _emoji_ok(f"{action} at {greeting_path}")
-    _emoji_tip(
-        "this file tells every Claude Code session to check Cairntir memory "
-        "before answering — without it, the MCP server is wired but silent."
-    )
+    # ---- Step 5: Cursor User Rule (manual paste) --------------------------
+    _emoji_step(5, total, "Cursor User Rule")
+    _emoji_warn("Cursor user-scope MCP is a file; the User Rule is not")
+    _echo_manual_cursor_rule()
+    _emoji_tip("project-local `cairntir init --host cursor` writes the rule automatically")
 
     # ---- Step 6: initialize / migrate the store --------------------------
     _emoji_step(6, total, "Initializing the memory store")
@@ -1778,17 +1740,18 @@ def setup_cmd(
     typer.echo(typer.style("Cairntir is ready.", fg=typer.colors.GREEN, bold=True))
     typer.echo()
     typer.echo("Next:")
-    typer.echo("  1. Fully quit Claude Code — not just close the window.")
+    typer.echo("  1. Fully quit the host you use — not just close the window.")
     typer.echo("  2. Reopen it in any folder.")
     typer.echo('  3. Ask the fresh chat: "what is cairntir?"')
     typer.echo()
     typer.echo(
-        "  If Claude answers with real knowledge and offers to call "
-        "cairntir_session_start, you're done."
+        "  If it answers with real knowledge and offers to call cairntir_handoff, you're done."
     )
     typer.echo()
     typer.echo("Learn more:  docs/cairntir-for-dummies.md")
     typer.echo("Troubleshoot: cairntir status     # shows wings + drawer counts")
+    typer.echo("Optional:    python -m cairntir.daemon   # spool capture; not started by setup")
+    typer.echo("Recipes:     cairntir recipe-list        # CLI-only; agents do not see these")
 
 
 @app.command("recipe-list")

@@ -970,7 +970,7 @@ def _unknown_wing_notice(store: DrawerStore, wing: str) -> str | None:
     leaves the caller guessing, and a guessing caller writes to a new wing
     and splits the project's memory in two.
     """
-    if store.list_by(wing=wing, limit=1):
+    if store.wing_exists(wing):
         return None
     counts = store.wing_counts()
     if not counts:
