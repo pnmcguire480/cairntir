@@ -418,7 +418,22 @@ def test_init_cursor_project_writes_mcp_and_always_rule(
     assert rule.exists()
     contents = rule.read_text(encoding="utf-8")
     assert "alwaysApply: true" in contents
-    assert "cairntir_session_start" in contents
+    assert "cairntir_handoff" in contents
+
+
+def test_init_cursor_user_prints_paste_ready_rule(
+    tmp_path: Path,
+    monkeypatch: object,
+) -> None:
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))  # type: ignore[attr-defined]
+    monkeypatch.setenv("HOME", str(tmp_path))  # type: ignore[attr-defined]
+    monkeypatch.chdir(tmp_path)  # type: ignore[attr-defined]
+    result = runner.invoke(app, ["init", "--host", "cursor", "--user"])
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / ".cursor" / "mcp.json").exists()
+    assert "Cursor Settings" in result.output
+    assert "cairntir_handoff" in result.output
+    assert not (tmp_path / ".cursor" / "rules" / "cairntir.mdc").exists()
 
 
 def test_init_codex_project_preserves_existing_config(
@@ -545,7 +560,7 @@ def test_upsert_greeting_creates_file_when_missing(tmp_path: Path) -> None:
     text = target.read_text(encoding="utf-8")
     assert GREETING_BEGIN_MARKER in text
     assert GREETING_END_MARKER in text
-    assert "cairntir_session_start" in text
+    assert "cairntir_handoff" in text
 
 
 def test_upsert_greeting_appends_to_existing_file(tmp_path: Path) -> None:
@@ -577,7 +592,7 @@ def test_upsert_greeting_updates_existing_markers(tmp_path: Path) -> None:
     assert action == "updated"
     text = target.read_text(encoding="utf-8")
     assert "STALE OLD GREETING" not in text
-    assert "cairntir_session_start" in text
+    assert "cairntir_handoff" in text
     assert "prologue" in text
     assert "epilogue" in text
 
@@ -618,7 +633,7 @@ def test_init_user_installs_greeting_by_default(monkeypatch: object, tmp_path: P
     assert "greeting preamble" in result.stdout
     claude_md = tmp_path / ".claude" / "CLAUDE.md"
     assert claude_md.exists()
-    assert "cairntir_session_start" in claude_md.read_text(encoding="utf-8")
+    assert "cairntir_handoff" in claude_md.read_text(encoding="utf-8")
 
 
 def test_init_user_no_greeting_flag_skips_install(monkeypatch: object, tmp_path: Path) -> None:
@@ -682,25 +697,39 @@ def test_setup_wizard_happy_path(tmp_path: Path, monkeypatch: object) -> None:
         assert f"[{i}/8]" in result.stdout
     assert "Cairntir is ready." in result.stdout
     assert "smoke test" in result.stdout.lower()
+    assert "cairntir_handoff" in result.stdout
+    assert "Cursor Settings" in result.stdout
     # Greeting preamble landed.
     claude_md = tmp_path / ".claude" / "CLAUDE.md"
     assert claude_md.exists()
-    assert "cairntir_session_start" in claude_md.read_text(encoding="utf-8")
+    assert "cairntir_handoff" in claude_md.read_text(encoding="utf-8")
+    # Cursor user-scope MCP is a file; policy is printed for paste.
+    assert (tmp_path / ".cursor" / "mcp.json").exists()
     # Store exists with one drawer from the smoke test.
     db = tmp_path / "home" / "cairntir.db"
     assert db.exists()
 
 
-def test_setup_fails_when_claude_cli_missing(monkeypatch: object) -> None:
+def test_setup_succeeds_when_claude_cli_missing(tmp_path: Path, monkeypatch: object) -> None:
+    """A Cursor-only user can complete README's first command."""
     import shutil
 
-    def _no_claude(_name: str) -> str | None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path / "home"))  # type: ignore[attr-defined]
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))  # type: ignore[attr-defined]
+    monkeypatch.setenv("HOME", str(tmp_path))  # type: ignore[attr-defined]
+
+    def _no_cli(_name: str) -> str | None:
         return None
 
-    monkeypatch.setattr(shutil, "which", _no_claude)  # type: ignore[attr-defined]
+    monkeypatch.setattr(shutil, "which", _no_cli)  # type: ignore[attr-defined]
     result = runner.invoke(app, ["setup", "--yes"])
-    assert result.exit_code != 0
+    assert result.exit_code == 0, result.stdout
     assert "claude" in result.stdout.lower()
+    assert "skipped" in result.stdout.lower() or "not on PATH" in result.stdout
+    assert "Cairntir is ready." in result.stdout
+    assert (tmp_path / ".cursor" / "mcp.json").exists()
+    assert "Cursor Settings" in result.stdout
+    assert (tmp_path / "home" / "cairntir.db").exists()
 
 
 def test_setup_home_override_sets_env(tmp_path: Path, monkeypatch: object) -> None:

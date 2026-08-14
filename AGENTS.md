@@ -104,7 +104,7 @@ Read these in a fresh chat and you have full context. That is the sniff test.
 4. `ETHOS.md` — the 5 principles
 5. `docs/lineage/brainstormer.md` and `docs/lineage/mempalace.md` — what was kept
    and dropped from each predecessor
-6. `HARNESS_AUDIT.md` — 12-primitive gap analysis (the rebuild justification)
+6. `HARNESS_AUDIT.md` — pointer to the BrainStormer harness audit in `lineage/`
 7. `docs/release-cadence.md` — commit vs. merge vs. tag, and how a version is chosen
 8. `plans/` — the live execution plans
 
@@ -114,11 +114,14 @@ Read these in a fresh chat and you have full context. That is the sniff test.
 You have access to persistent memory through the `cairntir_*` MCP tools.
 At the start of every conversation:
 
-1. Call `cairntir_session_start` with the wing matching the current project.
+1. Call `cairntir_handoff(wing)` with the wing matching the current project.
    Use the lowercase folder name in the working directory as the wing. If the
-   correct wing is ambiguous, ask the user.
-2. Read the returned identity and essential drawers before answering anything
-   substantive.
+   correct wing is ambiguous, ask the user. Prefer this over
+   `cairntir_session_start`: handoff returns whole drawers under a budget,
+   including recent default-layer memories. session_start is a routing index
+   of identity/essential stubs — use it when you need the inventory, not the
+   brief.
+2. Read the returned drawers before answering anything substantive.
 3. Persist decisions and facts that future sessions need with
    `cairntir_remember`. Preserve the user's wording when it is load-bearing.
 4. Call `cairntir_recall` before reasoning from scratch about past decisions,
@@ -130,8 +133,17 @@ At the start of every conversation:
    method that differs from the prior baseline, call `cairntir_discover` and
    tell the user. Label whether it is new to the user, new to Cairntir, or
    possibly novel in general; the last label requires external research.
+7. Capture-on-arrival: when the user makes a request that may not be fully
+   executed within the current turn — work that starts later, a deferred task,
+   a session about to end, restart, or compact — record it with
+   `cairntir_remember` IMMEDIATELY, before doing any other work on it, in the
+   user's exact wording. Never defer that write to the end of the turn or the
+   session: a session can die between the request and the write, and capture
+   that waits for a quiet moment never happens. Conversely, when resuming,
+   treat open requests surfaced by the handoff as first-class owed work, not
+   background noise.
 
-If session start returns no memory for an established wing, report that the
+If handoff returns no memory for an established wing, report that the
 store may be new or misconfigured. Do not silently substitute model memory.
 
 This policy is host-neutral: every agent must read and write the same Cairntir

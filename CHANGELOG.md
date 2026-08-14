@@ -13,6 +13,47 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`cairntir setup` required the Claude Code CLI and exited 1 without
+  it**, so a Cursor-only user following the README's first command
+  could not install. Setup now detects hosts, wires every supported
+  adapter at user scope, and skips missing CLIs instead of failing.
+  Cursor's paste-ready User Rule is printed by `setup` and by
+  `cairntir init --host cursor --user`.
+- **The installed memory policy told every agent to call
+  `cairntir_session_start`**, which skips default-layer (`on_demand`)
+  writes unless a query is passed. Default `cairntir_remember` is
+  `on_demand`. The policy now starts with `cairntir_handoff`, which
+  already returns those drawers from leftover budget. Every marked
+  policy copy in the repo is checked against `MEMORY_POLICY`.
+- **The docs-site How to Use page described a different product** —
+  `pipx install -e c:/Dev/Cairntir`, expect `cairntir 0.1.0`, twelve
+  tools. It now matches 1.7.0. Docs home, MkDocs nav, SECURITY.md,
+  and the README addendum no longer advertise 1.0 / 1.2.0-rc / 1.4.0
+  as current.
+
+### Changed
+
+- PyPI classifier moved from Pre-Alpha to Beta, matching a published
+  1.7.0.
+- README tests badge is the GitHub Actions workflow, not a static
+  "passing" image. Host compatibility splits first-class adapters
+  (four) from generic MCP clients.
+- `DrawerStore.wing_exists` answers the unknown-wing notice with
+  SQL `EXISTS` instead of materialising a row (`list_by(limit=1)`).
+  Jarvis's P3 on the 1.7.0 review: existence-only call sites should
+  not load objects. `handoff`'s recency `_SCAN_LIMIT` is still a
+  window, not "all" — left alone on purpose.
+- Root `HARNESS_AUDIT.md` is a pointer to the BrainStormer lineage
+  copy, not a second drifted audit. `plans/README.md` names live
+  vs dated plans without moving files (moving would break
+  commitment discovery). Issue template version placeholder is
+  1.7.0. Integration-guide embedder example no longer implies
+  MiniLM/384 is production. `setup` names the optional daemon and
+  that recipes are CLI-only. Coverage omit on `mcp/server.py` now
+  says what it hides.
+
 ## [1.7.0] — 2026-08-13
 
 Eight findings from an external upgrade review against a live 3,586-drawer
