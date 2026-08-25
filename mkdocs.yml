@@ -38,6 +38,7 @@ nav:
   - Manifesto: manifesto.md
   - Concept: concept.md
   - Roadmap: roadmap.md
+  - v1.7.1: release/v1.7.1.md
   - v1.7.0: release/v1.7.0.md
   - Lineage:
       - BrainStormer: lineage/brainstormer.md

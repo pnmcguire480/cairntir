@@ -13,6 +13,8 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.7.1] — 2026-08-25
+
 ### Fixed
 
 - **`cairntir setup` required the Claude Code CLI and exited 1 without
@@ -29,9 +31,22 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   policy copy in the repo is checked against `MEMORY_POLICY`.
 - **The docs-site How to Use page described a different product** —
   `pipx install -e c:/Dev/Cairntir`, expect `cairntir 0.1.0`, twelve
-  tools. It now matches 1.7.0. Docs home, MkDocs nav, SECURITY.md,
+  tools. It now matches the supported 1.7 series. Docs home, MkDocs nav, SECURITY.md,
   and the README addendum no longer advertise 1.0 / 1.2.0-rc / 1.4.0
   as current.
+- **Current-state sources disagreed with shipped behavior.** `CLAUDE.md`
+  still reported 466 tests and three already-landed gaps; the roadmap called
+  Phase 1 "next" and counted 18 MCP tools; the concept page counted 17; the
+  plan map treated completed bootstrap and source-assessment plans as live;
+  and memory drawer #215 still surfaced v1.3.0 as prepared but unpublished.
+  The repository now agrees on the 20-tool surface and the actual v1.8.0
+  transcript-recovery next step. A superseding drawer closes an explicitly
+  flagged open question on the handoff path without rewriting its evidence.
+- **The production tokenizer-window eval bypassed the production provider.**
+  It constructed FastEmbed directly, looked in the temporary default cache,
+  and failed the documented offline release gate even when Cairntir's anchored
+  model cache was healthy. The test now loads the same provider and cache path
+  as the CLI and MCP server.
 
 ### Changed
 
@@ -49,7 +64,7 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   copy, not a second drifted audit. `plans/README.md` names live
   vs dated plans without moving files (moving would break
   commitment discovery). Issue template version placeholder is
-  1.7.0. Integration-guide embedder example no longer implies
+  1.7.1. Integration-guide embedder example no longer implies
   MiniLM/384 is production. `setup` names the optional daemon and
   that recipes are CLI-only. Coverage omit on `mcp/server.py` now
   says what it hides.
