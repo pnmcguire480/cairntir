@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-05
 **Author:** Qwen Code (qwen3.8-max-preview), from the failed recall test of 2026-08-05 (drawers #299, #300, #301)
-**Status:** v1.8.0 release candidate; local acceptance complete.
+**Status:** v1.8.0 candidate merged to `main` via PR #74; not published.
 
 ---
 
