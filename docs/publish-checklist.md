@@ -57,9 +57,8 @@ Release operations:
 ## Past release records
 
 Evidence and known limits for each shipped release live under `docs/release/`.
-The active candidate is
-[`docs/release/v1.7.1.md`](release/v1.7.1.md). The latest published record is
-[`docs/release/v1.7.0.md`](release/v1.7.0.md).
+The latest published record is
+[`docs/release/v1.7.1.md`](release/v1.7.1.md).
 
 ## Local verification
 

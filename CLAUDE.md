@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.7.1 release candidate** on `fix/new-user-front-door`; v1.7.0 remains the latest published release until the candidate passes the complete gate, PR #67 merges, and `v1.7.1` publishes. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
+- **Stage:** **v1.7.1 published** 2026-08-25 from merge commit `104c905` (PyPI + GitHub release; both artifacts attested). **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
 
 ---
 
@@ -118,19 +118,19 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
-- **Date:** 2026-08-25 (**v1.7.1 truth pass and release candidate**)
-- **What happened:** The shipped product, repository status, roadmap, plan map,
-  MCP inventory, and append-only release ledger were reconciled. The MCP server
-  exposes 20 tools. `docs/roadmap.md` now names the actual next work: v1.7.1,
-  bounded transcript recovery for v1.8.0, then a pre-registered retrieval
-  preflight holdout. Superseded open questions now close on the handoff read
-  path, so the stale v1.3.0 prepared-not-cut drawer can be corrected without
-  rewriting history. The exact candidate passes 695 tests at 84.84% coverage,
-  Ruff, mypy strict across 51 source files, all repository scanners, strict
-  docs, package build, and an isolated Windows wheel install.
-- **Next:** push PR #67, wait for the full matrix, merge through branch
-  protection, tag v1.7.1, verify GitHub/PyPI provenance, and repeat the fresh
-  install from PyPI.
+- **Date:** 2026-08-25 (**v1.7.1 published**)
+- **What happened:** PR #67 merged as `104c905` after the complete matrix. The
+  exact merge passed CI, CodeQL, Docs, and Pages; tag `v1.7.1` then completed
+  trusted publishing in release run `32822613334`. GitHub and PyPI expose the
+  same wheel and sdist hashes, GitHub SLSA verification is bound to the tag,
+  commit, repository, and `release.yml`, and PyPI's Integrity API carries one
+  GitHub-publisher attestation per artifact. A fresh Windows install from the
+  public Simple Index reports 1.7.1, clean redirected help, three bundled
+  recipes, and no broken requirements. The shipped product, roadmap, plan map,
+  20-tool MCP inventory, and append-only release ledger now agree.
+- **Next:** implement bounded transcript recovery for v1.8.0 from
+  `plans/2026-08-05-transcript-recovery.md`, then run the pre-registered
+  retrieval-preflight holdout.
 
 - **Date:** 2026-08-14 (**new-user front door — Tier 2 only, Cairntir off**)
 - **What happened:** First-look audit (drawer #447) then repair on

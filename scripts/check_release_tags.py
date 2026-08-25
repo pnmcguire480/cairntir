@@ -10,8 +10,9 @@ for three months while every ``pip install cairntir`` kept resolving to 1.1.2.
 This check closes that gap. Every released version in CHANGELOG.md must have a
 matching git tag, with two deliberate exemptions:
 
-* The version currently in ``pyproject.toml`` is exempt. During release prep the
-  changelog header is written before the tag exists; that is the normal order.
+* The version currently in ``pyproject.toml`` is exempt only while its tag does
+  not exist. During release prep the changelog header is written before the tag;
+  once tagged, the same gate verifies that version reached PyPI.
 * Versions in :data:`KNOWN_UNRELEASED` are exempt because they are historical
   fact. They are recorded here rather than hidden, and retagging them now would
   re-trigger the publish workflow against a stale commit.
@@ -126,7 +127,7 @@ def unpublished(versions: list[str], published: set[str]) -> list[str]:
 
 
 def main() -> int:
-    """Entry point. Returns 1 if a released changelog version has no tag."""
+    """Return 1 when a released version lacks its tag or PyPI artifacts."""
     try:
         tags = existing_tags()
     except (subprocess.CalledProcessError, OSError) as exc:
@@ -141,12 +142,13 @@ def main() -> int:
         )
         return 1
 
-    in_flight = current_version()
+    current = current_version()
+    in_flight = f"v{current}" not in tags
     violations: list[str] = []
     released: list[str] = []
 
     for version in changelog_versions():
-        if version == in_flight:
+        if version == current and in_flight:
             continue
         if version in KNOWN_UNRELEASED:
             continue
@@ -205,7 +207,8 @@ def main() -> int:
         )
         return 1
 
-    print(f"ok: every released changelog version is tagged and published (in-flight: {in_flight})")
+    suffix = f" (in-flight: {current})" if in_flight else ""
+    print(f"ok: every released changelog version is tagged and published{suffix}")
     return 0
 
 
