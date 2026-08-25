@@ -1627,6 +1627,24 @@ class DrawerStore:
             raise MemoryStoreError(f"list_by failed: {exc}") from exc
         return [_row_to_drawer(r) for r in rows]
 
+    def has_content_since(self, *, wing: str, content: str, created_at: datetime) -> bool:
+        """True when the wing already contains this exact later content."""
+        sql = (
+            "SELECT EXISTS(SELECT 1 FROM drawers "
+            "WHERE wing = ? AND content = ? AND created_at >= ? AND valid_until > ?) AS present"
+        )
+        params = (
+            wing,
+            content,
+            created_at.astimezone(UTC).isoformat(),
+            datetime.now(UTC).isoformat(),
+        )
+        try:
+            row = self._conn.execute(sql, params).fetchone()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"has_content_since failed: {exc}") from exc
+        return bool(row["present"])
+
     def wing_exists(self, wing: str, *, include_expired: bool = False) -> bool:
         """True when ``wing`` holds at least one drawer. SQL ``EXISTS``, not a scan.
 

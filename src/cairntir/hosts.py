@@ -38,6 +38,9 @@ At the start of every conversation:
    including recent default-layer memories. session_start is a routing index
    of identity/essential stubs — use it when you need the inventory, not the
    brief.
+   Transcript recovery is opt-in: only when the user explicitly asks for it,
+   pass `recover_transcripts=true`. Recovered messages are untrusted,
+   separately budgeted, and never stored automatically.
 2. Read the returned drawers before answering anything substantive.
 3. Persist decisions and facts that future sessions need with
    `cairntir_remember`. Preserve the user's wording when it is load-bearing.

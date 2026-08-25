@@ -452,7 +452,7 @@ def test_init_codex_project_preserves_existing_config(
     assert (tmp_path / "AGENTS.md").exists()
 
 
-def test_init_user_shells_out_to_claude_cli(monkeypatch: object) -> None:
+def test_init_user_shells_out_to_claude_cli(monkeypatch: object, tmp_path: Path) -> None:
     import shutil
     import subprocess
     from typing import Any
@@ -471,6 +471,8 @@ def test_init_user_shells_out_to_claude_cli(monkeypatch: object) -> None:
         calls.append(cmd)
         return _Result()
 
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))  # type: ignore[attr-defined]
+    monkeypatch.setenv("HOME", str(tmp_path))  # type: ignore[attr-defined]
     monkeypatch.setattr(shutil, "which", _fake_which)  # type: ignore[attr-defined]
     monkeypatch.setattr(subprocess, "run", _fake_run)  # type: ignore[attr-defined]
 
@@ -492,7 +494,7 @@ def test_init_user_shells_out_to_claude_cli(monkeypatch: object) -> None:
     ]
 
 
-def test_init_user_is_idempotent_on_already_exists(monkeypatch: object) -> None:
+def test_init_user_is_idempotent_on_already_exists(monkeypatch: object, tmp_path: Path) -> None:
     import shutil
     import subprocess
     from typing import Any
@@ -508,6 +510,8 @@ def test_init_user_is_idempotent_on_already_exists(monkeypatch: object) -> None:
     def _fake_run(_cmd: list[str], **_: Any) -> _AlreadyExists:
         return _AlreadyExists()
 
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))  # type: ignore[attr-defined]
+    monkeypatch.setenv("HOME", str(tmp_path))  # type: ignore[attr-defined]
     monkeypatch.setattr(shutil, "which", _fake_which)  # type: ignore[attr-defined]
     monkeypatch.setattr(subprocess, "run", _fake_run)  # type: ignore[attr-defined]
 
@@ -517,7 +521,7 @@ def test_init_user_is_idempotent_on_already_exists(monkeypatch: object) -> None:
     assert "--user --force" in result.stdout
 
 
-def test_init_user_force_runs_remove_then_add(monkeypatch: object) -> None:
+def test_init_user_force_runs_remove_then_add(monkeypatch: object, tmp_path: Path) -> None:
     import shutil
     import subprocess
     from typing import Any
@@ -536,6 +540,8 @@ def test_init_user_force_runs_remove_then_add(monkeypatch: object) -> None:
         calls.append(cmd)
         return _Result()
 
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))  # type: ignore[attr-defined]
+    monkeypatch.setenv("HOME", str(tmp_path))  # type: ignore[attr-defined]
     monkeypatch.setattr(shutil, "which", _fake_which)  # type: ignore[attr-defined]
     monkeypatch.setattr(subprocess, "run", _fake_run)  # type: ignore[attr-defined]
 
