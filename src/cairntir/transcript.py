@@ -380,7 +380,7 @@ def _project_bucket(projects: Path, project_root: Path) -> Path | None:
 
 
 def _sanitise_project_path(path: Path) -> str:
-    return str(path.resolve()).replace(":", "-").replace("\\", "-").replace("/", "-")
+    return re.sub(r"[^a-zA-Z0-9]", "-", str(path.resolve()))
 
 
 def _codex_project(path: Path, project_root: Path) -> bool:
@@ -548,9 +548,33 @@ def _extract_codex(source: Path, events: Sequence[dict[str, Any]]) -> list[Recov
         and payload.get("type") == "task_complete"
         and payload.get("turn_id")
     }
+    response_contents = {
+        content
+        for row in events
+        if row.get("type") == "response_item"
+        and isinstance((payload := row.get("payload")), dict)
+        and (content := _codex_response_content(payload))
+    }
     out: list[RecoveredRequest | None] = []
     for row in events:
         payload = row.get("payload")
+        if (
+            row.get("type") == "event_msg"
+            and isinstance(payload, dict)
+            and payload.get("type") == "user_message"
+            and isinstance(payload.get("message"), str)
+        ):
+            content = payload["message"].strip()
+            if (
+                not content
+                or content.lstrip().startswith(_CODEX_CONTEXT_PREFIXES)
+                or content in response_contents
+            ):
+                continue
+            turn_id = str(payload["turn_id"]) if payload.get("turn_id") else None
+            request = _request("codex", source, row, content, turn_id=turn_id)
+            out.append(None if turn_id in completed_turns else request)
+            continue
         if (
             row.get("type") != "response_item"
             or not isinstance(payload, dict)
@@ -558,19 +582,8 @@ def _extract_codex(source: Path, events: Sequence[dict[str, Any]]) -> list[Recov
             or payload.get("role") != "user"
         ):
             continue
-        content = payload.get("content")
-        if not isinstance(content, list):
-            continue
-        texts = [
-            item["text"].strip()
-            for item in content
-            if isinstance(item, dict)
-            and item.get("type") == "input_text"
-            and isinstance(item.get("text"), str)
-            and item["text"].strip()
-            and not item["text"].lstrip().startswith(_CODEX_CONTEXT_PREFIXES)
-        ]
-        if not texts:
+        content = _codex_response_content(payload)
+        if not content:
             continue
         metadata = payload.get("internal_chat_message_metadata_passthrough")
         turn_id = (
@@ -578,9 +591,29 @@ def _extract_codex(source: Path, events: Sequence[dict[str, Any]]) -> list[Recov
             if isinstance(metadata, dict) and metadata.get("turn_id")
             else None
         )
-        request = _request("codex", source, row, "\n".join(texts), turn_id=turn_id)
+        request = _request("codex", source, row, content, turn_id=turn_id)
         out.append(None if turn_id in completed_turns else request)
     return out
+
+
+def _codex_response_content(payload: dict[str, Any]) -> str:
+    content = payload.get("content")
+    if (
+        payload.get("type") != "message"
+        or payload.get("role") != "user"
+        or not isinstance(content, list)
+    ):
+        return ""
+    texts = [
+        item["text"].strip()
+        for item in content
+        if isinstance(item, dict)
+        and item.get("type") == "input_text"
+        and isinstance(item.get("text"), str)
+        and item["text"].strip()
+        and not item["text"].lstrip().startswith(_CODEX_CONTEXT_PREFIXES)
+    ]
+    return "\n".join(texts)
 
 
 def _until_next_user(events: Sequence[dict[str, Any]], start: int) -> Iterable[dict[str, Any]]:

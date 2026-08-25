@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 from collections.abc import Iterator
@@ -45,7 +46,7 @@ def _write_jsonl(path: Path, rows: list[dict[str, object]], *, mtime: float = 1.
 
 
 def _bucket(root: Path) -> str:
-    return str(root.resolve()).replace(":", "-").replace("\\", "-").replace("/", "-")
+    return re.sub(r"[^a-zA-Z0-9]", "-", str(root.resolve()))
 
 
 def _qwen_path(home: Path, project: Path, session: str) -> Path:
@@ -107,6 +108,14 @@ def _codex_user(turn: str, content: str) -> dict[str, object]:
             "content": [{"type": "input_text", "text": content}],
             "internal_chat_message_metadata_passthrough": {"turn_id": turn},
         },
+    }
+
+
+def _codex_event_user(content: str) -> dict[str, object]:
+    return {
+        "timestamp": "2026-08-25T10:00:01Z",
+        "type": "event_msg",
+        "payload": {"type": "user_message", "message": content, "kind": "plain"},
     }
 
 
@@ -249,6 +258,7 @@ def test_codex_adapter_filters_injected_app_context(store: DrawerStore, tmp_path
     rows = [
         _codex_meta(session, project),
         _codex_user("turn-1", "<recommended_plugins>not user-authored</recommended_plugins>"),
+        _codex_event_user("Implement the Codex transcript adapter."),
         _codex_user("turn-1", "Implement the Codex transcript adapter."),
     ]
     _write_jsonl(_codex_path(home, session), rows)
@@ -299,7 +309,7 @@ def test_kill_after_request_is_named_verbatim_on_first_handoff(
     killed_path = _codex_path(home, previous)
     transcript = "".join(
         json.dumps(row) + "\n"
-        for row in [_codex_meta(previous, project), _codex_user("killed-turn", request)]
+        for row in [_codex_meta(previous, project), _codex_event_user(request)]
     )
     writer = (
         "import sys,time; from pathlib import Path; "
