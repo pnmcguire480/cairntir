@@ -13,6 +13,13 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Changed
+
+- **The release-tag gate stops calling an already-published current version
+  "in-flight."** The current `pyproject.toml` version is exempt only until its
+  tag exists; after tagging, the gate verifies that version on PyPI like every
+  other release.
+
 ## [1.7.1] — 2026-08-25
 
 ### Fixed

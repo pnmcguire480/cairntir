@@ -84,6 +84,45 @@ def test_unpublished_flags_only_the_missing_versions() -> None:
     assert missing == ["1.1.2"]
 
 
+def test_current_version_is_verified_after_its_tag_exists(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    module = _load_script()
+    monkeypatch.setattr(module, "existing_tags", lambda: {"v1.7.1"})
+    monkeypatch.setattr(module, "current_version", lambda: "1.7.1")
+    monkeypatch.setattr(module, "changelog_versions", lambda: ["1.7.1"])
+    monkeypatch.setattr(module, "pypi_published_versions", lambda: {"1.7.1"})
+
+    assert module.main() == 0
+    assert "in-flight" not in capsys.readouterr().out
+
+
+def test_untagged_current_version_remains_in_flight(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    module = _load_script()
+    monkeypatch.setattr(module, "existing_tags", lambda: {"v1.7.0"})
+    monkeypatch.setattr(module, "current_version", lambda: "1.7.1")
+    monkeypatch.setattr(module, "changelog_versions", lambda: ["1.7.1", "1.7.0"])
+    monkeypatch.setattr(module, "pypi_published_versions", lambda: {"1.7.0"})
+
+    assert module.main() == 0
+    assert "in-flight: 1.7.1" in capsys.readouterr().out
+
+
+def test_tagged_current_version_must_exist_on_pypi(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    module = _load_script()
+    monkeypatch.setattr(module, "existing_tags", lambda: {"v1.7.1"})
+    monkeypatch.setattr(module, "current_version", lambda: "1.7.1")
+    monkeypatch.setattr(module, "changelog_versions", lambda: ["1.7.1"])
+    monkeypatch.setattr(module, "pypi_published_versions", lambda: set())
+
+    assert module.main() == 1
+    assert "tag v1.7.1 exists but PyPI serves no files" in capsys.readouterr().err
+
+
 def test_the_check_runs_as_a_release_gate_with_tags_fetched() -> None:
     release = (WORKFLOWS / "release.yml").read_text(encoding="utf-8")
     assert "scripts/check_release_tags.py" in release
