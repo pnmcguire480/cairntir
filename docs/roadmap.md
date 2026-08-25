@@ -9,9 +9,9 @@ The original v0.1 → v1.7 build plans are retained under `plans/` as history.
 They are not current status. The live plan map is
 [`plans/README.md`](https://github.com/pnmcguire480/cairntir/blob/main/plans/README.md).
 
-## v1.7.1 — New-user front door and truth pass
+## v1.7.1 — New-user front door and truth pass ✅
 
-Patch release for failures in the first five minutes:
+Published 2026-08-25. Patch release for failures in the first five minutes:
 
 - `cairntir setup` works without the Claude Code CLI and configures installed
   hosts while reporting unavailable ones;
@@ -21,8 +21,8 @@ Patch release for failures in the first five minutes:
 - first-run documentation, status, plan-map, MCP inventory, and release memory
   agree with the shipped product;
 - the full local gate, remote operating-system/Python matrix, package build,
-  trusted publication, provenance attestations, and fresh Windows install are
-  release requirements.
+  trusted publication, provenance attestations, and fresh Windows install all
+  passed.
 
 No schema migration or reindex is required.
 

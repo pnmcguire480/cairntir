@@ -3,7 +3,7 @@
 This is the human front door. If a command or version here disagrees
 with the code, this file is wrong.
 
-**Current release candidate: 1.7.1.** Zero-prior-knowledge walkthrough:
+**Current release: 1.7.1.** Zero-prior-knowledge walkthrough:
 [cairntir-for-dummies.md](cairntir-for-dummies.md).
 
 ## Install
