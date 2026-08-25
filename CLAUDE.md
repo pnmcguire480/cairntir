@@ -129,10 +129,11 @@ under `docs/recipes/` and earn their place by use, not by governance.
   immediately after the user event, and proves the fresh backend's first
   handoff returns the request verbatim. Local gates: 711 tests at 84.48%,
   Ruff, mypy strict, all repository checks, strict docs, wheel/sdist build, and
-  isolated Windows wheel smoke pass.
-- **Next:** land the candidate through a protected-branch PR and require the
-  full remote matrix. Do not tag or publish without Patrick's explicit release
-  action. Then run the pre-registered retrieval-preflight holdout.
+  isolated Windows wheel smoke pass. PR #74 passed lint/type, CodeQL, package
+  build, LongMemEval R@5, and the nine-way OS/Python test matrix.
+- **Next:** merge PR #74 through the protected branch. Do not tag or publish
+  without Patrick's explicit release action. Then run the pre-registered
+  retrieval-preflight holdout.
 
 - **Date:** 2026-08-25 (**v1.7.1 published**)
 - **What happened:** PR #67 merged as `104c905` after the complete matrix. The
