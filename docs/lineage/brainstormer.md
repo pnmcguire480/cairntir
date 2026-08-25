@@ -64,7 +64,7 @@ BrainStormer had commands for init, wrapup, quality, status, doctor, sync, updat
 
 ### init / wrapup Ceremony
 
-BrainStormer required users to type `brainstormer init` and `brainstormer wrapup` at session boundaries. Users dropped out at the ceremony. Cairntir replaces both with a background daemon and an auto-called `cairntir_session_start` MCP tool. **The user does nothing.**
+BrainStormer required users to type `brainstormer init` and `brainstormer wrapup` at session boundaries. Users dropped out at the ceremony. Cairntir replaces both with a background daemon and a host policy that starts each session with the bounded `cairntir_handoff` MCP tool. **The user does nothing.**
 
 ### The License System
 

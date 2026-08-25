@@ -51,10 +51,9 @@ otherwise is how the old assertion passed while being false.
 @pytest.mark.slow
 def test_declared_embedder_window_matches_the_model() -> None:
     """PRODUCTION_TOKEN_WINDOW must equal the tokenizer's configured truncation."""
-    from fastembed import TextEmbedding
-
-    model = TextEmbedding(model_name=PRODUCTION_MODEL)
-    tokenizer = model.model.tokenizer  # type: ignore[attr-defined]
+    provider = FastEmbedProvider()
+    provider.dimension  # noqa: B018 — force the production model/cache path
+    tokenizer = provider._model.model.tokenizer  # type: ignore[union-attr]
     assert tokenizer is not None, "cannot verify a window without a tokenizer"
 
     configured = tokenizer.truncation["max_length"]

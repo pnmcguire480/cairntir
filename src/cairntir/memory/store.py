@@ -1627,6 +1627,28 @@ class DrawerStore:
             raise MemoryStoreError(f"list_by failed: {exc}") from exc
         return [_row_to_drawer(r) for r in rows]
 
+    def wing_exists(self, wing: str, *, include_expired: bool = False) -> bool:
+        """True when ``wing`` holds at least one drawer. SQL ``EXISTS``, not a scan.
+
+        The unknown-wing notice only needs a yes/no. ``list_by(limit=1)``
+        still materialises a full row — content, metadata, provenance —
+        to answer a boolean. Jarvis's P3 on the 1.7.0 review: call sites
+        that only check existence should not load objects. Not urgent at
+        a few thousand drawers; cheap to make honest now.
+        """
+        clauses = ["wing = ?"]
+        params: list[Any] = [wing]
+        if not include_expired:
+            clauses.append("valid_until > ?")
+            params.append(datetime.now(UTC).isoformat())
+        where = " AND ".join(clauses)
+        sql = f"SELECT EXISTS(SELECT 1 FROM drawers WHERE {where}) AS present"  # noqa: S608
+        try:
+            row = self._conn.execute(sql, params).fetchone()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"wing_exists failed: {exc}") from exc
+        return bool(row["present"])
+
     def content_lengths(
         self, *, wing: str | None = None, include_expired: bool = False
     ) -> list[int]:

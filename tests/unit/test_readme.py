@@ -84,3 +84,14 @@ def test_documented_cli_commands_exist(readme: str) -> None:
 
     missing = advertised - registered
     assert not missing, f"README advertises CLI commands that do not exist: {sorted(missing)}"
+
+
+def test_how_to_use_is_not_the_v0_product() -> None:
+    """The docs-site front door once taught `pipx install -e c:/Dev/Cairntir`."""
+    text = (REPO_ROOT / "docs" / "how-to-use.md").read_text(encoding="utf-8")
+    assert "c:/Dev/Cairntir" not in text
+    assert "c:\\Dev\\Cairntir" not in text
+    assert "0.1.0" not in text
+    assert "twelve Cairntir tools" not in text
+    assert "cairntir setup" in text
+    assert "cairntir_handoff" in text

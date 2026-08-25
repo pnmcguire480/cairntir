@@ -28,7 +28,7 @@ optimization loop.
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![mypy: strict](https://img.shields.io/badge/mypy-strict-blueviolet.svg)](https://mypy.readthedocs.io/)
 [![ruff](https://img.shields.io/badge/ruff-clean-green.svg)](https://github.com/astral-sh/ruff)
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](tests/)
+[![CI](https://github.com/pnmcguire480/cairntir/actions/workflows/ci.yml/badge.svg)](https://github.com/pnmcguire480/cairntir/actions/workflows/ci.yml)
 [![MCP compatible](https://img.shields.io/badge/MCP-compatible-purple.svg)](https://modelcontextprotocol.io/)
 
 ---
@@ -51,15 +51,18 @@ context you paid for and can't read is the expensive kind.
 
 ```bash
 pip install cairntir           # live on PyPI
-cairntir setup                 # initialize the store + Claude Code
-cairntir init --host all --user # connect Codex, Cursor, and Claude Code
+cairntir setup                 # store + every host it can find
 ```
 
-Restart the configured hosts. Cursor's global MCP entry is installed
+Restart the configured hosts. `setup` does not require the Claude Code
+CLI — a Cursor-only machine completes the same command. Missing CLIs
+are skipped, not fatal. Cursor's global MCP entry is installed
 automatically, but its global User Rule must be pasted into
 **Cursor Settings → Rules → User Rules** because Cursor does not publish a
-file-backed global-rule surface. Project-local Cursor setup is fully automatic:
-`cairntir init --host cursor`.
+file-backed global-rule surface; `setup` prints the text. Project-local
+Cursor setup is fully automatic: `cairntir init --host cursor`.
+
+To (re)wire one host later: `cairntir init --host all --user`.
 
 **Once installed, Cairntir stays on.** Every `cairntir` CLI invocation silently re-verifies the user-scope MCP registration and re-registers the stable `cairntir-mcp` launcher if Claude Code can't find it. Moving venvs, upgrading Python, or reinstalling no longer breaks the wiring — `pip install cairntir` is TRUE, `pip uninstall cairntir` is FALSE, nothing in between. When a newer release lands on PyPI, the next CLI run and the next MCP tool response prepend a one-line update banner; nothing is interrupted.
 
@@ -80,7 +83,7 @@ You open a Claude Code chat in a project you haven't touched in three weeks. Nor
 
 With Cairntir installed:
 
-1. The chat starts. Claude's system prompt tells it to call `cairntir_handoff` before answering anything.
+1. The chat starts. The installed policy tells the agent to call `cairntir_handoff` before answering anything.
 2. Cairntir composes one brief: the operating protocol, the last few session deltas **in full text**, open questions, and — if Claude passes the files it's about to touch — the memory anchored to that code.
 3. Claude reads them. It now knows you picked Postgres, why you picked it, what the hack in `auth.py` is protecting, and what's on next session's list.
 4. You type your question. The answer comes back with real context — and drawer id citations, so you can click through to the source.
@@ -193,14 +196,14 @@ measures its own overhead rather than asking you to trust it.
 
 ## Compatible with
 
-Cairntir is an MCP server. Anything that speaks [Model Context Protocol](https://modelcontextprotocol.io/) can talk to it unchanged:
+**First-class adapters** (`cairntir setup` / `cairntir init --host`):
+**Claude Code, Codex, Cursor, and Qwen Code**, sharing one store with
+per-write host provenance.
 
-- **Codex, Cursor, and [Claude Code](https://claude.com/claude-code)** (first-class hosts sharing one store)
-- **[Claude Desktop](https://claude.ai/download)**
-- **[Cursor](https://cursor.sh/)**
-- **[Windsurf](https://codeium.com/windsurf)**
-- **[Zed](https://zed.dev/)** (MCP client support rolling out)
-- Any other [MCP-compatible client](https://modelcontextprotocol.io/clients)
+**Any other MCP client** — Claude Desktop, Windsurf, Zed, and the rest of
+the [MCP client list](https://modelcontextprotocol.io/clients) — can
+point at `cairntir-mcp` themselves. There is no `init` target for those
+names; they are generic stdio, not first-class hosts.
 
 Pairs naturally with:
 - **Git hooks** — auto-capture commit messages as drawers via the daemon's spool directory.
@@ -289,6 +292,11 @@ Every one of those is the literal text Claude wrote during a session you had wee
 
 ## Project structure
 
+This is a **seam sketch**, not an inventory. `src/cairntir/` has many
+more modules than this block names. `addons/cairntir_blender/` is the
+working Blender add-on; `examples/blender-mcp-plugin/` is a scaffold
+only. `plans/README.md` says which plans are live.
+
 ```
 cairntir/
 ├── src/cairntir/
@@ -313,7 +321,10 @@ cairntir/
 │   ├── property/           # Hypothesis-driven invariants
 │   ├── integration/        # MCP backend + daemon
 │   └── eval/               # LongMemEval R@5 subset (fail-on-regression CI gate)
+├── addons/cairntir_blender/ # Working Blender add-on (not in the wheel)
+├── plans/                  # Live plans + dated history — see plans/README.md
 └── docs/
+    ├── how-to-use.md               # Human front door (must match the shipped product)
     ├── cairntir-for-dummies.md     # Zero-knowledge getting-started guide
     ├── conception.md               # Origin story + ethos + horizon
     ├── concept.md                  # What Cairntir is (the three ingredients)
@@ -332,7 +343,7 @@ cairntir/
 
 Cairntir is the distillation of two predecessors:
 
-- **[MemPalace](https://github.com/milla-jovovich/mempalace)** — brilliant wing/room/drawer taxonomy, 96.6% LongMemEval R@5, but no reasoning layer. We borrowed the concepts, not the code.
+- **[MemPalace](https://github.com/milla-jovovich/mempalace)** — brilliant wing/room/drawer taxonomy, 96.6% LongMemEval R@5, but no reasoning layer. We borrowed the concepts, not the code. **That 96.6% is MemPalace's number, not ours.** Cairntir's CI gate is 80% R@5 on a 10-question internal subset.
 - **BrainStormer** — the author's prior attempt. Great vocabulary (Crucible, Quality, ETHOS), terrible runtime (224 silent `except: pass` blocks, "architecture of a learning system, runtime of a static scaffolder"). Preserved as read-only lineage; reimplemented from scratch.
 
 On 2026-04-08, a **round table of eight thinkers** — Karpathy, LeCun, Sutskever, Hinton, Fuller, Peter Joseph, Alan Watts, Uncle Bob — reviewed the long-road plan and converged on five themes that are now the committed v0.2 → v1.0 arc:
@@ -402,39 +413,12 @@ Either way, we build.
 
 ---
 
-## Addendum — where the stack stands (2026-08-05)
+## Addendum — where the stack stands
 
-_Added at Patrick's request immediately after v1.4.0 shipped. The body above
-says what Cairntir is; this section records where it currently stands — recent
-releases, how the pieces fit end to end, what it concretely helps with, and
-what just changed and why._
-
-### Recent releases, briefly
-
-| Release | Date | Theme |
-|---|---|---|
-| **1.4.0** | 2026-08-05 | The honesty release — wiring the enforcement layer |
-| **1.3.0** | 2026-08-02 | Context budget + structural recall |
-| **1.2.0** | 2026-07-28 | Foundation hardening + multi-host continuity |
-
-- **1.4.0** — Settled predictions now actually close in the handoff and count
-  in calibration. `cairntir doctor --gate` runs the store-integrity check
-  pre-commit, beside the bank, instead of on a CI runner that has no store.
-  The release gate verifies PyPI presence, not just the tag.
-  `cairntir_remember` nudges when a claim carries no prediction. And Qwen Code
-  joins Claude Code, Codex, and Cursor as the fourth supported host.
-- **1.3.0** — `cairntir_handoff`: one composed brief under a hard budget,
-  whole drawers or nothing, replacing hand-maintained HANDOFF.md files.
-  `cairntir cost`: the read path measuring its own overhead. And structural
-  recall — `cairntir_recall_for_change(files)` surfaces the drawers anchored
-  to the files a change touches, with append-only retroactive anchoring.
-- **1.2.0** — Embedding-space identity with fail-closed reads, `doctor` and
-  backup-first `reindex`, exact `get`, host adapters
-  (`cairntir init --host <host|all>`), the Discovery Ledger, immutable write
-  provenance, and prompt-safe evidence rendering.
-
-The full notes live in [CHANGELOG.md](CHANGELOG.md) — each entry is written as
-a claim with its evidence, in the same spirit as the store itself.
+The **1.7.1** release candidate is in verification; **1.7.0** remains the
+latest published release until the tag completes trusted publishing. Release
+history lives in [CHANGELOG.md](CHANGELOG.md) and
+[docs/release/v1.7.1.md](docs/release/v1.7.1.md), not in a second table here.
 
 ### How it works, end to end
 

@@ -34,10 +34,12 @@ theme:
 nav:
   - Home: index.md
   - How to Use: how-to-use.md
+  - For Dummies: cairntir-for-dummies.md
   - Manifesto: manifesto.md
   - Concept: concept.md
   - Roadmap: roadmap.md
-  - v1.2.0 Release Candidate: release/v1.2.0-rc.md
+  - v1.7.1: release/v1.7.1.md
+  - v1.7.0: release/v1.7.0.md
   - Lineage:
       - BrainStormer: lineage/brainstormer.md
       - MemPalace: lineage/mempalace.md

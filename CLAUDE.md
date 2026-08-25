@@ -10,11 +10,11 @@
 - **Name:** Cairntir
 - **Pronunciation:** *CAIRN-teer*
 - **Etymology:** Cairn (stacked waypoint stones marking a path) + Palantir (seeing-stone across time and distance). A stack of stones that sees across time.
-- **One-liner:** Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia.
+- **One-liner:** Host-neutral memory-first reasoning layer. Kills cross-chat AI amnesia.
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.4.1 published** 2026-08-06 (PyPI + GitHub release, both artifacts attested). Latest on PyPI is `1.4.1`; the seven live releases are 1.0.0, 1.1.0, 1.1.2, 1.2.0, 1.3.0, 1.4.0, 1.4.1. Note: 1.4.1's tag push did **not** trigger the release workflow and it shipped via `gh workflow run release.yml --ref v1.4.1` — see Last Session. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`, which now fails the build if that happens again. (Note: `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.)
+- **Stage:** **v1.7.1 release candidate** on `fix/new-user-front-door`; v1.7.0 remains the latest published release until the candidate passes the complete gate, PR #67 merges, and `v1.7.1` publishes. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
 
 ---
 
@@ -117,6 +117,41 @@ under `docs/recipes/` and earn their place by use, not by governance.
 ## Current State
 
 ### Last Session
+
+- **Date:** 2026-08-25 (**v1.7.1 truth pass and release candidate**)
+- **What happened:** The shipped product, repository status, roadmap, plan map,
+  MCP inventory, and append-only release ledger were reconciled. The MCP server
+  exposes 20 tools. `docs/roadmap.md` now names the actual next work: v1.7.1,
+  bounded transcript recovery for v1.8.0, then a pre-registered retrieval
+  preflight holdout. Superseded open questions now close on the handoff read
+  path, so the stale v1.3.0 prepared-not-cut drawer can be corrected without
+  rewriting history. The exact candidate passes 695 tests at 84.84% coverage,
+  Ruff, mypy strict across 51 source files, all repository scanners, strict
+  docs, package build, and an isolated Windows wheel install.
+- **Next:** push PR #67, wait for the full matrix, merge through branch
+  protection, tag v1.7.1, verify GitHub/PyPI provenance, and repeat the fresh
+  install from PyPI.
+
+- **Date:** 2026-08-14 (**new-user front door — Tier 2 only, Cairntir off**)
+- **What happened:** First-look audit (drawer #447) then repair on
+  `fix/new-user-front-door` with Cairntir MCP taken down (editable install).
+  Standing rule #446: only Tier 2. `cairntir setup` no longer requires the
+  Claude CLI; missing hosts are skipped. `MEMORY_POLICY` starts with
+  `cairntir_handoff` (default `on_demand` writes are visible). Every marked
+  policy copy is now tested against the source. Docs-site How to Use is 1.7.0,
+  not `pipx install -e c:/Dev/Cairntir` / 0.1.0. Cursor user-scope init/setup
+  prints the paste-ready User Rule. Stale "current version" surfaces (docs
+  home, MkDocs nav, SECURITY.md, README addendum, CLAUDE.md Stage, PyPI
+  classifier) corrected. 73 targeted tests passing; 124 commitments landed.
+  Same session, second pass: Jarvis's 1.7.0 note + the rest of the
+  first-look list. `wing_exists` (SQL EXISTS) for the unknown-wing
+  notice — his P3. Handoff `_SCAN_LIMIT` left alone. Plans mapped, not
+  moved. HARNESS_AUDIT is a pointer. 689 tests, 83.60% coverage; ruff,
+  mypy --strict (51 files), all check_* gates, mkdocs pending this
+  block. **Not committed.** User-scope Cursor MCP still emptied.
+- **Next:** commit + PR if Patrick wants it. Then re-enable Cursor MCP.
+  Patch is the cadence exception for the install/first-run fixes.
+  Embedder weight pin still needs a fastembed API that does not exist.
 
 - **Date:** 2026-08-12 (**external upgrade review — 7 of 8 findings real, v1.7.0 prepared**)
 - **What happened:** A tester (Jarvis, for Lou) evaluated 1.4.1 → 1.6.2 against a
@@ -1039,7 +1074,7 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 - **Memory layer:** wing/room/drawer taxonomy over sqlite-vec, 4-layer retrieval,
   schema v6 with immutable write provenance and durable idempotency receipts.
-- **MCP server:** 19 tools over stdio (`cairntir-mcp`, or `python -m cairntir.mcp.server`).
+- **MCP server:** 20 tools over stdio (`cairntir-mcp`, or `python -m cairntir.mcp.server`).
 - **Handoff:** `cairntir_handoff(wing)` / `cairntir handoff <wing>` returns one
   composed brief under a hard character budget — protocol, recent deltas, open
   questions, and anchors for the files in play. Drawers come back **whole**;
@@ -1060,30 +1095,29 @@ under `docs/recipes/` and earn their place by use, not by governance.
   embedder's ~2,048-char window. Closes P5. Measures Cairntir's own payload
   only; it is not a general token dashboard and must not become one.
 - **Daemon:** `python -m cairntir.daemon` polls a spool dir and persists drawers.
-- **Three-host continuity:** Claude Code, Codex, and Cursor read and write the
-  same store with host/session provenance preserved.
+- **Four-host continuity:** Claude Code, Codex, Cursor, and Qwen Code read and
+  write the same store with host/session provenance preserved.
 - **Published:** PyPI (`pip install cairntir`) and GitHub releases, both with
   build-provenance attestations. Docs at
   https://pnmcguire480.github.io/cairntir/
-- **Quality bar:** 466 tests passing, 82% coverage, ruff clean, mypy --strict
-  clean across 47 source files, silent-exception scan clean.
+- **Quality bar:** Ruff lint/format, mypy strict, complete pytest with an 80%
+  coverage floor, semantic eval, seam checks, release/tag checks, landed
+  commitments, store health, strict docs, package build, the nine-way OS/Python
+  CI matrix, and isolated Windows installs. Exact evidence lives in the current
+  release record under `docs/release/`.
 
 ### What's Not Built Yet
 
-- **Token budget on `session_start`** — it still returns every identity +
-  essential stub, truncated, plus an evidence block repeating them. `handoff`
-  now exists as the bounded alternative and `session_start`'s description points
-  at it, but `session_start` itself is unchanged and remains the expensive path.
-  Finding 2.
-- **Retrieval ranking quality** — semantic recall ranked a known-correct drawer
-  7th with every hit clustered between 1.03 and 1.15. Hypothesis is drawer size,
-  not the embedding model. Finding 3, needs the split test before any change.
-- **Prediction/calibration in practice** — the machinery exists and has never
-  been used: 0 prediction drawers written by an agent. Nothing in the write path
-  asks for one. Finding 4.
-- **Rename-survival testing for anchor staleness** — `symbol_source_hash` is
-  stored and deliberately never compared. The hold lifts only when tested against
-  a corpus that actually contains renames.
+- **Tier 1 — bounded transcript recovery:** capture-on-arrival cannot survive a
+  kill before the first tool call. The v1.8.0 plan covers Qwen, Claude, and
+  Codex adapters plus an honest unsupported Cursor receipt.
+- **Measured retrieval preflight:** a receipt-visible, thresholded preflight is
+  only a hypothesis. It must beat explicit handoff/recall on a pre-registered
+  holdout and preserve abstention, provenance, and authority boundaries.
+- **Externally blocked model-weight pinning:** FastEmbed's production model
+  source does not expose a usable revision contract.
+- **Tier 3 rename-survival evaluation:** `symbol_source_hash` remains stored but
+  deliberately unused until a real rename corpus can test the signal.
 
 ### Local Development Note
 
@@ -1132,7 +1166,7 @@ session.
 | "think about this with what we already know" | Reason | (invoked automatically) |
 | "what did we decide about X" | — | `cairntir_recall` |
 | "remember this" | — | `cairntir_remember` |
-| "where are we" (session start) | — | `cairntir_session_start` |
+| "where are we" (session start) | — | `cairntir_handoff` |
 
 ---
 
@@ -1144,7 +1178,7 @@ session.
 4. `docs/lineage/brainstormer.md` — what we kept/dropped from BrainStormer
 5. `docs/lineage/mempalace.md` — same for MemPalace
 6. `ETHOS.md` — the 5 principles
-7. `HARNESS_AUDIT.md` — 12-primitive gap analysis (the rebuild justification)
+7. `HARNESS_AUDIT.md` — pointer to the BrainStormer harness audit in `lineage/`
 8. `plans/purrfect-drifting-sparrow.md` — execution plan
 9. `lineage/brainstormer/project_v1_realization.md` — "The Big Realization"
 10. `docs/release-cadence.md` — commit vs. merge vs. tag, when to release, how
@@ -1158,11 +1192,14 @@ Reading all 10 in a fresh chat should produce full context awareness. That's the
 You have access to persistent memory through the `cairntir_*` MCP tools.
 At the start of every conversation:
 
-1. Call `cairntir_session_start` with the wing matching the current project.
+1. Call `cairntir_handoff(wing)` with the wing matching the current project.
    Use the lowercase folder name in the working directory as the wing. If the
-   correct wing is ambiguous, ask the user.
-2. Read the returned identity and essential drawers before answering anything
-   substantive.
+   correct wing is ambiguous, ask the user. Prefer this over
+   `cairntir_session_start`: handoff returns whole drawers under a budget,
+   including recent default-layer memories. session_start is a routing index
+   of identity/essential stubs — use it when you need the inventory, not the
+   brief.
+2. Read the returned drawers before answering anything substantive.
 3. Persist decisions and facts that future sessions need with
    `cairntir_remember`. Preserve the user's wording when it is load-bearing.
 4. Call `cairntir_recall` before reasoning from scratch about past decisions,
@@ -1174,8 +1211,17 @@ At the start of every conversation:
    method that differs from the prior baseline, call `cairntir_discover` and
    tell the user. Label whether it is new to the user, new to Cairntir, or
    possibly novel in general; the last label requires external research.
+7. Capture-on-arrival: when the user makes a request that may not be fully
+   executed within the current turn — work that starts later, a deferred task,
+   a session about to end, restart, or compact — record it with
+   `cairntir_remember` IMMEDIATELY, before doing any other work on it, in the
+   user's exact wording. Never defer that write to the end of the turn or the
+   session: a session can die between the request and the write, and capture
+   that waits for a quiet moment never happens. Conversely, when resuming,
+   treat open requests surfaced by the handoff as first-class owed work, not
+   background noise.
 
-If session start returns no memory for an established wing, report that the
+If handoff returns no memory for an established wing, report that the
 store may be new or misconfigured. Do not silently substitute model memory.
 
 This policy is host-neutral: every agent must read and write the same Cairntir

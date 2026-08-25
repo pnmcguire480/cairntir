@@ -715,6 +715,16 @@ def test_list_by_limit_none_returns_everything(tmp_path: Path) -> None:
         assert len(store.list_by(limit=None)) == 150
 
 
+def test_wing_exists_is_sql_exists_not_a_materialised_row(store: DrawerStore) -> None:
+    """Jarvis P3: existence is a boolean. Do not load a drawer to answer it."""
+    assert store.wing_exists("cairntir") is False
+    store.add(_drawer("present", wing="cairntir"))
+    store.add(_drawer("other", wing="other"))
+    assert store.wing_exists("cairntir") is True
+    assert store.wing_exists("other") is True
+    assert store.wing_exists("missing") is False
+
+
 def test_content_lengths_counts_the_whole_corpus(tmp_path: Path) -> None:
     """`cairntir cost` must measure every drawer, not the newest N.
 

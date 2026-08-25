@@ -2,12 +2,15 @@
 
 ## Supported Versions
 
-Cairntir is pre-alpha. Only the latest `main` branch is supported for security fixes at this time. Once v0.1.0 ships, this will expand.
+Cairntir is published. Only the latest release on PyPI is supported
+for security fixes. Development snapshots on `main` may include fixes
+that have not been tagged yet.
 
 | Version   | Supported |
 | --------- | --------- |
-| `main`    | ✅        |
-| < v0.1.0  | ❌        |
+| `1.7.x`   | ✅        |
+| `main`    | ✅ (unreleased) |
+| < 1.7.0   | ❌        |
 
 ## Reporting a Vulnerability
 

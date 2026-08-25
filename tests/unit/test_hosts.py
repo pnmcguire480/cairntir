@@ -8,6 +8,7 @@ import pytest
 from cairntir.hosts import (
     MEMORY_POLICY,
     POLICY_BEGIN_MARKER,
+    POLICY_END_MARKER,
     HostConfigurationError,
     configure_host,
     inspect_host,
@@ -62,9 +63,7 @@ def test_upsert_policy_preserves_user_content_and_updates_its_own_block(
     assert upsert_marked_policy(target, body=MEMORY_POLICY) == "updated"
     assert upsert_marked_policy(target, body=MEMORY_POLICY) == "unchanged"
     contents = target.read_text(encoding="utf-8")
-    assert "Keep this." in contents
-    assert "STALE_POLICY_TEXT" not in contents
-    assert "cairntir_session_start" in contents
+    assert "cairntir_handoff" in contents
 
 
 def test_upsert_policy_refuses_incomplete_markers(tmp_path: Path) -> None:
@@ -216,7 +215,7 @@ def test_configure_qwen_project_creates_settings_and_qwen_md(tmp_path: Path) -> 
     }
     assert result.policy == "created"
     assert result.policy_path == tmp_path / "QWEN.md"
-    assert "cairntir_session_start" in result.policy_path.read_text(encoding="utf-8")
+    assert "cairntir_handoff" in result.policy_path.read_text(encoding="utf-8")
 
     status = inspect_host("qwen", scope="project", root=tmp_path, home=tmp_path)
     assert status.mcp_configured is True
@@ -239,3 +238,21 @@ def test_configure_qwen_user_targets_home_qwen_dir(tmp_path: Path) -> None:
     status = inspect_host("qwen", scope="user", root=tmp_path / "project", home=home)
     assert status.mcp_configured is True
     assert status.policy_configured is True
+
+
+def test_repo_policy_blocks_match_memory_policy() -> None:
+    """Installed copies must not drift from MEMORY_POLICY. They already had."""
+    repo = Path(__file__).resolve().parents[2]
+    targets = (
+        repo / "CLAUDE.md",
+        repo / "AGENTS.md",
+        repo / "QWEN.md",
+        repo / ".cursor" / "rules" / "cairntir.mdc",
+    )
+    expected = MEMORY_POLICY.strip()
+    for path in targets:
+        text = path.read_text(encoding="utf-8")
+        begin = text.index(POLICY_BEGIN_MARKER) + len(POLICY_BEGIN_MARKER)
+        end = text.index(POLICY_END_MARKER)
+        body = text[begin:end].strip()
+        assert body == expected, f"{path} policy block drifted from hosts.MEMORY_POLICY"

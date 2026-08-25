@@ -144,6 +144,27 @@ def test_an_explicit_metadata_flag_counts_as_an_open_question(store: DrawerStore
     assert ids == [flagged]
 
 
+def test_a_superseded_open_question_is_closed(store: DrawerStore) -> None:
+    stale = _add(
+        store,
+        room="release",
+        content="is v1.3.0 still waiting to publish?",
+        metadata={"open_question": "v1.3.0-release"},
+    )
+    current = _add(
+        store,
+        room="release",
+        content="v1.3.0 published",
+        supersedes_id=stale,
+    )
+
+    brief = compose(store, wing="cairntir")
+
+    ids = [d.id for d in _sections(brief)["open_questions"].included]  # type: ignore[attr-defined]
+    assert stale not in ids
+    assert current in [d.id for d in brief.all_drawers()]
+
+
 def test_prose_is_never_mined_for_questions(store: DrawerStore) -> None:
     """A question nobody recorded as one is not surfaced. Honest, not clever."""
     _add(store, content="Is this a question? Who knows.", layer=Layer.ON_DEMAND)

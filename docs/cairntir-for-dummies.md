@@ -50,9 +50,9 @@ instruction sheets.
 
 **You need:**
 - Python 3.11 or newer
-- Claude Code installed and working (`claude --version` should print
-  something)
 - A shell (PowerShell on Windows, Terminal on macOS/Linux)
+- At least one of: Cursor, Claude Code, Codex, or Qwen Code. You do
+  **not** need Claude Code specifically.
 
 **Step 1 — Install Cairntir.** One command.
 
@@ -70,32 +70,28 @@ That's it. You should now be able to run `cairntir` from any folder.
 > *Want to hack on Cairntir itself?* Clone the repo and
 > `pip install -e .` instead. That path is for contributors.
 
-**Step 2 — Wire Cairntir into Claude Code.** One command. Run it from
-anywhere.
+**Step 2 — Wire it.** One command. Run it from anywhere.
 
 ```
-cairntir init --user
+cairntir setup
 ```
 
-Two things happen:
-- Cairntir registers its MCP server at user scope, so *every* Claude
-  Code session on your machine can reach it regardless of which
-  folder you open the chat in.
-- Cairntir installs a preamble into `~/.claude/CLAUDE.md` that tells
-  every Claude session "check Cairntir memory before you answer."
-  Without this step, Claude Code knows Cairntir exists but doesn't
-  know to actually use it.
+That initializes the store and registers every supported host it can
+find (Claude Code, Codex, Cursor, Qwen Code) at user scope. You do
+not need Claude Code installed. Missing CLIs are skipped, not fatal.
+If you use Cursor globally, paste the User Rule `setup` prints into
+**Cursor Settings → Rules → User Rules**.
 
-**Step 3 — Restart Claude Code.** Fully quit — not just close the
+**Step 3 — Restart the host you use.** Fully quit — not just close the
 window. On Windows, check the system tray and Task Manager. On macOS,
 Command-Q. Reopen it.
 
-**Step 4 — Test it.** Open a Claude Code chat in any folder and ask:
+**Step 4 — Test it.** Open a chat in any folder and ask:
 
 > what is cairntir?
 
-If Claude answers with real knowledge — pronunciation, "memory-first
-reasoning layer," offers to call `cairntir_session_start` — it's
+If the agent answers with real knowledge — pronunciation, "memory-first
+reasoning layer," offers to call `cairntir_handoff` — it's
 working. If it says "I don't know what that is," go to the
 troubleshooting section.
 
@@ -145,11 +141,12 @@ This is the whole point of Cairntir, and the reason it exists. On day
 touched in three weeks. Normally Claude has no idea what you're
 doing and asks you to re-explain. With Cairntir:
 
-1. The chat starts. Claude sees your preamble telling it to call
-   `cairntir_session_start`.
-2. Claude calls it. It gets back your identity drawers (who you are,
-   how you work) plus the essential drawers for that wing (current
-   state of the project).
+1. The chat starts. The agent sees your preamble telling it to call
+   `cairntir_handoff`.
+2. It calls it. It gets back whole drawers under a budget: recent
+   session deltas, open questions, and the identity/essential material
+   for that wing — including recent default-layer memories that
+   `session_start` would skip.
 3. Claude reads them. It now knows you picked Postgres, why you
    picked it, what failed last week, and what's blocking the next
    commit.
@@ -273,14 +270,14 @@ silent side effects are the wrong default.
   decisions.
 - **Not configurable.** There is one right way to use it. The point
   is to kill a class of problems, not to give you ten knobs.
-- **Not finished.** v1.0 is the foundation. The road leads somewhere
-  much bigger — see `docs/roadmap.md` and `docs/manifesto.md` if
-  you're curious.
+- **Not finished.** 1.7.1 is the current release candidate. The road leads
+  somewhere much bigger — see `docs/roadmap.md` and `docs/manifesto.md`
+  if you're curious.
 
 ## The one sentence version
 
-**Cairntir is a file on your hard drive that lets Claude remember
-things between chats. You install it once with `cairntir init --user`,
-restart Claude Code, and never think about it again.**
+**Cairntir is a file on your hard drive that lets your agent remember
+things between chats. You install it once with `cairntir setup`,
+restart the host you use, and never think about it again.**
 
 That's the whole thing.

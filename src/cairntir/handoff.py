@@ -526,10 +526,15 @@ def _open_questions(wing_drawers: list[Drawer]) -> list[Drawer]:
     than a question — it is falsifiable — and burying it among questions
     lost that. See :func:`is_open_prediction`.
 
-    Nothing is inferred from prose. A question nobody recorded as one is
-    not surfaced here, which is the honest behaviour.
+    A later drawer may close the question by superseding it. The source remains
+    immutable; only the handoff's reading moves to the leaf. Nothing is inferred
+    from prose. A question nobody recorded as one is not surfaced, which is the
+    honest behaviour.
     """
-    return [d for d in wing_drawers if bool(d.metadata.get("open_question"))]
+    superseded = {d.supersedes_id for d in wing_drawers if d.supersedes_id is not None}
+    return [
+        d for d in wing_drawers if bool(d.metadata.get("open_question")) and d.id not in superseded
+    ]
 
 
 def _anchored(

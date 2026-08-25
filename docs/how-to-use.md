@@ -1,335 +1,93 @@
 # How to Use Cairntir
 
-> 🔄 **This file must be updated as Cairntir grows.** If you add a
-> feature, add a section here. If you rename a command, fix it here.
-> This is the front door for humans — it cannot be allowed to rot.
+This is the human front door. If a command or version here disagrees
+with the code, this file is wrong.
 
----
+**Current release candidate: 1.7.1.** Zero-prior-knowledge walkthrough:
+[cairntir-for-dummies.md](cairntir-for-dummies.md).
 
-## What Is Cairntir?
+## Install
 
-Cairntir is a **notebook for your AI**.
+You need Python 3.11+ and a shell. You do **not** need Claude Code
+installed. Cursor, Codex, and Qwen Code are first-class hosts too.
 
-When you talk to Claude in one chat, Claude forgets everything the
-next time you open a new chat. That's called **amnesia**, and it's
-really annoying. You end up explaining the same stuff over and over.
-
-Cairntir fixes that. It's a little program that runs on your computer
-and remembers the important things you and Claude decide together.
-Next time you open a new chat, Claude can look in the notebook and
-say *"oh right, we already decided that."*
-
-That's it. That's the whole point.
-
----
-
-## The Four Words You Need to Know
-
-Cairntir stores memories like a big filing cabinet. It has four parts:
-
-1. **Wing** — a project. Like "Cairntir" or "my school essay".
-2. **Room** — a topic inside a project. Like "decisions" or "bugs".
-3. **Drawer** — one memory. A sentence or a paragraph. Verbatim —
-   meaning Cairntir saves it exactly the way you said it.
-4. **Layer** — how important a drawer is. Four levels:
-   - **identity** — the most important stuff. Who you are, what you're building.
-   - **essential** — important decisions you don't want to lose.
-   - **on_demand** — useful but not critical. Looked up when asked.
-   - **deep** — old stuff. Only pulled out when you're digging deep.
-
-When you walk into a project, Cairntir opens the right wing, looks at
-the rooms, and hands Claude the drawers that matter most. The
-important ones come first; the deep ones only come if you ask.
-
----
-
-## Step 1 — Install It
-
-You only do this once.
-
-```powershell
-python -m pip install --user pipx
-python -m pipx ensurepath
+```bash
+pip install cairntir
+cairntir setup
 ```
 
-**Close PowerShell and open a new one.** (This is important — the
-path only updates in new windows.)
+That one wizard initializes the store, wires every supported host it
+can find at user scope, and prints the Cursor User Rule that Cursor
+cannot install from a file. Missing CLIs are skipped, not fatal.
 
-Then install Cairntir itself:
+Then fully quit and reopen the host you use.
 
-```powershell
-pipx install -e c:/Dev/Cairntir
+`uv tool install cairntir` and `pipx install cairntir` work the same
+way. Contributors clone the repo and `pip install -e .` instead.
+
+To wire a single host later:
+
+```bash
+cairntir init --host cursor --user    # or claude, codex, qwen, or all
 ```
 
-Check it worked:
+Project-local Cursor setup (`cairntir init --host cursor`, no
+`--user`) writes both the MCP config and the always-apply rule.
+Cursor's **global** User Rule still has to be pasted into
+**Cursor Settings → Rules → User Rules** — `setup` and
+`init --host cursor --user` print the text to paste.
 
-```powershell
-cairntir version
+## Check it worked
+
+```bash
+cairntir version    # cairntir 1.7.1
+cairntir status     # where the store lives, drawer counts
+cairntir doctor     # host wiring without changing anything
 ```
 
-You should see `cairntir 0.1.0` (or newer).
+Open a chat in any folder and ask: *what is cairntir?* If the agent
+answers with real knowledge and offers to call `cairntir_handoff`,
+you are done.
 
----
+## The four words
 
-## Step 2 — Try the Three Commands You Can Type Yourself
+1. **Wing** — a project.
+2. **Room** — a topic inside a project.
+3. **Drawer** — one verbatim memory.
+4. **Layer** — identity / essential / on_demand / deep. Default writes
+   land on `on_demand`. That is why agents start with **handoff**, not
+   `session_start`: handoff still returns recent default-layer
+   memories; `session_start` does not unless you pass a query.
 
-Cairntir has three commands a human types. Everything else happens
-automatically inside Claude Code.
+## What you type as a human
 
-### `cairntir version`
-Tells you which version you have. Boring but useful.
+Almost nothing. Once it is installed, the agent reads and writes
+memory. The commands a person actually types:
 
-### `cairntir status`
-Shows you where the notebook lives on your computer and how many
-drawers are in each wing. Example:
-
-```
-cairntir 0.1.0
-home: C:\Users\you\AppData\Local\cairntir
-db:   C:\Users\you\AppData\Local\cairntir\cairntir.db
-wings: 2  drawers: 47
-  cairntir  (32 drawers)
-  cort4congress  (15 drawers)
-```
-
-### `cairntir recall "what you want to remember"`
-Searches the notebook for anything that sounds like what you asked.
-Example:
-
-```powershell
-cairntir recall "why did we pick sqlite"
+```bash
+cairntir recall "database decisions" --wing myapp
+cairntir handoff myapp
+cairntir cost myapp
 ```
 
-You'll get back the top drawers that match, with their drawer id and
-the first line of each.
+## Day 30
 
-You can narrow the search to just one wing:
+You open a fresh chat in a project you have not touched in three
+weeks. The installed policy tells the agent to call
+`cairntir_handoff(wing)` first. It gets whole drawers under a budget:
+the protocol, the last session deltas, open questions, and memory
+anchored to the files in play. Then you ask your question.
 
-```powershell
-cairntir recall "auth decision" --wing cairntir
-```
+That is the North Star. Details live in the repository README.
 
-Or to just one room:
+## Troubleshooting
 
-```powershell
-cairntir recall "bug" --wing cairntir --room bugs
-```
+- **Tools appear, agent never uses them.** The MCP server is wired
+  but the policy is missing. Re-run `cairntir setup`, and if you are
+  on Cursor at user scope, paste the printed User Rule.
+- **`cairntir setup` warned that `claude` is not on PATH.** Expected
+  on a Cursor-only machine. Cursor and Qwen still got wired.
+- **Wrong Python / venv.** `cairntir init --user --force --host all`.
 
-The rest of Cairntir can be used from Codex, Cursor, Claude Code, or any
-MCP-compatible agent.
-
----
-
-## Step 3 — Connect Your AI Agents
-
-Cairntir's real power shows up when every coding agent talks to the same
-store. To configure all three first-class hosts at user scope:
-
-```powershell
-cairntir init --host all --user
-```
-
-For one project or one host:
-
-```powershell
-cairntir init --host codex
-cairntir init --host cursor
-cairntir init --host claude
-```
-
-The command preserves existing config and instruction text. Run
-`cairntir doctor` to inspect user and project wiring without changing it.
-Cursor's global User Rule is the one manual exception because Cursor stores it
-inside Settings; project-local Cursor rules are installed automatically.
-
-Restart the host. You'll see twelve Cairntir tools:
-
-| Tool | What it does |
-|---|---|
-| `cairntir_remember` | Save a new drawer (something you want to remember) |
-| `cairntir_recall` | Search for old drawers |
-| `cairntir_cross_recall` | Search across every project wing |
-| `cairntir_get` | Fetch one complete verbatim drawer from a recall reference |
-| `cairntir_session_start` | Load the most important drawers at the start of a chat |
-| `cairntir_discover` | Record an evidence-backed emergent pattern and notify the user |
-| `cairntir_discovery_transition` | Promote, reject, corroborate, or expire a finding append-only |
-| `cairntir_discoveries` | Read the current Discovery Ledger |
-| `cairntir_learning_log` | Read the plain-language Human Learning Log |
-| `cairntir_timeline` | See everything about one topic, in order |
-| `cairntir_audit` | Check if a wing is healthy — uses the Quality skill |
-| `cairntir_crucible` | Stress-test an idea — uses the Crucible skill |
-
-You don't normally call these yourself. Talk to your agent as usual and its
-installed Cairntir policy tells it when to use them.
-
-Try saying:
-
-> *"Remember that we decided to use sqlite-vec because it's embedded
-> and doesn't need a server."*
-
-The active agent will call `cairntir_remember` and save it.
-
-Then in a **brand new chat**, in the **same folder**, say:
-
-> *"What did we decide about the database?"*
-
-The next agent—even a different host—can call `cairntir_recall`, find the
-same drawer, and answer.
-**That's the amnesia cure.** That moment is the whole reason Cairntir
-exists.
-
----
-
-## Step 4 — Use the Slash Commands
-
-If you load the Cairntir plugin (it lives at
-`c:/Dev/Cairntir/.claude-plugin/plugin.json`), you get three slash
-commands in Claude Code:
-
-- **`/cairntir:remember`** — save something to the notebook
-- **`/cairntir:recall`** — search the notebook
-- **`/cairntir:reason`** — think through a question using the notebook
-
-The `/reason` one is special. It tells Claude to *first* look at
-what's already in the notebook *before* answering. That way Claude
-doesn't give you a generic answer — it gives you an answer that fits
-what you've already decided.
-
----
-
-## Step 5 — The Three Thinking Skills
-
-Cairntir comes with three built-in skills. Claude uses them when you
-ask the right kind of question.
-
-### 🔥 Crucible — "Stress-test this idea"
-When you're not sure if a plan will work, ask Claude to run it
-through the Crucible. Example:
-
-> *"Use crucible on my plan to rewrite the auth system this week."*
-
-Claude will pull the Crucible skill text and poke holes in your
-plan — looking for assumptions you didn't notice, things that could
-break, questions you haven't answered.
-
-### ✅ Quality — "Is this ready?"
-When you want a second opinion before shipping, ask for an audit.
-Example:
-
-> *"Audit the cairntir wing."*
-
-Claude uses the Quality skill to check the essential drawers and tell
-you if anything looks rushed, risky, or half-baked.
-
-### 🧠 Reason — "Think about this with what we already know"
-This is the one that uses memory the hardest. Example:
-
-> *"Reason about whether we should switch from sqlite-vec to chromadb."*
-
-Claude will load the wing's 4 layers of context, search the notebook
-for anything relevant, and *then* answer — with drawer ids cited
-inline so you can check the sources.
-
----
-
-## Step 6 — The Daemon (Optional, Advanced)
-
-Cairntir also has a background program called the **daemon**. It
-watches a folder called the spool and auto-saves any drawers that
-land there. This is how Claude Code will eventually save memories
-**without you typing anything at all**.
-
-To start it:
-
-```powershell
-python -m cairntir.daemon
-```
-
-Leave it running in a separate window. Press **Ctrl+C** to stop it.
-
-You don't need the daemon for Cairntir to work — the MCP tools save
-drawers directly. The daemon is for later, when auto-capture is fully
-wired up.
-
----
-
-## Where Does Cairntir Keep Its Stuff?
-
-On Windows:
-
-```
-C:\Users\<you>\AppData\Local\cairntir\cairntir.db
-```
-
-That one file is your whole notebook. You can back it up by copying
-it. You can delete it to start fresh (but you'll lose all your
-memories). You can move it to a different folder by setting an
-environment variable:
-
-```powershell
-$env:CAIRNTIR_HOME = "D:\my-cairntir-notebook"
-cairntir status
-```
-
----
-
-## Common Questions
-
-**Q: Will Cairntir send my memories to the internet?**
-No. Everything stays on your computer. No cloud, no telemetry, no
-account. Local-first, always.
-
-**Q: Can I use Cairntir with more than one project?**
-Yes. One installation, many wings. Each project becomes its own wing
-in the same notebook.
-
-**Q: What if I want separate notebooks per project?**
-Set `CAIRNTIR_HOME` to a different folder in each project.
-
-**Q: Does Cairntir work without Claude Code?**
-Yes. You can save and search through the CLI, or connect Codex, Cursor,
-Claude Code, and any other MCP client. The value comes from every host reading
-and writing one canonical store.
-
-**Q: What happens when Cairntir gets a new version?**
-If you installed with `pipx install -e`, just `git pull` in the
-Cairntir folder. The editable install picks up changes immediately.
-
-**Q: How do I report a bug?**
-Open an issue at
+File a bug at
 [github.com/pnmcguire480/cairntir/issues](https://github.com/pnmcguire480/cairntir/issues).
-
----
-
-## The Five Rules
-
-These are the rules Cairntir lives by. You don't have to memorize
-them, but they explain why it works the way it does.
-
-1. **Verbatim.** Cairntir never summarizes your memories. It saves
-   them exactly the way you said them.
-2. **Local-first.** Your notebook lives on your computer. No cloud.
-3. **Opinionated.** There's one right way to do things. Fewer knobs,
-   fewer mistakes.
-4. **No silent failures.** If something goes wrong, Cairntir tells
-   you loudly. No swallowed errors.
-5. **Comprehension before code.** Every feature has to make the
-   amnesia problem smaller. If it doesn't, it doesn't ship.
-
----
-
-## What's Next?
-
-Cairntir is at **v0.1.0**. The next things on the road:
-
-- `v0.1.x` — PyPI publish, docs site, polish
-- `v0.2.0` — Temporal knowledge graph (who decided what, when?)
-- `v0.3.0` — Multi-project synthesis (patterns across all your wings)
-- `v1.0.0` — Cairntir as a library other tools can depend on
-
-See [roadmap.md](roadmap.md) for the longer story, including what
-this all builds toward. (Hint: it's bigger than code memory.)
-
----
-
-*Last updated: 2026-04-08 — Cairntir v0.1.0*
