@@ -127,7 +127,7 @@ under `docs/recipes/` and earn their place by use, not by governance.
   never stores automatically; `--write N` is the explicit untrusted write
   path. The hard acceptance test now launches a transcript writer, kills it
   immediately after the user event, and proves the fresh backend's first
-  handoff returns the request verbatim. Local gates: 711 tests at 84.45%,
+  handoff returns the request verbatim. Local gates: 711 tests at 84.48%,
   Ruff, mypy strict, all repository checks, strict docs, wheel/sdist build, and
   isolated Windows wheel smoke pass.
 - **Next:** land the candidate through a protected-branch PR and require the
