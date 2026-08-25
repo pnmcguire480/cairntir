@@ -45,6 +45,11 @@ Cairntir replaces both with:
 - **An MCP tool** (`cairntir_handoff`) that every configured host calls
   at the start of a session to load a budgeted brief. `cairntir_session_start`
   remains as the identity/essential inventory plus discoveries.
+- **An opt-in transcript recovery path** for the request that lands before an
+  agent's first memory write. Qwen Code, Claude Code, and Codex expose bounded
+  JSONL tails; Cursor returns unsupported until it has a stable documented
+  schema. Transcript messages remain untrusted and are never stored
+  automatically.
 
 The user does nothing. The memory is just there, like gravity.
 

@@ -26,11 +26,11 @@ Published 2026-08-25. Patch release for failures in the first five minutes:
 
 No schema migration or reindex is required.
 
-## v1.8.0 — Bounded transcript recovery
+## v1.8.0 — Bounded transcript recovery ✅
 
-Capture-on-arrival narrows memory loss but cannot close the interval between a
-user request and the agent's first tool call. The next release implements the
-opt-in recovery contract in
+Prepared as a release candidate on 2026-08-25. Capture-on-arrival narrows
+memory loss but cannot close the interval between a user request and the
+agent's first tool call. v1.8.0 implements the opt-in recovery contract in
 [`plans/2026-08-05-transcript-recovery.md`](https://github.com/pnmcguire480/cairntir/blob/main/plans/2026-08-05-transcript-recovery.md):
 
 1. bounded, whole-message tail readers for Qwen Code, Claude Code, and Codex;
