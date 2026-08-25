@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.7.1 published** 2026-08-25 from merge commit `104c905` (PyPI + GitHub release; both artifacts attested). **v1.8.0 bounded transcript recovery is a local release candidate; it is not published.** **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
+- **Stage:** **v1.7.1 published** 2026-08-25 from merge commit `104c905` (PyPI + GitHub release; both artifacts attested). **v1.8.0 bounded transcript recovery is merged to `main` at `e718304` as an unpublished release candidate.** **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
 
 ---
 
@@ -118,7 +118,7 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
-- **Date:** 2026-08-25 (**v1.8.0 transcript-recovery release candidate**)
+- **Date:** 2026-08-25 (**v1.8.0 transcript-recovery candidate merged**)
 - **What happened:** Added bounded, opt-in transcript recovery for verified
   Qwen Code 0.21.5, Claude Code 2.1.222, and Codex 0.149.0-alpha.4.1 formats.
   Cursor returns an honest unsupported receipt because its documented local
@@ -130,10 +130,10 @@ under `docs/recipes/` and earn their place by use, not by governance.
   handoff returns the request verbatim. Local gates: 711 tests at 84.48%,
   Ruff, mypy strict, all repository checks, strict docs, wheel/sdist build, and
   isolated Windows wheel smoke pass. PR #74 passed lint/type, CodeQL, package
-  build, LongMemEval R@5, and the nine-way OS/Python test matrix.
-- **Next:** merge PR #74 through the protected branch. Do not tag or publish
-  without Patrick's explicit release action. Then run the pre-registered
-  retrieval-preflight holdout.
+  build, LongMemEval R@5, and the nine-way OS/Python test matrix, then merged
+  to `main` as `e718304`.
+- **Next:** do not tag or publish v1.8.0 without Patrick's explicit release
+  action. Run the pre-registered retrieval-preflight holdout next.
 
 - **Date:** 2026-08-25 (**v1.7.1 published**)
 - **What happened:** PR #67 merged as `104c905` after the complete matrix. The
