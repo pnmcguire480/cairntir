@@ -53,6 +53,12 @@ from cairntir.prompt_safety import (
 )
 from cairntir.provenance import WriteProvenance
 from cairntir.skills import load_skill
+from cairntir.transcript import (
+    DEFAULT_RECOVERY_BUDGET_CHARS,
+    RecoveryContext,
+    recover_transcript,
+    render_recovery_report,
+)
 
 if TYPE_CHECKING:
     from cairntir.memory.store import DrawerStore
@@ -119,10 +125,16 @@ def _prediction_nudge(claim: str | None, predicted_outcome: str | None) -> str:
 class CairntirBackend:
     """Transport-free implementation of Cairntir's MCP tools."""
 
-    def __init__(self, store: DrawerStore) -> None:
+    def __init__(
+        self,
+        store: DrawerStore,
+        *,
+        recovery_context: RecoveryContext | None = None,
+    ) -> None:
         """Create a backend over an existing :class:`DrawerStore`."""
         self._store = store
         self._retriever = Retriever(store)
+        self._recovery_context = recovery_context
 
     # ------------------------------------------------------------------ tools
 
@@ -519,6 +531,8 @@ class CairntirBackend:
         budget_chars: int = DEFAULT_BUDGET_CHARS,
         files: list[str] | None = None,
         max_deltas: int = 8,
+        recover_transcripts: bool = False,
+        recovery_budget_chars: int = DEFAULT_RECOVERY_BUDGET_CHARS,
     ) -> str:
         """Compose one bounded brief for ``wing`` — the replacement for HANDOFF.md.
 
@@ -537,7 +551,23 @@ class CairntirBackend:
             )
         except ValueError as exc:
             raise MCPError(str(exc)) from exc
-        return _format_handoff(brief, store=self._store)
+        rendered = _format_handoff(brief, store=self._store)
+        if not recover_transcripts:
+            return rendered
+        if self._recovery_context is None:
+            raise MCPError(
+                "transcript recovery was requested, but this backend has no host adapter context"
+            )
+        try:
+            recovery = recover_transcript(
+                self._store,
+                wing=wing,
+                context=self._recovery_context,
+                budget_chars=recovery_budget_chars,
+            )
+        except ValueError as exc:
+            raise MCPError(str(exc)) from exc
+        return rendered.rstrip() + "\n\n" + render_recovery_report(recovery) + "\n"
 
     def session_start(
         self, *, wing: str, query: str | None = None, budget_chars: int | None = None

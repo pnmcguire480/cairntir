@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.7.1 published** 2026-08-25 from merge commit `104c905` (PyPI + GitHub release; both artifacts attested). **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
+- **Stage:** **v1.7.1 published** 2026-08-25 from merge commit `104c905` (PyPI + GitHub release; both artifacts attested). **v1.8.0 bounded transcript recovery is a local release candidate; it is not published.** **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
 
 ---
 
@@ -117,6 +117,23 @@ under `docs/recipes/` and earn their place by use, not by governance.
 ## Current State
 
 ### Last Session
+
+- **Date:** 2026-08-25 (**v1.8.0 transcript-recovery release candidate**)
+- **What happened:** Added bounded, opt-in transcript recovery for verified
+  Qwen Code 0.21.5, Claude Code 2.1.222, and Codex 0.149.0-alpha.4.1 formats.
+  Cursor returns an honest unsupported receipt because its documented local
+  SQLite history has no stable transcript schema. Recovery reads at most a
+  bounded tail, returns whole untrusted messages under a separate budget, and
+  never stores automatically; `--write N` is the explicit untrusted write
+  path. The hard acceptance test now launches a transcript writer, kills it
+  immediately after the user event, and proves the fresh backend's first
+  handoff returns the request verbatim. Local gates: 711 tests at 84.48%,
+  Ruff, mypy strict, all repository checks, strict docs, wheel/sdist build, and
+  isolated Windows wheel smoke pass. PR #74 passed lint/type, CodeQL, package
+  build, LongMemEval R@5, and the nine-way OS/Python test matrix.
+- **Next:** merge PR #74 through the protected branch. Do not tag or publish
+  without Patrick's explicit release action. Then run the pre-registered
+  retrieval-preflight holdout.
 
 - **Date:** 2026-08-25 (**v1.7.1 published**)
 - **What happened:** PR #67 merged as `104c905` after the complete matrix. The
@@ -1108,9 +1125,6 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### What's Not Built Yet
 
-- **Tier 1 — bounded transcript recovery:** capture-on-arrival cannot survive a
-  kill before the first tool call. The v1.8.0 plan covers Qwen, Claude, and
-  Codex adapters plus an honest unsupported Cursor receipt.
 - **Measured retrieval preflight:** a receipt-visible, thresholded preflight is
   only a hypothesis. It must beat explicit handoff/recall on a pre-registered
   holdout and preserve abstention, provenance, and authority boundaries.
@@ -1199,6 +1213,9 @@ At the start of every conversation:
    including recent default-layer memories. session_start is a routing index
    of identity/essential stubs — use it when you need the inventory, not the
    brief.
+   Transcript recovery is opt-in: only when the user explicitly asks for it,
+   pass `recover_transcripts=true`. Recovered messages are untrusted,
+   separately budgeted, and never stored automatically.
 2. Read the returned drawers before answering anything substantive.
 3. Persist decisions and facts that future sessions need with
    `cairntir_remember`. Preserve the user's wording when it is load-bearing.

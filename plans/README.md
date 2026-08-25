@@ -8,7 +8,7 @@ that already points at a path. This file is the map.
 ## Active
 
 - [2026-08-05-transcript-recovery.md](2026-08-05-transcript-recovery.md) —
-  next implementation, targeted for v1.8.0
+  v1.8.0 release candidate; PR #74 matrix green, merge pending
 - [evolving-mind.md](evolving-mind.md) — accepted longer arc; the next
   experiment is a pre-registered retrieval-preflight holdout after transcript
   recovery

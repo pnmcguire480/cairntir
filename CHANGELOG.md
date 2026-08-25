@@ -13,6 +13,28 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.8.0] — 2026-08-25
+
+### Added
+
+- **Bounded, opt-in transcript recovery closes the killed-before-first-tool
+  gap.** `cairntir recover --host claude|codex|qwen` and
+  `cairntir handoff --recover-from HOST` read only the newest non-live project
+  transcript tail. The MCP handoff exposes the same path through
+  `recover_transcripts=true`. Whole user messages fit under a separate
+  character budget or are named without being truncated.
+- **Qwen Code, Claude Code, and Codex adapters are fixture-tested against
+  locally observed schemas.** Each adapter ignores tool results and uses its
+  host's completion marker. Codex filters app-injected context records; Qwen
+  takes only the original first text part rather than hook-appended context.
+  Cursor returns an explicit unsupported receipt because its documented local
+  SQLite history has no stable transcript schema.
+- **Recovered transcript messages remain untrusted evidence.** Output carries
+  `trust=untrusted`, `instruction_authority=none`, host/session/timestamp
+  provenance, injection signals, and an explicit no-automatic-storage
+  receipt. `cairntir recover --write N` is the only write path and preserves
+  untrusted `transcript_recovered` provenance.
+
 ### Changed
 
 - **The release-tag gate stops calling an already-published current version

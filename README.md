@@ -123,8 +123,9 @@ wing, so the gap widens as a project accumulates history — which is exactly wh
 you need the budget. Run `cairntir cost` on your own store rather than taking
 these numbers as a promise.
 
-It is deterministic — no ranking, no embedder, pure SQL — so repeat calls are
-byte-identical and stay friendly to your host's prompt cache.
+The default drawer-only handoff is deterministic — no ranking, no embedder,
+pure SQL — so repeat calls are byte-identical and stay friendly to your host's
+prompt cache.
 
 And you can audit it yourself, which is the point:
 
@@ -135,6 +136,24 @@ cairntir cost myproject
 That reports what the tool catalog, `session_start`, and `handoff` each cost,
 plus how much of your corpus exceeds the embedder's input window. Cairntir
 measures its own overhead rather than asking you to trust it.
+
+## If the session dies before the first memory write
+
+Transcript recovery is explicit and read-only:
+
+```bash
+cairntir recover --host codex --wing myproject
+cairntir handoff myproject --recover-from codex
+```
+
+Qwen Code, Claude Code, and Codex adapters inspect only a bounded tail from the
+newest non-live project session. Recovered user messages are returned whole
+under their own character budget with `trust=untrusted` and
+`instruction_authority=none`. They never become drawers automatically.
+`cairntir recover --host codex --wing myproject --write 1` is the explicit
+consent path for one returned message. Cursor reports unsupported because its
+documented local SQLite history has no stable transcript schema Cairntir can
+read honestly.
 
 ---
 
@@ -311,7 +330,7 @@ cairntir/
 │   ├── handoff.py          # Budgeted brief composition — whole drawers only
 │   ├── cost.py             # What Cairntir's own read path costs
 │   ├── daemon/             # Auto-capture spool watcher
-│   └── cli.py              # cairntir setup | init | handoff | cost | recall | recall-for-change | anchor | replay | calibration | doctor | status | export | import | migrate
+│   └── cli.py              # cairntir setup | init | handoff | recover | cost | recall | replay | doctor | export | import
 ├── scripts/
 │   ├── check_release_tags.py         # A changelog entry is not a release
 │   └── check_landed_commitments.py   # A plan that promises something must deliver it
@@ -489,10 +508,10 @@ that class instead of discovering it months later:
   miss now fails the build.
 - **Qwen Code became the fourth host.** Continuity is host-neutral or it is a
   lie; the same store, the same provenance, one more front door.
-- **Next, already planned:** [transcript
-  recovery](plans/2026-08-05-transcript-recovery.md) — no memory loss between
-  chats even when a session dies before it can write. Born the day a final
-  request was recovered from a host transcript because the store never saw it.
+- **Bounded transcript recovery closes the last pre-write gap.** The
+  [recovery plan](plans/2026-08-05-transcript-recovery.md) became v1.8.0 after
+  the real killed Qwen request that created the plan was recovered from its
+  host transcript. Recovery stays opt-in, untrusted, budgeted, and read-only.
 
 ---
 

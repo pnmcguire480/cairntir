@@ -49,6 +49,16 @@ from cairntir.memory.taxonomy import Drawer
 from cairntir.portable import export_drawers, import_drawers
 from cairntir.provenance import TrustLevel, WriteProvenance
 from cairntir.register import clear_checkpoint, ensure_registered
+from cairntir.transcript import (
+    DEFAULT_MAX_REQUESTS,
+    DEFAULT_RECOVERY_BUDGET_CHARS,
+    RecoveredRequest,
+    RecoveryContext,
+    RecoveryReport,
+    recover_transcript,
+    render_recovery_report,
+    store_recovered_request,
+)
 from cairntir.update import maybe_check_in_background, pending_update_banner
 
 
@@ -76,14 +86,14 @@ app = typer.Typer(
 )
 
 
-def _backend() -> CairntirBackend:
+def _backend(*, recovery_context: RecoveryContext | None = None) -> CairntirBackend:
     """Open the on-disk drawer store and wrap it in a backend.
 
     Every production entry point uses the same provider factory. Equal
     dimensions do not make two embedding spaces compatible.
     """
     store = _open_store()
-    return CairntirBackend(store)
+    return CairntirBackend(store, recovery_context=recovery_context)
 
 
 def _open_store(
@@ -543,6 +553,16 @@ def handoff_cmd(
     max_deltas: int = typer.Option(
         8, "--deltas", help="How many recent session drawers to consider."
     ),
+    recover_from: str | None = typer.Option(
+        None,
+        "--recover-from",
+        help="Opt in to transcript recovery from claude, codex, cursor, or qwen.",
+    ),
+    recovery_budget: int = typer.Option(
+        DEFAULT_RECOVERY_BUDGET_CHARS,
+        "--recovery-budget",
+        help="Separate character budget for whole recovered messages.",
+    ),
 ) -> None:
     """Compose one bounded brief for a wing — the replacement for HANDOFF.md.
 
@@ -551,23 +571,94 @@ def handoff_cmd(
     Anything that does not fit is named with its id and size so you can
     fetch exactly what you want with `cairntir get`.
 
-    Deterministic: no ranking and no embedder, so repeat runs are identical.
+    The default drawer-only path is deterministic. Opt-in transcript recovery
+    reflects changes in the host-owned transcript tail.
     """
     if not db_path().exists():
         typer.echo("cairntir: no store yet — nothing to hand off.", err=True)
         raise typer.Exit(code=1)
     try:
+        recovery_context = _cli_recovery_context(recover_from) if recover_from else None
         typer.echo(
-            _backend().handoff(
+            _backend(recovery_context=recovery_context).handoff(
                 wing=wing,
                 budget_chars=budget,
                 files=list(file) if file else None,
                 max_deltas=max_deltas,
+                recover_transcripts=recovery_context is not None,
+                recovery_budget_chars=recovery_budget,
             )
         )
     except (MCPError, MemoryStoreError) as exc:
         typer.echo(f"cairntir: {exc}", err=True)
         raise typer.Exit(code=1) from exc
+
+
+@app.command("recover")
+def recover_cmd(
+    host: str = typer.Option(
+        ...,
+        "--host",
+        help="Transcript host: claude, codex, cursor, or qwen.",
+    ),
+    wing: str | None = typer.Option(None, "--wing", "-w", help="Wing; defaults to cwd name."),
+    budget: int = typer.Option(
+        DEFAULT_RECOVERY_BUDGET_CHARS,
+        "--budget",
+        "-b",
+        help="Hard ceiling on returned transcript content in characters.",
+    ),
+    max_requests: int = typer.Option(
+        DEFAULT_MAX_REQUESTS,
+        "--requests",
+        help="Maximum unfinished tail requests to consider.",
+    ),
+    write: int | None = typer.Option(
+        None,
+        "--write",
+        help="Explicitly store one returned request by its 1-based index.",
+    ),
+) -> None:
+    """Recover unfinished host transcript requests without storing them."""
+    selected_wing = wing or Path.cwd().name.lower()
+    context = _cli_recovery_context(host)
+    store = _open_store(capture_path="transcript_recovery_cli")
+    try:
+        report = recover_transcript(
+            store,
+            wing=selected_wing,
+            context=context,
+            budget_chars=budget,
+            max_requests=max_requests,
+        )
+        typer.echo(render_recovery_report(report))
+        if write is not None:
+            saved = store_recovered_request(
+                store,
+                wing=selected_wing,
+                request=_recovered_request_at(report, write),
+            )
+            typer.echo(
+                f"Stored recovered request #{saved.id} with trust=untrusted and "
+                "capture_path=transcript_recovered."
+            )
+    except (MCPError, MemoryStoreError, ValueError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+
+def _cli_recovery_context(host: str) -> RecoveryContext:
+    selected = host.strip().lower()
+    if selected not in SUPPORTED_HOSTS:
+        choices = ", ".join(SUPPORTED_HOSTS)
+        raise MCPError(f"unknown transcript host {host!r}; choose {choices}")
+    return RecoveryContext.current(selected, live_session=False)
+
+
+def _recovered_request_at(report: RecoveryReport, index: int) -> RecoveredRequest:
+    if index < 1 or index > len(report.requests):
+        raise MCPError(f"--write index must be from 1 to {len(report.requests)}")
+    return report.requests[index - 1]
 
 
 @app.command("cost")

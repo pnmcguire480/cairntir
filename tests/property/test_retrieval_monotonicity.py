@@ -150,7 +150,14 @@ def test_round_tripped_drawer_is_retrievable_by_exact_content(
     with TemporaryDirectory() as tmp:
         db = Path(tmp) / "rt.db"
         with DrawerStore(db, HashEmbeddingProvider(dimension=32)) as store:
-            saved = store.add(Drawer(wing="cairntir", room="monotonicity", content=content))
+            saved = store.add(
+                Drawer(
+                    wing="cairntir",
+                    room="monotonicity",
+                    content=content,
+                    metadata={"hypothesis_generated": True},
+                )
+            )
             assert saved.id is not None
             hits = store.search(content, wing="cairntir", limit=5)
             assert any(d.content == content for d, _ in hits), (

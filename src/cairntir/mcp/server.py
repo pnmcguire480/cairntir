@@ -21,10 +21,12 @@ from pydantic import ValidationError
 from cairntir.config import db_path
 from cairntir.errors import CairntirError, EmbeddingError
 from cairntir.handoff import DEFAULT_BUDGET_CHARS
+from cairntir.hosts import SUPPORTED_HOSTS
 from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import production_embedding_provider
 from cairntir.memory.store import DrawerStore
 from cairntir.provenance import TrustLevel, WriteProvenance
+from cairntir.transcript import DEFAULT_RECOVERY_BUDGET_CHARS, RecoveryContext
 from cairntir.update import maybe_check_in_background, pending_update_banner
 
 _SERVER_NAME = "cairntir"
@@ -344,8 +346,8 @@ def _tool_specs() -> list[types.Tool]:
                 "what you need to start. Drawers come back WHOLE, never truncated. "
                 "Anything that did not fit the budget is listed by id and size so you "
                 "can spend one cairntir_get on exactly what you want instead of a "
-                "blind recall. Deterministic — no ranking, no embedder — so repeat "
-                "calls are byte-identical and stay prompt-cache friendly."
+                "blind recall. The default drawer-only path is deterministic and "
+                "prompt-cache friendly; opt-in transcript recovery reflects host changes."
             ),
             inputSchema={
                 "type": "object",
@@ -376,6 +378,23 @@ def _tool_specs() -> list[types.Tool]:
                         "minimum": 1,
                         "default": 8,
                         "description": "How many recent session drawers to consider.",
+                    },
+                    "recover_transcripts": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": (
+                            "Opt in to bounded recovery from the configured host's most "
+                            "recent non-live transcript. Read-only; never stores messages."
+                        ),
+                    },
+                    "recovery_budget_chars": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "default": DEFAULT_RECOVERY_BUDGET_CHARS,
+                        "description": (
+                            "Separate hard ceiling for recovered transcript message content. "
+                            "Whole messages are returned or named, never truncated."
+                        ),
                     },
                 },
             },
@@ -869,7 +888,10 @@ async def _amain(*, host: str = "unknown", model: str = "unknown") -> None:
         ),
     )
     _trace("DrawerStore opened")
-    backend = CairntirBackend(store)
+    recovery_context = (
+        RecoveryContext.current(host, live_session=True) if host in SUPPORTED_HOSTS else None
+    )
+    backend = CairntirBackend(store, recovery_context=recovery_context)
 
     # Warm the embedder while the asyncio handshake completes. The MCP
     # initialize JSON-RPC is mostly I/O-bound and releases the GIL often,

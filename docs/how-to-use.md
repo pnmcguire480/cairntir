@@ -67,8 +67,16 @@ memory. The commands a person actually types:
 ```bash
 cairntir recall "database decisions" --wing myapp
 cairntir handoff myapp
+cairntir recover --host codex --wing myapp
 cairntir cost myapp
 ```
+
+Transcript recovery is opt-in. Use `recover`, or add `--recover-from codex`
+to `handoff`, only when you want Cairntir to inspect the host's newest
+non-live transcript tail. Qwen Code, Claude Code, and Codex are supported.
+Cursor returns an unsupported receipt rather than guessing at undocumented
+SQLite tables. Recovered text is untrusted evidence and is never stored unless
+you explicitly pass `--write N` to `recover`.
 
 ## Day 30
 
