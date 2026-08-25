@@ -57,9 +57,9 @@ Release operations:
 ## Past release records
 
 Evidence and known limits for each shipped release live under `docs/release/`.
-The most recent is
-[`docs/release/v1.2.0-rc.md`](release/v1.2.0-rc.md) — v1.2.0, published
-2026-08-01.
+The active candidate is
+[`docs/release/v1.7.1.md`](release/v1.7.1.md). The latest published record is
+[`docs/release/v1.7.0.md`](release/v1.7.0.md).
 
 ## Local verification
 
@@ -95,8 +95,8 @@ Also confirm:
 2. Wait for every required CI job. Investigate failures; never bypass them.
 3. Merge only the exact commit that passed review and CI.
 4. Obtain Patrick's explicit approval to publish.
-5. Create an annotated `v1.2.0` tag on that merged commit and push only that
-   tag.
+5. Create the candidate's annotated version tag on that merged commit and push
+   only that tag.
 6. Watch the release workflow through verification, build, attestation, PyPI,
    and GitHub Release.
 7. Compare the published artifact hashes with the workflow artifacts and run

@@ -95,14 +95,14 @@ Pulled automatically when a session opens in a wing. Limited to ~20 drawers, ran
 
 The MCP surface is deliberately small.
 
-1. `cairntir_remember(wing, room, content, metadata?)` — store a drawer
-2. `cairntir_recall(query, wing?, room?, limit=10, full_content=0)` — semantic + metadata search; `full_content=N` delivers the top N hits whole, skipping the `get` round trip
-3. `cairntir_cross_recall(query, limit=10)` — search every wing
+1. `cairntir_remember(...)` — store a drawer
+2. `cairntir_settle(...)` — append the observed outcome for a prediction
+3. `cairntir_recall(...)` — semantic and metadata search
 4. `cairntir_get(drawer_id)` — fetch one complete verbatim drawer
-5. `cairntir_handoff(wing)` — budgeted brief (the amnesia killer); `cairntir_session_start` is the inventory
-6. `cairntir_timeline(wing, entity)` — chronological view of a topic across drawers
-7. `cairntir_audit(wing)` — run the `quality` skill on current work
-8. `cairntir_crucible(claim)` — run the `crucible` skill on a claim or plan
+5. `cairntir_cross_recall(...)` — search every wing
+6. `cairntir_recall_for_change(files, ...)` — retrieve structurally anchored memory
+7. `cairntir_handoff(wing, ...)` — return the bounded, whole-drawer resume brief
+8. `cairntir_session_start(wing, ...)` — return the identity/essential inventory
 9. `cairntir_discover(...)` — record an evidence-backed emergent pattern
 10. `cairntir_discovery_transition(...)` — append a reviewed lifecycle change
 11. `cairntir_discoveries(...)` — inspect current Discovery Ledger leaves
@@ -110,12 +110,16 @@ The MCP surface is deliberately small.
 13. `cairntir_discover_scan(...)` — propose repeated multi-episode patterns
 14. `cairntir_calibration(...)` — report prediction outcomes and uncertainty
 15. `cairntir_codeglass_record(...)` — store a cited teaching walkthrough
-16. `cairntir_codeglass_teachback(...)` — record immediate/delayed learning
+16. `cairntir_codeglass_teachback(...)` — record immediate or delayed learning
 17. `cairntir_codeglass_retention(...)` — compare later recall with the baseline
+18. `cairntir_timeline(wing, entity)` — show a topic chronologically
+19. `cairntir_audit(wing)` — run the `quality` skill
+20. `cairntir_crucible(claim)` — stress-test a claim or plan
 
-The first eight are memory and reasoning operations. The learning and
+The memory and reasoning tools carry exact evidence. The learning and
 CodeGlass tools make growth visible, measurable, and governable rather than
-hiding it inside a model.
+hiding it inside a model. `TOOL_SURFACE_VERSION` and a seam test keep this
+20-tool inventory synchronized with the server.
 
 ## Visible Learning
 

@@ -10,11 +10,11 @@
 - **Name:** Cairntir
 - **Pronunciation:** *CAIRN-teer*
 - **Etymology:** Cairn (stacked waypoint stones marking a path) + Palantir (seeing-stone across time and distance). A stack of stones that sees across time.
-- **One-liner:** Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia.
+- **One-liner:** Host-neutral memory-first reasoning layer. Kills cross-chat AI amnesia.
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.7.0 published** 2026-08-13 (PyPI + GitHub release, both artifacts attested). Latest on PyPI is `1.7.0`. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
+- **Stage:** **v1.7.1 release candidate** on `fix/new-user-front-door`; v1.7.0 remains the latest published release until the candidate passes the complete gate, PR #67 merges, and `v1.7.1` publishes. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
 
 ---
 
@@ -117,6 +117,20 @@ under `docs/recipes/` and earn their place by use, not by governance.
 ## Current State
 
 ### Last Session
+
+- **Date:** 2026-08-25 (**v1.7.1 truth pass and release candidate**)
+- **What happened:** The shipped product, repository status, roadmap, plan map,
+  MCP inventory, and append-only release ledger were reconciled. The MCP server
+  exposes 20 tools. `docs/roadmap.md` now names the actual next work: v1.7.1,
+  bounded transcript recovery for v1.8.0, then a pre-registered retrieval
+  preflight holdout. Superseded open questions now close on the handoff read
+  path, so the stale v1.3.0 prepared-not-cut drawer can be corrected without
+  rewriting history. The exact candidate passes 695 tests at 84.84% coverage,
+  Ruff, mypy strict across 51 source files, all repository scanners, strict
+  docs, package build, and an isolated Windows wheel install.
+- **Next:** push PR #67, wait for the full matrix, merge through branch
+  protection, tag v1.7.1, verify GitHub/PyPI provenance, and repeat the fresh
+  install from PyPI.
 
 - **Date:** 2026-08-14 (**new-user front door — Tier 2 only, Cairntir off**)
 - **What happened:** First-look audit (drawer #447) then repair on
@@ -1081,30 +1095,29 @@ under `docs/recipes/` and earn their place by use, not by governance.
   embedder's ~2,048-char window. Closes P5. Measures Cairntir's own payload
   only; it is not a general token dashboard and must not become one.
 - **Daemon:** `python -m cairntir.daemon` polls a spool dir and persists drawers.
-- **Three-host continuity:** Claude Code, Codex, and Cursor read and write the
-  same store with host/session provenance preserved.
+- **Four-host continuity:** Claude Code, Codex, Cursor, and Qwen Code read and
+  write the same store with host/session provenance preserved.
 - **Published:** PyPI (`pip install cairntir`) and GitHub releases, both with
   build-provenance attestations. Docs at
   https://pnmcguire480.github.io/cairntir/
-- **Quality bar:** 466 tests passing, 82% coverage, ruff clean, mypy --strict
-  clean across 47 source files, silent-exception scan clean.
+- **Quality bar:** Ruff lint/format, mypy strict, complete pytest with an 80%
+  coverage floor, semantic eval, seam checks, release/tag checks, landed
+  commitments, store health, strict docs, package build, the nine-way OS/Python
+  CI matrix, and isolated Windows installs. Exact evidence lives in the current
+  release record under `docs/release/`.
 
 ### What's Not Built Yet
 
-- **Token budget on `session_start`** — it still returns every identity +
-  essential stub, truncated, plus an evidence block repeating them. `handoff`
-  now exists as the bounded alternative and `session_start`'s description points
-  at it, but `session_start` itself is unchanged and remains the expensive path.
-  Finding 2.
-- **Retrieval ranking quality** — semantic recall ranked a known-correct drawer
-  7th with every hit clustered between 1.03 and 1.15. Hypothesis is drawer size,
-  not the embedding model. Finding 3, needs the split test before any change.
-- **Prediction/calibration in practice** — the machinery exists and has never
-  been used: 0 prediction drawers written by an agent. Nothing in the write path
-  asks for one. Finding 4.
-- **Rename-survival testing for anchor staleness** — `symbol_source_hash` is
-  stored and deliberately never compared. The hold lifts only when tested against
-  a corpus that actually contains renames.
+- **Tier 1 — bounded transcript recovery:** capture-on-arrival cannot survive a
+  kill before the first tool call. The v1.8.0 plan covers Qwen, Claude, and
+  Codex adapters plus an honest unsupported Cursor receipt.
+- **Measured retrieval preflight:** a receipt-visible, thresholded preflight is
+  only a hypothesis. It must beat explicit handoff/recall on a pre-registered
+  holdout and preserve abstention, provenance, and authority boundaries.
+- **Externally blocked model-weight pinning:** FastEmbed's production model
+  source does not expose a usable revision contract.
+- **Tier 3 rename-survival evaluation:** `symbol_source_hash` remains stored but
+  deliberately unused until a real rename corpus can test the signal.
 
 ### Local Development Note
 
@@ -1153,7 +1166,7 @@ session.
 | "think about this with what we already know" | Reason | (invoked automatically) |
 | "what did we decide about X" | — | `cairntir_recall` |
 | "remember this" | — | `cairntir_remember` |
-| "where are we" (session start) | — | `cairntir_session_start` |
+| "where are we" (session start) | — | `cairntir_handoff` |
 
 ---
 

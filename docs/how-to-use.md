@@ -3,7 +3,7 @@
 This is the human front door. If a command or version here disagrees
 with the code, this file is wrong.
 
-**Current release: 1.7.0.** Zero-prior-knowledge walkthrough:
+**Current release candidate: 1.7.1.** Zero-prior-knowledge walkthrough:
 [cairntir-for-dummies.md](cairntir-for-dummies.md).
 
 ## Install
@@ -40,7 +40,7 @@ Cursor's **global** User Rule still has to be pasted into
 ## Check it worked
 
 ```bash
-cairntir version    # cairntir 1.7.0
+cairntir version    # cairntir 1.7.1
 cairntir status     # where the store lives, drawer counts
 cairntir doctor     # host wiring without changing anything
 ```

@@ -415,9 +415,10 @@ Either way, we build.
 
 ## Addendum — where the stack stands
 
-Current release is **1.7.0** (2026-08-13). Release history lives in
-[CHANGELOG.md](CHANGELOG.md) and [docs/release/v1.7.0.md](docs/release/v1.7.0.md),
-not in a second table here.
+The **1.7.1** release candidate is in verification; **1.7.0** remains the
+latest published release until the tag completes trusted publishing. Release
+history lives in [CHANGELOG.md](CHANGELOG.md) and
+[docs/release/v1.7.1.md](docs/release/v1.7.1.md), not in a second table here.
 
 ### How it works, end to end
 

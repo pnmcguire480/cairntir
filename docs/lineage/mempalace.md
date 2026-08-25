@@ -60,21 +60,15 @@ MemPalace includes an experimental "AAAK" compression dialect — an LLM-native 
 
 Cairntir operates entirely at small scales (solo developer, mostly under 1000 drawers per wing). AAAK's benefits would not materialize. Raw storage only. No AAAK.
 
-### 19 MCP Tools
+### MCP Surface
 
-MemPalace exposes 19 MCP tools. Cairntir's v0.1 collapsed the surface to
-**6**, and later added only two earned retrieval operations:
-
-1. `cairntir_remember`
-2. `cairntir_recall`
-3. `cairntir_cross_recall`
-4. `cairntir_get`
-5. `cairntir_session_start`
-6. `cairntir_timeline`
-7. `cairntir_audit` (from BrainStormer)
-8. `cairntir_crucible` (from BrainStormer)
-
-Fewer tools = fewer decisions for the AI. Decisions are where things go wrong.
+MemPalace exposed 19 MCP tools when Cairntir was designed. Cairntir's v0.1
+collapsed its own surface to six memory tools plus Audit and Crucible. The
+surface has since grown to 20 only where shipped behavior earned an operation:
+bounded handoff, structural recall, explicit settlement, discovery/calibration,
+and CodeGlass. The canonical current inventory is in
+[`docs/concept.md`](../concept.md); a seam test keeps its count aligned with the
+server.
 
 ### Conversation Miners for 5 Chat Formats
 
@@ -96,6 +90,6 @@ Neither predecessor is sufficient alone. Cairntir's identity is precisely this m
 
 ## Credit Where It's Due
 
-MemPalace is excellent work. The fact that Cairntir does not ship MemPalace's code is not a judgment of MemPalace — it is a judgment that *reimplementing the concepts in a smaller, more opinionated form* serves Cairntir's audience better. Anyone who needs MemPalace's full 19-tool surface, temporal KG, multi-format miners, and ChromaDB scalability should use MemPalace directly. Cairntir is for people who want the 6-tool, one-file, zero-config version of the same idea.
+MemPalace is excellent work. The fact that Cairntir does not ship MemPalace's code is not a judgment of MemPalace — it is a judgment that *reimplementing the concepts in a smaller, more opinionated form* serves Cairntir's audience better. Anyone who needs MemPalace's temporal KG, multi-format miners, and ChromaDB scalability should use MemPalace directly. Cairntir is for people who want the smaller, one-file, zero-config expression of the same idea.
 
 **Thank you, @milla-jovovich, for proving that verbatim + taxonomy beats summarize + hope.** Cairntir stands on that proof.

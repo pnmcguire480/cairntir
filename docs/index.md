@@ -28,7 +28,7 @@ Live on [PyPI](https://pypi.org/project/cairntir/). Source on [GitHub](https://g
 
 ## Status
 
-**v1.7.0** is current (2026-08-13). Live on [PyPI](https://pypi.org/project/cairntir/). Full notes in the [changelog](https://github.com/pnmcguire480/cairntir/blob/main/CHANGELOG.md).
+**v1.7.1** is the current release candidate; **v1.7.0** remains live on [PyPI](https://pypi.org/project/cairntir/) until trusted publishing completes. Full notes are in the [changelog](https://github.com/pnmcguire480/cairntir/blob/main/CHANGELOG.md).
 
 ## License
 
