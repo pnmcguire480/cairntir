@@ -23,6 +23,12 @@ that already points at a path. This file is the map.
   - [Large Enterprise](product-lines/large-enterprise.md)
   - [National Security](product-lines/national-security.md)
 
+## Proposed / not active
+
+- [2026-08-30-phone-pc-continuity.md](2026-08-30-phone-pc-continuity.md) —
+  field-case design proposal; no implementation, roadmap priority, or release
+  is authorized
+
 ## Dated / closed (keep; do not treat as current status)
 
 Session reports, shipped-release plans, and research that already
