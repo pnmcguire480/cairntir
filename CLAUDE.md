@@ -118,6 +118,24 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-08-30 (**commercial product family and organizational feedback
+  direction documented; no code or license change**)
+- **What happened:** Patrick authorized three commercial product lines—medium
+  business, large enterprise, and national security—and clarified the larger
+  thesis: major company data should let Cairntir follow operational rises and
+  declines, connect them to decisions and outcomes, and propose evidence-backed
+  corrections where humans miss the pattern. Added a shared-core product-family
+  decision plus a gated roadmap for each line. The design refuses three drifting
+  copies: the public core stays MIT and unchanged; separately owned downstream
+  packages supply administration, policy, deployment, organizational feedback,
+  assurance, and support. Recommendations begin in shadow mode, carry a
+  falsifiable predicted effect, require human authority, and settle against the
+  observed result. National-security work starts unclassified, then CUI with a
+  real partner; classified use requires sponsorship and applicable approvals.
+- **Next:** review the decision package. If accepted, run ownership/dependency
+  packet F0 and customer discovery before commercial code. Core v1.8.0 remains
+  unpublished, and retrieval preflight remains the accepted core experiment.
+
 - **Date:** 2026-08-25 (**v1.8.0 transcript-recovery candidate merged**)
 - **What happened:** Added bounded, opt-in transcript recovery for verified
   Qwen Code 0.21.5, Claude Code 2.1.222, and Codex 0.149.0-alpha.4.1 formats.
