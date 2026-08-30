@@ -13,6 +13,16 @@ that already points at a path. This file is the map.
   experiment is a pre-registered retrieval-preflight holdout after transcript
   recovery
 
+## Authorized commercial discovery / no core implementation
+
+- [2026-08-30-commercial-product-family.md](2026-08-30-commercial-product-family.md) —
+  preserves the MIT core and defines one shared foundation plus three downstream
+  product lines; authorizes IP-boundary work and customer discovery, not code,
+  certification claims, or a core-roadmap change
+  - [Medium Business](product-lines/medium-business.md)
+  - [Large Enterprise](product-lines/large-enterprise.md)
+  - [National Security](product-lines/national-security.md)
+
 ## Dated / closed (keep; do not treat as current status)
 
 Session reports, shipped-release plans, and research that already
