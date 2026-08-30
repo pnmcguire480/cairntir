@@ -118,6 +118,19 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-08-30 (**phone-to-PC continuity proposed; no behavior change**)
+- **What happened:** The guitar-research field case showed the phone held the
+  user's controlling intent while a reduced PC handoff invited drift. Added a
+  proposed plan that distinguishes the existing machine-local four-host
+  boundary from phone intake, keeps the PC-local Cairntir store authoritative,
+  rejects live SQLite file sync, treats assistant research as derived evidence,
+  keeps project mutation in the external host bridge, and defines compact
+  receipts plus a role-aware reconciliation procedure. No runtime behavior
+  changed.
+- **Next:** Patrick reviews the proposal. It authorizes no implementation,
+  roadmap change, or release. v1.8.0 remains unpublished, and the accepted next
+  experiment remains the retrieval-preflight holdout.
+
 - **Date:** 2026-08-25 (**v1.8.0 transcript-recovery candidate merged**)
 - **What happened:** Added bounded, opt-in transcript recovery for verified
   Qwen Code 0.21.5, Claude Code 2.1.222, and Codex 0.149.0-alpha.4.1 formats.

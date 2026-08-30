@@ -13,6 +13,12 @@ that already points at a path. This file is the map.
   experiment is a pre-registered retrieval-preflight holdout after transcript
   recovery
 
+## Proposed / not active
+
+- [2026-08-30-phone-pc-continuity.md](2026-08-30-phone-pc-continuity.md) —
+  field-case design proposal; no implementation, roadmap priority, or release
+  is authorized
+
 ## Dated / closed (keep; do not treat as current status)
 
 Session reports, shipped-release plans, and research that already
