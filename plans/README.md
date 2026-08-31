@@ -25,3 +25,13 @@ landed. Read them as history, not as "what to do next."
 - `purrfect-drifting-sparrow.md`, `next-map.md`
 - `signal-reader.md`, `codeglass-recovery.md`
 - research notes from 2026-08-02 and 2026-08-04
+
+## Roadmap contract
+
+Every active or newly written roadmap must end with a `Finalization Mode`
+section. It freezes the acceptance inventory, evidence required, non-goals,
+verification reserve, maximum repair rounds, no-progress rule, and terminal
+disposition (`COMPLETE`, `BLOCKED`, or `EXHAUSTED`). It also names a tester
+independent of the coder, freezes the tester-authored acceptance artifacts
+before coding, and keeps them outside the coder's write scope. Historical
+closed plans remain unchanged evidence.
