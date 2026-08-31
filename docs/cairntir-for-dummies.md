@@ -270,7 +270,7 @@ silent side effects are the wrong default.
   decisions.
 - **Not configurable.** There is one right way to use it. The point
   is to kill a class of problems, not to give you ten knobs.
-- **Not finished.** 1.7.1 is the current release. The road leads
+- **Not finished.** 1.8.0 is the current release. The road leads
   somewhere much bigger — see `docs/roadmap.md` and `docs/manifesto.md`
   if you're curious.
 

@@ -58,7 +58,7 @@ Release operations:
 
 Evidence and known limits for each shipped release live under `docs/release/`.
 The latest published record is
-[`docs/release/v1.7.1.md`](release/v1.7.1.md).
+[`docs/release/v1.8.0.md`](release/v1.8.0.md).
 
 ## Local verification
 

@@ -38,4 +38,6 @@ def test_manual_release_recovery_requires_an_exact_tag_and_post_publish_check() 
     assert "attestations: write" in workflow
     assert "needs: verify" in workflow
     assert "Verify PyPI publication" in workflow
+    assert "for attempt in {1..12}" in workflow
+    assert "PyPI index has not propagated yet" in workflow
     assert "needs: [build, verify-published]" in workflow

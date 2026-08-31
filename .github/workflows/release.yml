@@ -113,7 +113,17 @@ jobs:
           fetch-depth: 0
           ref: ${{ inputs.tag || github.ref }}
       - name: Every changelogged tag reached PyPI
-        run: python scripts/check_release_tags.py
+        run: |
+          for attempt in {1..12}; do
+            if python scripts/check_release_tags.py; then
+              exit 0
+            fi
+            if [ "$attempt" -eq 12 ]; then
+              exit 1
+            fi
+            echo "PyPI index has not propagated yet; retrying in 10 seconds."
+            sleep 10
+          done
 
   github-release:
     name: GitHub Release
