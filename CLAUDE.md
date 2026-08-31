@@ -118,6 +118,26 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-08-30 (**repository settlement consolidated in PR #78; release
+  remains unauthorized**)
+- **What happened:** Recovered the canonical `C:\Dev\Cairntir` checkout's two
+  uncommitted work streams, committed bounded Finalization Mode and the verified
+  agent-fleet wiring separately, then combined them with all seven open PRs.
+  The settlement preserves both 2026-08-30 proposals, lands five GitHub Action
+  updates, and fixes the phone-continuity plan link that failed strict MkDocs
+  only after the branches were combined. The normalized independent
+  Finalization Mode suite is frozen at SHA-256
+  `EC78448B63EE5226F273D10E79307E8EAE7E8F818978550839A50D3E2210618F`.
+  PR #78's combined integration head passed Ruff, formatting, strict mypy,
+  every repository gate, strict docs, package build, CodeQL, the nine-way
+  OS/Python matrix with 744 tests, and LongMemEval R@5 (CI run `33343615128`,
+  CodeQL run `33343615151`).
+- **Next:** merge PR #78, close its seven superseded PRs, remove stale remote
+  branches, and leave the canonical checkout clean on `main`. Do not tag or
+  publish v1.8.0 without Patrick's explicit release action. Retrieval preflight
+  remains the accepted core experiment; the two new proposals retain their own
+  review and discovery gates.
+
 - **Date:** 2026-08-30 (**commercial product family and organizational feedback
   direction documented; no code or license change**)
 - **What happened:** Patrick authorized three commercial product lines—medium
