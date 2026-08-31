@@ -88,6 +88,7 @@ def test_current_version_is_verified_after_its_tag_exists(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     module = _load_script()
+    monkeypatch.delenv(module.RELEASE_RECOVERY_ENV, raising=False)
     monkeypatch.setattr(module, "existing_tags", lambda: {"v1.7.1"})
     monkeypatch.setattr(module, "current_version", lambda: "1.7.1")
     monkeypatch.setattr(module, "changelog_versions", lambda: ["1.7.1"])
@@ -101,6 +102,7 @@ def test_untagged_current_version_remains_in_flight(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     module = _load_script()
+    monkeypatch.delenv(module.RELEASE_RECOVERY_ENV, raising=False)
     monkeypatch.setattr(module, "existing_tags", lambda: {"v1.7.0"})
     monkeypatch.setattr(module, "current_version", lambda: "1.7.1")
     monkeypatch.setattr(module, "changelog_versions", lambda: ["1.7.1", "1.7.0"])
@@ -114,6 +116,7 @@ def test_tagged_current_version_must_exist_on_pypi(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     module = _load_script()
+    monkeypatch.delenv(module.RELEASE_RECOVERY_ENV, raising=False)
     monkeypatch.setattr(module, "existing_tags", lambda: {"v1.7.1"})
     monkeypatch.setattr(module, "current_version", lambda: "1.7.1")
     monkeypatch.setattr(module, "changelog_versions", lambda: ["1.7.1"])
@@ -123,7 +126,37 @@ def test_tagged_current_version_must_exist_on_pypi(
     assert "tag v1.7.1 exists but PyPI serves no files" in capsys.readouterr().err
 
 
+def test_explicit_ci_recovery_defers_current_pypi_check(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    module = _load_script()
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    monkeypatch.setenv(module.RELEASE_RECOVERY_ENV, "1.7.1")
+    monkeypatch.setattr(module, "existing_tags", lambda: {"v1.7.1"})
+    monkeypatch.setattr(module, "current_version", lambda: "1.7.1")
+    monkeypatch.setattr(module, "changelog_versions", lambda: ["1.7.1"])
+    monkeypatch.setattr(module, "pypi_published_versions", lambda: set())
+
+    assert module.main() == 0
+    assert "release recovery: 1.7.1" in capsys.readouterr().out
+
+
+def test_recovery_refuses_a_version_other_than_current(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    module = _load_script()
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    monkeypatch.setenv(module.RELEASE_RECOVERY_ENV, "1.7.0")
+    monkeypatch.setattr(module, "existing_tags", lambda: {"v1.7.1", "v1.7.0"})
+    monkeypatch.setattr(module, "current_version", lambda: "1.7.1")
+
+    assert module.main() == 1
+    assert "invalid CAIRNTIR_RELEASE_RECOVERY" in capsys.readouterr().err
+
+
 def test_the_check_runs_as_a_release_gate_with_tags_fetched() -> None:
     release = (WORKFLOWS / "release.yml").read_text(encoding="utf-8")
     assert "scripts/check_release_tags.py" in release
     assert "fetch-depth: 0" in release
+    assert "Verify PyPI publication" in release
+    assert "needs: [build, verify-published]" in release
