@@ -87,6 +87,10 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --dev
       - name: Run tests
+        env:
+          # Same bounded bridge as the lint gate above; the integration test
+          # invokes that gate as a subprocess. Remove after 1.8.0 reaches PyPI.
+          CAIRNTIR_RELEASE_RECOVERY: "1.8.0"
         run: uv run pytest -m "not slow" --cov-fail-under=80
 
   eval:
