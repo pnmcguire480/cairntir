@@ -26,11 +26,16 @@ def test_every_external_github_action_is_pinned_to_a_commit() -> None:
     assert unpinned == []
 
 
-def test_manual_release_dispatch_cannot_publish_or_create_a_release() -> None:
+def test_manual_release_recovery_requires_an_exact_tag_and_post_publish_check() -> None:
     workflow = (WORKFLOWS / "release.yml").read_text(encoding="utf-8")
-    tag_guard = "if: startsWith(github.ref, 'refs/tags/v')"
-    assert workflow.count(tag_guard) == 2
+    publish_guard = "if: startsWith(github.ref, 'refs/tags/v') || inputs.tag != ''"
+    assert workflow.count(publish_guard) == 3
+    assert "Existing version tag to recover without moving it" in workflow
+    assert workflow.count("ref: ${{ inputs.tag || github.ref }}") == 4
+    assert 'test "$RELEASE_TAG" = "v$version"' in workflow
+    assert 'test "$(git rev-parse HEAD)" = "$(git rev-list -n 1 "$RELEASE_TAG")"' in workflow
     assert "actions/attest-build-provenance@" in workflow
     assert "attestations: write" in workflow
     assert "needs: verify" in workflow
-    assert "uv run pytest -q" in workflow
+    assert "Verify PyPI publication" in workflow
+    assert "needs: [build, verify-published]" in workflow
