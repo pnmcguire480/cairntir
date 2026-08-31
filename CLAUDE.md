@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.7.1 published** 2026-08-25 from merge commit `104c905` (PyPI + GitHub release; both artifacts attested). **v1.8.0 bounded transcript recovery is merged to `main` at `e718304` as an unpublished release candidate.** **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
+- **Stage:** **v1.7.1 published** 2026-08-25 from merge commit `104c905` (PyPI + GitHub release; both artifacts attested). **v1.8.0 is a publication-authorized release candidate on `main`; the final tag and public artifact verification remain.** **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
 
 ---
 
@@ -118,8 +118,8 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
-- **Date:** 2026-08-30 (**repository settlement consolidated in PR #78; release
-  remains unauthorized**)
+- **Date:** 2026-08-30 (**repository settlement merged in PR #78; v1.8.0
+  publication explicitly authorized**)
 - **What happened:** Recovered the canonical `C:\Dev\Cairntir` checkout's two
   uncommitted work streams, committed bounded Finalization Mode and the verified
   agent-fleet wiring separately, then combined them with all seven open PRs.
@@ -128,15 +128,17 @@ under `docs/recipes/` and earn their place by use, not by governance.
   only after the branches were combined. The normalized independent
   Finalization Mode suite is frozen at SHA-256
   `EC78448B63EE5226F273D10E79307E8EAE7E8F818978550839A50D3E2210618F`.
-  PR #78's combined integration head passed Ruff, formatting, strict mypy,
-  every repository gate, strict docs, package build, CodeQL, the nine-way
-  OS/Python matrix with 744 tests, and LongMemEval R@5 (CI run `33343615128`,
-  CodeQL run `33343615151`).
-- **Next:** merge PR #78, close its seven superseded PRs, remove stale remote
-  branches, and leave the canonical checkout clean on `main`. Do not tag or
-  publish v1.8.0 without Patrick's explicit release action. Retrieval preflight
-  remains the accepted core experiment; the two new proposals retain their own
-  review and discovery gates.
+  PR #78 merged as `69fa6c1` after its final head passed Ruff, formatting,
+  strict mypy, every repository gate, strict docs, package build, CodeQL, the
+  nine-way OS/Python matrix with 744 tests, and LongMemEval R@5 (CI run
+  `33343943524`, CodeQL run `33343943482`). Patrick then explicitly authorized
+  publishing v1.8.0.
+- **Next:** merge the release-preparation record through protected `main`, tag
+  that exact green merge as `v1.8.0`, verify GitHub/PyPI artifacts and
+  provenance, close superseded PRs, remove stale branches, and leave the
+  canonical checkout clean on `main`. Retrieval preflight remains the accepted
+  core experiment; the two new proposals retain their own review and discovery
+  gates.
 
 - **Date:** 2026-08-30 (**commercial product family and organizational feedback
   direction documented; no code or license change**)
