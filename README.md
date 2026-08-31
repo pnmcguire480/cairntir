@@ -13,7 +13,7 @@ explain the project again.
 > [Release evidence](docs/release/v1.8.0.md) ·
 > [PyPI](https://pypi.org/project/cairntir/1.8.0/)
 
-[![PyPI version](https://img.shields.io/pypi/v/cairntir.svg)](https://pypi.org/project/cairntir/)
+[![PyPI version](https://img.shields.io/pypi/v/cairntir.svg?cacheSeconds=300)](https://pypi.org/project/cairntir/)
 [![PyPI downloads](https://img.shields.io/pypi/dm/cairntir.svg)](https://pypi.org/project/cairntir/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![CI](https://github.com/pnmcguire480/cairntir/actions/workflows/ci.yml/badge.svg)](https://github.com/pnmcguire480/cairntir/actions/workflows/ci.yml)
