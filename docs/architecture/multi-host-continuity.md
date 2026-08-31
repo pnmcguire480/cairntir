@@ -5,7 +5,7 @@
 **Hosts:** Codex, Cursor, Claude Code, Qwen Code
 
 **Related proposal:**
-[Phone-to-PC Continuity Bridge](../../plans/2026-08-30-phone-pc-continuity.md)
+[Phone-to-PC Continuity Bridge](https://github.com/pnmcguire480/cairntir/blob/main/plans/2026-08-30-phone-pc-continuity.md)
 covers phone conversations
 created outside the machine-local store. It is unimplemented and does not
 change this accepted decision.
