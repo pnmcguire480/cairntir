@@ -73,7 +73,13 @@ class RecoveryContext:
             "cursor": "CURSOR_SESSION_ID",
             "qwen": "QWEN_SESSION_ID",
         }
-        session_id = os.environ.get("CAIRNTIR_SESSION_ID") or os.environ.get(session_names[host])
+        # A host outside TRANSCRIPT_HOSTS has no session variable to read. Fall
+        # back rather than KeyError: callers gate on TRANSCRIPT_HOSTS, and a
+        # crash here would take down MCP startup for a merely-unsupported host.
+        session_var = session_names.get(host)
+        session_id = os.environ.get("CAIRNTIR_SESSION_ID") or (
+            os.environ.get(session_var) if session_var else None
+        )
         return cls(
             host=host,
             project_root=(project_root or Path.cwd()).resolve(),

@@ -24,6 +24,7 @@ from cairntir.hosts import (
     POLICY_BEGIN_MARKER,
     POLICY_END_MARKER,
     SUPPORTED_HOSTS,
+    TRANSCRIPT_HOSTS,
     HostConfigurationError,
     HostName,
     HostScope,
@@ -649,8 +650,8 @@ def recover_cmd(
 
 def _cli_recovery_context(host: str) -> RecoveryContext:
     selected = host.strip().lower()
-    if selected not in SUPPORTED_HOSTS:
-        choices = ", ".join(SUPPORTED_HOSTS)
+    if selected not in TRANSCRIPT_HOSTS:
+        choices = ", ".join(TRANSCRIPT_HOSTS)
         raise MCPError(f"unknown transcript host {host!r}; choose {choices}")
     return RecoveryContext.current(selected, live_session=False)
 
@@ -1526,7 +1527,7 @@ def init_cmd(
     host: str = typer.Option(
         "claude",
         "--host",
-        help="Agent host to configure: claude, codex, cursor, qwen, or all.",
+        help=f"Agent host to configure: {', '.join(SUPPORTED_HOSTS)}, or all.",
     ),
     user: bool = typer.Option(
         False,
@@ -1545,7 +1546,7 @@ def init_cmd(
         " remains as a backward-compatible alias.",
     ),
 ) -> None:
-    """Connect Claude Code, Codex, Cursor, Qwen Code, or all four to one Cairntir store.
+    """Connect any supported agent host, or all of them, to one Cairntir store.
 
     Existing JSON, TOML, and instruction-file content is preserved. Cairntir
     only replaces blocks carrying its own markers and refuses ambiguous
