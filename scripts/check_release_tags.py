@@ -31,6 +31,7 @@ Exit code 1 if any violations are found. Used as a CI check and a release gate.
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -69,6 +70,9 @@ KNOWN_UNPUBLISHED = {
 
 PYPI_PACKAGE_URL = "https://pypi.org/pypi/cairntir/json"
 """The JSON endpoint listing every published release of this package."""
+
+RELEASE_RECOVERY_ENV = "CAIRNTIR_RELEASE_RECOVERY"
+"""Explicit CI-only bridge for repairing a tagged pre-publication failure."""
 
 
 def changelog_versions() -> list[str]:
@@ -143,7 +147,19 @@ def main() -> int:
         return 1
 
     current = current_version()
-    in_flight = f"v{current}" not in tags
+    recovery = os.environ.get(RELEASE_RECOVERY_ENV)
+    if recovery and (
+        os.environ.get("GITHUB_ACTIONS") != "true"
+        or recovery != current
+        or f"v{current}" not in tags
+    ):
+        print(
+            f"ERROR: invalid {RELEASE_RECOVERY_ENV}={recovery!r}; recovery is "
+            "allowed only in GitHub Actions for the tagged current version.",
+            file=sys.stderr,
+        )
+        return 1
+    in_flight = f"v{current}" not in tags or recovery == current
     violations: list[str] = []
     released: list[str] = []
 
@@ -207,7 +223,9 @@ def main() -> int:
         )
         return 1
 
-    suffix = f" (in-flight: {current})" if in_flight else ""
+    suffix = f" (release recovery: {current})" if recovery == current else ""
+    if in_flight and not suffix:
+        suffix = f" (in-flight: {current})"
     print(f"ok: every released changelog version is tagged and published{suffix}")
     return 0
 
