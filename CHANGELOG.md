@@ -13,7 +13,7 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
-## [1.8.0] — 2026-08-25
+## [1.8.0] — 2026-08-30
 
 ### Added
 
@@ -34,6 +34,15 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   provenance, injection signals, and an explicit no-automatic-storage
   receipt. `cairntir recover --write N` is the only write path and preserves
   untrusted `transcript_recovered` provenance.
+- **Finalization Mode provides a bounded roadmap-closure recipe.** It freezes
+  independently authored acceptance tests, reserves verification capacity,
+  limits repair rounds, and terminates as `COMPLETE`, `BLOCKED`, or
+  `EXHAUSTED` instead of manufacturing more work after the evidence is green.
+- **Verified MCP wiring now covers eight agent hosts.** `cairntir init` supports
+  Claude Code, Cline, Codex, Copilot CLI, Cursor, Gemini CLI, OpenCode, and Qwen
+  Code without conflating host configuration support with the smaller set of
+  transcript adapters. `scripts/wire_hosts.py` inspects and wires the installed
+  fleet while refusing to guess unverified configuration surfaces.
 
 ### Changed
 
