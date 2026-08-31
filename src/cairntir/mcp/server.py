@@ -21,7 +21,7 @@ from pydantic import ValidationError
 from cairntir.config import db_path
 from cairntir.errors import CairntirError, EmbeddingError
 from cairntir.handoff import DEFAULT_BUDGET_CHARS
-from cairntir.hosts import SUPPORTED_HOSTS
+from cairntir.hosts import TRANSCRIPT_HOSTS
 from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import production_embedding_provider
 from cairntir.memory.store import DrawerStore
@@ -889,7 +889,7 @@ async def _amain(*, host: str = "unknown", model: str = "unknown") -> None:
     )
     _trace("DrawerStore opened")
     recovery_context = (
-        RecoveryContext.current(host, live_session=True) if host in SUPPORTED_HOSTS else None
+        RecoveryContext.current(host, live_session=True) if host in TRANSCRIPT_HOSTS else None
     )
     backend = CairntirBackend(store, recovery_context=recovery_context)
 
