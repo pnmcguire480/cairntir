@@ -13,6 +13,21 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Changed
+
+- Replaced the duplicated, stale README addendum and hidden keyword list with a
+  concise 1.8.0 front door structured around the current release, supported
+  agent hosts, verifiable capabilities, and the search language people use for
+  persistent AI coding-agent memory. The docs home, setup guide, and issue
+  template now identify 1.8.0 consistently.
+
+### Fixed
+
+- The release workflow now allows PyPI index propagation before its independent
+  post-publish verification. The 1.8.0 publication succeeded before PyPI's JSON
+  response exposed its files, so the first immediate verification saw a stale
+  empty result.
+
 ## [1.8.0] — 2026-08-30
 
 ### Added

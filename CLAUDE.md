@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.7.1 published** 2026-08-25 from merge commit `104c905` (PyPI + GitHub release; both artifacts attested). **v1.8.0 is a publication-authorized release candidate on `main`; the final tag and public artifact verification remain.** **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
+- **Stage:** **v1.8.0 published** 2026-08-30 from protected merge `8dcb3fb` (PyPI + GitHub Release; both artifacts attested and independently hash-matched). Release workflow run `33346147256` published the immutable tag after repair PR #80 closed the pre-publication/PyPI deadlock. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
 
 ---
 
@@ -118,27 +118,25 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
-- **Date:** 2026-08-30 (**repository settlement merged in PR #78; v1.8.0
-  publication explicitly authorized**)
-- **What happened:** Recovered the canonical `C:\Dev\Cairntir` checkout's two
-  uncommitted work streams, committed bounded Finalization Mode and the verified
-  agent-fleet wiring separately, then combined them with all seven open PRs.
-  The settlement preserves both 2026-08-30 proposals, lands five GitHub Action
-  updates, and fixes the phone-continuity plan link that failed strict MkDocs
-  only after the branches were combined. The normalized independent
-  Finalization Mode suite is frozen at SHA-256
-  `EC78448B63EE5226F273D10E79307E8EAE7E8F818978550839A50D3E2210618F`.
-  PR #78 merged as `69fa6c1` after its final head passed Ruff, formatting,
-  strict mypy, every repository gate, strict docs, package build, CodeQL, the
-  nine-way OS/Python matrix with 744 tests, and LongMemEval R@5 (CI run
-  `33343943524`, CodeQL run `33343943482`). Patrick then explicitly authorized
-  publishing v1.8.0.
-- **Next:** merge the release-preparation record through protected `main`, tag
-  that exact green merge as `v1.8.0`, verify GitHub/PyPI artifacts and
-  provenance, close superseded PRs, remove stale branches, and leave the
-  canonical checkout clean on `main`. Retrieval preflight remains the accepted
-  core experiment; the two new proposals retain their own review and discovery
-  gates.
+- **Date:** 2026-08-30 (**v1.8.0 published and independently verified**)
+- **What happened:** PR #78 settled the canonical checkout, all seven open PRs,
+  Finalization Mode, and the verified eight-host fleet into protected `main`.
+  PR #79 finalized the release record and merged as `8dcb3fb`; immutable tag
+  `v1.8.0` points there. The first tag run exposed a circular pre-publication
+  PyPI gate before any build or upload. PR #80 repaired the workflow without
+  moving the tag or weakening product tests. Recovery run `33346147256` passed
+  verification, built and attested both artifacts, published through trusted
+  PyPI, independently verified the public files, and created the GitHub Release.
+  Workflow, GitHub, and PyPI copies hash-match: wheel
+  `74a42bfd5f0db8cb68bf5c3d5a1387c4d73eba19cbc7bd80f09e2da65d44b59e`,
+  sdist `8e3be37c9cb05186314d81db014532dc1a3704747c19d3b8f5018015af5146ee`.
+  A fresh Windows/Python 3.11 public-PyPI install reported 1.8.0, rendered help,
+  loaded all four bundled recipes, and passed dependency checks. The README was
+  replaced with a concise 1.8.0 front door and direct changelog/release links.
+- **Next:** merge the final evidence/README PR through protected `main`, remove
+  stale merged remote branches, and leave both checkouts clean on `main`.
+  Retrieval preflight remains the accepted core experiment; the two 2026-08-30
+  proposals retain their own review and discovery gates.
 
 - **Date:** 2026-08-30 (**commercial product family and organizational feedback
   direction documented; no code or license change**)

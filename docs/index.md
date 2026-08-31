@@ -2,7 +2,10 @@
 
 > *A stack of stones that sees across time.*
 
-**Cairntir** is a memory-first reasoning layer for [Claude Code](https://claude.com/claude-code) and every other [Model Context Protocol](https://modelcontextprotocol.io/) client. It kills cross-chat AI amnesia.
+**Cairntir** is a local-first persistent memory MCP server for AI coding
+agents. Claude Code, Codex, Cursor, Qwen Code, and other
+[Model Context Protocol](https://modelcontextprotocol.io/) clients share one
+cross-session memory store.
 
 ## Install
 
@@ -28,7 +31,10 @@ Live on [PyPI](https://pypi.org/project/cairntir/). Source on [GitHub](https://g
 
 ## Status
 
-**v1.7.1** is live on [PyPI](https://pypi.org/project/cairntir/1.7.1/) and [GitHub](https://github.com/pnmcguire480/cairntir/releases/tag/v1.7.1). Full notes are in the [changelog](https://github.com/pnmcguire480/cairntir/blob/main/CHANGELOG.md).
+**v1.8.0** is live on [PyPI](https://pypi.org/project/cairntir/1.8.0/) and
+[GitHub](https://github.com/pnmcguire480/cairntir/releases/tag/v1.8.0). Read the
+[1.8.0 release record](release/v1.8.0.md) and full
+[changelog](https://github.com/pnmcguire480/cairntir/blob/main/CHANGELOG.md).
 
 ## License
 

@@ -36,11 +36,6 @@ jobs:
       - name: No silent except check
         run: uv run python scripts/check_no_silent_except.py
       - name: Release tag check
-        env:
-          # Temporary bridge for the immutable v1.8.0 tag whose first publish
-          # run exposed the pre-publication/PyPI deadlock. Remove after PyPI
-          # verification succeeds.
-          CAIRNTIR_RELEASE_RECOVERY: "1.8.0"
         run: uv run python scripts/check_release_tags.py
       - name: Landed commitment check
         run: uv run python scripts/check_landed_commitments.py
@@ -87,10 +82,6 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --dev
       - name: Run tests
-        env:
-          # Same bounded bridge as the lint gate above; the integration test
-          # invokes that gate as a subprocess. Remove after 1.8.0 reaches PyPI.
-          CAIRNTIR_RELEASE_RECOVERY: "1.8.0"
         run: uv run pytest -m "not slow" --cov-fail-under=80
 
   eval:
