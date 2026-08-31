@@ -87,3 +87,42 @@ Cairntir is complete for the current arc only when:
 Cairntir is still pointed at memory that compounds beyond software: AI,
 grand-scale 3D printing, and post-scarcity tooling. That horizon guides the
 local-first, open, substrate-neutral design; it is not a release commitment.
+
+## Finalization Mode
+
+Every roadmap ends here. Before execution starts, turn its finish line into a
+fixed acceptance inventory: required outcomes, explicit non-goals, the evidence
+that proves each outcome, and the authority or dependency each outcome needs.
+
+An impartial tester receives the thesis, issue, and test parameters before the
+coder starts. The tester authors and freezes the acceptance tests independently.
+The coder may read the tests and their failure evidence but may not author,
+edit, delete, weaken, or rebaseline them. Test artifacts are hash-bound outside
+the coder's write scope; changing them invalidates the run.
+
+`FAIL` and `INCONCLUSIVE` are honest evidence, not agent failure. Deleting a
+test, narrowing the selected suite, loosening an assertion, blessing changed
+output, or special-casing a fixture to manufacture `PASS` is false-green
+tampering. It terminates the run without a completion claim and records the
+producer as the source of the invalidation.
+
+Finalization is bounded:
+
+- reserve verification budget before implementation spends the rest;
+- allow at most two repair-and-verify rounds unless the roadmap names a lower
+  limit; protected or externally billed gates default to one attempt;
+- repeat a check only after a relevant state change or to reproduce a declared
+  flaky result; an identical check against identical state is not progress;
+- stop when the next action cannot close a named acceptance gap.
+
+The roadmap must terminate as `COMPLETE`, `BLOCKED`, or `EXHAUSTED`.
+`COMPLETE` requires an independent `PASS` plus fresh evidence for every
+acceptance item. `BLOCKED` names the unmet item and the smallest external
+decision, authority, or dependency that can unblock it. `EXHAUSTED` preserves
+the best evidence, names the budget
+or round limit reached, and does not silently reopen the loop. New work becomes
+a new roadmap or an explicitly authorized amendment; it is never smuggled into
+finalization.
+
+Use the [Finalization Mode recipe](recipes/finalization-mode/README.md) to apply
+this contract to a specific roadmap.

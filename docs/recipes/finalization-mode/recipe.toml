@@ -1,0 +1,26 @@
+[recipe]
+name = "finalization-mode"
+description = "Close a roadmap against a frozen acceptance inventory, protected verification reserve, bounded repair rounds, a no-progress rule, and an explicit COMPLETE, BLOCKED, or EXHAUSTED disposition."
+version = "0.1"
+output_wing = "finalization"
+skills = ["quality", "crucible"]
+
+[input.roadmap]
+type = "string"
+required = true
+description = "The roadmap or plan to convert into a bounded finalization contract."
+
+[input.max_repair_rounds]
+type = "integer"
+required = false
+description = "Maximum repair-and-verify rounds. Defaults to two; use one for protected or externally billed gates."
+
+[input.verification_budget]
+type = "string"
+required = true
+description = "The time, token, cost, or invocation reserve that implementation cannot spend."
+
+[input.test_parameters]
+type = "string"
+required = true
+description = "The thesis, issue, acceptance parameters, and forbidden shortcuts sent to an impartial tester before coding."

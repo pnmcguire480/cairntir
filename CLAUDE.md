@@ -118,6 +118,57 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-08-30 (**repository settlement consolidated in PR #78; release
+  remains unauthorized**)
+- **What happened:** Recovered the canonical `C:\Dev\Cairntir` checkout's two
+  uncommitted work streams, committed bounded Finalization Mode and the verified
+  agent-fleet wiring separately, then combined them with all seven open PRs.
+  The settlement preserves both 2026-08-30 proposals, lands five GitHub Action
+  updates, and fixes the phone-continuity plan link that failed strict MkDocs
+  only after the branches were combined. The normalized independent
+  Finalization Mode suite is frozen at SHA-256
+  `EC78448B63EE5226F273D10E79307E8EAE7E8F818978550839A50D3E2210618F`.
+  PR #78's combined integration head passed Ruff, formatting, strict mypy,
+  every repository gate, strict docs, package build, CodeQL, the nine-way
+  OS/Python matrix with 744 tests, and LongMemEval R@5 (CI run `33343615128`,
+  CodeQL run `33343615151`).
+- **Next:** merge PR #78, close its seven superseded PRs, remove stale remote
+  branches, and leave the canonical checkout clean on `main`. Do not tag or
+  publish v1.8.0 without Patrick's explicit release action. Retrieval preflight
+  remains the accepted core experiment; the two new proposals retain their own
+  review and discovery gates.
+
+- **Date:** 2026-08-30 (**commercial product family and organizational feedback
+  direction documented; no code or license change**)
+- **What happened:** Patrick authorized three commercial product lines—medium
+  business, large enterprise, and national security—and clarified the larger
+  thesis: major company data should let Cairntir follow operational rises and
+  declines, connect them to decisions and outcomes, and propose evidence-backed
+  corrections where humans miss the pattern. Added a shared-core product-family
+  decision plus a gated roadmap for each line. The design refuses three drifting
+  copies: the public core stays MIT and unchanged; separately owned downstream
+  packages supply administration, policy, deployment, organizational feedback,
+  assurance, and support. Recommendations begin in shadow mode, carry a
+  falsifiable predicted effect, require human authority, and settle against the
+  observed result. National-security work starts unclassified, then CUI with a
+  real partner; classified use requires sponsorship and applicable approvals.
+- **Next:** review the decision package. If accepted, run ownership/dependency
+  packet F0 and customer discovery before commercial code. Core v1.8.0 remains
+  unpublished, and retrieval preflight remains the accepted core experiment.
+
+- **Date:** 2026-08-30 (**phone-to-PC continuity proposed; no behavior change**)
+- **What happened:** The guitar-research field case showed the phone held the
+  user's controlling intent while a reduced PC handoff invited drift. Added a
+  proposed plan that distinguishes the existing machine-local four-host
+  boundary from phone intake, keeps the PC-local Cairntir store authoritative,
+  rejects live SQLite file sync, treats assistant research as derived evidence,
+  keeps project mutation in the external host bridge, and defines compact
+  receipts plus a role-aware reconciliation procedure. No runtime behavior
+  changed.
+- **Next:** Patrick reviews the proposal. It authorizes no implementation,
+  roadmap change, or release. v1.8.0 remains unpublished, and the accepted next
+  experiment remains the retrieval-preflight holdout.
+
 - **Date:** 2026-08-25 (**v1.8.0 transcript-recovery candidate merged**)
 - **What happened:** Added bounded, opt-in transcript recovery for verified
   Qwen Code 0.21.5, Claude Code 2.1.222, and Codex 0.149.0-alpha.4.1 formats.
