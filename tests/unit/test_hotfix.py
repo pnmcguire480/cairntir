@@ -7,7 +7,13 @@ from pathlib import Path
 import pytest
 
 from cairntir.errors import HotfixError
-from cairntir.hotfix import HotfixAction, HotfixCommand, HotfixCoordinator, HotfixReceipt
+from cairntir.hotfix import (
+    HotfixAction,
+    HotfixCommand,
+    HotfixCoordinator,
+    HotfixReceipt,
+    HotfixState,
+)
 from cairntir.memory.embeddings import HashEmbeddingProvider
 from cairntir.memory.store import DrawerStore
 from cairntir.memory.taxonomy import Drawer
@@ -619,6 +625,231 @@ def test_unchanged_failed_state_cannot_be_attempted_again(tmp_path: Path) -> Non
         )
 
 
+def test_failed_verification_blocks_same_state_when_attempt_reported_pass(
+    tmp_path: Path,
+) -> None:
+    store = _store(tmp_path)
+    coordinator = HotfixCoordinator(store)
+    evidence_id = _evidence(store, "The host passed but independent verification failed.")
+    opened, _ = _open_and_recommend(coordinator, evidence_id, suffix="verified-failure")
+    first_authority = _authorize(
+        coordinator,
+        opened,
+        evidence_id,
+        suffix="verified-failure",
+        sequence=1,
+        previous_sequence=None,
+    )
+    _preflight(
+        coordinator,
+        opened,
+        first_authority,
+        evidence_id,
+        suffix="verified-failure-1",
+        state_hash="1" * 64,
+    )
+    _attempt(
+        coordinator,
+        opened,
+        first_authority,
+        evidence_id,
+        suffix="verified-failure-1",
+        before="1" * 64,
+        after="2" * 64,
+        outcome="pass",
+    )
+    failed = _verify(
+        coordinator,
+        opened,
+        first_authority,
+        evidence_id,
+        suffix="verified-failure-1",
+        state_hash="2" * 64,
+        verdict="fail",
+    )
+    assert failed.state is HotfixState.REPAIR_REQUIRED
+    second_authority = _authorize(
+        coordinator,
+        opened,
+        evidence_id,
+        suffix="verified-failure",
+        sequence=2,
+        previous_sequence=1,
+    )
+    _preflight(
+        coordinator,
+        opened,
+        second_authority,
+        evidence_id,
+        suffix="verified-failure-2",
+        state_hash="2" * 64,
+    )
+
+    with pytest.raises(HotfixError, match="unchanged failed state"):
+        _attempt(
+            coordinator,
+            opened,
+            second_authority,
+            evidence_id,
+            suffix="verified-failure-2",
+            before="2" * 64,
+            after="3" * 64,
+            outcome="pass",
+        )
+
+
+def test_changed_failed_state_does_not_advertise_illegal_settlement(
+    tmp_path: Path,
+) -> None:
+    store = _store(tmp_path)
+    coordinator = HotfixCoordinator(store)
+    evidence_id = _evidence(store, "The failed attempt changed protected state.")
+    opened, _ = _open_and_recommend(
+        coordinator,
+        evidence_id,
+        suffix="pending-rollback",
+        max_attempts=1,
+    )
+    authority = _authorize(
+        coordinator,
+        opened,
+        evidence_id,
+        suffix="pending-rollback",
+        sequence=1,
+        previous_sequence=None,
+    )
+    _preflight(
+        coordinator,
+        opened,
+        authority,
+        evidence_id,
+        suffix="pending-rollback",
+        state_hash="1" * 64,
+    )
+    _attempt(
+        coordinator,
+        opened,
+        authority,
+        evidence_id,
+        suffix="pending-rollback",
+        before="1" * 64,
+        after="2" * 64,
+        outcome="fail",
+    )
+
+    failed = _verify(
+        coordinator,
+        opened,
+        authority,
+        evidence_id,
+        suffix="pending-rollback",
+        state_hash="2" * 64,
+        verdict="fail",
+    )
+
+    assert failed.next_action == "rollback"
+    assert failed.legal_actions == ("rollback",)
+
+
+def test_new_preflight_cannot_bypass_pending_rollback_before_terminal_settlement(
+    tmp_path: Path,
+) -> None:
+    store = _store(tmp_path)
+    coordinator = HotfixCoordinator(store)
+    evidence_id = _evidence(store, "The failed changed state still requires rollback.")
+    opened, _ = _open_and_recommend(coordinator, evidence_id, suffix="rollback-bypass")
+    first_authority = _authorize(
+        coordinator,
+        opened,
+        evidence_id,
+        suffix="rollback-bypass",
+        sequence=1,
+        previous_sequence=None,
+    )
+    _preflight(
+        coordinator,
+        opened,
+        first_authority,
+        evidence_id,
+        suffix="rollback-bypass-1",
+        state_hash="1" * 64,
+    )
+    _attempt(
+        coordinator,
+        opened,
+        first_authority,
+        evidence_id,
+        suffix="rollback-bypass-1",
+        before="1" * 64,
+        after="2" * 64,
+        outcome="fail",
+    )
+    _verify(
+        coordinator,
+        opened,
+        first_authority,
+        evidence_id,
+        suffix="rollback-bypass-1",
+        state_hash="2" * 64,
+        verdict="fail",
+    )
+    second_authority = _authorize(
+        coordinator,
+        opened,
+        evidence_id,
+        suffix="rollback-bypass",
+        sequence=2,
+        previous_sequence=1,
+    )
+    second_preflight = _preflight(
+        coordinator,
+        opened,
+        second_authority,
+        evidence_id,
+        suffix="rollback-bypass-2",
+        state_hash="2" * 64,
+    )
+    settlement = {
+        "disposition": "blocked",
+        "observed_outcome": "the next attempt could not start",
+        "blocker": "external executor unavailable",
+        "smallest_unblock": "restore the executor after exact rollback",
+        "evidence_ids": [evidence_id],
+    }
+
+    assert second_preflight.legal_actions == ("record_attempt", "rollback")
+    with pytest.raises(HotfixError, match="rolled back before terminal"):
+        coordinator.run(
+            HotfixCommand(
+                action=HotfixAction.SETTLE,
+                wing="cairntir",
+                case_id=opened.case_id,
+                payload=settlement,
+                idempotency_key="settle-rollback-bypass-too-early",
+            )
+        )
+
+    rolled_back = _rollback(
+        coordinator,
+        opened,
+        first_authority,
+        evidence_id,
+        suffix="rollback-bypass",
+        restored="1" * 64,
+    )
+    assert rolled_back.state is HotfixState.ROLLED_BACK
+    blocked = coordinator.run(
+        HotfixCommand(
+            action=HotfixAction.SETTLE,
+            wing="cairntir",
+            case_id=opened.case_id,
+            payload=settlement,
+            idempotency_key="settle-rollback-bypass",
+        )
+    )
+    assert blocked.state is HotfixState.BLOCKED
+
+
 def test_preflight_binding_mismatch_writes_no_event(tmp_path: Path) -> None:
     store = _store(tmp_path)
     coordinator = HotfixCoordinator(store)
@@ -751,6 +982,145 @@ def test_verification_fails_closed_without_writing_event(
     assert status.event_drawer_id == attempted.event_drawer_id
 
 
+def test_independent_roles_reject_case_only_executor_aliases(tmp_path: Path) -> None:
+    store = _store(tmp_path)
+    coordinator = HotfixCoordinator(store)
+    evidence_id = _evidence(store, "Actor identity aliases are not independent.")
+    opened, _ = _open_and_recommend(coordinator, evidence_id, suffix="actor-alias")
+    authority = _authorize(
+        coordinator,
+        opened,
+        evidence_id,
+        suffix="actor-alias",
+        sequence=1,
+        previous_sequence=None,
+    )
+    preflight_payload = {
+        "authority_hash": authority.data["authority_hash"],
+        "inspector": "CODEX",
+        "observed_bindings": {
+            "candidate_hash": "a" * 64,
+            "plan_hash": "b" * 64,
+            "toolchain_hash": "c" * 64,
+            "target": "clone/cache-only/a4",
+        },
+        "capabilities": ["repair", "smoke"],
+        "observed_state_hash": "1" * 64,
+        "checks": {
+            name: {
+                "passed": True,
+                "detail": f"{name} passed",
+                "evidence_ids": [evidence_id],
+            }
+            for name in ("binding", "containment")
+        },
+    }
+
+    with pytest.raises(HotfixError, match="inspector must differ"):
+        coordinator.run(
+            HotfixCommand(
+                action=HotfixAction.PREFLIGHT,
+                wing="cairntir",
+                case_id=opened.case_id,
+                payload=preflight_payload,
+                idempotency_key="preflight-actor-alias-invalid",
+            )
+        )
+
+    preflight_payload["inspector"] = "opus5"
+    coordinator.run(
+        HotfixCommand(
+            action=HotfixAction.PREFLIGHT,
+            wing="cairntir",
+            case_id=opened.case_id,
+            payload=preflight_payload,
+            idempotency_key="preflight-actor-alias-valid",
+        )
+    )
+    _attempt(
+        coordinator,
+        opened,
+        authority,
+        evidence_id,
+        suffix="actor-alias",
+        before="1" * 64,
+        after="2" * 64,
+        outcome="pass",
+    )
+    with pytest.raises(HotfixError, match="verifier must differ"):
+        coordinator.run(
+            HotfixCommand(
+                action=HotfixAction.VERIFY,
+                wing="cairntir",
+                case_id=opened.case_id,
+                payload={
+                    "authority_hash": authority.data["authority_hash"],
+                    "verifier": "CODEX",
+                    "observed_state_hash": "2" * 64,
+                    "results": {
+                        "bounded smoke passes": {
+                            "verdict": "pass",
+                            "detail": "case-only alias must not pass",
+                            "evidence_ids": [evidence_id],
+                        }
+                    },
+                },
+                idempotency_key="verify-actor-alias-invalid",
+            )
+        )
+    with pytest.raises(HotfixError, match="rollback verifier must differ"):
+        coordinator.run(
+            HotfixCommand(
+                action=HotfixAction.ROLLBACK,
+                wing="cairntir",
+                case_id=opened.case_id,
+                payload={
+                    "authority_hash": authority.data["authority_hash"],
+                    "rollback_executor": "codex",
+                    "verifier": "CODEX",
+                    "rollback_ref": f"rollback-{'1' * 8}",
+                    "observed_state_hash": "1" * 64,
+                    "summary": "case-only alias must not pass",
+                    "evidence_ids": [evidence_id],
+                },
+                idempotency_key="rollback-actor-alias-invalid",
+            )
+        )
+
+
+def test_authority_rejects_case_only_allowed_prohibited_overlap(tmp_path: Path) -> None:
+    store = _store(tmp_path)
+    coordinator = HotfixCoordinator(store)
+    evidence_id = _evidence(store, "Action names cannot bypass a prohibition by case.")
+    opened, _ = _open_and_recommend(coordinator, evidence_id, suffix="action-alias")
+
+    with pytest.raises(HotfixError, match="both allowed and prohibited"):
+        coordinator.run(
+            HotfixCommand(
+                action=HotfixAction.AUTHORIZE,
+                wing="cairntir",
+                case_id=opened.case_id,
+                payload={
+                    "authority_id": "AUTH-action-alias-1",
+                    "sequence": 1,
+                    "previous_sequence": None,
+                    "candidate_id": "repair",
+                    "candidate_hash": "a" * 64,
+                    "plan_hash": "b" * 64,
+                    "toolchain_hash": "c" * 64,
+                    "target": "clone/cache-only/a4",
+                    "executor": "codex",
+                    "capabilities": ["repair"],
+                    "allowed_actions": ["Repair"],
+                    "prohibited_actions": ["repair"],
+                    "required_checks": ["binding"],
+                    "evidence_ids": [evidence_id],
+                },
+                idempotency_key="authorize-action-alias-1",
+            )
+        )
+
+
 def test_attempt_budget_requires_rollback_before_exhausted_settlement(
     tmp_path: Path,
 ) -> None:
@@ -807,7 +1177,7 @@ def test_attempt_budget_requires_rollback_before_exhausted_settlement(
 
     assert failed.state.value == "repair_required"
     assert failed.next_action == "rollback"
-    assert failed.legal_actions == ("rollback", "settle")
+    assert failed.legal_actions == ("rollback",)
     with pytest.raises(HotfixError, match="rolled back before terminal"):
         coordinator.run(
             HotfixCommand(
@@ -1079,6 +1449,55 @@ def test_event_content_tampering_is_detected_on_status(tmp_path: Path) -> None:
     )
 
     with pytest.raises(HotfixError, match="failed integrity validation"):
+        reopened.run(
+            HotfixCommand(
+                action=HotfixAction.STATUS,
+                wing="cairntir",
+                case_id=opened.case_id,
+                payload={},
+            )
+        )
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("hotfix_schema", "cairntir.hotfix.corrupt"),
+        ("case_id", "hf-corrupt-tail"),
+    ],
+)
+def test_event_identity_metadata_tampering_cannot_hide_latest_event(
+    tmp_path: Path,
+    field: str,
+    value: str,
+) -> None:
+    store = _store(tmp_path)
+    coordinator = HotfixCoordinator(store)
+    evidence_id = _evidence(store, "The recommendation is part of one bound case.")
+    opened, recommended = _open_and_recommend(
+        coordinator,
+        evidence_id,
+        suffix=f"identity-tamper-{field}",
+    )
+    store.close()
+    connection = sqlite3.connect(tmp_path / "hotfix.db")
+    row = connection.execute(
+        "SELECT metadata FROM drawers WHERE id = ?", (recommended.event_drawer_id,)
+    ).fetchone()
+    assert row is not None
+    metadata = json.loads(row[0])
+    metadata[field] = value
+    connection.execute(
+        "UPDATE drawers SET metadata = ? WHERE id = ?",
+        (json.dumps(metadata), recommended.event_drawer_id),
+    )
+    connection.commit()
+    connection.close()
+    reopened = HotfixCoordinator(
+        DrawerStore(tmp_path / "hotfix.db", HashEmbeddingProvider(dimension=32))
+    )
+
+    with pytest.raises(HotfixError, match="identity metadata"):
         reopened.run(
             HotfixCommand(
                 action=HotfixAction.STATUS,

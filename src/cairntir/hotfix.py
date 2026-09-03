@@ -189,6 +189,10 @@ def _classify_failure(symptom: str) -> str:
     return next((kind for kind, needles in rules if any(n in lowered for n in needles)), "unknown")
 
 
+def _same_actor(left: str, right: str) -> bool:
+    return left.casefold() == right.casefold()
+
+
 class HotfixCoordinator:
     """Validate and persist a bounded hotfix ledger behind one interface."""
 
@@ -456,7 +460,9 @@ class HotfixCoordinator:
         capabilities = tuple(sorted(_strings(payload, "capabilities", required=True)))
         allowed_actions = tuple(sorted(_strings(payload, "allowed_actions", required=True)))
         prohibited_actions = tuple(sorted(_strings(payload, "prohibited_actions")))
-        overlap = set(allowed_actions) & set(prohibited_actions)
+        overlap = {action.casefold() for action in allowed_actions} & {
+            action.casefold() for action in prohibited_actions
+        }
         if overlap:
             raise HotfixError(f"actions cannot be both allowed and prohibited: {sorted(overlap)}")
         required_checks = tuple(sorted(_strings(payload, "required_checks", required=True)))
@@ -508,7 +514,7 @@ class HotfixCoordinator:
         payload = command.payload
         authority_hash = self._matching_authority_hash(payload, authority)
         inspector = _text(payload, "inspector")
-        if inspector == authority.payload["executor"]:
+        if _same_actor(inspector, authority.payload["executor"]):
             raise HotfixError("preflight inspector must differ from the authorized executor")
         observed = payload.get("observed_bindings")
         if not isinstance(observed, dict):
@@ -602,10 +608,7 @@ class HotfixCoordinator:
             raise HotfixError(f"hotfix {case_id} exhausted its {max_attempts} attempt budget")
         if prior_attempts:
             prior = prior_attempts[-1]
-            if (
-                prior.payload["outcome"] != "pass"
-                and state_hash_before == prior.payload["state_hash_after"]
-            ):
+            if state_hash_before == prior.payload["state_hash_after"]:
                 raise HotfixError(
                     "unchanged failed state cannot be attempted again; record a real repair first"
                 )
@@ -652,7 +655,7 @@ class HotfixCoordinator:
         if attempt.payload["authority_hash"] != authority_hash:
             raise HotfixError("verification is not bound to the latest attempt authority")
         verifier = _text(payload, "verifier")
-        if verifier == attempt.payload["executor"]:
+        if _same_actor(verifier, attempt.payload["executor"]):
             raise HotfixError("verifier must differ from the attempt executor")
         observed_state_hash = self._sha256(payload, "observed_state_hash")
         if observed_state_hash != attempt.payload["state_hash_after"]:
@@ -707,17 +710,27 @@ class HotfixCoordinator:
     def _rollback(self, command: HotfixCommand) -> HotfixReceipt:
         case_id = self._case_id(command)
         events = self._events(command.wing, case_id)
-        authority = self._last(events, HotfixAction.AUTHORIZE)
         attempt = self._last(events, HotfixAction.RECORD_ATTEMPT)
         payload = command.payload
-        authority_hash = self._matching_authority_hash(payload, authority)
+        authority_hash = str(attempt.payload["authority_hash"])
+        if payload.get("authority_hash") != authority_hash:
+            raise HotfixError("authority_hash does not match the latest attempt authority")
+        try:
+            authority = next(
+                event
+                for event in reversed(events)
+                if event.kind is HotfixAction.AUTHORIZE
+                and event.payload.get("authority_hash") == authority_hash
+            )
+        except StopIteration as exc:
+            raise HotfixError("latest attempt has no matching authority envelope") from exc
         if attempt.payload["authority_hash"] != authority_hash:
             raise HotfixError("rollback is not bound to the latest attempt authority")
         rollback_executor = _text(payload, "rollback_executor")
         if rollback_executor != authority.payload["executor"]:
             raise HotfixError("rollback executor does not match the authority envelope")
         verifier = _text(payload, "verifier")
-        if verifier == rollback_executor:
+        if _same_actor(verifier, rollback_executor):
             raise HotfixError("rollback verifier must differ from the rollback executor")
         rollback_ref = _text(payload, "rollback_ref")
         if rollback_ref != attempt.payload["rollback_ref"]:
@@ -742,6 +755,8 @@ class HotfixCoordinator:
             expected=(
                 HotfixState.ATTEMPTED,
                 HotfixState.REPAIR_REQUIRED,
+                HotfixState.AUTHORIZED,
+                HotfixState.PREFLIGHTED,
             ),
             new_state=HotfixState.ROLLED_BACK,
             payload=event_payload,
@@ -801,20 +816,11 @@ class HotfixCoordinator:
                 )
             expected = (HotfixState.REPAIR_REQUIRED, HotfixState.ROLLED_BACK)
 
-        if disposition in {HotfixState.BLOCKED, HotfixState.EXHAUSTED}:
-            attempt_events = [
-                event for event in events if event.kind is HotfixAction.RECORD_ATTEMPT
-            ]
-            latest = events[-1]
-            if (
-                attempt_events
-                and attempt_events[-1].payload["state_hash_before"]
-                != attempt_events[-1].payload["state_hash_after"]
-                and latest.state is HotfixState.REPAIR_REQUIRED
-            ):
-                raise HotfixError(
-                    "changed failed state must be rolled back before terminal settlement"
-                )
+        if disposition in {
+            HotfixState.BLOCKED,
+            HotfixState.EXHAUSTED,
+        } and self._requires_rollback(events, events[-1].state):
+            raise HotfixError("changed failed state must be rolled back before terminal settlement")
         event_payload = {
             "disposition": disposition.value,
             "observed_outcome": observed_outcome,
@@ -969,6 +975,7 @@ class HotfixCoordinator:
                 new_state,
                 attempts=attempt_count,
                 max_attempts=max_attempts,
+                requires_rollback=requires_rollback,
             )
             card_lines.append(f"Next legal action: {next_action}")
             return {
@@ -1173,6 +1180,7 @@ class HotfixCoordinator:
                 latest.state,
                 attempts=attempts,
                 max_attempts=max_attempts,
+                requires_rollback=requires_rollback,
             ),
             data=data,
         )
@@ -1186,15 +1194,26 @@ class HotfixCoordinator:
         return case_id
 
     def _events(self, wing: str, case_id: str) -> list[_LedgerEvent]:
-        drawers = [
-            drawer
-            for drawer in self._store.list_by(wing=wing, room=HOTFIX_ROOM, limit=None)
-            if drawer.metadata.get("hotfix_schema") == HOTFIX_SCHEMA
-            and drawer.metadata.get("case_id") == case_id
-        ]
-        drawers.sort(key=lambda drawer: drawer.id or 0)
-        if not drawers:
+        room_drawers = self._store.list_by(wing=wing, room=HOTFIX_ROOM, limit=None)
+        by_id = {drawer.id: drawer for drawer in room_drawers if drawer.id is not None}
+        connected = {
+            drawer_id
+            for drawer_id, drawer in by_id.items()
+            if drawer.metadata.get("case_id") == case_id
+        }
+        if not connected:
             raise HotfixError(f"hotfix {case_id!r} does not exist in wing {wing!r}")
+        previous_size = -1
+        while previous_size != len(connected):
+            previous_size = len(connected)
+            for drawer_id, drawer in by_id.items():
+                if drawer_id in connected and drawer.supersedes_id in by_id:
+                    connected.add(drawer.supersedes_id)
+                if drawer.supersedes_id in connected:
+                    connected.add(drawer_id)
+        drawers = sorted(
+            (by_id[drawer_id] for drawer_id in connected), key=lambda item: item.id or 0
+        )
 
         events: list[_LedgerEvent] = []
         previous_hash: str | None = None
@@ -1203,6 +1222,8 @@ class HotfixCoordinator:
         failure_class = str(drawers[0].metadata.get("failure_class", ""))
         for index, drawer in enumerate(drawers):
             metadata = drawer.metadata
+            if metadata.get("hotfix_schema") != HOTFIX_SCHEMA or metadata.get("case_id") != case_id:
+                raise HotfixError(f"hotfix {case_id} event #{drawer.id} identity metadata changed")
             try:
                 kind = HotfixAction(str(metadata["kind"]))
                 state = HotfixState(str(metadata["state"]))
@@ -1259,13 +1280,39 @@ class HotfixCoordinator:
 
     @staticmethod
     def _requires_rollback(events: list[_LedgerEvent], state: HotfixState) -> bool:
-        if state is not HotfixState.REPAIR_REQUIRED:
+        if state in {
+            HotfixState.VERIFIED,
+            HotfixState.ROLLED_BACK,
+            HotfixState.COMPLETE,
+        }:
             return False
-        attempts = [event for event in events if event.kind is HotfixAction.RECORD_ATTEMPT]
-        return bool(
-            attempts
-            and attempts[-1].payload["state_hash_before"]
-            != attempts[-1].payload["state_hash_after"]
+        try:
+            index = next(
+                index
+                for index in range(len(events) - 1, -1, -1)
+                if events[index].kind is HotfixAction.RECORD_ATTEMPT
+            )
+        except StopIteration:
+            return False
+        attempt = events[index]
+        if attempt.payload["state_hash_before"] == attempt.payload["state_hash_after"]:
+            return False
+        tail = events[index + 1 :]
+        rolled_back = any(
+            event.kind is HotfixAction.ROLLBACK
+            and event.payload.get("attempt") == attempt.payload.get("attempt")
+            and event.payload.get("authority_hash") == attempt.payload.get("authority_hash")
+            for event in tail
+        )
+        if rolled_back:
+            return False
+        if state is HotfixState.REPAIR_REQUIRED:
+            return True
+        return any(
+            event.kind is HotfixAction.VERIFY
+            and event.payload.get("attempt") == attempt.payload.get("attempt")
+            and event.payload.get("accepted") is False
+            for event in tail
         )
 
     @staticmethod
@@ -1304,17 +1351,24 @@ class HotfixCoordinator:
         *,
         attempts: int = 0,
         max_attempts: int = 2,
+        requires_rollback: bool = False,
     ) -> tuple[str, ...]:
         if state is HotfixState.REPAIR_REQUIRED:
-            actions = [HotfixAction.ROLLBACK.value, HotfixAction.SETTLE.value]
+            actions = [HotfixAction.ROLLBACK.value]
             if attempts < max_attempts:
                 actions.insert(0, HotfixAction.AUTHORIZE.value)
+            if not requires_rollback:
+                actions.append(HotfixAction.SETTLE.value)
             return tuple(actions)
         if state is HotfixState.ROLLED_BACK:
             actions = [HotfixAction.SETTLE.value]
             if attempts < max_attempts:
                 actions.insert(0, HotfixAction.AUTHORIZE.value)
             return tuple(actions)
+        if state is HotfixState.AUTHORIZED and requires_rollback:
+            return (HotfixAction.PREFLIGHT.value, HotfixAction.ROLLBACK.value)
+        if state is HotfixState.PREFLIGHTED and requires_rollback:
+            return (HotfixAction.RECORD_ATTEMPT.value, HotfixAction.ROLLBACK.value)
         return {
             HotfixState.OPEN: (HotfixAction.RECOMMEND.value, HotfixAction.SETTLE.value),
             HotfixState.RECOMMENDED: (
