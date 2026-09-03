@@ -358,25 +358,19 @@ class HotfixCoordinator:
             seen_ids.add(candidate_id)
             summary = _text(raw, "summary")
             state_change = _text(raw, "state_change")
-            evidence_ids = self._evidence_ids(
-                raw, "evidence_ids", wing=command.wing, required=True
-            )
+            evidence_ids = self._evidence_ids(raw, "evidence_ids", wing=command.wing, required=True)
             reversible = raw.get("reversible")
             if not isinstance(reversible, bool):
                 raise HotfixError(f"candidate {candidate_id!r} reversible must be boolean")
             risk = raw.get("risk")
             if risk not in risk_order:
-                raise HotfixError(
-                    f"candidate {candidate_id!r} risk must be low, medium, or high"
-                )
+                raise HotfixError(f"candidate {candidate_id!r} risk must be low, medium, or high")
             precedent_ids = _strings(raw, "precedent_case_ids")
             precedents = [
                 self._precedent(events[0], command.wing, precedent_id)
                 for precedent_id in precedent_ids
             ]
-            precedent_strength = max(
-                (precedent["strength"] for precedent in precedents), default=0
-            )
+            precedent_strength = max((precedent["strength"] for precedent in precedents), default=0)
             progress = state_change.strip().lower() not in {"none", "no change", "unchanged"}
             candidate = {
                 "id": candidate_id,
@@ -417,10 +411,7 @@ class HotfixCoordinator:
             expected=HotfixState.OPEN,
             new_state=HotfixState.RECOMMENDED,
             payload=event_payload,
-            content=(
-                f"Hotfix {case_id} recommendation: {selected['id']}\n"
-                f"{selected['summary']}"
-            ),
+            content=(f"Hotfix {case_id} recommendation: {selected['id']}\n{selected['summary']}"),
             data={"selected_candidate": selected["id"], "ranking": candidates},
         )
 
@@ -469,9 +460,7 @@ class HotfixCoordinator:
         if overlap:
             raise HotfixError(f"actions cannot be both allowed and prohibited: {sorted(overlap)}")
         required_checks = tuple(sorted(_strings(payload, "required_checks", required=True)))
-        evidence_ids = self._evidence_ids(
-            payload, "evidence_ids", wing=command.wing, required=True
-        )
+        evidence_ids = self._evidence_ids(payload, "evidence_ids", wing=command.wing, required=True)
         acceptance = first.payload["acceptance"]
         envelope: dict[str, Any] = {
             "authority_id": authority_id,
@@ -620,18 +609,13 @@ class HotfixCoordinator:
                 raise HotfixError(
                     "unchanged failed state cannot be attempted again; record a real repair first"
                 )
-        if any(
-            event.payload.get("authority_hash") == authority_hash
-            for event in prior_attempts
-        ):
+        if any(event.payload.get("authority_hash") == authority_hash for event in prior_attempts):
             raise HotfixError("one authority envelope permits only one attempt")
         outcome = payload.get("outcome")
         if outcome not in {"pass", "fail", "inconclusive"}:
             raise HotfixError("outcome must be pass, fail, or inconclusive")
         summary = _text(payload, "summary")
-        evidence_ids = self._evidence_ids(
-            payload, "evidence_ids", wing=command.wing, required=True
-        )
+        evidence_ids = self._evidence_ids(payload, "evidence_ids", wing=command.wing, required=True)
         rollback_ref = _text(payload, "rollback_ref")
         artifacts = self._artifacts(payload)
         attempt_number = len(prior_attempts) + 1
@@ -678,9 +662,7 @@ class HotfixCoordinator:
             raise HotfixError("results must be an object keyed by acceptance item")
         acceptance = first.payload["acceptance"]
         if set(raw_results) != set(acceptance):
-            raise HotfixError(
-                "verification must cover the frozen acceptance inventory exactly"
-            )
+            raise HotfixError("verification must cover the frozen acceptance inventory exactly")
         results: dict[str, Any] = {}
         for item in acceptance:
             result = raw_results[item]
@@ -717,8 +699,7 @@ class HotfixCoordinator:
             new_state=new_state,
             payload=event_payload,
             content=(
-                f"Hotfix {case_id} verification by {verifier}: "
-                f"{'PASS' if accepted else 'FAIL'}"
+                f"Hotfix {case_id} verification by {verifier}: {'PASS' if accepted else 'FAIL'}"
             ),
             data={"accepted": accepted, "verdict": "pass" if accepted else "fail"},
         )
@@ -745,9 +726,7 @@ class HotfixCoordinator:
         if observed_state_hash != attempt.payload["state_hash_before"]:
             raise HotfixError("rollback did not restore the exact pre-attempt state")
         summary = _text(payload, "summary")
-        evidence_ids = self._evidence_ids(
-            payload, "evidence_ids", wing=command.wing, required=True
-        )
+        evidence_ids = self._evidence_ids(payload, "evidence_ids", wing=command.wing, required=True)
         event_payload = {
             "authority_hash": authority_hash,
             "attempt": attempt.payload["attempt"],
@@ -789,9 +768,7 @@ class HotfixCoordinator:
         }:
             raise HotfixError("disposition must be complete, blocked, or exhausted")
         observed_outcome = _text(payload, "observed_outcome")
-        evidence_ids = self._evidence_ids(
-            payload, "evidence_ids", wing=command.wing, required=True
-        )
+        evidence_ids = self._evidence_ids(payload, "evidence_ids", wing=command.wing, required=True)
         resolution = payload.get("resolution")
         delta = payload.get("delta")
         if resolution is not None and (not isinstance(resolution, str) or not resolution.strip()):
@@ -815,9 +792,7 @@ class HotfixCoordinator:
             )
         else:
             _text(payload, "budget_exhausted")
-            attempts = sum(
-                event.kind is HotfixAction.RECORD_ATTEMPT for event in events
-            )
+            attempts = sum(event.kind is HotfixAction.RECORD_ATTEMPT for event in events)
             max_attempts = events[0].payload["max_attempts"]
             if attempts < max_attempts:
                 raise HotfixError(
@@ -827,14 +802,14 @@ class HotfixCoordinator:
             expected = (HotfixState.REPAIR_REQUIRED, HotfixState.ROLLED_BACK)
 
         if disposition in {HotfixState.BLOCKED, HotfixState.EXHAUSTED}:
-            attempts = [
+            attempt_events = [
                 event for event in events if event.kind is HotfixAction.RECORD_ATTEMPT
             ]
             latest = events[-1]
             if (
-                attempts
-                and attempts[-1].payload["state_hash_before"]
-                != attempts[-1].payload["state_hash_after"]
+                attempt_events
+                and attempt_events[-1].payload["state_hash_before"]
+                != attempt_events[-1].payload["state_hash_after"]
                 and latest.state is HotfixState.REPAIR_REQUIRED
             ):
                 raise HotfixError(
@@ -856,7 +831,7 @@ class HotfixCoordinator:
             new_state=disposition,
             payload=event_payload,
             content=f"Hotfix {case_id} settled {disposition.value}: {observed_outcome}",
-            data={"disposition": disposition.value, "resolution": event_payload["resolution"]},
+            data=event_payload,
         )
 
     @staticmethod
@@ -881,9 +856,7 @@ class HotfixCoordinator:
         return value
 
     @staticmethod
-    def _matching_authority_hash(
-        payload: dict[str, Any], authority: _LedgerEvent
-    ) -> str:
+    def _matching_authority_hash(payload: dict[str, Any], authority: _LedgerEvent) -> str:
         authority_hash = payload.get("authority_hash")
         expected = authority.payload["authority_hash"]
         if authority_hash != expected:
@@ -930,8 +903,7 @@ class HotfixCoordinator:
             if latest.state not in expected_states:
                 allowed = ", ".join(state.value for state in expected_states)
                 raise HotfixError(
-                    f"hotfix {case_id} is {latest.state.value}; "
-                    f"{action.value} requires {allowed}"
+                    f"hotfix {case_id} is {latest.state.value}; {action.value} requires {allowed}"
                 )
             parent_id = latest.drawer.id
             if parent_id is None:
@@ -1120,8 +1092,7 @@ class HotfixCoordinator:
             strength = 3
         elif (
             current_meta["failure_class"] == precedent_meta["failure_class"]
-            and str(current.payload["stage"]).lower()
-            == str(precedent[0].payload["stage"]).lower()
+            and str(current.payload["stage"]).lower() == str(precedent[0].payload["stage"]).lower()
         ):
             strength = 2
         elif current_meta["failure_class"] == precedent_meta["failure_class"]:
@@ -1179,6 +1150,15 @@ class HotfixCoordinator:
         latest_id = latest.drawer.id
         if latest_id is None:
             raise HotfixError(f"hotfix {case_id} has an event without a drawer id")
+        data: dict[str, Any] = {
+            "attempts": attempts,
+            "max_attempts": max_attempts,
+            "acceptance_passed": passed,
+            "acceptance_total": len(acceptance),
+            "acceptance_hash": _hash({"acceptance": acceptance}),
+        }
+        if latest.kind is HotfixAction.SETTLE:
+            data["settlement"] = latest.payload
         return HotfixReceipt(
             case_id=case_id,
             action=HotfixAction.STATUS,
@@ -1194,13 +1174,7 @@ class HotfixCoordinator:
                 attempts=attempts,
                 max_attempts=max_attempts,
             ),
-            data={
-                "attempts": attempts,
-                "max_attempts": max_attempts,
-                "acceptance_passed": passed,
-                "acceptance_total": len(acceptance),
-                "acceptance_hash": _hash({"acceptance": acceptance}),
-            },
+            data=data,
         )
 
     @staticmethod
@@ -1305,9 +1279,7 @@ class HotfixCoordinator:
         if state is HotfixState.REPAIR_REQUIRED:
             if attempts >= max_attempts:
                 return (
-                    HotfixAction.ROLLBACK.value
-                    if requires_rollback
-                    else HotfixAction.SETTLE.value
+                    HotfixAction.ROLLBACK.value if requires_rollback else HotfixAction.SETTLE.value
                 )
             return HotfixAction.AUTHORIZE.value
         if state is HotfixState.ROLLED_BACK and attempts >= max_attempts:

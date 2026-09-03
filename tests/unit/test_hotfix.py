@@ -858,6 +858,57 @@ def test_attempt_budget_requires_rollback_before_exhausted_settlement(
         )
 
 
+def test_blocked_settlement_is_terminal_and_preserves_smallest_unblock(
+    tmp_path: Path,
+) -> None:
+    store = _store(tmp_path)
+    coordinator = HotfixCoordinator(store)
+    evidence_id = _evidence(store, "The signing service is unavailable.")
+    opened = coordinator.run(
+        HotfixCommand(
+            action=HotfixAction.OPEN,
+            wing="cairntir",
+            payload={
+                "title": "external signer blocked",
+                "stage": "authority",
+                "symptom": "signing service unavailable",
+                "acceptance": ["exact permit is signed"],
+                "evidence_ids": [evidence_id],
+            },
+            idempotency_key="open-blocked",
+        )
+    )
+    settled = coordinator.run(
+        HotfixCommand(
+            action=HotfixAction.SETTLE,
+            wing="cairntir",
+            case_id=opened.case_id,
+            payload={
+                "disposition": "blocked",
+                "observed_outcome": "no authority envelope was signed",
+                "blocker": "external signing service unavailable",
+                "smallest_unblock": "restore the signer and open a new case",
+                "evidence_ids": [evidence_id],
+            },
+            idempotency_key="settle-blocked",
+        )
+    )
+    status = coordinator.run(
+        HotfixCommand(
+            action=HotfixAction.STATUS,
+            wing="cairntir",
+            case_id=opened.case_id,
+            payload={},
+        )
+    )
+
+    assert settled.state.value == "blocked"
+    assert settled.data["smallest_unblock"] == "restore the signer and open a new case"
+    assert status.state.value == "blocked"
+    assert status.legal_actions == ()
+    assert status.data["settlement"]["blocker"] == "external signing service unavailable"
+
+
 def test_rollback_requires_independent_exact_pre_attempt_state(tmp_path: Path) -> None:
     store = _store(tmp_path)
     coordinator = HotfixCoordinator(store)
@@ -1087,9 +1138,7 @@ def test_forked_supersession_chain_is_detected_on_status(tmp_path: Path) -> None
     store = _store(tmp_path)
     coordinator = HotfixCoordinator(store)
     evidence_id = _evidence(store, "A recommendation exists once.")
-    opened, recommended = _open_and_recommend(
-        coordinator, evidence_id, suffix="forked-chain"
-    )
+    opened, recommended = _open_and_recommend(coordinator, evidence_id, suffix="forked-chain")
     child = store.get(recommended.event_drawer_id or 0)
     assert child is not None
     store.add(
@@ -1215,7 +1264,5 @@ def test_matching_completed_precedent_returns_its_resolution(tmp_path: Path) -> 
     selected = recommendation.data["ranking"][0]
     assert recommendation.data["selected_candidate"] == "reuse-proven-repair"
     assert selected["precedents"][0]["case_id"] == prior.case_id
-    assert selected["precedents"][0]["resolution"] == (
-        "rebuild the ACL digest before the smoke"
-    )
+    assert selected["precedents"][0]["resolution"] == ("rebuild the ACL digest before the smoke")
     assert selected["precedents"][0]["strength"] == 3

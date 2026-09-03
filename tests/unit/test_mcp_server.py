@@ -108,10 +108,7 @@ def test_hotfix_tool_spec_exposes_discriminated_action_payloads() -> None:
     specs = {tool.name: tool for tool in _tool_specs()}
     hotfix = specs["cairntir_hotfix"]
     variants = hotfix.inputSchema["oneOf"]
-    actions = {
-        variant["properties"]["action"]["const"]
-        for variant in variants
-    }
+    actions = {variant["properties"]["action"]["const"] for variant in variants}
     assert actions == {
         "open",
         "recommend",
