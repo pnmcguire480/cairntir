@@ -118,6 +118,25 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
+- **Date:** 2026-09-02 (**bounded hotfix ledger prepared in PR #84; protected
+  `main` untouched**)
+- **What happened:** Built the authorized additive hotfix module on
+  `codex/cairntir-hotfix-module` from frozen `main` SHA `4e123a1`.
+  `HotfixCoordinator.run(HotfixCommand)` now records a deterministic failure
+  fingerprint, evidence-cited candidate ranking and completed precedents, exact
+  authority and preflight bindings, one host-executed attempt per authority,
+  independent acceptance or exact rollback, and terminal `COMPLETE`,
+  `BLOCKED`, or `EXHAUSTED` settlement. The CLI and 21st MCP tool share that
+  seam; Cairntir never executes or signs the repair. Added the Bounded Hotfix
+  recipe, operator docs, and append-only integrity tests. Mutation-checking
+  proved the unchanged-failed-state test turns red when its guard is disabled.
+  Local evidence: 764 non-slow tests at 83.24% coverage, all 5 evals, Ruff,
+  strict mypy, strict docs, repository gates, wheel/sdist build, wheel-content
+  inspection, and a fresh Windows install exposing 21 tools and 5 recipes.
+- **Next:** let protected-branch review and CI settle PR #84. Do not merge, tag,
+  publish, or mutate a live store as part of this implementation. Retrieval
+  preflight remains the accepted next core experiment.
+
 - **Date:** 2026-08-30 (**v1.8.0 published and independently verified**)
 - **What happened:** PR #78 settled the canonical checkout, all seven open PRs,
   Finalization Mode, and the verified eight-host fleet into protected `main`.
@@ -1142,7 +1161,7 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 - **Memory layer:** wing/room/drawer taxonomy over sqlite-vec, 4-layer retrieval,
   schema v6 with immutable write provenance and durable idempotency receipts.
-- **MCP server:** 20 tools over stdio (`cairntir-mcp`, or `python -m cairntir.mcp.server`).
+- **MCP server:** 21 tools over stdio (`cairntir-mcp`, or `python -m cairntir.mcp.server`).
 - **Handoff:** `cairntir_handoff(wing)` / `cairntir handoff <wing>` returns one
   composed brief under a hard character budget — protocol, recent deltas, open
   questions, and anchors for the files in play. Drawers come back **whole**;
@@ -1152,12 +1171,13 @@ under `docs/recipes/` and earn their place by use, not by governance.
   drawers it returns can actually answer something. Deterministic, so it stays
   prompt-cache friendly.
 - **Three skills:** Crucible, Quality, Reason — bundled and loadable.
-- **Recipes:** Signal Reader, Decision Replay, and the discovery/calibration ledger.
+- **Recipes:** Signal Reader, Decision Replay, CodeGlass, Finalization Mode, and
+  Bounded Hotfix.
 - **Structural recall:** `cairntir_recall_for_change(files=[…])` surfaces drawers
   anchored to the files a change touches. Anchors are validated on write, and
   `cairntir anchor <id> --repair` fixes drawers written before that guard existed.
 - **CLI:** `cairntir` — recall, get, handoff, cost, anchor, recall-for-change,
-  replay, export, import, calibration, doctor, register, and more.
+  replay, hotfix, export, import, calibration, doctor, register, and more.
 - **Cost accounting:** `cairntir cost <wing>` reports what the read path costs —
   tool catalog, `session_start`, `handoff`, and drawer sizes against the
   embedder's ~2,048-char window. Closes P5. Measures Cairntir's own payload
