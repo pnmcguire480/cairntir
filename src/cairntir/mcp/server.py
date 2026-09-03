@@ -18,6 +18,7 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from pydantic import ValidationError
 
+from cairntir import __version__
 from cairntir.config import db_path
 from cairntir.errors import CairntirError, EmbeddingError
 from cairntir.handoff import DEFAULT_BUDGET_CHARS
@@ -1028,7 +1029,7 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
     calls in the same session do not repeat the banner — repetition is
     noise, not signal.
     """
-    server: Server[Any, Any] = Server(_SERVER_NAME)
+    server: Server[Any, Any] = Server(_SERVER_NAME, version=__version__)
     update_banner_shown = False
 
     @server.list_tools()

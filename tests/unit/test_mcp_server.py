@@ -16,6 +16,7 @@ from typing import Any
 
 import pytest
 
+from cairntir import __version__
 from cairntir.mcp.backend import CairntirBackend
 from cairntir.mcp.server import _format_validation_error, build_server
 from cairntir.memory.embeddings import HashEmbeddingProvider
@@ -269,3 +270,15 @@ def test_format_validation_error_picks_first_error() -> None:
     # First error's loc and msg surface; no multi-line dump.
     assert "count" in rendered
     assert "\n" not in rendered
+
+
+def test_server_handshake_reports_cairntir_version(_backend: CairntirBackend) -> None:
+    """The handshake must advertise Cairntir's version, not the SDK's.
+
+    ``Server(name)`` built without ``version=`` makes the mcp library fall
+    back to reporting its own package version in ``serverInfo``, so every
+    host shows the SDK's number and an operator cannot tell which Cairntir
+    they are actually talking to.
+    """
+    options = build_server(_backend).create_initialization_options()
+    assert options.server_version == __version__

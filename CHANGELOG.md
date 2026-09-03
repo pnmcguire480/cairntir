@@ -13,6 +13,14 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Fixed
+
+- The MCP handshake now advertises Cairntir's own version. `build_server`
+  constructed `Server` without a `version`, so the mcp library fell back to
+  reporting its own package version in `serverInfo`. Every host displayed the
+  SDK's number instead of Cairntir's, leaving an operator unable to tell which
+  Cairntir they were talking to.
+
 ## [1.9.0] — 2026-09-03
 
 ### Added
