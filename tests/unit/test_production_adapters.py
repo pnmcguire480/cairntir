@@ -100,10 +100,15 @@ def test_null_runner_without_verdict_raises() -> None:
 def test_null_runner_returns_outcome_matching_verdict() -> None:
     runner = NullRunner()
     hypothesis = Hypothesis(claim="c", predicted_outcome="p", wing="cairntir", room="room-a")
-    runner.set_verdict(observed="it happened as predicted", success=True)
+    runner.set_verdict(
+        observed="it happened as predicted",
+        success=True,
+        delta="the route was surprising",
+    )
     outcome = runner.run(hypothesis)
     assert outcome.success is True
     assert outcome.observed == "it happened as predicted"
+    assert outcome.delta == "the route was surprising"
     assert outcome.experiment.hypothesis is hypothesis
 
 

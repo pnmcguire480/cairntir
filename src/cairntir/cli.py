@@ -1082,6 +1082,11 @@ def reason_cmd(
         "--success/--fail",
         help="Verdict: did the prediction hold? Prompted if omitted.",
     ),
+    delta: str = typer.Option(
+        "",
+        "--delta",
+        help="Optional surprise: how reality differed even if the prediction held.",
+    ),
     proposer: str = typer.Option(
         "manual",
         "--proposer",
@@ -1108,9 +1113,9 @@ def reason_cmd(
 ) -> None:
     """Run one Reason loop step: predict \u2192 observe \u2192 update belief.
 
-    Cairntir does not call cloud LLMs. The observed outcome and
-    verdict always come from the caller (you saw what happened, not
-    the model). With --proposer ollama, the *claim* and
+    Cairntir does not call cloud LLMs. The observed outcome, verdict,
+    and optional surprise delta come from the caller (you saw what
+    happened, not the model). With --proposer ollama, the *claim* and
     *predicted_outcome* are drafted by a locally-running Ollama
     model \u2014 still no network \u2014 and surfaced for confirmation before
     the loop commits.
@@ -1146,7 +1151,7 @@ def reason_cmd(
     try:
         loop = ReasonLoop(
             proposer=proposer_obj,  # type: ignore[arg-type]
-            runner=NullRunner(observed=observed, success=success),
+            runner=NullRunner(observed=observed, success=success, delta=delta),
             beliefs=StoreBackedBeliefs(store=store),
             memory=StoreBackedMemory(store=store),
         )
@@ -1194,6 +1199,11 @@ def replay_cmd(
         "--success/--fail",
         help="Verdict: did the original prediction hold? Prompted if omitted.",
     ),
+    delta: str = typer.Option(
+        "",
+        "--delta",
+        help="Optional surprise: how reality differed even if the prediction held.",
+    ),
     proposer: str = typer.Option(
         "manual",
         "--proposer",
@@ -1226,9 +1236,9 @@ def replay_cmd(
     the leaf — so the new prediction extends the original chain instead
     of starting a new one.
 
-    Cairntir does not call cloud LLMs. The observed outcome and the
-    verdict come from you. With --proposer ollama, the *claim* and
-    *predicted_outcome* are re-drafted by a locally-running model
+    Cairntir does not call cloud LLMs. The observed outcome, verdict,
+    and optional surprise delta come from you. With --proposer ollama,
+    the *claim* and *predicted_outcome* are re-drafted by a locally-running model
     (still no network), surfaced for confirmation. The default
     'manual' proposer re-uses the original chain leaf's claim
     verbatim — the right call for closing a prediction window.
@@ -1359,7 +1369,7 @@ def replay_cmd(
             memory=StoreBackedMemory(store=store),
             beliefs=StoreBackedBeliefs(store=store),
             proposer=replay_proposer,
-            runner=NullRunner(observed=observed, success=success),
+            runner=NullRunner(observed=observed, success=success, delta=delta),
         )
         try:
             result = recipe_runner.run(
@@ -1941,6 +1951,11 @@ def recipe_run_cmd(
         "--success/--fail",
         help="Verdict for the reason step. Prompted if omitted.",
     ),
+    delta: str = typer.Option(
+        "",
+        "--delta",
+        help="Optional surprise: how reality differed even if the prediction held.",
+    ),
     idempotency_key: str | None = typer.Option(
         None,
         "--idempotency-key",
@@ -1950,8 +1965,9 @@ def recipe_run_cmd(
     """Execute a named recipe with the given inputs.
 
     Zero network calls. If the recipe chains the ``reason`` skill, the
-    CLI collects the claim / predicted / observed / verdict via flags
-    or interactive prompts \u2014 no LLM runs inside Cairntir.
+    CLI collects claim / prediction / observation / verdict via flags or
+    prompts and accepts an optional surprise delta via `--delta` — no LLM runs
+    inside Cairntir.
     """
     from cairntir.recipes import RecipeError, RecipeRunner, discover_recipes
 
@@ -2018,7 +2034,7 @@ def recipe_run_cmd(
                 claim=claim or "(no claim)",
                 predicted_outcome=predicted or "(no predicted outcome)",
             ),
-            runner=NullRunner(observed=observed, success=success),
+            runner=NullRunner(observed=observed, success=success, delta=delta),
         )
         try:
             result = recipe_runner.run(

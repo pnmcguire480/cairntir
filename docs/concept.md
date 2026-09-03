@@ -139,7 +139,9 @@ discoveries appear at session start; the Human Learning Log exposes useful
 leaves in plain language. Source evidence is never rewritten, and
 "potentially novel in general" cannot be promoted without external research.
 Repeated Reason episodes may create calibrated candidates automatically, but
-automation cannot corroborate or promote its own proposal.
+only uniquely bound prediction/observation pairs count, evidence populations
+remain separated by room, and automation cannot corroborate or promote its own
+proposal.
 
 ---
 

@@ -62,10 +62,9 @@ class BeliefStore(Protocol):
     """Raise or lower a drawer's belief mass.
 
     Both methods return the new mass after the adjustment. The loop
-    uses the return value to compute the actual ``mass_change`` it
-    records in a :class:`~cairntir.reason.model.BeliefUpdate`, so
-    implementations that clamp at zero still communicate the real
-    move to the caller.
+    records the signed adjustment it requested in
+    :class:`~cairntir.reason.model.BeliefUpdate`; callers that need the
+    clamped post-update mass can inspect the store.
     """
 
     def reinforce(self, drawer_id: int, *, amount: float) -> float:

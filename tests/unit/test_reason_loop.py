@@ -10,6 +10,7 @@ from cairntir.memory.taxonomy import Drawer
 from cairntir.reason import (
     BeliefStore,
     BeliefUpdate,
+    Experiment,
     ExperimentRunner,
     Hypothesis,
     HypothesisProposer,
@@ -222,6 +223,276 @@ def test_empty_predicted_outcome_is_rejected() -> None:
     )
     with pytest.raises(ValueError, match="falsifiable prediction"):
         loop.step(question="q", wing="cairntir", room="room-a")
+
+
+def test_blank_claim_is_rejected_before_writing() -> None:
+    memory = FakeMemoryGateway()
+    loop = ReasonLoop(
+        proposer=FakeProposer(
+            hypothesis=Hypothesis(
+                claim="   ",
+                predicted_outcome="something observable happens",
+                wing="cairntir",
+                room="room-a",
+            )
+        ),
+        runner=FakeRunner(observed="something observable happens", success=True),
+        beliefs=FakeBeliefStore(),
+        memory=memory,
+    )
+
+    with pytest.raises(ValueError, match="empty claim"):
+        loop.step(question="q", wing="cairntir", room="room-a")
+
+    assert memory.drawers == {}
+
+
+def test_reason_loop_rejects_cross_scope_hypothesis_before_writing() -> None:
+    memory = FakeMemoryGateway()
+    loop = ReasonLoop(
+        proposer=FakeProposer(
+            hypothesis=Hypothesis(
+                claim="scope stays bound",
+                predicted_outcome="the requested wing receives the record",
+                wing="other-wing",
+                room="other-room",
+            )
+        ),
+        runner=FakeRunner(observed="unused", success=True),
+        beliefs=FakeBeliefStore(),
+        memory=memory,
+    )
+
+    with pytest.raises(ValueError, match="scope mismatch"):
+        loop.step(question="where does this land?", wing="cairntir", room="reason")
+
+    assert memory.drawers == {}
+
+
+def test_reason_loop_rejects_outcome_for_a_different_hypothesis() -> None:
+    hypothesis = Hypothesis(
+        claim="the committed hypothesis is tested",
+        predicted_outcome="the same hypothesis returns in the outcome",
+        wing="cairntir",
+        room="reason",
+    )
+    different = Hypothesis(
+        claim="different claim",
+        predicted_outcome="different outcome",
+        wing="cairntir",
+        room="reason",
+    )
+
+    class MismatchedRunner:
+        def run(self, proposed: Hypothesis) -> Outcome:
+            _ = proposed
+            return Outcome(
+                experiment=Experiment(hypothesis=different, description="wrong experiment"),
+                observed="different outcome",
+                success=True,
+            )
+
+    memory = FakeMemoryGateway()
+    beliefs = FakeBeliefStore()
+    loop = ReasonLoop(
+        proposer=FakeProposer(hypothesis=hypothesis),
+        runner=MismatchedRunner(),
+        beliefs=beliefs,
+        memory=memory,
+    )
+
+    with pytest.raises(ValueError, match="different hypothesis"):
+        loop.step(question="was the committed hypothesis tested?", wing="cairntir", room="reason")
+
+    assert len(memory.drawers) == 1
+    assert beliefs.masses == {}
+
+
+def test_reason_loop_rejects_outcome_without_an_experiment() -> None:
+    hypothesis = Hypothesis(
+        claim="the runner records its experiment",
+        predicted_outcome="the outcome cites the tested hypothesis",
+        wing="cairntir",
+        room="reason",
+    )
+
+    class MissingExperimentRunner:
+        def run(self, proposed: Hypothesis) -> Outcome:
+            _ = proposed
+            return Outcome(
+                experiment=None,  # type: ignore[arg-type]
+                observed="the outcome cites nothing",
+                success=True,
+            )
+
+    memory = FakeMemoryGateway()
+    loop = ReasonLoop(
+        proposer=FakeProposer(hypothesis=hypothesis),
+        runner=MissingExperimentRunner(),
+        beliefs=FakeBeliefStore(),
+        memory=memory,
+    )
+
+    with pytest.raises(TypeError, match="Experiment"):
+        loop.step(question="what was tested?", wing="cairntir", room="reason")
+
+    assert len(memory.drawers) == 1
+
+
+@pytest.mark.parametrize(
+    ("description", "observed", "success", "exception_type", "message"),
+    [
+        ("   ", "observed", True, ValueError, "experiment description"),
+        ("experiment", "   ", True, ValueError, "empty observation"),
+        ("experiment", "observed", "yes", TypeError, "boolean verdict"),
+    ],
+)
+def test_reason_loop_rejects_incomplete_outcome_evidence(
+    description: str,
+    observed: str,
+    success: object,
+    exception_type: type[Exception],
+    message: str,
+) -> None:
+    hypothesis = Hypothesis(
+        claim="outcome evidence is complete",
+        predicted_outcome="the runner returns a bound record",
+        wing="cairntir",
+        room="reason",
+    )
+
+    class IncompleteRunner:
+        def run(self, proposed: Hypothesis) -> Outcome:
+            return Outcome(
+                experiment=Experiment(hypothesis=proposed, description=description),
+                observed=observed,
+                success=success,  # type: ignore[arg-type]
+            )
+
+    memory = FakeMemoryGateway()
+    beliefs = FakeBeliefStore()
+    loop = ReasonLoop(
+        proposer=FakeProposer(hypothesis=hypothesis),
+        runner=IncompleteRunner(),
+        beliefs=beliefs,
+        memory=memory,
+    )
+
+    with pytest.raises(exception_type, match=message):
+        loop.step(question="is the outcome complete?", wing="cairntir", room="reason")
+
+    assert len(memory.drawers) == 1
+    assert beliefs.masses == {}
+
+
+def test_successful_step_preserves_explicit_surprise_delta() -> None:
+    hypothesis = Hypothesis(
+        claim="the release publishes",
+        predicted_outcome="the release becomes publicly installable",
+        wing="cairntir",
+        room="reason",
+    )
+
+    class SurprisingSuccessRunner:
+        def run(self, proposed: Hypothesis) -> Outcome:
+            return Outcome(
+                experiment=Experiment(
+                    hypothesis=proposed,
+                    description="inspect the published release and workflow provenance",
+                ),
+                observed="the release became publicly installable after manual dispatch",
+                success=True,
+                delta="the result held, but the tag trigger never started",
+            )
+
+    memory = FakeMemoryGateway()
+    beliefs = FakeBeliefStore()
+    loop = ReasonLoop(
+        proposer=FakeProposer(hypothesis=hypothesis),
+        runner=SurprisingSuccessRunner(),
+        beliefs=beliefs,
+        memory=memory,
+    )
+
+    update = loop.step(question="did publication hold?", wing="cairntir", room="reason")
+    observation = memory.drawers[update.observation_id]
+
+    assert update.mass_change == pytest.approx(1.0)
+    assert update.delta == "the result held, but the tag trigger never started"
+    assert observation.delta == update.delta
+    assert observation.metadata["success"] is True
+    assert observation.metadata["experiment"] == (
+        "inspect the published release and workflow provenance"
+    )
+    assert "Experiment: inspect the published release" in observation.content
+
+
+def test_non_durable_memory_rejects_idempotency_key() -> None:
+    hypothesis = Hypothesis(
+        claim="replay is honest",
+        predicted_outcome="unsupported durability is rejected",
+        wing="cairntir",
+        room="reason",
+    )
+    proposer = FakeProposer(hypothesis=hypothesis)
+    memory = FakeMemoryGateway()
+    loop = ReasonLoop(
+        proposer=proposer,
+        runner=FakeRunner(observed="unsupported durability is rejected", success=True),
+        beliefs=FakeBeliefStore(),
+        memory=memory,
+    )
+
+    with pytest.raises(ValueError, match="durable memory gateway"):
+        loop.step(
+            question="will this replay?",
+            wing="cairntir",
+            room="reason",
+            idempotency_key="pretend-durable",
+        )
+
+    assert proposer.seen == []
+    assert memory.drawers == {}
+
+
+@pytest.mark.parametrize(
+    ("question", "supersedes_id", "message"),
+    [
+        ("   ", None, "question must be non-empty"),
+        ("valid question", 0, "supersedes_id must be a positive integer"),
+        ("valid question", True, "supersedes_id must be a positive integer"),
+    ],
+)
+def test_reason_loop_rejects_invalid_invocation_before_proposal(
+    question: str,
+    supersedes_id: int | None,
+    message: str,
+) -> None:
+    hypothesis = Hypothesis(
+        claim="inputs are valid",
+        predicted_outcome="the proposer is not called for invalid input",
+        wing="cairntir",
+        room="reason",
+    )
+    proposer = FakeProposer(hypothesis=hypothesis)
+    memory = FakeMemoryGateway()
+    loop = ReasonLoop(
+        proposer=proposer,
+        runner=FakeRunner(observed="unused", success=True),
+        beliefs=FakeBeliefStore(),
+        memory=memory,
+    )
+
+    with pytest.raises(ValueError, match=message):
+        loop.step(
+            question=question,
+            wing="cairntir",
+            room="reason",
+            supersedes_id=supersedes_id,
+        )
+
+    assert proposer.seen == []
+    assert memory.drawers == {}
 
 
 def test_loop_never_swallows_runner_errors() -> None:

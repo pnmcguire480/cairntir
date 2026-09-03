@@ -25,6 +25,14 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ### Changed
 
+- Hardened the Karpathy-derived learning loop at its public boundaries. Reason
+  now rejects blank or cross-scope commitments, mismatched or incomplete
+  outcomes, invalid supersession ids, and non-durable idempotency claims.
+  Explicit surprise is preserved independently of verdict through `Outcome`,
+  `NullRunner`, and the `reason`, `replay`, and `recipe-run` CLI paths.
+- Automatic discovery now admits only uniquely bound Reason
+  prediction/observation pairs, counts each prediction once, and keeps repeated
+  claims separated by room before proposing a human-reviewed candidate.
 - Replaced the duplicated, stale README addendum and hidden keyword list with a
   concise 1.8.0 front door structured around the current release, supported
   agent hosts, verifiable capabilities, and the search language people use for
@@ -33,6 +41,11 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ### Fixed
 
+- Closed bounded-hotfix state gaps that allowed a host-reported pass with failed
+  independent verification to retry unchanged state, hid mandatory rollback
+  behind later authority/preflight events, advertised illegal settlement, or
+  treated case-only actor/action aliases as independent. Status now also fails
+  closed when tail identity metadata is altered.
 - The release workflow now allows PyPI index propagation before its independent
   post-publish verification. The 1.8.0 publication succeeded before PyPI's JSON
   response exposed its files, so the first immediate verification saw a stale

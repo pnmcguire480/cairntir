@@ -7,6 +7,9 @@ that already points at a path. This file is the map.
 
 ## Active
 
+- [2026-09-03-reason-loop-hardening.md](2026-09-03-reason-loop-hardening.md) —
+  hardens the Karpathy-derived prediction/experiment/outcome boundary before
+  PR #84 merges, preserving scope, evidence binding, surprise, and honest replay
 - [2026-09-02-bounded-hotfix-ledger.md](2026-09-02-bounded-hotfix-ledger.md) —
   authorized additive implementation on an isolated clone; preserves cited
   recommendation, exact authority, bounded attempt, independent verification,

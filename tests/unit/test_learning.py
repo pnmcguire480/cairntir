@@ -38,6 +38,42 @@ def _evidence(store: DrawerStore, content: str = "Repeated result observed.") ->
     return saved.id
 
 
+def _reason_episode(
+    store: DrawerStore,
+    *,
+    room: str,
+    claim: str,
+    predicted: str,
+    observed: str,
+    success: bool,
+) -> int:
+    prediction = store.add(
+        Drawer(
+            wing="cairntir",
+            room=room,
+            content=f"Claim: {claim}\nPredicted: {predicted}",
+            claim=claim,
+            predicted_outcome=predicted,
+            metadata={"source": "reason.predict"},
+        )
+    )
+    assert prediction.id is not None
+    observation = store.add(
+        Drawer(
+            wing="cairntir",
+            room=room,
+            content=f"Observed: {observed}",
+            claim=claim,
+            predicted_outcome=predicted,
+            observed_outcome=observed,
+            supersedes_id=prediction.id,
+            metadata={"source": "reason.observe", "success": success},
+        )
+    )
+    assert observation.id is not None
+    return observation.id
+
+
 def test_record_and_list_discovery_with_evidence(store: DrawerStore) -> None:
     evidence_id = _evidence(store)
     discovery = record_discovery(
@@ -210,20 +246,17 @@ def test_multi_episode_reflection_proposes_calibrated_candidate_once(
     store: DrawerStore,
 ) -> None:
     evidence_ids: list[int] = []
-    for index, success in enumerate((True, True, True, False), start=1):
-        saved = store.add(
-            Drawer(
-                wing="cairntir",
+    for success in (True, True, True, False):
+        evidence_ids.append(
+            _reason_episode(
+                store,
                 room="reason",
-                content=f"observation {index}",
                 claim="Scoped retrieval finds the project memory",
-                predicted_outcome="the correct drawer appears",
-                observed_outcome="found" if success else "missed",
-                metadata={"source": "reason.observe", "success": success},
+                predicted="the correct drawer appears",
+                observed="found" if success else "missed",
+                success=success,
             )
         )
-        assert saved.id is not None
-        evidence_ids.append(saved.id)
 
     proposed = propose_multi_episode_discoveries(
         store,
@@ -247,3 +280,87 @@ def test_multi_episode_reflection_proposes_calibrated_candidate_once(
         )
         == []
     )
+
+
+def test_multi_episode_reflection_ignores_unbound_outcome_shaped_drawers(
+    store: DrawerStore,
+) -> None:
+    for index in range(3):
+        store.add(
+            Drawer(
+                wing="cairntir",
+                room="reason",
+                content=f"unbound observation {index}",
+                claim="Repeated text alone is not learning",
+                predicted_outcome="a candidate appears",
+                observed_outcome="a candidate appears",
+                metadata={"source": "reason.observe", "success": True},
+            )
+        )
+
+    assert propose_multi_episode_discoveries(store, wing="cairntir") == []
+
+
+def test_multi_episode_reflection_keeps_rooms_separate(store: DrawerStore) -> None:
+    evidence_by_room: dict[str, list[int]] = {"alpha": [], "beta": []}
+    for room in evidence_by_room:
+        for index in range(2):
+            evidence_by_room[room].append(
+                _reason_episode(
+                    store,
+                    room=room,
+                    claim="The scoped strategy works",
+                    predicted="the operation completes",
+                    observed=f"{room} observation {index}",
+                    success=True,
+                )
+            )
+
+    assert propose_multi_episode_discoveries(store, wing="cairntir") == []
+
+    evidence_by_room["alpha"].append(
+        _reason_episode(
+            store,
+            room="alpha",
+            claim="The scoped strategy works",
+            predicted="the operation completes",
+            observed="alpha observation 3",
+            success=True,
+        )
+    )
+    proposed = propose_multi_episode_discoveries(store, wing="cairntir")
+
+    assert len(proposed) == 1
+    assert proposed[0].evidence_ids == tuple(evidence_by_room["alpha"])
+    assert "'alpha'" in proposed[0].title
+
+
+def test_multi_episode_reflection_counts_each_prediction_once(store: DrawerStore) -> None:
+    claim = "One experiment is one episode"
+    predicted = "one observation is counted"
+    prediction = store.add(
+        Drawer(
+            wing="cairntir",
+            room="reason",
+            content=f"Claim: {claim}\nPredicted: {predicted}",
+            claim=claim,
+            predicted_outcome=predicted,
+            metadata={"source": "reason.predict"},
+        )
+    )
+    assert prediction.id is not None
+    for index in range(3):
+        store.add(
+            Drawer(
+                wing="cairntir",
+                room="reason",
+                content=f"duplicate observation {index}",
+                claim=claim,
+                predicted_outcome=predicted,
+                observed_outcome="one observation is counted",
+                supersedes_id=prediction.id,
+                metadata={"source": "reason.observe", "success": True},
+            )
+        )
+
+    assert propose_multi_episode_discoveries(store, wing="cairntir") == []

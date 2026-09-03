@@ -279,12 +279,63 @@ def test_reason_non_interactive_writes_drawers(tmp_path: Path, monkeypatch: obje
             "--observed",
             "cold-start completes in 1s",
             "--success",
+            "--delta",
+            "the cache warmed through an unexpected fallback",
         ],
     )
     assert result.exit_code == 0, result.output
     assert "prediction drawer" in result.output
     assert "observation drawer" in result.output
     assert "mass_change" in result.output
+    assert "the cache warmed through an unexpected fallback" in result.output
+
+    store = DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384))
+    observations = [
+        drawer
+        for drawer in store.list_by(wing="cairntir", room="predictions")
+        if drawer.metadata.get("source") == "reason.observe"
+    ]
+    store.close()
+    assert len(observations) == 1
+    assert observations[0].delta == "the cache warmed through an unexpected fallback"
+
+
+def test_recipe_run_preserves_explicit_delta(tmp_path: Path, monkeypatch: object) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]
+    DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384)).close()
+
+    result = runner.invoke(
+        app,
+        [
+            "recipe-run",
+            "decision-replay",
+            "--input",
+            "decision_drawer_id=1",
+            "--input",
+            "current_evidence=the result arrived through a fallback",
+            "--claim",
+            "the operation completes",
+            "--predicted",
+            "the operation completes",
+            "--observed",
+            "the fallback path completed it",
+            "--success",
+            "--delta",
+            "the outcome held but the primary path failed",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    with DrawerStore(
+        tmp_path / "cairntir.db",
+        HashEmbeddingProvider(dimension=384),
+    ) as store:
+        observation = next(
+            drawer
+            for drawer in store.list_by(wing="replays", limit=None)
+            if drawer.metadata.get("source") == "reason.observe"
+        )
+    assert observation.delta == "the outcome held but the primary path failed"
 
 
 def test_root_banner() -> None:
@@ -854,6 +905,8 @@ def test_replay_extends_supersedes_chain(tmp_path: Path, monkeypatch: object) ->
             "--observed",
             "cold start steady at ~1.4s across multiple sessions",
             "--success",
+            "--delta",
+            "the prediction held through a different warmup path",
         ],
     )
     assert result.exit_code == 0, result.output
@@ -877,6 +930,8 @@ def test_replay_extends_supersedes_chain(tmp_path: Path, monkeypatch: object) ->
         )
         assert new_prediction.claim == original.claim
         assert new_prediction.predicted_outcome == original.predicted_outcome
+        observation = next(d for d in replays if d.metadata.get("source") == "reason.observe")
+        assert observation.delta == "the prediction held through a different warmup path"
     finally:
         store.close()
 

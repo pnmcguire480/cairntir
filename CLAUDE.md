@@ -118,24 +118,27 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
-- **Date:** 2026-09-02 (**bounded hotfix ledger prepared in PR #84; protected
-  `main` untouched**)
-- **What happened:** Built the authorized additive hotfix module on
-  `codex/cairntir-hotfix-module` from frozen `main` SHA `4e123a1`.
-  `HotfixCoordinator.run(HotfixCommand)` now records a deterministic failure
-  fingerprint, evidence-cited candidate ranking and completed precedents, exact
-  authority and preflight bindings, one host-executed attempt per authority,
-  independent acceptance or exact rollback, and terminal `COMPLETE`,
-  `BLOCKED`, or `EXHAUSTED` settlement. The CLI and 21st MCP tool share that
-  seam; Cairntir never executes or signs the repair. Added the Bounded Hotfix
-  recipe, operator docs, and append-only integrity tests. Mutation-checking
-  proved the unchanged-failed-state test turns red when its guard is disabled.
-  Local evidence: 764 non-slow tests at 83.24% coverage, all 5 evals, Ruff,
-  strict mypy, strict docs, repository gates, wheel/sdist build, wheel-content
-  inspection, and a fresh Windows install exposing 21 tools and 5 recipes.
-- **Next:** let protected-branch review and CI settle PR #84. Do not merge, tag,
-  publish, or mutate a live store as part of this implementation. Retrieval
-  preflight remains the accepted next core experiment.
+- **Date:** 2026-09-03 (**bounded hotfix and Karpathy-loop hardening complete
+  locally in PR #84; protected `main` untouched**)
+- **What happened:** A second-chance review closed six hotfix integrity gaps:
+  independently failed host-pass attempts cannot retry unchanged state;
+  mandatory rollback survives later authority/preflight events; receipts no
+  longer advertise illegal settlement; case-only actor/action aliases fail;
+  and altered tail identity metadata cannot hide an event. The Karpathy-derived
+  Reason loop now binds non-empty hypotheses and complete outcomes to the exact
+  invocation scope, preserves explicit surprise independently of verdict,
+  persists the experiment, and refuses fake idempotency. `--delta` reaches all
+  three shipped CLI paths. Automatic discovery accepts only unique, bound
+  prediction/observation pairs and separates evidence by room; it still stops
+  at human-reviewed candidates. Local evidence: 787 non-slow tests at 84.03%
+  coverage, all 5 evals against an isolated live-store copy, Ruff, strict mypy,
+  strict docs, repository gates, wheel/sdist build, and an isolated wheel smoke
+  proving `--delta`, `Outcome`, and all five recipes. Temporary verification
+  copies were removed; the live store and canonical `main` remained untouched.
+- **Next:** require the exact pushed head to pass protected CI before merging
+  PR #84. The accumulated capability is a 1.9.0 MINOR; tagging and publication
+  remain an explicit separate gate. Retrieval preflight remains the accepted
+  next core experiment.
 
 - **Date:** 2026-08-30 (**v1.8.0 published and independently verified**)
 - **What happened:** PR #78 settled the canonical checkout, all seven open PRs,
