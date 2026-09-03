@@ -120,11 +120,15 @@ The MCP surface is deliberately small.
 18. `cairntir_timeline(wing, entity)` — show a topic chronologically
 19. `cairntir_audit(wing)` — run the `quality` skill
 20. `cairntir_crucible(claim)` — stress-test a claim or plan
+21. `cairntir_hotfix(action, wing, ...)` — advance or inspect a bounded repair ledger
 
 The memory and reasoning tools carry exact evidence. The learning and
 CodeGlass tools make growth visible, measurable, and governable rather than
-hiding it inside a model. `TOOL_SURFACE_VERSION` and a seam test keep this
-20-tool inventory synchronized with the server.
+hiding it inside a model. The hotfix tool records cited recommendations, exact
+authority and environment bindings, host-execution receipts, independent
+verification, rollback, and terminal settlement. It never executes a repair or
+turns memory evidence into authority. `TOOL_SURFACE_VERSION` and a seam test
+keep this 21-tool inventory synchronized with the server.
 
 ## Visible Learning
 

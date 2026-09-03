@@ -174,6 +174,19 @@ def test_discover_recipes_finds_signal_reader(tmp_path: Path) -> None:
     assert "signal-reader" in names
 
 
+def test_discover_recipes_finds_bounded_hotfix(tmp_path: Path) -> None:
+    repo_root = Path(__file__).resolve().parents[2]
+    contracts = discover_recipes(search_paths=[repo_root / "docs" / "recipes"])
+    by_name = {contract.name: contract for contract in contracts}
+
+    contract = by_name["bounded-hotfix"]
+    assert contract.output_wing == "hotfix"
+    assert contract.skills == ("quality", "crucible")
+    assert contract.required_input_names() == frozenset(
+        {"failure", "acceptance", "candidate_paths", "authority_boundary"}
+    )
+
+
 def test_discover_recipes_skips_malformed_files(tmp_path: Path) -> None:
     # Good one
     _write_toml(

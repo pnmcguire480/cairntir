@@ -117,6 +117,7 @@ Cairntir reports that limit instead of guessing at private data.
 | Cross-wing recall | Searches every project while preserving project provenance |
 | Prediction tracking | Scores whether recorded claims and expected outcomes held |
 | Discovery Ledger | Exposes evidence-backed patterns through a reviewed lifecycle |
+| Bounded hotfix ledger | Orders evidence, exact authority, one-attempt execution receipts, independent verification, and terminal settlement |
 | Portable memory | Exports and imports content-addressed, signed JSONL envelopes |
 | Transcript recovery | Recovers unfinished requests without automatic storage |
 | Local-first operation | Keeps the authoritative memory database on your machine |
@@ -130,6 +131,7 @@ cairntir recall-for-change src/auth.py
 cairntir recover --host codex --wing myproject
 cairntir cost myproject
 cairntir calibration --wing myproject
+cairntir hotfix status --wing myproject --case-id hf-abc123
 cairntir export memories.jsonl
 ```
 
@@ -157,10 +159,10 @@ benchmark as its own.
 
 ## MCP server and library surface
 
-The MCP server exposes **20 tools** over stdio for exact memory, handoff,
+The MCP server exposes **21 tools** over stdio for exact memory, handoff,
 semantic and structural recall, audit, reasoning, calibration, discovery, and
-CodeGlass learning records. Tool builders can use the stable Python Protocol
-surface with a custom backend; see the [integration guide](docs/integration-guide.md).
+bounded hotfix records. Tool builders can use the stable Python Protocol surface
+with a custom backend; see the [integration guide](docs/integration-guide.md).
 
 ```text
 cairntir/
@@ -168,8 +170,9 @@ cairntir/
 │   ├── contracts.py      # stable Store protocol
 │   ├── memory/           # SQLite, sqlite-vec, belief scoring, consolidation
 │   ├── mcp/              # host-neutral stdio server
+│   ├── hotfix.py         # bounded append-only repair ledger
 │   ├── reason/           # testable reasoning loop and ports
-│   └── cli.py            # cairntir setup | init | handoff | recover | cost | recall | replay | doctor | export | import
+│   └── cli.py            # cairntir setup | init | handoff | recover | recall | replay | hotfix | doctor | export | import
 ├── tests/                # unit, contract, property, integration, evaluation
 ├── docs/                 # guides, architecture, recipes, release evidence
 └── plans/                # live plans and dated decision history
@@ -182,6 +185,8 @@ the primitive skill set:
 
 - [Finalization Mode](docs/recipes/finalization-mode/) — finish a roadmap
   against frozen acceptance criteria and bounded repair rounds.
+- [Bounded Hotfix](docs/recipes/bounded-hotfix/) — compare cited repair paths,
+  bind one attempt to exact authority, independently verify it, and stop.
 - [CodeGlass](docs/recipes/codeglass/) — turn unfamiliar code into durable,
   evidence-cited understanding.
 - [Decision Replay](docs/recipes/decision-replay/) — revisit a past prediction

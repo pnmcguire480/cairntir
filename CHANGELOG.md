@@ -13,6 +13,16 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Added
+
+- **A bounded hotfix ledger preserves the path from failure to terminal
+  evidence.** `cairntir_hotfix`, `cairntir hotfix`, and the Bounded Hotfix
+  recipe compare cited precedents, seal exact authority and preflight bindings,
+  allow one host-executed attempt per authority, reject unchanged failed-state
+  retries, require independent verification or exact rollback, and terminate as
+  `COMPLETE`, `BLOCKED`, or `EXHAUSTED`. Cairntir records and validates the
+  workflow but never executes repairs or elevates memory into authority.
+
 ### Changed
 
 - Replaced the duplicated, stale README addendum and hidden keyword list with a

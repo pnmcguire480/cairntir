@@ -1,0 +1,31 @@
+[recipe]
+name = "bounded-hotfix"
+description = "Prepare and stress-test a bounded repair contract before recording its ordered evidence through cairntir_hotfix."
+version = "0.1"
+output_wing = "hotfix"
+skills = ["quality", "crucible"]
+
+[input.failure]
+type = "string"
+required = true
+description = "The observed failure, stage, and relevant prior errors without proposed authority expansion."
+
+[input.acceptance]
+type = "string"
+required = true
+description = "The frozen acceptance inventory and the fresh evidence required for every item."
+
+[input.candidate_paths]
+type = "string"
+required = true
+description = "Reversible candidate paths with cited evidence, expected state change, and risk."
+
+[input.authority_boundary]
+type = "string"
+required = true
+description = "The exact target, capabilities, allowed actions, prohibited actions, and independent roles."
+
+[input.max_attempts]
+type = "integer"
+required = false
+description = "Attempt budget: one for protected or externally billed work, otherwise at most two."

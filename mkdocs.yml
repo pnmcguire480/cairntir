@@ -38,6 +38,12 @@ nav:
   - Manifesto: manifesto.md
   - Concept: concept.md
   - Roadmap: roadmap.md
+  - Recipes:
+      - Bounded Hotfix: recipes/bounded-hotfix/README.md
+      - Finalization Mode: recipes/finalization-mode/README.md
+      - CodeGlass: recipes/codeglass/README.md
+      - Decision Replay: recipes/decision-replay/README.md
+      - Signal Reader: recipes/signal-reader/README.md
   - v1.8.0: release/v1.8.0.md
   - v1.7.1: release/v1.7.1.md
   - v1.7.0: release/v1.7.0.md

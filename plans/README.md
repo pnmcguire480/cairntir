@@ -7,6 +7,10 @@ that already points at a path. This file is the map.
 
 ## Active
 
+- [2026-09-02-bounded-hotfix-ledger.md](2026-09-02-bounded-hotfix-ledger.md) —
+  authorized additive implementation on an isolated clone; preserves cited
+  recommendation, exact authority, bounded attempt, independent verification,
+  rollback, and terminal evidence without giving Cairntir execution power
 - [2026-08-05-transcript-recovery.md](2026-08-05-transcript-recovery.md) —
   v1.8.0 candidate merged to `main` via PR #74; release not authorized
 - [evolving-mind.md](evolving-mind.md) — accepted longer arc; the next

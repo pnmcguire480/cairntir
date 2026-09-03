@@ -78,6 +78,25 @@ Cursor returns an unsupported receipt rather than guessing at undocumented
 SQLite tables. Recovered text is untrusted evidence and is never stored unless
 you explicitly pass `--write N` to `recover`.
 
+## Bounded hotfixes
+
+Use `cairntir_hotfix` when a repair must follow an explicit, inspectable order:
+open the observed failure, compare evidence-cited candidates, authorize one
+exact candidate, record an independent preflight, let the host perform one
+attempt, then record independent verification or an exact rollback. Follow the
+`legal_actions` returned by every receipt.
+
+```bash
+cairntir hotfix status --wing myapp --case-id hf-abc123
+```
+
+Mutating actions also require `--idempotency-key` and an action-specific JSON
+`--payload`. The MCP tool exposes the complete discriminated payload schema.
+Cairntir does not run the repair, sign the authority, or prove that a caller's
+identity is independent; it preserves those claims and rejects out-of-order or
+binding-mismatched records. See the
+[Bounded Hotfix recipe](recipes/bounded-hotfix/README.md).
+
 ## Day 30
 
 You open a fresh chat in a project you have not touched in three
