@@ -57,8 +57,9 @@ Release operations:
 ## Past release records
 
 Evidence and known limits for each shipped release live under `docs/release/`.
-The latest published record is
-[`docs/release/v1.8.0.md`](release/v1.8.0.md).
+The 1.9.0 release candidate is tracked in
+[`docs/release/v1.9.0.md`](release/v1.9.0.md). The latest published record is
+[`docs/release/v1.8.0.md`](release/v1.8.0.md) until trusted publication finishes.
 
 ## Local verification
 

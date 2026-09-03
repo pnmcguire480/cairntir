@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.8.0 published** 2026-08-30 from protected merge `8dcb3fb` (PyPI + GitHub Release; both artifacts attested and independently hash-matched). Release workflow run `33346147256` published the immutable tag after repair PR #80 closed the pre-publication/PyPI deadlock. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
+- **Stage:** **v1.9.0 release candidate** in PR #84: bounded hotfix evidence plus Karpathy-loop boundary hardening, prepared and locally verified from an isolated clone. Patrick explicitly authorized publication after exact-head protected CI and merge. Latest published is **v1.8.0**, released 2026-08-30 from protected merge `8dcb3fb` with attested, independently hash-matched GitHub and PyPI artifacts. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
 
 ---
 
@@ -135,10 +135,12 @@ under `docs/recipes/` and earn their place by use, not by governance.
   strict docs, repository gates, wheel/sdist build, and an isolated wheel smoke
   proving `--delta`, `Outcome`, and all five recipes. Temporary verification
   copies were removed; the live store and canonical `main` remained untouched.
-- **Next:** require the exact pushed head to pass protected CI before merging
-  PR #84. The accumulated capability is a 1.9.0 MINOR; tagging and publication
-  remain an explicit separate gate. Retrieval preflight remains the accepted
-  next core experiment.
+- **Next:** finish the 1.9.0 metadata and literature sweep, rerun the complete
+  local gate, require fresh protected CI on the exact pushed head, and merge
+  PR #84. Patrick explicitly authorized the post-merge `v1.9.0` tag and trusted
+  GitHub/PyPI publication; verify artifact hashes and a fresh public install
+  before recording completion. Retrieval preflight remains the accepted next
+  core experiment.
 
 - **Date:** 2026-08-30 (**v1.8.0 published and independently verified**)
 - **What happened:** PR #78 settled the canonical checkout, all seven open PRs,

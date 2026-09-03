@@ -1,7 +1,8 @@
 # Reason Loop Boundary Hardening
 
-**Status:** implemented and locally verified on the isolated PR #84 branch;
-protected CI remains before merge. Canonical `main` remains untouched.
+**Status:** implemented as part of the v1.9.0 release candidate and locally
+verified on the isolated PR #84 branch; protected CI remains before merge.
+Canonical `main` remains untouched.
 
 ## Evidence
 
@@ -103,4 +104,6 @@ clean pushed branch, open mergeable PR, and canonical `main` still clean at
 execution environment; the pre-existing protocol, calibration, and durability
 tests remain outside this slice and may not be weakened. `BLOCKED` names one
 external dependency and its smallest unblock. `EXHAUSTED` stops after two repair
-rounds. Merge, tag, publication, and live-store mutation remain separate gates.
+rounds. Merge and live-store mutation remain separate gates. Patrick explicitly
+authorized the `v1.9.0` tag and trusted GitHub/PyPI publication after the exact
+candidate finishes protected CI and merges.

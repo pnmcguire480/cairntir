@@ -1,8 +1,8 @@
 # Bounded Hotfix Ledger
 
-**Status:** authorized for implementation on an isolated clone of `main` at
-`4e123a1f8a91f3867046a818490de63f4d8433e7`. The live Cairntir store stays
-closed until the implementation, pull request, and verification are complete.
+**Status:** implemented as part of the v1.9.0 release candidate on an isolated
+clone of `main` at `4e123a1f8a91f3867046a818490de63f4d8433e7`. The live Cairntir store stays
+closed until the pull request and verification are complete.
 
 ## Problem
 

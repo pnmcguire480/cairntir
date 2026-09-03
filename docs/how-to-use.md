@@ -3,7 +3,8 @@
 This is the human front door. If a command or version here disagrees
 with the code, this file is wrong.
 
-**Current release: 1.8.0.** Zero-prior-knowledge walkthrough:
+**Current source: 1.9.0 release candidate. Latest published: 1.8.0.**
+Zero-prior-knowledge walkthrough:
 [cairntir-for-dummies.md](cairntir-for-dummies.md).
 
 ## Install
@@ -40,7 +41,7 @@ Cursor's **global** User Rule still has to be pasted into
 ## Check it worked
 
 ```bash
-cairntir version    # cairntir 1.8.0
+cairntir version    # 1.9.0 from this candidate; 1.8.0 from PyPI until release
 cairntir status     # where the store lives, drawer counts
 cairntir doctor     # host wiring without changing anything
 ```

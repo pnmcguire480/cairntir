@@ -13,6 +13,8 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.9.0] — 2026-09-03
+
 ### Added
 
 - **A bounded hotfix ledger preserves the path from failure to terminal
@@ -34,10 +36,10 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   prediction/observation pairs, counts each prediction once, and keeps repeated
   claims separated by room before proposing a human-reviewed candidate.
 - Replaced the duplicated, stale README addendum and hidden keyword list with a
-  concise 1.8.0 front door structured around the current release, supported
-  agent hosts, verifiable capabilities, and the search language people use for
-  persistent AI coding-agent memory. The docs home, setup guide, and issue
-  template now identify 1.8.0 consistently.
+  concise front door structured around the published release and 1.9.0
+  candidate, supported agent hosts, verifiable capabilities, and the search
+  language people use for persistent AI coding-agent memory. The docs home,
+  setup guide, and issue template now identify release state consistently.
 
 ### Fixed
 
