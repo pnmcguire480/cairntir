@@ -8,12 +8,10 @@ decisions, facts, outcomes, and unfinished work across chats and across coding
 agents, so a new session can recover the real context instead of asking you to
 explain the project again.
 
-> Release candidate: **Cairntir 1.9.0** ·
+> Current release: **[Cairntir 1.9.0](https://github.com/pnmcguire480/cairntir/releases/tag/v1.9.0)** ·
+> [PyPI](https://pypi.org/project/cairntir/1.9.0/) ·
 > [Changelog](CHANGELOG.md#190--2026-09-03) ·
-> [Acceptance record](docs/release/v1.9.0.md)
->
-> Latest published: **[Cairntir 1.8.0](https://github.com/pnmcguire480/cairntir/releases/tag/v1.8.0)** ·
-> [PyPI](https://pypi.org/project/cairntir/1.8.0/)
+> [Verified release record](docs/release/v1.9.0.md)
 
 [![PyPI version](https://img.shields.io/pypi/v/cairntir.svg?cacheSeconds=300)](https://pypi.org/project/cairntir/)
 [![PyPI downloads](https://img.shields.io/pypi/dm/cairntir.svg)](https://pypi.org/project/cairntir/)

@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.9.0 release candidate** in PR #84: bounded hotfix evidence plus Karpathy-loop boundary hardening, prepared and locally verified from an isolated clone. Patrick explicitly authorized publication after exact-head protected CI and merge. Latest published is **v1.8.0**, released 2026-08-30 from protected merge `8dcb3fb` with attested, independently hash-matched GitHub and PyPI artifacts. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
+- **Stage:** **v1.9.0 published and independently verified** on 2026-09-03: bounded hotfix evidence plus Karpathy-loop boundary hardening. PR #84 passed exact-head protected CI and merged as `6a4398661f361c03aa5da4ffb72aa098e6f9f6e1`; immutable tag `v1.9.0`, GitHub Release, PyPI Trusted Publishing, provenance, cross-channel hashes, and a fresh public install all passed. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
 
 ---
 
@@ -118,8 +118,7 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 ### Last Session
 
-- **Date:** 2026-09-03 (**bounded hotfix and Karpathy-loop hardening complete
-  locally in PR #84; protected `main` untouched**)
+- **Date:** 2026-09-03 (**v1.9.0 published and independently verified**)
 - **What happened:** A second-chance review closed six hotfix integrity gaps:
   independently failed host-pass attempts cannot retry unchanged state;
   mandatory rollback survives later authority/preflight events; receipts no
@@ -130,17 +129,20 @@ under `docs/recipes/` and earn their place by use, not by governance.
   persists the experiment, and refuses fake idempotency. `--delta` reaches all
   three shipped CLI paths. Automatic discovery accepts only unique, bound
   prediction/observation pairs and separates evidence by room; it still stops
-  at human-reviewed candidates. Local evidence: 787 non-slow tests at 84.03%
-  coverage, all 5 evals against an isolated live-store copy, Ruff, strict mypy,
-  strict docs, repository gates, wheel/sdist build, and an isolated wheel smoke
-  proving `--delta`, `Outcome`, and all five recipes. Temporary verification
-  copies were removed; the live store and canonical `main` remained untouched.
-- **Next:** finish the 1.9.0 metadata and literature sweep, rerun the complete
-  local gate, require fresh protected CI on the exact pushed head, and merge
-  PR #84. Patrick explicitly authorized the post-merge `v1.9.0` tag and trusted
-  GitHub/PyPI publication; verify artifact hashes and a fresh public install
-  before recording completion. Retrieval preflight remains the accepted next
-  core experiment.
+  at human-reviewed candidates. Local evidence passed with 787 non-slow tests
+  at 84.03% coverage, all 5 evals, Ruff, strict mypy, strict docs, repository
+  gates, build, and install smoke. PR #84 then passed exact-head protected CI
+  and merged as `6a4398661f361c03aa5da4ffb72aa098e6f9f6e1`. Tag `v1.9.0` completed trusted
+  publication in run `33717954236`. Workflow, GitHub Release, and PyPI copies
+  hash-match: wheel `539bd2a5296515d2313516830108236de067829d45b4d317906b83e5a1efc900`,
+  sdist `2cb1d001828cc85a90395f12d4c5ef0e84fbcf108ea487b3f78ccf5a4c37cdda`.
+  Both attestations verified, and a fresh Windows/Python 3.11 public-PyPI
+  install reported 1.9.0, passed dependency checks, exposed `--delta` on all
+  three learning commands, and loaded all five recipes. The frozen checkout and
+  live store remained untouched during development and release.
+- **Next:** run the pre-registered retrieval-preflight holdout. It remains the
+  accepted next core experiment; v1.9.0 publication adds no authority to ship
+  it without its own evidence and review gates.
 
 - **Date:** 2026-08-30 (**v1.8.0 published and independently verified**)
 - **What happened:** PR #78 settled the canonical checkout, all seven open PRs,
