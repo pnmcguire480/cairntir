@@ -1,8 +1,9 @@
 # Bounded Hotfix Ledger
 
-**Status:** implemented as part of the v1.9.0 release candidate on an isolated
-clone of `main` at `4e123a1f8a91f3867046a818490de63f4d8433e7`. The live Cairntir store stays
-closed until the pull request and verification are complete.
+**Status:** shipped in v1.9.0 through PR #84 and independently verified after
+trusted GitHub/PyPI publication. Implementation ran on an isolated clone of
+`main` at `4e123a1f8a91f3867046a818490de63f4d8433e7`; the frozen canonical checkout
+and live Cairntir store were not mutated by development or release work.
 
 ## Problem
 
@@ -143,6 +144,10 @@ The acceptance inventory above is frozen before implementation. Production
 code may not special-case its fixtures, and any change to an acceptance test
 after its first green result must be justified as a new discovered requirement,
 not silently rebaselined.
+
+**Disposition: COMPLETE.** The frozen inventory, complete local gate, protected
+CI, protected merge, trusted publication, provenance verification, cross-channel
+artifact hash comparison, and fresh public install all passed for v1.9.0.
 
 ```cairntir-commitments
 symbol src/cairntir/hotfix.py HotfixCoordinator
