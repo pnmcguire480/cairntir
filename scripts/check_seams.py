@@ -171,6 +171,16 @@ SEAMS: tuple[Seam, ...] = (
         test_path=Path("tests/eval/test_embedder_window.py"),
         test_name="test_declared_embedder_window_matches_the_model",
     ),
+    Seam(
+        name="the hotfix MCP adapter and coordinator enforce one ordering",
+        sides=(
+            Side(Path("src/cairntir/hotfix.py"), "HotfixCoordinator"),
+            Side(Path("src/cairntir/mcp/backend.py"), "hotfix"),
+            Side(Path("src/cairntir/mcp/server.py"), "_dispatch"),
+        ),
+        test_path=Path("tests/integration/test_seams.py"),
+        test_name="test_hotfix_mcp_and_coordinator_enforce_the_same_ordering",
+    ),
 )
 
 

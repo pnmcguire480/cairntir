@@ -46,14 +46,17 @@ class Outcome:
     """The observation an :class:`ExperimentRunner` produced.
 
     ``success`` is the runner's verdict on whether the hypothesis's
-    ``predicted_outcome`` held. The loop does not second-guess it —
-    that judgement is the runner's job and the test of whether the
-    runner is trustworthy is whether it calls successes correctly.
+    ``predicted_outcome`` held. ``delta`` is optional surprise evidence
+    about how reality differed, independent of that verdict: a prediction
+    may hold through an unexpected route. The loop does not second-guess
+    either judgement, but it validates that the outcome is bound to the
+    hypothesis it committed.
     """
 
     experiment: Experiment
     observed: str
     success: bool
+    delta: str = ""
 
 
 @dataclass(frozen=True)
@@ -65,9 +68,8 @@ class BeliefUpdate:
     supersedes it with the real outcome. ``mass_change`` is the
     scalar the belief store was nudged by: positive on success,
     negative on failure, zero if the loop decided to abstain.
-    ``delta`` is the free-form surprise note — empty when the
-    prediction held exactly, populated when the observation
-    diverged.
+    ``delta`` is the free-form surprise note. It is independent of
+    the verdict: a prediction may hold through an unexpected path.
     """
 
     prediction_id: int

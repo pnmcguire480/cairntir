@@ -3,7 +3,7 @@
 Cairntir's shipped foundation is the memory-first reasoning layer: verbatim
 drawers, wing/room taxonomy, local embeddings, bounded whole-drawer handoff,
 prediction and discovery ledgers, structural recall, three skills, recipes,
-four first-class host adapters, and a 20-tool MCP server.
+four first-class host adapters, and a 21-tool MCP server.
 
 The original v0.1 → v1.7 build plans are retained under `plans/` as history.
 They are not current status. The live plan map is
@@ -43,6 +43,31 @@ agent's first tool call. v1.8.0 implements the opt-in recovery contract in
 
 The transcript adapters are host-specific. The recovery result and trust
 boundary remain host-neutral.
+
+## v1.9.0 — Bounded repair and evidence-bound learning 🚧
+
+Prepared as a release candidate on 2026-09-03. The additive hotfix protocol
+records one append-only case from failure through terminal settlement. It
+compares cited candidate paths with completed precedents, binds one attempt to
+exact authority and preflight observations, rejects retries from unchanged
+failed state, requires independent acceptance or exact rollback, and stops as
+`COMPLETE`, `BLOCKED`, or `EXHAUSTED`.
+
+Cairntir remains the evidence and ordering layer. The host performs the actual
+repair; caller identities and observed state are asserted evidence, not
+cryptographic proof. The implementation contract is
+[`plans/2026-09-02-bounded-hotfix-ledger.md`](https://github.com/pnmcguire480/cairntir/blob/main/plans/2026-09-02-bounded-hotfix-ledger.md).
+
+The same candidate hardens the Karpathy-derived learning loop. Hypotheses,
+experiments, and outcomes must bind to one non-empty wing/room scope; verdict
+and surprise remain independent; non-durable gateways cannot advertise
+idempotency; and discovery counts only unique predict-observe pairs from the
+same room. Automatic promotion remains prohibited: repeated evidence produces
+a human-reviewed candidate only. The hardening contract is
+[`plans/2026-09-03-reason-loop-hardening.md`](https://github.com/pnmcguire480/cairntir/blob/main/plans/2026-09-03-reason-loop-hardening.md).
+
+This release candidate does not displace the retrieval preflight experiment
+below.
 
 ## Retrieval preflight — experiment before feature
 

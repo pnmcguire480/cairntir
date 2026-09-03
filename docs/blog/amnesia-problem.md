@@ -129,7 +129,7 @@ That meant the unit of memory could not be a chat log. It had to be a
 - `claim` — what we believed at the time
 - `predicted_outcome` — what we expected to happen if the claim was right
 - `observed_outcome` — what actually happened
-- `delta` — non-empty if the prediction failed (the surprise)
+- `delta` — optional surprise, independent of whether the prediction held
 - `supersedes_id` — link to the drawer this one replaces
 
 Every drawer is a tiny experiment. Every retrieval is a re-vote on
@@ -200,10 +200,10 @@ to rate my own past judgment.
 
 After Cairntir, every load-bearing claim becomes a drawer with a
 `predicted_outcome` field. Three weeks later, when reality arrives,
-the drawer's `observed_outcome` field gets filled in and a `delta` is
-recorded if the prediction missed. The belief-as-distribution scorer
-raises mass on drawers whose predictions held and lowers it on the
-ones that didn't. It runs silently across months.
+the drawer's `observed_outcome` field gets filled in and a `delta` records
+how reality differed, even when the verdict still held. The
+belief-as-distribution scorer raises mass on drawers whose predictions held
+and lowers it on the ones that didn't. It runs silently across months.
 
 After the first surprise-weighted demotion of a drawer I'd been sure
 of, I started being more careful about what I claimed. Knowing the

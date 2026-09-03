@@ -68,8 +68,273 @@ _WARMUP_PROBE: Final[str] = "cairntir embedder warmup"
 side effect (loading the model) matters."""
 
 
+def _hotfix_tool_spec() -> types.Tool:
+    """Return the discriminated schema for the bounded hotfix interface."""
+    text = {"type": "string", "minLength": 1}
+    sha256 = {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    string_list = {
+        "type": "array",
+        "items": text,
+        "uniqueItems": True,
+    }
+    nonempty_strings = {**string_list, "minItems": 1}
+    evidence = {
+        "type": "array",
+        "items": {"type": "integer", "minimum": 1},
+        "minItems": 1,
+        "uniqueItems": True,
+    }
+
+    def obj(
+        properties: dict[str, Any],
+        required: tuple[str, ...] = (),
+        *,
+        additional: bool | dict[str, Any] = False,
+    ) -> dict[str, Any]:
+        schema: dict[str, Any] = {
+            "type": "object",
+            "properties": properties,
+            "additionalProperties": additional,
+        }
+        if required:
+            schema["required"] = list(required)
+        return schema
+
+    check = obj(
+        {
+            "passed": {"const": True},
+            "detail": text,
+            "evidence_ids": evidence,
+        },
+        ("passed", "detail", "evidence_ids"),
+    )
+    verdict = obj(
+        {
+            "verdict": {"type": "string", "enum": ["pass", "fail", "inconclusive"]},
+            "detail": text,
+            "evidence_ids": evidence,
+        },
+        ("verdict", "detail", "evidence_ids"),
+    )
+    payloads: dict[str, dict[str, Any]] = {
+        "open": obj(
+            {
+                "title": text,
+                "stage": text,
+                "symptom": text,
+                "acceptance": nonempty_strings,
+                "non_goals": string_list,
+                "evidence_ids": {**evidence, "minItems": 0},
+                "failure_class": text,
+                "max_attempts": {"type": "integer", "minimum": 1, "maximum": 2},
+            },
+            ("title", "stage", "symptom", "acceptance"),
+        ),
+        "recommend": obj(
+            {
+                "candidates": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": obj(
+                        {
+                            "id": text,
+                            "summary": text,
+                            "evidence_ids": evidence,
+                            "precedent_case_ids": string_list,
+                            "state_change": text,
+                            "reversible": {"type": "boolean"},
+                            "risk": {"type": "string", "enum": ["low", "medium", "high"]},
+                        },
+                        (
+                            "id",
+                            "summary",
+                            "evidence_ids",
+                            "state_change",
+                            "reversible",
+                            "risk",
+                        ),
+                    ),
+                }
+            },
+            ("candidates",),
+        ),
+        "authorize": obj(
+            {
+                "authority_id": text,
+                "sequence": {"type": "integer", "minimum": 1},
+                "previous_sequence": {"type": ["integer", "null"], "minimum": 0},
+                "candidate_id": text,
+                "candidate_hash": sha256,
+                "plan_hash": sha256,
+                "toolchain_hash": sha256,
+                "target": text,
+                "executor": text,
+                "capabilities": nonempty_strings,
+                "allowed_actions": nonempty_strings,
+                "prohibited_actions": string_list,
+                "required_checks": nonempty_strings,
+                "evidence_ids": evidence,
+            },
+            (
+                "authority_id",
+                "sequence",
+                "candidate_id",
+                "candidate_hash",
+                "plan_hash",
+                "toolchain_hash",
+                "target",
+                "executor",
+                "capabilities",
+                "allowed_actions",
+                "required_checks",
+                "evidence_ids",
+            ),
+        ),
+        "preflight": obj(
+            {
+                "authority_hash": sha256,
+                "inspector": text,
+                "observed_bindings": obj(
+                    {
+                        "candidate_hash": sha256,
+                        "plan_hash": sha256,
+                        "toolchain_hash": sha256,
+                        "target": text,
+                    },
+                    ("candidate_hash", "plan_hash", "toolchain_hash", "target"),
+                ),
+                "capabilities": nonempty_strings,
+                "observed_state_hash": sha256,
+                "checks": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": check,
+                },
+            },
+            (
+                "authority_hash",
+                "inspector",
+                "observed_bindings",
+                "capabilities",
+                "observed_state_hash",
+                "checks",
+            ),
+        ),
+        "record_attempt": obj(
+            {
+                "authority_hash": sha256,
+                "executor": text,
+                "executed_actions": nonempty_strings,
+                "state_hash_before": sha256,
+                "state_hash_after": sha256,
+                "outcome": {"type": "string", "enum": ["pass", "fail", "inconclusive"]},
+                "summary": text,
+                "evidence_ids": evidence,
+                "artifacts": {
+                    "type": "array",
+                    "items": obj({"name": text, "sha256": sha256}, ("name", "sha256")),
+                },
+                "rollback_ref": text,
+            },
+            (
+                "authority_hash",
+                "executor",
+                "executed_actions",
+                "state_hash_before",
+                "state_hash_after",
+                "outcome",
+                "summary",
+                "evidence_ids",
+                "rollback_ref",
+            ),
+        ),
+        "rollback": obj(
+            {
+                "authority_hash": sha256,
+                "rollback_executor": text,
+                "verifier": text,
+                "rollback_ref": text,
+                "observed_state_hash": sha256,
+                "summary": text,
+                "evidence_ids": evidence,
+            },
+            (
+                "authority_hash",
+                "rollback_executor",
+                "verifier",
+                "rollback_ref",
+                "observed_state_hash",
+                "summary",
+                "evidence_ids",
+            ),
+        ),
+        "verify": obj(
+            {
+                "authority_hash": sha256,
+                "verifier": text,
+                "observed_state_hash": sha256,
+                "results": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": verdict,
+                },
+            },
+            ("authority_hash", "verifier", "observed_state_hash", "results"),
+        ),
+        "settle": obj(
+            {
+                "disposition": {
+                    "type": "string",
+                    "enum": ["complete", "blocked", "exhausted"],
+                },
+                "observed_outcome": text,
+                "resolution": text,
+                "delta": text,
+                "blocker": text,
+                "smallest_unblock": text,
+                "budget_exhausted": text,
+                "evidence_ids": evidence,
+            },
+            ("disposition", "observed_outcome", "evidence_ids"),
+        ),
+        "status": obj({}),
+    }
+    variants: list[dict[str, Any]] = []
+    for action, payload in payloads.items():
+        properties = {
+            "action": {"const": action},
+            "wing": text,
+            "case_id": text,
+            "idempotency_key": text,
+            "payload": payload,
+        }
+        required = ["action", "wing"]
+        if action != "open":
+            required.append("case_id")
+        if action != "status":
+            required.extend(("payload", "idempotency_key"))
+        variants.append(
+            {
+                "type": "object",
+                "properties": properties,
+                "required": required,
+                "additionalProperties": False,
+            }
+        )
+    return types.Tool(
+        name="cairntir_hotfix",
+        description=(
+            "Run the append-only bounded hotfix protocol. Start with action=open; "
+            "then follow legal_actions in each receipt. Cairntir records and validates "
+            "evidence, authority, ordering, attempts, rollback, and settlement but never "
+            "executes the repair itself."
+        ),
+        inputSchema={"oneOf": variants},
+    )
+
+
 def _tool_specs() -> list[types.Tool]:
-    return [
+    specs = [
         types.Tool(
             name="cairntir_remember",
             description=(
@@ -702,6 +967,8 @@ def _tool_specs() -> list[types.Tool]:
             },
         ),
     ]
+    specs.append(_hotfix_tool_spec())
+    return specs
 
 
 def _dispatch(backend: CairntirBackend, name: str, args: dict[str, Any]) -> str:
@@ -746,6 +1013,8 @@ def _dispatch(backend: CairntirBackend, name: str, args: dict[str, Any]) -> str:
             return backend.audit(**args)
         case "cairntir_crucible":
             return backend.crucible(**args)
+        case "cairntir_hotfix":
+            return backend.hotfix(**args)
         case _:
             raise CairntirError(f"unknown tool {name!r}")
 

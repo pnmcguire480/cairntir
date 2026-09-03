@@ -7,8 +7,15 @@ that already points at a path. This file is the map.
 
 ## Active
 
-- [2026-08-05-transcript-recovery.md](2026-08-05-transcript-recovery.md) —
-  v1.8.0 candidate merged to `main` via PR #74; release not authorized
+- [2026-09-03-reason-loop-hardening.md](2026-09-03-reason-loop-hardening.md) —
+  v1.9.0 release-candidate hardening of the Karpathy-derived
+  prediction/experiment/outcome boundary before PR #84 merges, preserving
+  scope, evidence binding, surprise, and honest replay
+- [2026-09-02-bounded-hotfix-ledger.md](2026-09-02-bounded-hotfix-ledger.md) —
+  v1.9.0 release-candidate implementation on an isolated clone; preserves
+  cited recommendation, exact authority, bounded attempt, independent
+  verification, rollback, and terminal evidence without giving Cairntir
+  execution power
 - [evolving-mind.md](evolving-mind.md) — accepted longer arc; the next
   experiment is a pre-registered retrieval-preflight holdout after transcript
   recovery
@@ -38,6 +45,7 @@ landed. Read them as history, not as "what to do next."
 - `field-report-2026-08-02.md`, `morning-report-2026-08-05.md`
 - `release-1.3.0.md`, `v1.1-synergy-stack.md`, `v1.2-foundation-hardening.md`
 - `2026-08-14-new-user-front-door.md` — shipped in v1.7.1
+- `2026-08-05-transcript-recovery.md` — shipped in v1.8.0
 - `purrfect-drifting-sparrow.md`, `next-map.md`
 - `signal-reader.md`, `codeglass-recovery.md`
 - research notes from 2026-08-02 and 2026-08-04

@@ -210,7 +210,11 @@ loop = ReasonLoop(
         claim="rate-limiting reduces the p99 by more than 200ms",
         predicted_outcome="p99 drops under 400ms after deploy",
     ),
-    runner=NullRunner(observed="p99 dropped to 380ms", success=True),
+    runner=NullRunner(
+        observed="p99 dropped to 380ms",
+        success=True,
+        delta="the fallback limiter, not the primary limiter, handled the load",
+    ),
     beliefs=StoreBackedBeliefs(store=store),
     memory=StoreBackedMemory(store=store),
 )
@@ -221,6 +225,15 @@ update = loop.step(
 )
 print(update.mass_change, update.delta)
 ```
+
+Verdict and surprise are separate. A prediction can hold while the route differs;
+pass that path-level evidence as `delta` instead of discarding it. The loop rejects
+blank commitments, scope changes, outcomes bound to another hypothesis, incomplete
+experiment records, and idempotency claims made through a non-durable gateway.
+
+Automatic reflection counts only uniquely bound Reason prediction/observation
+pairs. It keeps repeated claims separated by room and may propose a reviewable
+candidate, but it never corroborates or promotes one.
 
 ### Rolling your own proposer — e.g. a local Gemma
 

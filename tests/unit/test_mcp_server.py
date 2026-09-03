@@ -10,6 +10,7 @@ clean user-facing strings instead of crashing the tool call.
 from __future__ import annotations
 
 import asyncio
+import json
 from pathlib import Path
 from typing import Any
 
@@ -99,6 +100,55 @@ def test_discovery_tools_are_exposed_with_evidence_requirement() -> None:
     discover = specs["cairntir_discover"]
     assert "evidence_ids" in discover.inputSchema["required"]
     assert discover.inputSchema["properties"]["evidence_ids"]["minItems"] == 1
+
+
+def test_hotfix_tool_spec_exposes_discriminated_action_payloads() -> None:
+    from cairntir.mcp.server import _tool_specs
+
+    specs = {tool.name: tool for tool in _tool_specs()}
+    hotfix = specs["cairntir_hotfix"]
+    variants = hotfix.inputSchema["oneOf"]
+    actions = {variant["properties"]["action"]["const"] for variant in variants}
+    assert actions == {
+        "open",
+        "recommend",
+        "authorize",
+        "preflight",
+        "record_attempt",
+        "rollback",
+        "verify",
+        "settle",
+        "status",
+    }
+    open_variant = next(
+        variant for variant in variants if variant["properties"]["action"]["const"] == "open"
+    )
+    open_payload = open_variant["properties"]["payload"]
+    assert set(open_payload["required"]) == {"title", "stage", "symptom", "acceptance"}
+    assert open_payload["additionalProperties"] is False
+
+
+def test_hotfix_tool_dispatch_returns_structured_receipt(_backend: CairntirBackend) -> None:
+    server = build_server(_backend)
+    text = _invoke_call_tool(
+        server,
+        "cairntir_hotfix",
+        {
+            "action": "open",
+            "wing": "cairntir",
+            "payload": {
+                "title": "MCP hotfix",
+                "stage": "a4",
+                "symptom": "assertion failed",
+                "acceptance": ["MCP receipt returns"],
+            },
+            "idempotency_key": "mcp-hotfix-open",
+        },
+    )
+    payload = json.loads(text)
+    assert payload["schema"] == "cairntir.hotfix.v1"
+    assert payload["state"] == "open"
+    assert payload["legal_actions"] == ["recommend", "settle"]
 
 
 def test_get_tool_returns_complete_drawer(_backend: CairntirBackend) -> None:

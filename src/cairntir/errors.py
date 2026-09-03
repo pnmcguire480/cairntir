@@ -40,6 +40,10 @@ class WorkflowError(CairntirError):
     """Raised when a durable workflow cannot be prepared or completed."""
 
 
+class HotfixError(CairntirError):
+    """Raised when a hotfix command violates evidence or ordering rules."""
+
+
 class IdempotencyConflictError(WorkflowError):
     """Raised when an idempotency key is reused for a different request."""
 

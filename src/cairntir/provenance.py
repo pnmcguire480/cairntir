@@ -15,7 +15,7 @@ from typing import Any, Final
 from uuid import uuid4
 
 _NEVER_EXPIRES: Final[str] = "9999-12-31T23:59:59.999999+00:00"
-TOOL_SURFACE_VERSION: Final[str] = "20"
+TOOL_SURFACE_VERSION: Final[str] = "21"
 """How many MCP tools the surface exposes, recorded on every write receipt.
 
 Hand-maintained because deriving it would make :mod:`cairntir.provenance`

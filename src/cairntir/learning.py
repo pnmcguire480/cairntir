@@ -231,24 +231,26 @@ def propose_multi_episode_discoveries(
 ) -> list[Discovery]:
     """Propose conservative candidates from repeated prediction outcomes.
 
-    Automatic analysis may create or refresh ``candidate`` records. It never
-    corroborates or promotes them; those transitions remain evidence- and
-    human-governed.
+    Automatic analysis may create or refresh ``candidate`` records. Evidence
+    must be a uniquely bound Reason prediction/observation pair, and repeated
+    claims remain separated by room. Automation never corroborates or promotes
+    candidates; those transitions remain evidence- and human-governed.
     """
     if min_observations < 2:
         raise ValueError("min_observations must be at least 2")
     if not 0.5 < confidence_threshold <= 1.0:
         raise ValueError("confidence_threshold must be above 0.5 and at most 1.0")
 
-    episodes: dict[str, list[Drawer]] = defaultdict(list)
+    episodes: dict[tuple[str, str], list[Drawer]] = defaultdict(list)
     for drawer in store.list_by(wing=wing, limit=None):
         if (
             drawer.id is not None
             and drawer.claim
             and drawer.observed_outcome is not None
             and isinstance(drawer.metadata.get("success"), bool)
+            and _is_bound_reason_observation(store, drawer)
         ):
-            episodes[_normalize_claim(drawer.claim)].append(drawer)
+            episodes[(drawer.room, _normalize_claim(drawer.claim))].append(drawer)
 
     current_by_pattern = {
         item.pattern_key: item
@@ -256,7 +258,12 @@ def propose_multi_episode_discoveries(
         if item.pattern_key is not None
     }
     proposed: list[Discovery] = []
-    for normalized_claim, observations in sorted(episodes.items()):
+    for (room, normalized_claim), observations in sorted(episodes.items()):
+        by_prediction: dict[int, list[Drawer]] = defaultdict(list)
+        for observation in observations:
+            if observation.supersedes_id is not None:
+                by_prediction[observation.supersedes_id].append(observation)
+        observations = [items[0] for items in by_prediction.values() if len(items) == 1]
         if len(observations) < min_observations:
             continue
         successes = [item for item in observations if item.metadata["success"] is True]
@@ -266,7 +273,12 @@ def propose_multi_episode_discoveries(
             continue
 
         evidence_ids = tuple(sorted(item.id for item in observations if item.id is not None))
-        pattern_key = "claim:" + hashlib.sha256(normalized_claim.encode()).hexdigest()[:20]
+        scoped_claim = json.dumps(
+            {"claim": normalized_claim, "room": room},
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        pattern_key = "claim-room:" + hashlib.sha256(scoped_claim.encode()).hexdigest()[:20]
         fingerprint = hashlib.sha256(
             json.dumps(evidence_ids, separators=(",", ":")).encode()
         ).hexdigest()
@@ -288,9 +300,10 @@ def propose_multi_episode_discoveries(
         )
         baseline = predicted.most_common(1)[0][0] if predicted else "no shared prediction"
         direction = "held" if reliable else "failed"
-        title = f"Repeated claim {direction}: {observations[0].claim}"
+        title = f"Repeated claim {direction} in {room!r}: {observations[0].claim}"
         summary = (
-            f"Across {len(observations)} recorded episodes, this claim {direction} "
+            f"Within room {room!r}, across {len(observations)} recorded episodes, "
+            f"this claim {direction} "
             f"{len(successes)} time(s) and failed {len(observations) - len(successes)} "
             f"time(s) (calibrated confidence {confidence:.0%}). This is an automatic "
             "candidate, not a promoted rule."
@@ -456,6 +469,20 @@ def _from_drawer(drawer: Drawer) -> Discovery:
 
 def _normalize_claim(claim: str) -> str:
     return " ".join(re.findall(r"[a-z0-9]+", claim.lower()))
+
+
+def _is_bound_reason_observation(store: Store, drawer: Drawer) -> bool:
+    if drawer.metadata.get("source") != "reason.observe" or drawer.supersedes_id is None:
+        return False
+    prediction = store.get(drawer.supersedes_id)
+    return bool(
+        prediction is not None
+        and prediction.metadata.get("source") == "reason.predict"
+        and prediction.wing == drawer.wing
+        and prediction.room == drawer.room
+        and prediction.claim == drawer.claim
+        and prediction.predicted_outcome == drawer.predicted_outcome
+    )
 
 
 def _format_confidence(value: float | None) -> str:

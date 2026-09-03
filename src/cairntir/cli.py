@@ -16,7 +16,13 @@ from cairntir import __version__
 from cairntir.config import cairntir_home, db_path, model_cache_dir
 from cairntir.cost import measure as measure_cost
 from cairntir.cost import render as render_cost
-from cairntir.errors import EmbeddingError, MCPError, MemoryStoreError, ProjectionError
+from cairntir.errors import (
+    CairntirError,
+    EmbeddingError,
+    MCPError,
+    MemoryStoreError,
+    ProjectionError,
+)
 from cairntir.handoff import DEFAULT_BUDGET_CHARS
 from cairntir.hosts import (
     CURSOR_USER_RULE_PASTE_HINT,
@@ -448,6 +454,44 @@ def get_cmd(drawer_id: int) -> None:
     except (MCPError, MemoryStoreError) as exc:
         typer.echo(f"cairntir: {exc}", err=True)
         raise typer.Exit(code=1) from exc
+
+
+@app.command("hotfix")
+def hotfix_cmd(
+    action: str,
+    wing: str = typer.Option(..., "--wing", "-w", help="Project wing."),
+    case_id: str | None = typer.Option(None, "--case-id", help="Existing hotfix case id."),
+    payload: str = typer.Option("{}", "--payload", help="Action payload as a JSON object."),
+    idempotency_key: str | None = typer.Option(
+        None,
+        "--idempotency-key",
+        help="Stable retry key required by every mutating action.",
+    ),
+) -> None:
+    """Advance or inspect one bounded, append-only hotfix case."""
+    if not db_path().exists():
+        typer.echo("cairntir: no store yet — run `cairntir setup` first.", err=True)
+        raise typer.Exit(code=1)
+    try:
+        decoded = json.loads(payload)
+    except json.JSONDecodeError as exc:
+        typer.echo(f"cairntir: --payload is not valid JSON: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    if not isinstance(decoded, dict):
+        typer.echo("cairntir: --payload must decode to a JSON object", err=True)
+        raise typer.Exit(code=1)
+    try:
+        rendered = _backend().hotfix(
+            action=action,
+            wing=wing,
+            payload=decoded,
+            case_id=case_id,
+            idempotency_key=idempotency_key,
+        )
+    except CairntirError as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(rendered)
 
 
 @app.command("anchor")
@@ -1038,6 +1082,11 @@ def reason_cmd(
         "--success/--fail",
         help="Verdict: did the prediction hold? Prompted if omitted.",
     ),
+    delta: str = typer.Option(
+        "",
+        "--delta",
+        help="Optional surprise: how reality differed even if the prediction held.",
+    ),
     proposer: str = typer.Option(
         "manual",
         "--proposer",
@@ -1064,9 +1113,9 @@ def reason_cmd(
 ) -> None:
     """Run one Reason loop step: predict \u2192 observe \u2192 update belief.
 
-    Cairntir does not call cloud LLMs. The observed outcome and
-    verdict always come from the caller (you saw what happened, not
-    the model). With --proposer ollama, the *claim* and
+    Cairntir does not call cloud LLMs. The observed outcome, verdict,
+    and optional surprise delta come from the caller (you saw what
+    happened, not the model). With --proposer ollama, the *claim* and
     *predicted_outcome* are drafted by a locally-running Ollama
     model \u2014 still no network \u2014 and surfaced for confirmation before
     the loop commits.
@@ -1102,7 +1151,7 @@ def reason_cmd(
     try:
         loop = ReasonLoop(
             proposer=proposer_obj,  # type: ignore[arg-type]
-            runner=NullRunner(observed=observed, success=success),
+            runner=NullRunner(observed=observed, success=success, delta=delta),
             beliefs=StoreBackedBeliefs(store=store),
             memory=StoreBackedMemory(store=store),
         )
@@ -1150,6 +1199,11 @@ def replay_cmd(
         "--success/--fail",
         help="Verdict: did the original prediction hold? Prompted if omitted.",
     ),
+    delta: str = typer.Option(
+        "",
+        "--delta",
+        help="Optional surprise: how reality differed even if the prediction held.",
+    ),
     proposer: str = typer.Option(
         "manual",
         "--proposer",
@@ -1182,9 +1236,9 @@ def replay_cmd(
     the leaf — so the new prediction extends the original chain instead
     of starting a new one.
 
-    Cairntir does not call cloud LLMs. The observed outcome and the
-    verdict come from you. With --proposer ollama, the *claim* and
-    *predicted_outcome* are re-drafted by a locally-running model
+    Cairntir does not call cloud LLMs. The observed outcome, verdict,
+    and optional surprise delta come from you. With --proposer ollama,
+    the *claim* and *predicted_outcome* are re-drafted by a locally-running model
     (still no network), surfaced for confirmation. The default
     'manual' proposer re-uses the original chain leaf's claim
     verbatim — the right call for closing a prediction window.
@@ -1315,7 +1369,7 @@ def replay_cmd(
             memory=StoreBackedMemory(store=store),
             beliefs=StoreBackedBeliefs(store=store),
             proposer=replay_proposer,
-            runner=NullRunner(observed=observed, success=success),
+            runner=NullRunner(observed=observed, success=success, delta=delta),
         )
         try:
             result = recipe_runner.run(
@@ -1897,6 +1951,11 @@ def recipe_run_cmd(
         "--success/--fail",
         help="Verdict for the reason step. Prompted if omitted.",
     ),
+    delta: str = typer.Option(
+        "",
+        "--delta",
+        help="Optional surprise: how reality differed even if the prediction held.",
+    ),
     idempotency_key: str | None = typer.Option(
         None,
         "--idempotency-key",
@@ -1906,8 +1965,9 @@ def recipe_run_cmd(
     """Execute a named recipe with the given inputs.
 
     Zero network calls. If the recipe chains the ``reason`` skill, the
-    CLI collects the claim / predicted / observed / verdict via flags
-    or interactive prompts \u2014 no LLM runs inside Cairntir.
+    CLI collects claim / prediction / observation / verdict via flags or
+    prompts and accepts an optional surprise delta via `--delta` — no LLM runs
+    inside Cairntir.
     """
     from cairntir.recipes import RecipeError, RecipeRunner, discover_recipes
 
@@ -1974,7 +2034,7 @@ def recipe_run_cmd(
                 claim=claim or "(no claim)",
                 predicted_outcome=predicted or "(no predicted outcome)",
             ),
-            runner=NullRunner(observed=observed, success=success),
+            runner=NullRunner(observed=observed, success=success, delta=delta),
         )
         try:
             result = recipe_runner.run(

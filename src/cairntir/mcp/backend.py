@@ -31,6 +31,7 @@ from cairntir.durability import request_hash
 from cairntir.errors import AnchorError, MCPError
 from cairntir.handoff import DEFAULT_BUDGET_CHARS, Handoff
 from cairntir.handoff import compose as compose_handoff
+from cairntir.hotfix import HOTFIX_SCHEMA, HotfixAction, HotfixCommand, HotfixCoordinator
 from cairntir.learning import (
     DISCOVERY_STATES,
     NOVELTY_SCOPES,
@@ -137,6 +138,52 @@ class CairntirBackend:
         self._recovery_context = recovery_context
 
     # ------------------------------------------------------------------ tools
+
+    def hotfix(
+        self,
+        *,
+        action: str,
+        wing: str,
+        payload: dict[str, Any] | None = None,
+        case_id: str | None = None,
+        idempotency_key: str | None = None,
+    ) -> str:
+        """Advance or inspect one bounded, append-only hotfix case."""
+        try:
+            hotfix_action = HotfixAction(action)
+        except ValueError as exc:
+            raise MCPError(f"unknown hotfix action {action!r}") from exc
+        if payload is not None and not isinstance(payload, dict):
+            raise MCPError("hotfix payload must be an object")
+        receipt = HotfixCoordinator(self._store).run(
+            HotfixCommand(
+                action=hotfix_action,
+                wing=wing,
+                payload=payload or {},
+                case_id=case_id,
+                idempotency_key=idempotency_key,
+            )
+        )
+        terminal = not receipt.legal_actions
+        return json.dumps(
+            {
+                "schema": HOTFIX_SCHEMA,
+                "case_id": receipt.case_id,
+                "action": receipt.action.value,
+                "state": receipt.state.value,
+                "fingerprint": receipt.fingerprint,
+                "failure_class": receipt.failure_class,
+                "event_drawer_id": receipt.event_drawer_id,
+                "replayed": receipt.replayed,
+                "next_action": None if terminal else receipt.next_action,
+                "legal_actions": list(receipt.legal_actions),
+                "data": receipt.data,
+                "card": receipt.card,
+            },
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
 
     def remember(
         self,

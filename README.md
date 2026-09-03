@@ -8,9 +8,11 @@ decisions, facts, outcomes, and unfinished work across chats and across coding
 agents, so a new session can recover the real context instead of asking you to
 explain the project again.
 
-> Current release: **[Cairntir 1.8.0](https://github.com/pnmcguire480/cairntir/releases/tag/v1.8.0)** ·
-> [Changelog](CHANGELOG.md#180--2026-08-30) ·
-> [Release evidence](docs/release/v1.8.0.md) ·
+> Release candidate: **Cairntir 1.9.0** ·
+> [Changelog](CHANGELOG.md#190--2026-09-03) ·
+> [Acceptance record](docs/release/v1.9.0.md)
+>
+> Latest published: **[Cairntir 1.8.0](https://github.com/pnmcguire480/cairntir/releases/tag/v1.8.0)** ·
 > [PyPI](https://pypi.org/project/cairntir/1.8.0/)
 
 [![PyPI version](https://img.shields.io/pypi/v/cairntir.svg?cacheSeconds=300)](https://pypi.org/project/cairntir/)
@@ -60,23 +62,23 @@ cairntir init --host all --user
 New to MCP or terminal tools? Start with the
 [plain-English setup guide](docs/cairntir-for-dummies.md).
 
-## What changed in 1.8.0
+## What changed in 1.9.0
 
-Cairntir 1.8.0 closes the gap between a request arriving and the first memory
-write:
+Cairntir 1.9.0 makes repair and learning evidence fail closed:
 
-- **Bounded transcript recovery** for Claude Code, Codex, and Qwen Code returns
-  unfinished user requests from the newest non-live project session.
-- **Recovery is opt-in and read-only.** Recovered text is marked untrusted,
-  receives a separate context budget, and is never stored automatically.
-- **Eight verified host configurations** cover Claude Code, Cline, Codex,
-  Copilot CLI, Cursor, Gemini CLI, OpenCode, and Qwen Code.
-- **Finalization Mode** closes a roadmap against frozen acceptance tests,
-  bounded repair rounds, and an explicit `COMPLETE`, `BLOCKED`, or `EXHAUSTED`
-  result.
+- **Bounded hotfix ledgers** preserve cited recommendations, exact authority,
+  one-attempt execution receipts, independent verification, rollback, and a
+  terminal result without giving Cairntir execution power.
+- **Reason-loop boundary validation** rejects blank, cross-scope, mismatched,
+  incomplete, or falsely idempotent adapter output before it can become
+  evidence.
+- **Verdict and surprise stay independent.** Explicit `delta` survives through
+  `Outcome`, replay, recipes, adapters, and all shipped CLI reasoning paths.
+- **Discovery uses exact evidence pairs.** Only uniquely bound predictions and
+  observations in the same room count toward a human-reviewed candidate.
 
-Read the complete [1.8.0 changelog](CHANGELOG.md#180--2026-08-30) and
-[release acceptance record](docs/release/v1.8.0.md).
+Read the complete [1.9.0 changelog](CHANGELOG.md#190--2026-09-03) and
+[release acceptance record](docs/release/v1.9.0.md).
 
 ## How persistent memory works
 
@@ -117,6 +119,7 @@ Cairntir reports that limit instead of guessing at private data.
 | Cross-wing recall | Searches every project while preserving project provenance |
 | Prediction tracking | Scores whether recorded claims and expected outcomes held |
 | Discovery Ledger | Exposes evidence-backed patterns through a reviewed lifecycle |
+| Bounded hotfix ledger | Orders evidence, exact authority, one-attempt execution receipts, independent verification, and terminal settlement |
 | Portable memory | Exports and imports content-addressed, signed JSONL envelopes |
 | Transcript recovery | Recovers unfinished requests without automatic storage |
 | Local-first operation | Keeps the authoritative memory database on your machine |
@@ -130,6 +133,7 @@ cairntir recall-for-change src/auth.py
 cairntir recover --host codex --wing myproject
 cairntir cost myproject
 cairntir calibration --wing myproject
+cairntir hotfix status --wing myproject --case-id hf-abc123
 cairntir export memories.jsonl
 ```
 
@@ -157,10 +161,10 @@ benchmark as its own.
 
 ## MCP server and library surface
 
-The MCP server exposes **20 tools** over stdio for exact memory, handoff,
+The MCP server exposes **21 tools** over stdio for exact memory, handoff,
 semantic and structural recall, audit, reasoning, calibration, discovery, and
-CodeGlass learning records. Tool builders can use the stable Python Protocol
-surface with a custom backend; see the [integration guide](docs/integration-guide.md).
+bounded hotfix records. Tool builders can use the stable Python Protocol surface
+with a custom backend; see the [integration guide](docs/integration-guide.md).
 
 ```text
 cairntir/
@@ -168,8 +172,9 @@ cairntir/
 │   ├── contracts.py      # stable Store protocol
 │   ├── memory/           # SQLite, sqlite-vec, belief scoring, consolidation
 │   ├── mcp/              # host-neutral stdio server
+│   ├── hotfix.py         # bounded append-only repair ledger
 │   ├── reason/           # testable reasoning loop and ports
-│   └── cli.py            # cairntir setup | init | handoff | recover | cost | recall | replay | doctor | export | import
+│   └── cli.py            # cairntir setup | init | handoff | recover | recall | replay | hotfix | doctor | export | import
 ├── tests/                # unit, contract, property, integration, evaluation
 ├── docs/                 # guides, architecture, recipes, release evidence
 └── plans/                # live plans and dated decision history
@@ -182,6 +187,8 @@ the primitive skill set:
 
 - [Finalization Mode](docs/recipes/finalization-mode/) — finish a roadmap
   against frozen acceptance criteria and bounded repair rounds.
+- [Bounded Hotfix](docs/recipes/bounded-hotfix/) — compare cited repair paths,
+  bind one attempt to exact authority, independently verify it, and stop.
 - [CodeGlass](docs/recipes/codeglass/) — turn unfamiliar code into durable,
   evidence-cited understanding.
 - [Decision Replay](docs/recipes/decision-replay/) — revisit a past prediction
@@ -207,7 +214,8 @@ searchable evidence and history; it does not replace project policy.
 ## Documentation
 
 - [Changelog](CHANGELOG.md)
-- [Cairntir 1.8.0 release evidence](docs/release/v1.8.0.md)
+- [Cairntir 1.9.0 release acceptance](docs/release/v1.9.0.md)
+- [Cairntir 1.8.0 published evidence](docs/release/v1.8.0.md)
 - [How to use Cairntir](docs/how-to-use.md)
 - [Plain-English setup](docs/cairntir-for-dummies.md)
 - [Integration guide](docs/integration-guide.md)

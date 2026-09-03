@@ -77,7 +77,8 @@ The loop writes two drawers:
   This is what makes Decision Replay structural rather than cosmetic —
   the chain now has another link, and a future replay can walk it.
 - A **new observation drawer** with `supersedes_id = new_prediction_id`,
-  carrying the observed outcome and a `delta` if the prediction failed.
+  carrying the observed outcome and any explicit surprise `delta`. Verdict and
+  surprise are independent: a prediction can hold through an unexpected path.
 
 Belief mass is reinforced (+1.0) on success, weakened (-1.0) on failure.
 The store clamps mass at zero, so a long string of failed replays drives
@@ -119,7 +120,8 @@ The CLI:
 1. Walks the supersedes chain from drawer 95.
 2. Pre-fills the proposer's claim + predicted_outcome from the chain leaf.
 3. Prompts for the observed outcome (the *outcome* of the original
-   prediction, in your words) and a success/fail verdict.
+   prediction, in your words) and a success/fail verdict. Use `--delta` when
+   the route differed, including when the verdict still held.
 4. Runs the Decision Replay recipe with `supersedes_id` set to the leaf id.
 5. Prints the new prediction drawer id, the new observation drawer id,
    the Crucible marker id, and the belief mass change.
@@ -132,10 +134,10 @@ cairntir recipe-run decision-replay \
   --input current_evidence="fastembed default has held for four days..."
 ```
 
-This path skips the auto-fill — you must provide `--claim`, `--predicted`,
-`--observed`, `--success` flags (or answer the interactive prompts). Use
-this when you want to *change* the claim mid-replay, e.g. you realize the
-original prediction was poorly formed and the replay is also a
+This path skips the auto-fill — provide `--claim`, `--predicted`, `--observed`,
+and `--success`, or answer their interactive prompts. `--delta` is optional.
+Use this path when you want to *change* the claim mid-replay, e.g. you realize
+the original prediction was poorly formed and the replay is also a
 re-statement.
 
 ---
@@ -150,7 +152,7 @@ For a single Decision Replay invocation against drawer N (chain leaf L):
    recipe (`replays/decision-replay`). Carries the original claim +
    predicted outcome.
 3. **New observation drawer** — `supersedes_id = new_prediction_id`.
-   Carries the observed outcome and a `delta` if the prediction failed.
+   Carries the observed outcome and any explicit surprise `delta`.
 4. **Crucible marker drawer** — `supersedes_id = seed_id`. Embeds the
    Crucible prompt for the calling LLM to run against.
 

@@ -14,7 +14,7 @@
 - **Owner:** Patrick McGuire (@pnmcguire480)
 - **License:** MIT
 - **Repo:** `c:\Dev\Cairntir\` — https://github.com/pnmcguire480/cairntir
-- **Stage:** **v1.8.0 published** 2026-08-30 from protected merge `8dcb3fb` (PyPI + GitHub Release; both artifacts attested and independently hash-matched). Release workflow run `33346147256` published the immutable tag after repair PR #80 closed the pre-publication/PyPI deadlock. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
+- **Stage:** **v1.9.0 release candidate** in PR #84: bounded hotfix evidence plus Karpathy-loop boundary hardening, prepared and locally verified from an isolated clone. Patrick explicitly authorized publication after exact-head protected CI and merge. Latest published is **v1.8.0**, released 2026-08-30 from protected merge `8dcb3fb` with attested, independently hash-matched GitHub and PyPI artifacts. **1.0.1 and 1.1.3 were changelogged but never tagged and never published** — see `scripts/check_release_tags.py`. `v1.1.1` was tagged and GitHub-released but its PyPI publish failed, so it is not on PyPI.
 
 ---
 
@@ -117,6 +117,30 @@ under `docs/recipes/` and earn their place by use, not by governance.
 ## Current State
 
 ### Last Session
+
+- **Date:** 2026-09-03 (**bounded hotfix and Karpathy-loop hardening complete
+  locally in PR #84; protected `main` untouched**)
+- **What happened:** A second-chance review closed six hotfix integrity gaps:
+  independently failed host-pass attempts cannot retry unchanged state;
+  mandatory rollback survives later authority/preflight events; receipts no
+  longer advertise illegal settlement; case-only actor/action aliases fail;
+  and altered tail identity metadata cannot hide an event. The Karpathy-derived
+  Reason loop now binds non-empty hypotheses and complete outcomes to the exact
+  invocation scope, preserves explicit surprise independently of verdict,
+  persists the experiment, and refuses fake idempotency. `--delta` reaches all
+  three shipped CLI paths. Automatic discovery accepts only unique, bound
+  prediction/observation pairs and separates evidence by room; it still stops
+  at human-reviewed candidates. Local evidence: 787 non-slow tests at 84.03%
+  coverage, all 5 evals against an isolated live-store copy, Ruff, strict mypy,
+  strict docs, repository gates, wheel/sdist build, and an isolated wheel smoke
+  proving `--delta`, `Outcome`, and all five recipes. Temporary verification
+  copies were removed; the live store and canonical `main` remained untouched.
+- **Next:** finish the 1.9.0 metadata and literature sweep, rerun the complete
+  local gate, require fresh protected CI on the exact pushed head, and merge
+  PR #84. Patrick explicitly authorized the post-merge `v1.9.0` tag and trusted
+  GitHub/PyPI publication; verify artifact hashes and a fresh public install
+  before recording completion. Retrieval preflight remains the accepted next
+  core experiment.
 
 - **Date:** 2026-08-30 (**v1.8.0 published and independently verified**)
 - **What happened:** PR #78 settled the canonical checkout, all seven open PRs,
@@ -1142,7 +1166,7 @@ under `docs/recipes/` and earn their place by use, not by governance.
 
 - **Memory layer:** wing/room/drawer taxonomy over sqlite-vec, 4-layer retrieval,
   schema v6 with immutable write provenance and durable idempotency receipts.
-- **MCP server:** 20 tools over stdio (`cairntir-mcp`, or `python -m cairntir.mcp.server`).
+- **MCP server:** 21 tools over stdio (`cairntir-mcp`, or `python -m cairntir.mcp.server`).
 - **Handoff:** `cairntir_handoff(wing)` / `cairntir handoff <wing>` returns one
   composed brief under a hard character budget — protocol, recent deltas, open
   questions, and anchors for the files in play. Drawers come back **whole**;
@@ -1152,12 +1176,13 @@ under `docs/recipes/` and earn their place by use, not by governance.
   drawers it returns can actually answer something. Deterministic, so it stays
   prompt-cache friendly.
 - **Three skills:** Crucible, Quality, Reason — bundled and loadable.
-- **Recipes:** Signal Reader, Decision Replay, and the discovery/calibration ledger.
+- **Recipes:** Signal Reader, Decision Replay, CodeGlass, Finalization Mode, and
+  Bounded Hotfix.
 - **Structural recall:** `cairntir_recall_for_change(files=[…])` surfaces drawers
   anchored to the files a change touches. Anchors are validated on write, and
   `cairntir anchor <id> --repair` fixes drawers written before that guard existed.
 - **CLI:** `cairntir` — recall, get, handoff, cost, anchor, recall-for-change,
-  replay, export, import, calibration, doctor, register, and more.
+  replay, hotfix, export, import, calibration, doctor, register, and more.
 - **Cost accounting:** `cairntir cost <wing>` reports what the read path costs —
   tool catalog, `session_start`, `handoff`, and drawer sizes against the
   embedder's ~2,048-char window. Closes P5. Measures Cairntir's own payload

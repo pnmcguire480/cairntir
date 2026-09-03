@@ -31,10 +31,15 @@ Live on [PyPI](https://pypi.org/project/cairntir/). Source on [GitHub](https://g
 
 ## Status
 
-**v1.8.0** is live on [PyPI](https://pypi.org/project/cairntir/1.8.0/) and
-[GitHub](https://github.com/pnmcguire480/cairntir/releases/tag/v1.8.0). Read the
-[1.8.0 release record](release/v1.8.0.md) and full
+**v1.9.0** is the current release candidate. It adds the bounded hotfix ledger
+and hardens the prediction/experiment/outcome learning boundary; read its
+[acceptance record](release/v1.9.0.md) and full
 [changelog](https://github.com/pnmcguire480/cairntir/blob/main/CHANGELOG.md).
+
+The latest published release remains **v1.8.0** on
+[PyPI](https://pypi.org/project/cairntir/1.8.0/) and
+[GitHub](https://github.com/pnmcguire480/cairntir/releases/tag/v1.8.0) until the
+1.9.0 candidate completes protected CI and trusted publication.
 
 ## License
 

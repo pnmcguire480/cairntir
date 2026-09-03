@@ -129,19 +129,24 @@ class StoreBackedBeliefs:
 class NullRunner:
     """An :class:`~cairntir.reason.ExperimentRunner` that records a caller-supplied verdict.
 
-    No experiment is executed. The verdict — success-or-not plus a
-    human-readable observation string — is either passed at
-    construction time or via :meth:`set_verdict` before the next
-    :meth:`run` call. Useful for recipes where the "experiment" is a
-    human reading the proposer's output and judging whether the
-    prediction held.
+    No experiment is executed. The verdict, observation, and optional
+    surprise delta are either passed at construction time or via
+    :meth:`set_verdict` before the next :meth:`run` call. Useful for
+    recipes where the "experiment" is a human reading the proposer's
+    output and judging whether the prediction held.
 
     If :meth:`run` is called without a verdict set, it raises
     :class:`RuntimeError` immediately. The loop expects outcomes; a
     silent fallback would be a footgun.
     """
 
-    def __init__(self, *, observed: str = "", success: bool | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        observed: str = "",
+        success: bool | None = None,
+        delta: str = "",
+    ) -> None:
         """Initialize with an optional starting verdict.
 
         Leaving both arguments at their defaults means the first call
@@ -150,8 +155,9 @@ class NullRunner:
         """
         self._observed = observed
         self._success = success
+        self._delta = delta
 
-    def set_verdict(self, *, observed: str, success: bool) -> None:
+    def set_verdict(self, *, observed: str, success: bool, delta: str = "") -> None:
         """Record the verdict for the next :meth:`run` call.
 
         After :meth:`run` consumes a verdict it is *not* reset; the
@@ -161,6 +167,7 @@ class NullRunner:
         """
         self._observed = observed
         self._success = success
+        self._delta = delta
 
     def run(self, hypothesis: Hypothesis) -> Outcome:
         """Return an :class:`Outcome` built from the stored verdict."""
@@ -177,6 +184,7 @@ class NullRunner:
             experiment=experiment,
             observed=self._observed,
             success=self._success,
+            delta=self._delta,
         )
 
 
@@ -215,8 +223,8 @@ class ManualProposer:
         """Accept a prebuilt hypothesis or the raw strings to build one later.
 
         If ``hypothesis`` is supplied it is returned verbatim on every
-        :meth:`propose` call (the wing/room on the hypothesis wins,
-        regardless of what the loop passes). If ``claim`` and
+        :meth:`propose` call and its wing/room must match the later
+        :class:`~cairntir.reason.ReasonLoop` invocation. If ``claim`` and
         ``predicted_outcome`` are supplied instead, the hypothesis is
         constructed per-call with the loop's wing/room so the same
         proposer works across multiple contexts.
