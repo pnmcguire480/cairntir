@@ -28,7 +28,8 @@ from typer.testing import CliRunner
 
 from cairntir.calibration import calibration_report
 from cairntir.cli import app
-from cairntir.errors import ContentIntegrityError, MCPError
+from cairntir.errors import ContentIntegrityError, HotfixError, MCPError
+from cairntir.hotfix import HotfixAction, HotfixCommand, HotfixCoordinator
 from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import HashEmbeddingProvider
 from cairntir.memory.store import DrawerStore
@@ -351,3 +352,56 @@ def test_vault_check_and_apply_agree_about_drift(
     clean = runner.invoke(app, ["vault-sync", "--vault", str(vault), "--check"])
     assert clean.exit_code == 0, clean.output
     assert "ok: every vault walkthrough has a drawer" in clean.output
+
+
+def test_hotfix_mcp_and_coordinator_enforce_the_same_ordering(
+    backend: CairntirBackend,
+) -> None:
+    opened = json.loads(
+        backend.hotfix(
+            action="open",
+            wing="cairntir",
+            payload={
+                "title": "adapter seam",
+                "stage": "a4",
+                "symptom": "assertion failed",
+                "acceptance": ["ordering holds"],
+            },
+            idempotency_key="hotfix-adapter-open",
+        )
+    )
+    coordinator = HotfixCoordinator(backend._store)
+    direct = coordinator.run(
+        HotfixCommand(
+            action=HotfixAction.STATUS,
+            wing="cairntir",
+            case_id=opened["case_id"],
+            payload={},
+        )
+    )
+    assert opened["state"] == direct.state.value == "open"
+    assert opened["legal_actions"] == list(direct.legal_actions)
+
+    unauthorized = {
+        "authority_id": "too-early",
+        "sequence": 1,
+        "candidate_id": "missing-recommendation",
+    }
+    with pytest.raises(HotfixError, match="no recommend event"):
+        backend.hotfix(
+            action="authorize",
+            wing="cairntir",
+            case_id=opened["case_id"],
+            payload=unauthorized,
+            idempotency_key="hotfix-adapter-too-early",
+        )
+    with pytest.raises(HotfixError, match="no recommend event"):
+        coordinator.run(
+            HotfixCommand(
+                action=HotfixAction.AUTHORIZE,
+                wing="cairntir",
+                case_id=opened["case_id"],
+                payload=unauthorized,
+                idempotency_key="hotfix-direct-too-early",
+            )
+        )

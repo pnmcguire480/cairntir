@@ -220,6 +220,45 @@ def test_discovery_and_human_learning_log_commands(
     assert "Repair pattern emerged" in learning_log.output
 
 
+def test_hotfix_command_opens_and_reads_a_case(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))
+    DrawerStore(tmp_path / "cairntir.db", HashEmbeddingProvider(dimension=384)).close()
+    payload = json.dumps(
+        {
+            "title": "CLI hotfix",
+            "stage": "a4",
+            "symptom": "assertion failed",
+            "acceptance": ["CLI receipt returns"],
+        }
+    )
+
+    opened = runner.invoke(
+        app,
+        [
+            "hotfix",
+            "open",
+            "--wing",
+            "cairntir",
+            "--payload",
+            payload,
+            "--idempotency-key",
+            "cli-hotfix-open",
+        ],
+    )
+    assert opened.exit_code == 0, opened.output
+    receipt = json.loads(opened.output)
+    status = runner.invoke(
+        app,
+        ["hotfix", "status", "--wing", "cairntir", "--case-id", receipt["case_id"]],
+    )
+
+    assert status.exit_code == 0, status.output
+    assert json.loads(status.output)["state"] == "open"
+
+
 def test_reason_non_interactive_writes_drawers(tmp_path: Path, monkeypatch: object) -> None:
     """`cairntir reason` with every flag set runs a full loop step without prompts or network."""
     monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path))  # type: ignore[attr-defined]

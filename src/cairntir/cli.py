@@ -16,7 +16,13 @@ from cairntir import __version__
 from cairntir.config import cairntir_home, db_path, model_cache_dir
 from cairntir.cost import measure as measure_cost
 from cairntir.cost import render as render_cost
-from cairntir.errors import EmbeddingError, MCPError, MemoryStoreError, ProjectionError
+from cairntir.errors import (
+    CairntirError,
+    EmbeddingError,
+    MCPError,
+    MemoryStoreError,
+    ProjectionError,
+)
 from cairntir.handoff import DEFAULT_BUDGET_CHARS
 from cairntir.hosts import (
     CURSOR_USER_RULE_PASTE_HINT,
@@ -448,6 +454,44 @@ def get_cmd(drawer_id: int) -> None:
     except (MCPError, MemoryStoreError) as exc:
         typer.echo(f"cairntir: {exc}", err=True)
         raise typer.Exit(code=1) from exc
+
+
+@app.command("hotfix")
+def hotfix_cmd(
+    action: str,
+    wing: str = typer.Option(..., "--wing", "-w", help="Project wing."),
+    case_id: str | None = typer.Option(None, "--case-id", help="Existing hotfix case id."),
+    payload: str = typer.Option("{}", "--payload", help="Action payload as a JSON object."),
+    idempotency_key: str | None = typer.Option(
+        None,
+        "--idempotency-key",
+        help="Stable retry key required by every mutating action.",
+    ),
+) -> None:
+    """Advance or inspect one bounded, append-only hotfix case."""
+    if not db_path().exists():
+        typer.echo("cairntir: no store yet — run `cairntir setup` first.", err=True)
+        raise typer.Exit(code=1)
+    try:
+        decoded = json.loads(payload)
+    except json.JSONDecodeError as exc:
+        typer.echo(f"cairntir: --payload is not valid JSON: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    if not isinstance(decoded, dict):
+        typer.echo("cairntir: --payload must decode to a JSON object", err=True)
+        raise typer.Exit(code=1)
+    try:
+        rendered = _backend().hotfix(
+            action=action,
+            wing=wing,
+            payload=decoded,
+            case_id=case_id,
+            idempotency_key=idempotency_key,
+        )
+    except CairntirError as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(rendered)
 
 
 @app.command("anchor")
