@@ -91,17 +91,18 @@ def parse_capture(path: Path) -> Drawer:
     try:
         raw = path.read_text(encoding="utf-8")
         payload = json.loads(raw)
-    except (OSError, json.JSONDecodeError) as exc:
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise MCPError(f"unreadable spool file {path.name}: {exc}") from exc
     if not isinstance(payload, dict):
         raise MCPError(f"spool file {path.name} is not a JSON object")
     try:
+        json.dumps(payload, ensure_ascii=False).encode("utf-8")
         return Drawer(
-            wing=str(payload["wing"]),
-            room=str(payload["room"]),
-            content=str(payload["content"]),
+            wing=payload["wing"],
+            room=payload["room"],
+            content=payload["content"],
             layer=Layer(payload.get("layer", "on_demand")),
-            metadata=dict(payload.get("metadata") or {}),
+            metadata=payload.get("metadata", {}),
         )
     except (KeyError, ValueError, TypeError) as exc:
         raise MCPError(f"spool file {path.name} has invalid shape: {exc}") from exc

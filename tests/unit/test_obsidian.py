@@ -90,3 +90,27 @@ def test_projection_refuses_to_overwrite_unmarked_user_note(tmp_path: Path) -> N
         pytest.raises(ProjectionError, match="user-owned"),
     ):
         project_to_obsidian(store, vault=vault)
+
+
+def test_shared_evidence_and_prefix_ids_do_not_corrupt_receipt_links(tmp_path: Path) -> None:
+    vault = _vault(tmp_path)
+    with DrawerStore(tmp_path / "memory.db", HashEmbeddingProvider(dimension=16)) as store:
+        for index in range(10):
+            store.add(Drawer(wing="cairntir", room="evidence", content=f"Fact {index}"))
+        for title in ("First discovery", "Second discovery"):
+            record_discovery(
+                store,
+                wing="cairntir",
+                title=title,
+                summary="Shared evidence.",
+                novelty="user",
+                evidence_ids=(1, 10),
+                state="candidate",
+            )
+        result = project_to_obsidian(store, vault=vault)
+    text = result.learning_log.read_text(encoding="utf-8")
+    expected = (
+        "- evidence: [[cairntir-sync/receipts/drawer-1|#1]], "
+        "[[cairntir-sync/receipts/drawer-10|#10]]"
+    )
+    assert text.count(expected) == 2

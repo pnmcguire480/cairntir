@@ -43,7 +43,7 @@ def project_to_obsidian(
     """Project the learning log and CodeGlass notes without ingesting edits."""
     if not (vault / ".obsidian").is_dir():
         raise ProjectionError(f"{vault} is not an Obsidian vault (missing .obsidian)")
-    root = vault / "cairntir-sync"
+    root = vault.resolve() / "cairntir-sync"
     discoveries = list_discoveries(store, wing=wing, limit=None)
     visible_discoveries = [
         item
@@ -56,13 +56,14 @@ def project_to_obsidian(
         learning_log,
         _learning_log_markdown(visible_discoveries),
         title="Cairntir Human Learning Log",
+        root=root,
     )
 
     codeglass_notes: list[Path] = []
     receipt_ids: set[int] = set()
     walkthroughs = [
         drawer
-        for drawer in store.list_by(wing=wing, room=CODEGLASS_ROOM, limit=100_000)
+        for drawer in store.list_by(wing=wing, room=CODEGLASS_ROOM, limit=None)
         if drawer.id is not None
         and drawer.metadata.get("kind") == "codeglass.walkthrough"
         and _is_projectable(store, drawer.id)
@@ -72,7 +73,7 @@ def project_to_obsidian(
         if drawer_id is None:
             raise ProjectionError("stored CodeGlass walkthrough is missing its id")
         target = str(drawer.metadata.get("target", "walkthrough"))
-        note = root / "codeglass" / drawer.wing / f"{drawer_id}-{_slug(target)}.md"
+        note = root / "codeglass" / _slug(drawer.wing) / f"{drawer_id}-{_slug(target)}.md"
         evidence_ids = _evidence_ids(drawer.metadata.get("evidence_drawer_ids"))
         receipt_ids.update(evidence_ids)
         generated = (
@@ -84,7 +85,7 @@ def project_to_obsidian(
                 for item in evidence_ids
             )
         )
-        _upsert_generated(note, generated, title=f"CodeGlass — {target}")
+        _upsert_generated(note, generated, title=f"CodeGlass — {target}", root=root)
         codeglass_notes.append(note)
         receipt_ids.add(drawer_id)
 
@@ -106,17 +107,17 @@ def project_to_obsidian(
 
 def _learning_log_markdown(discoveries: list[Discovery]) -> str:
     rendered = format_discoveries(discoveries, heading="Cairntir Human Learning Log")
-    for item in discoveries:
-        rendered = rendered.replace(
-            f"cairntir://drawer/{item.drawer_id}",
-            f"[[cairntir-sync/receipts/drawer-{item.drawer_id}|Drawer #{item.drawer_id}]]",
-        )
-        for evidence_id in item.evidence_ids:
-            rendered = rendered.replace(
-                f"#{evidence_id}",
-                f"[[cairntir-sync/receipts/drawer-{evidence_id}|#{evidence_id}]]",
-            )
-    return rendered
+    ids = {str(item.drawer_id) for item in discoveries}
+    ids.update(str(evidence_id) for item in discoveries for evidence_id in item.evidence_ids)
+
+    def link(match: re.Match[str]) -> str:
+        drawer_id = match.group(1) or match.group(2)
+        if drawer_id not in ids:
+            return match.group(0)
+        label = f"Drawer #{drawer_id}" if match.group(1) else f"#{drawer_id}"
+        return f"[[cairntir-sync/receipts/drawer-{drawer_id}|{label}]]"
+
+    return re.sub(r"cairntir://drawer/(\d+)\b|#(\d+)\b", link, rendered)
 
 
 def _write_receipt(store: DrawerStore, *, root: Path, drawer_id: int) -> Path:
@@ -142,7 +143,7 @@ def _write_receipt(store: DrawerStore, *, root: Path, drawer_id: int) -> Path:
             f"{drawer_id}` or `cairntir_get` to inspect it.",
         )
     )
-    _upsert_generated(note, generated, title=f"Cairntir Drawer {drawer_id}")
+    _upsert_generated(note, generated, title=f"Cairntir Drawer {drawer_id}", root=root)
     return note
 
 
@@ -164,7 +165,11 @@ def _slug(value: str) -> str:
     return cleaned[:80] or "walkthrough"
 
 
-def _upsert_generated(path: Path, generated: str, *, title: str) -> None:
+def _upsert_generated(path: Path, generated: str, *, title: str, root: Path) -> None:
+    if not path.resolve().is_relative_to(root):
+        raise ProjectionError(f"projection path escapes the owned output tree: {path}")
+    if _BEGIN in generated or _END in generated or _BEGIN in title or _END in title:
+        raise ProjectionError(f"projection content contains reserved generated markers: {path}")
     block = f"{_BEGIN}\n{generated.rstrip()}\n{_END}\n"
     path.parent.mkdir(parents=True, exist_ok=True)
     if not path.exists():
@@ -172,11 +177,11 @@ def _upsert_generated(path: Path, generated: str, *, title: str) -> None:
         return
     try:
         existing = path.read_text(encoding="utf-8")
-    except OSError as exc:
+    except (OSError, UnicodeError) as exc:
         raise ProjectionError(f"could not read projection {path}: {exc}") from exc
     begin = existing.find(_BEGIN)
     end = existing.find(_END)
-    if begin == -1 or end == -1 or end < begin:
+    if existing.count(_BEGIN) != 1 or existing.count(_END) != 1 or end < begin:
         raise ProjectionError(
             f"refusing to overwrite user-owned Obsidian note without complete markers: {path}"
         )

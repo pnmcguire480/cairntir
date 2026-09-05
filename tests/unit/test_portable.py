@@ -119,6 +119,33 @@ def test_unsupported_format_version_is_rejected() -> None:
         decode_drawer(envelope)
 
 
+def test_boolean_format_version_is_not_version_one() -> None:
+    envelope = encode_drawer(_d())
+    envelope["format_version"] = True
+    with pytest.raises(PortableFormatError, match="format_version"):
+        decode_drawer(envelope)
+
+
+def test_non_ascii_signature_is_a_typed_error() -> None:
+    envelope = encode_drawer(_d(), signing_key=KEY)
+    envelope["signature"] = "not-a-signature-\u2603"
+    with pytest.raises(PortableFormatError, match="signature mismatch"):
+        decode_drawer(envelope, verify_key=KEY)
+
+
+def test_nested_hotfix_evidence_cannot_bind_to_destination_ids() -> None:
+    envelope = encode_drawer(_d(metadata={"payload": {"candidates": [{"evidence_ids": [1]}]}}))
+    with pytest.raises(PortableFormatError, match="source-local"):
+        decode_drawer(envelope)
+
+
+def test_escaped_surrogate_is_a_typed_portable_error() -> None:
+    envelope = encode_drawer(_d())
+    envelope["drawer"]["content"] = "\ud800"
+    with pytest.raises(PortableFormatError, match="UTF-8"):
+        decode_drawer(envelope)
+
+
 def test_missing_drawer_payload_is_rejected() -> None:
     with pytest.raises(PortableFormatError, match="missing a drawer payload"):
         decode_drawer({"format_version": FORMAT_VERSION})

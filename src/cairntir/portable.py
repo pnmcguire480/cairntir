@@ -54,7 +54,9 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import os
 import re
+import tempfile
 from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
@@ -143,12 +145,17 @@ def canonical_bytes(drawer_dict: dict[str, Any]) -> bytes:
     forms, which is what makes content hashing deterministic across
     platforms and Python versions.
     """
-    return json.dumps(
-        drawer_dict,
-        sort_keys=True,
-        ensure_ascii=False,
-        separators=(",", ":"),
-    ).encode("utf-8")
+    try:
+        return json.dumps(
+            drawer_dict,
+            sort_keys=True,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    except (ValueError, TypeError) as exc:
+        raise PortableFormatError(
+            f"payload cannot be encoded as canonical UTF-8 JSON: {exc}"
+        ) from exc
 
 
 def content_hash(drawer: Drawer) -> str:
@@ -215,7 +222,7 @@ def decode_drawer(
     if not isinstance(envelope, dict):
         raise PortableFormatError("envelope is not a JSON object")
     version = envelope.get("format_version")
-    if version != FORMAT_VERSION:
+    if type(version) is not int or version != FORMAT_VERSION:
         raise PortableFormatError(
             f"unsupported format_version {version!r}; this module speaks v{FORMAT_VERSION}"
         )
@@ -230,11 +237,11 @@ def decode_drawer(
     # same canonical projection encode_drawer used.
     try:
         drawer = Drawer(
-            wing=str(drawer_dict["wing"]),
-            room=str(drawer_dict["room"]),
-            content=str(drawer_dict["content"]),
+            wing=drawer_dict["wing"],
+            room=drawer_dict["room"],
+            content=drawer_dict["content"],
             layer=Layer(drawer_dict["layer"]),
-            metadata=dict(drawer_dict.get("metadata") or {}),
+            metadata=drawer_dict["metadata"],
             created_at=datetime.fromisoformat(str(drawer_dict["created_at"])),
             claim=drawer_dict["claim"],
             predicted_outcome=drawer_dict["predicted_outcome"],
@@ -262,9 +269,11 @@ def decode_drawer(
             raise PortableFormatError("signed envelope missing provenance")
         signed_bytes = actual.encode("utf-8") + canonical_bytes(provenance)
         expected_sig = _sign(signed_bytes, verify_key)
-        if not hmac.compare_digest(sig, expected_sig):
+        if not sig.isascii() or not hmac.compare_digest(sig, expected_sig):
             raise PortableFormatError("signature mismatch: key does not match envelope")
 
+    ensure_no_external_urls(drawer)
+    _reject_local_references(drawer)
     return drawer
 
 
@@ -272,13 +281,37 @@ def decode_drawer(
 
 
 def write_jsonl(envelopes: Iterable[dict[str, Any]], path: Path) -> int:
-    """Write envelopes to ``path`` as JSON Lines. Returns the count written."""
+    """Atomically replace ``path`` with JSON Lines; preserve it on failure."""
     count = 0
-    with path.open("w", encoding="utf-8") as fh:
-        for env in envelopes:
-            fh.write(json.dumps(env, ensure_ascii=False, sort_keys=True))
-            fh.write("\n")
-            count += 1
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            newline="\n",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as fh:
+            temporary = Path(fh.name)
+            for env in envelopes:
+                fh.write(json.dumps(env, ensure_ascii=False, sort_keys=True))
+                fh.write("\n")
+                count += 1
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.replace(temporary, path)
+    except (OSError, UnicodeError, TypeError, ValueError) as exc:
+        raise PortableFormatError(f"cannot write portable file {path}: {exc}") from exc
+    finally:
+        if temporary is not None:
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError as exc:
+                raise PortableFormatError(
+                    f"cannot remove temporary export {temporary}: {exc}"
+                ) from exc
     return count
 
 
@@ -287,7 +320,7 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
     envelopes: list[dict[str, Any]] = []
     try:
         raw = path.read_text(encoding="utf-8")
-    except OSError as exc:
+    except (OSError, UnicodeError) as exc:
         raise PortableFormatError(f"cannot read portable file {path}: {exc}") from exc
     for lineno, line in enumerate(raw.splitlines(), start=1):
         stripped = line.strip()
@@ -345,3 +378,38 @@ def import_drawers(
     """
     envelopes = read_jsonl(path)
     return [decode_drawer(env, verify_key=verify_key) for env in envelopes]
+
+
+def _reject_local_references(drawer: Drawer) -> None:
+    # V1 drops source ids: neither a signature nor a matching destination id
+    # provides the mapping needed to preserve relationships across stores.
+    local_keys = {
+        "evidence_drawer_ids",
+        "counterexample_drawer_ids",
+        "walkthrough_id",
+        "derived_from",
+        "evidence_ids",
+        "parent_drawer_id",
+    }
+
+    def contains_local_reference(value: object) -> bool:
+        if isinstance(value, dict):
+            return any(
+                (key in local_keys and item is not None and item != [])
+                or contains_local_reference(item)
+                for key, item in value.items()
+            )
+        if isinstance(value, list):
+            return any(contains_local_reference(item) for item in value)
+        return False
+
+    payload = _drawer_to_portable_dict(drawer)
+    if (
+        drawer.supersedes_id is not None
+        or contains_local_reference(drawer.metadata)
+        or re.search(r"cairntir://drawer/[0-9]+", json.dumps(payload), re.IGNORECASE)
+    ):
+        raise PortableFormatError(
+            "portable v1 cannot import source-local drawer references without an id map; "
+            "use a database backup to preserve linked history"
+        )
