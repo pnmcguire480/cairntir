@@ -1,44 +1,35 @@
 # Cairntir
 
-> *A stack of stones that sees across time.*
+Local-first, persistent memory shared by coding agents through MCP.
 
-**Cairntir** is a local-first persistent memory MCP server for AI coding
-agents. Claude Code, Codex, Cursor, Qwen Code, and other
-[Model Context Protocol](https://modelcontextprotocol.io/) clients share one
-cross-session memory store.
+Start with [installation and usage](how-to-use.md), then read
+[concepts and data handling](concept.md) for retrieval budgets, provenance,
+transcript recovery, backup, and portability.
 
-## Install
+## Recipes
 
-```bash
-pip install cairntir
-cairntir setup
-```
+- [CodeGlass](recipes/codeglass/README.md): preserve evidence-cited code understanding.
+- [Decision Replay](recipes/decision-replay/README.md): revisit predictions against outcomes.
+- [Signal Reader](recipes/signal-reader/README.md): record analysis as falsifiable evidence.
+- [Bounded Hotfix](recipes/bounded-hotfix/README.md): bind repair attempts to authority and verification.
+- [Finalization Mode](recipes/finalization-mode/README.md): finish against frozen acceptance criteria.
 
-Live on [PyPI](https://pypi.org/project/cairntir/). Source on [GitHub](https://github.com/pnmcguire480/cairntir).
+## Developers
 
-## Start Here
+The [integration guide](integration-guide.md) documents the stable Python
+protocols. [Multi-host continuity](architecture/multi-host-continuity.md)
+defines adapter boundaries. [Landed commitments](landed-commitments.md) records
+the executable regression contracts.
 
-- **[Why I built this (blog post)](blog/amnesia-problem.md)** — The story behind the tool
-- **[Cairntir for dummies](cairntir-for-dummies.md)** — Zero-prior-knowledge getting-started guide
-- **[Manifesto](manifesto.md)** — Why Cairntir exists and what problem it solves
-- **[Concept](concept.md)** — The three ingredients: verbatim memory, minimal skills, one loop
-- **[Conception](conception.md)** — Origin story, the round table, the horizon
-- **[Roadmap](roadmap.md)** — Where we are, where we're going, and the long horizon
-- **[Integration guide](integration-guide.md)** — Embedding Cairntir in your own tool
-- **[Deprecation policy](deprecation-policy.md)** — What "stable" means at v1.0
-- **[Lineage: BrainStormer](lineage/brainstormer.md)** — What we kept, what we dropped
-- **[Lineage: MemPalace](lineage/mempalace.md)** — Concepts borrowed, code reimplemented
+See the [roadmap](roadmap.md), [release policy](release-cadence.md),
+[publishing checklist](publish-checklist.md), and
+[deprecation policy](deprecation-policy.md).
 
-## Status
+## Release evidence
 
-**v1.9.0** is the current published release. It adds the bounded hotfix ledger
-and hardens the prediction/experiment/outcome learning boundary. The protected
-merge, trusted publication, provenance, cross-channel artifact hashes, and
-fresh public install are recorded in its
-[verified release record](release/v1.9.0.md). Install it from
-[PyPI](https://pypi.org/project/cairntir/1.9.0/) or inspect the immutable
-[GitHub Release](https://github.com/pnmcguire480/cairntir/releases/tag/v1.9.0).
+[1.9.0](release/v1.9.0.md) · [1.8.0](release/v1.8.0.md) ·
+[1.7.1](release/v1.7.1.md) · [1.7.0](release/v1.7.0.md) ·
+[1.2.0 candidate](release/v1.2.0-rc.md)
 
-## License
-
-[MIT](https://github.com/pnmcguire480/cairntir/blob/main/LICENSE). Free forever. Local-first forever. No SaaS.
+The [GitHub repository](https://github.com/pnmcguire480/cairntir) carries the
+source, changelog, contribution guide, security policy, and MIT license.
