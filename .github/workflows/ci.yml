@@ -26,13 +26,15 @@ jobs:
       - name: Set up Python
         run: uv python install 3.12
       - name: Install dependencies
-        run: uv sync --all-extras --dev
+        run: uv sync --locked --all-extras
       - name: Ruff check
-        run: uv run ruff check src tests scripts
+        run: uv run ruff check src tests scripts addons
       - name: Ruff format check
-        run: uv run ruff format --check src tests scripts
+        run: uv run ruff format --check src tests scripts addons
       - name: Mypy strict
         run: uv run mypy --strict src
+      - name: Strict documentation build
+        run: uv run mkdocs build --strict
       - name: No silent except check
         run: uv run python scripts/check_no_silent_except.py
       - name: Release tag check
@@ -41,6 +43,10 @@ jobs:
         run: uv run python scripts/check_landed_commitments.py
       - name: Seam check
         run: uv run python scripts/check_seams.py
+      - name: Documentation link check
+        run: uv run python scripts/check_docs_links.py
+      - name: Locked dependency advisories
+        run: uv run python scripts/check_dependency_advisories.py
       # Honest about its own reach: the skip is in the step NAME, not in a log
       # line nobody reads. The real gate runs where the data lives —
       # `cairntir doctor --gate` (pre-commit, local, self-hosted). The rules
@@ -80,7 +86,7 @@ jobs:
       - name: Set up Python ${{ matrix.python }}
         run: uv python install ${{ matrix.python }}
       - name: Install dependencies
-        run: uv sync --all-extras --dev
+        run: uv sync --locked --all-extras
       - name: Run tests
         run: uv run pytest -m "not slow" --cov-fail-under=80
 
@@ -97,7 +103,7 @@ jobs:
       - name: Set up Python
         run: uv python install 3.12
       - name: Install dependencies
-        run: uv sync --all-extras --dev
+        run: uv sync --locked --all-extras
       - name: Run LongMemEval subset (R@5 >= 0.80 or fail)
         run: uv run pytest -m eval --no-cov -q
 

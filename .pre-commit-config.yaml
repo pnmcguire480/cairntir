@@ -1,3 +1,4 @@
+exclude: ^lineage/
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -14,23 +15,6 @@ repos:
         args: ["--fix=lf"]
       - id: detect-private-key
 
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.9
-    hooks:
-      - id: ruff
-        args: ["--fix", "--exit-non-zero-on-fix"]
-      - id: ruff-format
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.2
-    hooks:
-      - id: mypy
-        additional_dependencies:
-          - pydantic>=2.7.0
-          - types-PyYAML
-        args: ["--strict", "--config-file=pyproject.toml"]
-        files: ^src/
-
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v3.4.0
     hooks:
@@ -40,9 +24,25 @@ repos:
 
   - repo: local
     hooks:
+      - id: ruff
+        name: ruff (locked project environment)
+        entry: uv run --locked ruff check
+        language: system
+        types_or: [python, pyi]
+      - id: ruff-format
+        name: ruff format (locked project environment)
+        entry: uv run --locked ruff format --check
+        language: system
+        types_or: [python, pyi]
+      - id: mypy
+        name: mypy (locked project environment)
+        entry: uv run --locked mypy --strict src
+        language: system
+        pass_filenames: false
+        files: ^src/
       - id: no-silent-except
         name: ban silent except:pass
-        entry: python scripts/check_no_silent_except.py
+        entry: uv run --locked python scripts/check_no_silent_except.py
         language: system
         pass_filenames: false
         files: ^src/.*\.py$
@@ -52,6 +52,6 @@ repos:
       # check run where no store exists and can only ever skip.
       - id: doctor-gate
         name: store health gate (cairntir doctor --gate)
-        entry: python -m cairntir doctor --gate
+        entry: uv run --locked python -m cairntir doctor --gate
         language: system
         pass_filenames: false
