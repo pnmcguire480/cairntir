@@ -40,6 +40,22 @@ def test_spool_dir_creates_directory_and_failed_subdir(tmp_path: Path) -> None:
     assert (path / "failed").exists()
 
 
+@pytest.mark.parametrize("field", ["content", "metadata"])
+def test_escaped_surrogate_is_quarantined_before_embedding(
+    store: DrawerStore,
+    spool: Path,
+    field: str,
+) -> None:
+    payload = {"wing": "cairntir", "room": "capture", "content": "valid", "metadata": {}}
+    payload[field] = "\ud800" if field == "content" else {"note": "\ud800"}
+    (spool / "000-invalid.json").write_text(json.dumps(payload), encoding="utf-8")
+    write_capture(spool, wing="cairntir", room="capture", content="Next request remains exact.")
+    daemon = CaptureDaemon(store, spool)
+    assert daemon.tick() == 1
+    assert daemon.stats.failed == 1
+    assert [drawer.content for drawer in store.list_by()] == ["Next request remains exact."]
+
+
 def test_write_capture_produces_readable_json(spool: Path) -> None:
     path = write_capture(spool, wing="cairntir", room="decisions", content="ship phase 4")
     payload = json.loads(path.read_text(encoding="utf-8"))

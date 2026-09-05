@@ -1,5 +1,5 @@
 site_name: Cairntir
-site_description: Memory-first reasoning layer for Claude Code. Kills cross-chat AI amnesia.
+site_description: Local-first, persistent memory shared by AI coding agents through MCP.
 site_url: https://pnmcguire480.github.io/cairntir/
 repo_url: https://github.com/pnmcguire480/cairntir
 repo_name: pnmcguire480/cairntir
@@ -33,10 +33,10 @@ theme:
 
 nav:
   - Home: index.md
-  - How to Use: how-to-use.md
-  - For Dummies: cairntir-for-dummies.md
-  - Manifesto: manifesto.md
-  - Concept: concept.md
+  - Getting Started: how-to-use.md
+  - Concepts: concept.md
+  - Architecture: architecture/multi-host-continuity.md
+  - Integration: integration-guide.md
   - Roadmap: roadmap.md
   - Recipes:
       - Bounded Hotfix: recipes/bounded-hotfix/README.md
@@ -44,10 +44,19 @@ nav:
       - CodeGlass: recipes/codeglass/README.md
       - Decision Replay: recipes/decision-replay/README.md
       - Signal Reader: recipes/signal-reader/README.md
-  - v1.9.0: release/v1.9.0.md
-  - v1.8.0: release/v1.8.0.md
-  - v1.7.1: release/v1.7.1.md
-  - v1.7.0: release/v1.7.0.md
+  - Maintenance:
+      - Release Policy: release-cadence.md
+      - Publish Checklist: publish-checklist.md
+      - Deprecation Policy: deprecation-policy.md
+      - Regression Contracts: landed-commitments.md
+  - Releases:
+      - Shipping Hardening Audit: release/hardening-2026-09-05.md
+      - v1.9.0: release/v1.9.0.md
+      - v1.8.0: release/v1.8.0.md
+      - v1.7.1: release/v1.7.1.md
+      - v1.7.0: release/v1.7.0.md
+      - v1.2.0 Candidate: release/v1.2.0-rc.md
+  - Principles: manifesto.md
   - Lineage:
       - BrainStormer: lineage/brainstormer.md
       - MemPalace: lineage/mempalace.md

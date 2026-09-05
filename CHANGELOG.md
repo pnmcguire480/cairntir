@@ -15,11 +15,38 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ### Fixed
 
+- Portable exports now replace the destination atomically, preserving an
+  existing backup when serialization or the input stream fails.
+- Portable imports remain untrusted and reject version-1 source-local history
+  and evidence references that cannot be mapped safely to destination ids.
+  Imports enforce the same external-URL restriction as exports and surface
+  malformed text and signatures as typed errors.
+- Invalid capture content is quarantined instead of being coerced into invented
+  strings or blocking later requests, including malformed UTF-8 and escaped
+  lone Unicode surrogates.
+- Obsidian projection rejects output paths escaping its owned tree and ambiguous
+  generated markers that could overwrite user notes. Shared evidence and
+  prefix-overlapping drawer ids no longer corrupt generated receipt links.
 - The MCP handshake now advertises Cairntir's own version. `build_server`
   constructed `Server` without a `version`, so the mcp library fell back to
   reporting its own package version in `serverInfo`. Every host displayed the
   SDK's number instead of Cairntir's, leaving an operator unable to tell which
   Cairntir they were talking to.
+
+### Changed
+
+- Updated the locked dependencies affected by published security advisories,
+  constrained the supported MCP SDK to patched 1.x releases, and added a
+  fail-closed PyPI advisory/yanked-release gate to CI and release verification.
+- Retired obsolete execution plans, session logs, promotional drafts, and
+  speculative product collateral from the working tree. Preserved their
+  executable commitments, release receipts, legal attribution, and Git history.
+- Consolidated the agent brief and setup documentation, corrected data-handling
+  claims, and kept MkDocs as the single documentation publishing configuration.
+- CI validates maintained documentation links and strict site builds before
+  merge. Pre-commit uses the project's locked Ruff and mypy environment.
+- Source distributions include an explicit build/maintenance inventory instead
+  of shipping host configuration and the historical lineage archive.
 
 ## [1.9.0] — 2026-09-03
 

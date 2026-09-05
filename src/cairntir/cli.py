@@ -1452,8 +1452,13 @@ def import_cmd(
 
 def _import_batch(store: DrawerStore, drawers: list[Drawer]) -> dict[str, object]:
     ids: list[int] = []
+    provenance = WriteProvenance.create(
+        host="cli",
+        capture_path="cli.import",
+        trust=TrustLevel.UNTRUSTED,
+    )
     for drawer in drawers:
-        saved = store.add(drawer)
+        saved = store.add(drawer, provenance=provenance)
         if saved.id is None:
             raise MemoryStoreError("portable import produced a drawer without an id")
         ids.append(saved.id)

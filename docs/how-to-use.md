@@ -1,11 +1,6 @@
 # How to Use Cairntir
 
-This is the human front door. If a command or version here disagrees
-with the code, this file is wrong.
-
 **Current published release: 1.9.0.**
-Zero-prior-knowledge walkthrough:
-[cairntir-for-dummies.md](cairntir-for-dummies.md).
 
 ## Install
 
@@ -46,9 +41,10 @@ cairntir status     # where the store lives, drawer counts
 cairntir doctor     # host wiring without changing anything
 ```
 
-Open a chat in any folder and ask: *what is cairntir?* If the agent
-answers with real knowledge and offers to call `cairntir_handoff`,
-you are done.
+Open a task in your project and ask the agent to call
+`cairntir_handoff(wing="myproject")`. It should return a tool receipt, not
+merely describe Cairntir. Ask it to remember a harmless test fact, open a fresh
+task, and check that the first handoff returns that fact verbatim.
 
 ## The four words
 
@@ -62,8 +58,8 @@ you are done.
 
 ## What you type as a human
 
-Almost nothing. Once it is installed, the agent reads and writes
-memory. The commands a person actually types:
+The installed policy asks agents to read and write memory. You can also
+inspect and recover context directly:
 
 ```bash
 cairntir recall "database decisions" --wing myapp

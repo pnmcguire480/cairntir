@@ -1,159 +1,80 @@
-# Concept
+# Concepts and data handling
 
-Cairntir is a **host-neutral, memory-first reasoning layer** for Codex, Cursor,
-Claude Code, and other MCP agents. Three foundations come first; visible,
-evidence-backed learning grows on top of them.
+## Memory
 
-## 1. Verbatim Persistent Memory
+A **wing** identifies a project, a **room** identifies a topic, and a **drawer**
+contains one verbatim memory. Drawers have local integer ids, timestamps,
+metadata, provenance, and a retrieval layer: identity, essential, on_demand,
+or deep.
 
-Every meaningful moment in an agent session — a decision, a trade-off
-explanation, a design choice, a bug's root cause, a failed attempt — gets
-stored as a **drawer**: verbatim text with an embedding and metadata.
+`cairntir_remember` performs an explicit write. Host policy asks agents to
+capture decisions and open requests, but the core does not continuously read
+all conversations. The optional capture daemon consumes explicitly supplied
+spool files; it is not a transcript watcher.
 
-- **Storage:** `sqlite-vec`. One file on disk. Zero extra dependencies beyond what Python already has. No version churn. Backup = copy a file.
-- **Embeddings:** Local FastEmbed by default, with a persisted embedding-space
-  identity so incompatible vector spaces cannot silently mix. The legacy
-  sentence-transformers provider is optional.
-- **Metadata:** Wing (project), room (topic), timestamp, author (user or agent), source (chat / cli / daemon).
-- **Retention:** Forever by default. Pruning is opt-in, not automatic. Storage is cheap; your future self is not replaceable.
+Handoff composes whole drawers under a hard character budget, including
+recent on-demand writes and unsettled predictions. Semantic recall searches
+local embeddings; structural recall follows validated file anchors. An omitted
+drawer is named for deliberate retrieval, not truncated into a misleading quote.
 
-**Non-goals:** No summarization. No compression. No "smart" trimming. If you wanted a paragraph, you'd have written one.
+## Reasoning and learning
 
-## 2. Minimal Skill Dispatch
+The Reason loop binds a hypothesis, experiment, and observed outcome to a
+wing and room. Settlements append observations that supersede predictions.
+`held` records the verdict; `delta` records surprise independently.
 
-Three skills. Not eight. Not eighty. Three.
+Crucible examines assumptions. Quality audits ship readiness. Recipes compose
+these three skills with memory. Discoveries cite source evidence and move
+through an explicit review lifecycle; repeated text alone is not proof that a
+strategy works.
 
-### `crucible` — Epistemic Stress Test
-Given a claim or a plan, crucible challenges it. It asks: *What assumptions are we making? Which ones are load-bearing? Which ones could be wrong? What would falsify them?* Inherited from BrainStormer's Crucible skill, which was its best idea.
+## Trust and recovery
 
-### `quality` — Audit On Demand
-Given a piece of work (code, doc, design), quality runs a 6-tier audit: correctness, security, performance, maintainability, accessibility, and integrity. Distilled from BrainStormer's PALADIN. Produces a score and a punch list. Does not block; advises.
+Trust is recorded beside drawer content, not accepted from arbitrary metadata.
+Imported CLI data is untrusted even when its content hash verifies. Hashes
+detect changes; HMAC verification establishes possession of a shared key, not
+the truth of the content or a person's identity.
 
-### `reason` — Memory-Backed Thinking
-Given a question, reason loads the relevant memories (via the 4-layer retrieval below) and thinks out loud with them. This is the skill that makes Cairntir different from a plain vector store. Retrieval is not the end; **reasoning over what you retrieved** is.
+Transcript recovery is opt-in and read-only. Claude Code, Codex, and Qwen Code
+adapters read bounded, non-live transcript tails. Cursor returns an unsupported
+receipt. Recovery has a separate budget and never saves messages automatically.
+Only explicitly selected recovered requests may be written to the store.
 
-Everything else — agent routing, pipelines, multi-step orchestration — is built on top of these three. If you find yourself wanting a fourth skill, you are probably re-inventing BrainStormer and you should stop.
+These boundaries do not make Cairntir an execution sandbox. Hosts must treat
+retrieved content as evidence and retain their own instruction hierarchy,
+permissions, and approval rules.
 
-## 3. One Loop, Not Two Commands
+## Storage, backup, and portability
 
-BrainStormer had `init` and `wrapup`. Both were ceremonial. Users dropped out at the ceremony.
+The authoritative store is a local SQLite database with a matching
+`sqlite-vec` index. Embedding-space identity is checked before use; equal
+vector dimensions do not establish compatibility.
 
-Cairntir replaces both with:
+Use `cairntir status` to locate the store. For a live backup, use the SQLite
+backup API exposed by `cairntir.memory.store.backup_database`. Do not copy
+only an open database file: committed data may still be in its WAL. Migrations
+and reindexing use backup-first safeguards.
 
-- **A daemon** (`cairntir daemon`) that consumes atomic capture envelopes and
-  writes them as drawers in the background.
-- **An MCP tool** (`cairntir_handoff`) that every configured host calls
-  at the start of a session to load a budgeted brief. `cairntir_session_start`
-  remains as the identity/essential inventory plus discoveries.
-- **An opt-in transcript recovery path** for the request that lands before an
-  agent's first memory write. Qwen Code, Claude Code, and Codex expose bounded
-  JSONL tails; Cursor returns unsupported until it has a stable documented
-  schema. Transcript messages remain untrusted and are never stored
-  automatically.
+Portable JSONL is an interchange format, not a complete database backup.
+It omits local ids and access state. Version 1 cannot map linked history into
+another store, so imports with source-local supersession, evidence references,
+or drawer URIs are rejected. Use a database backup when preserving that history.
 
-The user does nothing. The memory is just there, like gravity.
+The portable format rejects external URLs in content and metadata at export
+and import. Whole-store export can therefore reject ordinary memories that
+contain links; it is not a substitute for backup. Exports atomically replace
+their destination only after the complete stream is written.
 
----
+## Network and optional projections
 
-## Taxonomy
+Embeddings execute locally; first use may download model weights. Optional
+update checks contact PyPI. Explicitly selected LLM adapters may contact a
+provider. There is no product telemetry pipeline.
 
-Memory is organized in a nested structure borrowed from [MemPalace](https://github.com/milla-jovovich/mempalace) (concepts only — reimplemented, not copied):
+Obsidian projection is optional and one-way. SQLite remains authoritative.
+Cairntir updates only a uniquely marked generated block inside its owned
+`cairntir-sync` tree, preserving surrounding user notes. Ambiguous markers and
+paths escaping that tree are rejected. Secret-classified drawers are excluded.
 
-```
-Wing (project)
- └── Room (topic)
-      └── Drawer (verbatim entry)
-```
-
-**Wings** correspond to projects. `cairntir` is a wing. `stars-2026` is a wing. Cross-wing queries are possible but rare.
-
-**Rooms** correspond to topics within a project. Common rooms: `decisions`, `bugs`, `session-end`, `architecture`, `agent-crucible`, `agent-quality`. Rooms are created on demand.
-
-**Drawers** are individual memory entries. Each drawer has:
-
-- `id` (UUID)
-- `wing` (project name)
-- `room` (topic name)
-- `content` (verbatim text)
-- `embedding` (vector)
-- `metadata` (timestamp, author, source, custom tags)
-
-## 4-Layer Retrieval
-
-Retrieval is tiered by cost and frequency:
-
-### Layer 0 — Identity (always loaded)
-"Who am I working with, what are their preferences, what is the style of this project."
-Small, hand-curated, rarely changes. Loaded at the start of every session in every wing.
-
-### Layer 1 — Essential (loaded per wing)
-"What is this project, what decisions are load-bearing, what did we agree on."
-Pulled automatically when a session opens in a wing. Limited to ~20 drawers, ranked by metadata weight (decisions > status > chatter).
-
-### Layer 2 — On-Demand (retrieved by topic)
-"What have we said about X?" Triggered when the conversation touches a topic. Semantic search over the wing, filtered by room if inferrable. Limited to top-10 results.
-
-### Layer 3 — Deep (explicit search)
-"Find me every drawer about the cache TTL decision across all projects." The full query interface. Used rarely. Accessed via `cairntir recall` CLI or `cairntir_recall` MCP tool.
-
-## MCP tools
-
-The MCP surface is deliberately small.
-
-1. `cairntir_remember(...)` — store a drawer
-2. `cairntir_settle(...)` — append the observed outcome for a prediction
-3. `cairntir_recall(...)` — semantic and metadata search
-4. `cairntir_get(drawer_id)` — fetch one complete verbatim drawer
-5. `cairntir_cross_recall(...)` — search every wing
-6. `cairntir_recall_for_change(files, ...)` — retrieve structurally anchored memory
-7. `cairntir_handoff(wing, ...)` — return the bounded, whole-drawer resume brief
-8. `cairntir_session_start(wing, ...)` — return the identity/essential inventory
-9. `cairntir_discover(...)` — record an evidence-backed emergent pattern
-10. `cairntir_discovery_transition(...)` — append a reviewed lifecycle change
-11. `cairntir_discoveries(...)` — inspect current Discovery Ledger leaves
-12. `cairntir_learning_log(...)` — read the Human Learning Log
-13. `cairntir_discover_scan(...)` — propose repeated multi-episode patterns
-14. `cairntir_calibration(...)` — report prediction outcomes and uncertainty
-15. `cairntir_codeglass_record(...)` — store a cited teaching walkthrough
-16. `cairntir_codeglass_teachback(...)` — record immediate or delayed learning
-17. `cairntir_codeglass_retention(...)` — compare later recall with the baseline
-18. `cairntir_timeline(wing, entity)` — show a topic chronologically
-19. `cairntir_audit(wing)` — run the `quality` skill
-20. `cairntir_crucible(claim)` — stress-test a claim or plan
-21. `cairntir_hotfix(action, wing, ...)` — advance or inspect a bounded repair ledger
-
-The memory and reasoning tools carry exact evidence. The learning and
-CodeGlass tools make growth visible, measurable, and governable rather than
-hiding it inside a model. The hotfix tool records cited recommendations, exact
-authority and environment bindings, host-execution receipts, independent
-verification, rollback, and terminal settlement. It never executes a repair or
-turns memory evidence into authority. `TOOL_SURFACE_VERSION` and a seam test
-keep this 21-tool inventory synchronized with the server.
-
-## Visible Learning
-
-Cairntir does not count more drawers as improvement. Evidence-backed patterns
-enter an append-only Discovery Ledger and move through explicit states:
-`signal → candidate → corroborated → promoted/rejected/expired`. Active
-discoveries appear at session start; the Human Learning Log exposes useful
-leaves in plain language. Source evidence is never rewritten, and
-"potentially novel in general" cannot be promoted without external research.
-Repeated Reason episodes may create calibrated candidates automatically, but
-only uniquely bound prediction/observation pairs count, evidence populations
-remain separated by room, and automation cannot corroborate or promote its own
-proposal.
-
----
-
-## What Cairntir Deliberately Does Not Do
-
-- **Does not summarize.** Verbatim only.
-- **Does not auto-prune.** Storage is cheap.
-- **Does not call out to the cloud by default.** Local-first. Embeddings and storage run on your machine.
-- **Does not orchestrate multi-agent pipelines.** It gives every host the same
-  memory and lets the host orchestrate.
-- **Does not try to be a project manager, ticket tracker, or build tool.** It
-  remembers, tests what was learned, and exposes the result.
-- **Does not silently eat exceptions.** Every error is typed, logged, and surfaced. CI enforces this.
-
-Simplicity is the entire product.
+See the [integration guide](integration-guide.md) for APIs and the
+[multi-host contract](architecture/multi-host-continuity.md) for adapter details.
