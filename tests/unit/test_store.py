@@ -314,7 +314,7 @@ def test_migration_from_v1_database_preserves_old_rows(tmp_path: Path) -> None:
         version = s._conn.execute("PRAGMA user_version").fetchone()[0]
         assert version == SCHEMA_VERSION
 
-    migration_backups = list(tmp_path.glob("legacy.pre-v6-*.db"))
+    migration_backups = list(tmp_path.glob(f"legacy.pre-v{SCHEMA_VERSION}-*.db"))
     assert len(migration_backups) == 1
 
     receipt = reindex_database(db_path, HashEmbeddingProvider(dimension=32))

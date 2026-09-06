@@ -1051,8 +1051,12 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
 
     @server.call_tool()
     async def _call(name: str, arguments: dict[str, Any]) -> list[types.TextContent]:
+        from cairntir.access import ScopedStore
+
         nonlocal update_banner_shown
-        task_mode = name == "cairntir_handoff" and arguments.get("task") is not None
+        task_mode = isinstance(backend._store, ScopedStore) or (
+            name == "cairntir_handoff" and arguments.get("task") is not None
+        )
         if not task_mode:
             _trace(f"_call enter name={name!r} args_keys={sorted(arguments.keys())}")
         try:
@@ -1148,6 +1152,11 @@ def warm_embedder_in_background(store: DrawerStore) -> threading.Thread | None:
 
 
 async def _amain(*, host: str = "unknown", model: str = "unknown") -> None:
+    from cairntir.access import bind_grant, startup_token, validate_startup
+
+    token = startup_token()
+    if token is not None:
+        validate_startup(db_path(create=False), token)
     # Force HuggingFace Hub fully offline so local model providers never
     # try to revalidate cached assets against the network during load.
     # The model files are cached locally after first download; phoning
@@ -1158,12 +1167,14 @@ async def _amain(*, host: str = "unknown", model: str = "unknown") -> None:
     os.environ.setdefault("HF_HUB_OFFLINE", "1")
     os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 
-    _trace("amain start")
+    if token is None:
+        _trace("amain start")
     # Kick off the background PyPI check so the *next* tool call (or
     # the one after) sees the latest-version cache. The check runs in
     # a daemon thread, fail-silent on network or permission errors.
-    maybe_check_in_background()
-    _trace("update check spawned")
+    if token is None:
+        maybe_check_in_background()
+        _trace("update check spawned")
 
     store = DrawerStore(
         db_path(),
@@ -1175,7 +1186,14 @@ async def _amain(*, host: str = "unknown", model: str = "unknown") -> None:
             model=model,
         ),
     )
-    _trace("DrawerStore opened")
+    if token is not None:
+        try:
+            store = bind_grant(store, token)
+        except BaseException:
+            store.close()
+            raise
+    if token is None:
+        _trace("DrawerStore opened")
     recovery_context = (
         RecoveryContext.current(host, live_session=True) if host in TRANSCRIPT_HOSTS else None
     )
@@ -1189,14 +1207,20 @@ async def _amain(*, host: str = "unknown", model: str = "unknown") -> None:
     # survival mechanism — kept opt-in via CAIRNTIR_ENABLE_EMBEDDER_WARMUP
     # for the same race-safety reasons documented on
     # warm_embedder_in_background().
-    warm_embedder_in_background(store)
-    _trace("warmup considered")
+    if token is None:
+        warm_embedder_in_background(store)
+        _trace("warmup considered")
 
     server = build_server(backend)
-    _trace("server built; entering stdio_server")
-    async with stdio_server() as (read, write):
-        _trace("stdio_server entered; starting server.run")
-        await server.run(read, write, server.create_initialization_options())
+    if token is None:
+        _trace("server built; entering stdio_server")
+    try:
+        async with stdio_server() as (read, write):
+            if token is None:
+                _trace("stdio_server entered; starting server.run")
+            await server.run(read, write, server.create_initialization_options())
+    finally:
+        store.close()
 
 
 def main() -> None:

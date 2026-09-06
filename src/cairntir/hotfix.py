@@ -202,6 +202,18 @@ class HotfixCoordinator:
 
     def run(self, command: HotfixCommand) -> HotfixReceipt:
         """Run one hotfix command and return its durable operator receipt."""
+        from cairntir.access import ScopedStore
+
+        if isinstance(self._store, ScopedStore):
+            capability = "read" if command.action == HotfixAction.STATUS else "write"
+            self._store.authorize(capability, wing=command.wing)
+            if command.action == HotfixAction.AUTHORIZE:
+                self._store.authorize("approve", wing=command.wing)
+            self._store._references(
+                Drawer(
+                    wing=command.wing, room="default", content="hotfix", metadata=command.payload
+                )
+            )
         try:
             action = HotfixAction(command.action)
         except ValueError as exc:

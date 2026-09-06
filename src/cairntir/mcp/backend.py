@@ -591,6 +591,10 @@ class CairntirBackend:
         with whole drawers and a hard ceiling. Drawers that do not fit are
         named, never cut. See :mod:`cairntir.handoff`.
         """
+        from cairntir.access import AccessDenied, ScopedStore
+
+        if recover_transcripts and isinstance(self._store, ScopedStore):
+            raise AccessDenied("transcript recovery is unavailable in restricted sessions")
         if task is not None:
             if recover_transcripts:
                 raise MCPError(
@@ -901,6 +905,11 @@ class CairntirBackend:
             )
         except (KeyError, TypeError, ValueError) as exc:
             raise MCPError(f"invalid teach-back response: {exc}") from exc
+        from cairntir.access import ScopedStore
+
+        if isinstance(self._store, ScopedStore):
+            self._store.authorize("read", drawer_id=walkthrough_id)
+            self._store.authorize("write")
         request = {
             "walkthrough_id": walkthrough_id,
             "phase": phase,
@@ -934,6 +943,10 @@ class CairntirBackend:
 
     def codeglass_retention(self, *, walkthrough_id: int) -> str:
         """Show immediate-versus-delayed comprehension and concepts to revisit."""
+        from cairntir.access import ScopedStore
+
+        if isinstance(self._store, ScopedStore):
+            self._store.authorize("read", drawer_id=walkthrough_id)
         return render_retention(retention_report(self._store, walkthrough_id=walkthrough_id))
 
     def timeline(self, *, wing: str, entity: str, limit: int = 50) -> str:

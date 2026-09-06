@@ -200,6 +200,9 @@ def compose_task_context(
         key for key in records if not {"expired", "future_valid"}.intersection(excluded[key])
     }
     replaced = _superseded(records, current)
+    suppressed = getattr(store, "context_suppressed_ids", None)
+    if suppressed is not None:
+        replaced.update(suppressed(sorted(records)))
     for key in replaced:
         excluded[key].append("superseded")
 

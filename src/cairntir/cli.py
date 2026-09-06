@@ -117,7 +117,9 @@ def _open_store(
     capture_path: str = "cli",
     read_only: bool = False,
 ) -> DrawerStore:
-    return DrawerStore(
+    from cairntir.access import bind_grant
+
+    store = DrawerStore(
         path or (db_path(create=False) if read_only else db_path()),
         production_embedding_provider(),
         read_only=read_only,
@@ -127,6 +129,16 @@ def _open_store(
             trust=TrustLevel.USER_ASSERTED,
         ),
     )
+    if _startup_grant is not None:
+        try:
+            store = bind_grant(store, _startup_grant)
+        except BaseException:
+            store.close()
+            raise
+    return store
+
+
+_startup_grant: str | None = None
 
 
 @app.callback(invoke_without_command=True)
@@ -138,6 +150,31 @@ def _root(ctx: typer.Context) -> None:
     fail-silent — they never block, never raise, and surface only
     through the optional banner appended at end of command output.
     """
+    from cairntir.access import AccessDenied, startup_token, validate_startup
+
+    global _startup_grant
+    _startup_grant = startup_token()
+    if _startup_grant is not None:
+        validate_startup(db_path(create=False), _startup_grant)
+        if ctx.invoked_subcommand not in {
+            "get",
+            "recall",
+            "handoff",
+            "cross-recall",
+            "recall-for-change",
+            "anchor",
+            "hotfix",
+            "discover",
+            "discovery-transition",
+            "discoveries",
+            "learning-log",
+            "discover-scan",
+            "calibration",
+            "export",
+            "import",
+        }:
+            raise AccessDenied("restricted session: administrative command denied")
+        return
     if ctx.invoked_subcommand in {"handoff", "context-demo"}:
         return
     # Best-effort self-heal: TRUE-until-FALSE registration. Once
@@ -1448,31 +1485,50 @@ def export_cmd(
     path: Path,
     wing: str | None = typer.Option(None, "--wing", "-w", help="Scope to a wing."),
     room: str | None = typer.Option(None, "--room", "-r", help="Scope to a room."),
+    format_version: int = typer.Option(
+        1, "--format", min=1, max=2, help="Portable format version."
+    ),
 ) -> None:
-    """Export drawers to a portable JSONL envelope file.
+    """Export v1 JSONL envelopes or a complete v2 evidence bundle.
 
-    Fails closed if any drawer references a non-cairntir URL. The
-    format is content-addressed (sha256) and optionally HMAC-signed.
+    V1 rejects external URLs. V2 preserves exact source evidence and reference
+    closure, including expired history, and never follows quoted URLs.
     """
     if not db_path().exists():
         typer.echo("cairntir: no store yet — nothing to export.", err=True)
         raise typer.Exit(code=1)
-    backend = _backend()
-    drawers = backend._store.list_by(wing=wing, room=room, limit=100_000)
-    count = export_drawers(drawers, path)
+    store = _backend()._store
+    try:
+        if format_version == 2:
+            from cairntir.portable import export_bundle
+
+            count = export_bundle(store, path, wing=wing, room=room)["count"]
+        else:
+            from cairntir.access import ScopedStore
+
+            list_drawers = (
+                store.list_for_export if isinstance(store, ScopedStore) else store.list_by
+            )
+            drawers = list_drawers(wing=wing, room=room, limit=None)
+            count = export_drawers(drawers, path)
+    finally:
+        store.close()
     typer.echo(f"exported {count} drawers to {path}")
 
 
 @app.command("import")
 def import_cmd(
     path: Path,
+    format_version: int = typer.Option(
+        1, "--format", min=1, max=2, help="Portable format version."
+    ),
     idempotency_key: str | None = typer.Option(
         None,
         "--idempotency-key",
         help="Override the content-derived retry key.",
     ),
 ) -> None:
-    """Import drawers from a portable JSONL envelope file into the local store.
+    """Import v1 JSONL envelopes or an atomic v2 evidence bundle.
 
     Verifies each envelope's content hash before inserting. Signatures
     are not checked by default; add signature verification when the
@@ -1481,6 +1537,15 @@ def import_cmd(
     if not path.exists():
         typer.echo(f"cairntir: {path} does not exist.", err=True)
         raise typer.Exit(code=1)
+    if format_version == 2:
+        from cairntir.portable import import_bundle
+
+        with _open_store(capture_path="cli.import") as store:
+            result = import_bundle(store, path, idempotency_key=idempotency_key)
+        typer.echo(
+            f"imported {result['imported']} drawers from {path}; {result['existing']} existing"
+        )
+        return
     raw_hash = hashlib.sha256(path.read_bytes()).hexdigest()
     drawers = import_drawers(path)
     store = _open_store(capture_path="cli.import")
