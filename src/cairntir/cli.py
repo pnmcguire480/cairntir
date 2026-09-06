@@ -16,6 +16,7 @@ from cairntir import __version__
 from cairntir.config import cairntir_home, db_path, model_cache_dir
 from cairntir.cost import measure as measure_cost
 from cairntir.cost import render as render_cost
+from cairntir.cost import run_context_demo
 from cairntir.errors import (
     CairntirError,
     EmbeddingError,
@@ -93,13 +94,20 @@ app = typer.Typer(
 )
 
 
-def _backend(*, recovery_context: RecoveryContext | None = None) -> CairntirBackend:
+def _backend(
+    *,
+    recovery_context: RecoveryContext | None = None,
+    read_only: bool = False,
+    close_with: typer.Context | None = None,
+) -> CairntirBackend:
     """Open the on-disk drawer store and wrap it in a backend.
 
     Every production entry point uses the same provider factory. Equal
     dimensions do not make two embedding spaces compatible.
     """
-    store = _open_store()
+    store = _open_store(read_only=True) if read_only else _open_store()
+    if close_with is not None:
+        close_with.call_on_close(store.close)
     return CairntirBackend(store, recovery_context=recovery_context)
 
 
@@ -107,10 +115,12 @@ def _open_store(
     path: Path | None = None,
     *,
     capture_path: str = "cli",
+    read_only: bool = False,
 ) -> DrawerStore:
     return DrawerStore(
-        path or db_path(),
+        path or (db_path(create=False) if read_only else db_path()),
         production_embedding_provider(),
+        read_only=read_only,
         provenance=WriteProvenance.create(
             host="cli",
             capture_path=capture_path,
@@ -128,6 +138,8 @@ def _root(ctx: typer.Context) -> None:
     fail-silent — they never block, never raise, and surface only
     through the optional banner appended at end of command output.
     """
+    if ctx.invoked_subcommand in {"handoff", "context-demo"}:
+        return
     # Best-effort self-heal: TRUE-until-FALSE registration. Once
     # cairntir is installed, every CLI run guarantees the user-scope
     # MCP entry exists. Uninstalling the package removes the
@@ -582,12 +594,13 @@ def recall_for_change_cmd(
 
 @app.command("handoff")
 def handoff_cmd(
+    ctx: typer.Context,
     wing: str,
     budget: int = typer.Option(
         DEFAULT_BUDGET_CHARS,
         "--budget",
         "-b",
-        help="Hard ceiling on returned content, in characters (~4 chars per token).",
+        help="Character ceiling: drawer content normally, full response with --task.",
     ),
     file: list[str] | None = typer.Option(  # noqa: B008
         None,
@@ -597,6 +610,12 @@ def handoff_cmd(
     ),
     max_deltas: int = typer.Option(
         8, "--deltas", help="How many recent session drawers to consider."
+    ),
+    task: str | None = typer.Option(
+        None, "--task", help="Select current relevant evidence for this task as bounded JSON."
+    ),
+    candidate_limit: int | None = typer.Option(
+        None, "--candidate-limit", help="Optional task scan ceiling, disclosed in receipts."
     ),
     recover_from: str | None = typer.Option(
         None,
@@ -619,24 +638,52 @@ def handoff_cmd(
     The default drawer-only path is deterministic. Opt-in transcript recovery
     reflects changes in the host-owned transcript tail.
     """
-    if not db_path().exists():
+    if task is None:
+        ensure_registered()
+        maybe_check_in_background()
+        ctx.call_on_close(_print_update_banner)
+    if not (db_path(create=False) if task is not None else db_path()).exists():
         typer.echo("cairntir: no store yet — nothing to hand off.", err=True)
         raise typer.Exit(code=1)
     try:
         recovery_context = _cli_recovery_context(recover_from) if recover_from else None
         typer.echo(
-            _backend(recovery_context=recovery_context).handoff(
+            _backend(
+                recovery_context=recovery_context,
+                read_only=task is not None,
+                close_with=ctx,
+            ).handoff(
                 wing=wing,
                 budget_chars=budget,
                 files=list(file) if file else None,
                 max_deltas=max_deltas,
                 recover_transcripts=recovery_context is not None,
                 recovery_budget_chars=recovery_budget,
+                task=task,
+                candidate_limit=candidate_limit,
             )
         )
-    except (MCPError, MemoryStoreError) as exc:
+    except CairntirError as exc:
         typer.echo(f"cairntir: {exc}", err=True)
         raise typer.Exit(code=1) from exc
+
+
+@app.command("context-demo")
+def context_demo_cmd(
+    output: Path,
+    budget: int = typer.Option(8_192, "--budget", "-b", help="Full response character ceiling."),
+) -> None:
+    """Demonstrate cross-session retrieval and measured payload sizes offline."""
+    try:
+        report = run_context_demo(output, budget_chars=budget)
+    except (CairntirError, OSError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"Report: {output.resolve() / 'report.html'}")
+    typer.echo(
+        f"Synthetic payload: {report['metrics']['full_history_chars']:,} history characters; "
+        f"{report['metrics']['selected_chars']:,} selected characters."
+    )
 
 
 @app.command("recover")

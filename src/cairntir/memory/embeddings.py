@@ -28,6 +28,7 @@ import math
 import os
 import sys
 from collections.abc import Iterator, Sequence
+from pathlib import Path
 from typing import Protocol, runtime_checkable
 
 from cairntir.errors import EmbeddingError
@@ -263,6 +264,42 @@ class FastEmbedProvider:
             raise EmbeddingError(f"fastembed encode failed: {exc}") from exc
         return [[float(x) for x in row] for row in vectors]
 
+    def embed_query_readonly(self, query: str) -> list[float]:
+        """Embed using existing local assets, without download or diagnostic file writes."""
+        if self._model is None:
+            from cairntir.config import model_cache_dir
+
+            cache = model_cache_dir(create=False)
+            if not cache.is_dir():
+                raise EmbeddingError(
+                    f"task embedding requires an existing local model cache: {cache}"
+                )
+            try:
+                from fastembed import TextEmbedding
+
+                with _silence_io():
+                    model_path = _cached_fastembed_model(self._model_name, cache)
+                    self._model = TextEmbedding(
+                        model_name=self._model_name,
+                        cache_dir=str(cache),
+                        specific_model_path=str(model_path),
+                        local_files_only=True,
+                    )
+            except Exception as exc:
+                raise EmbeddingError(
+                    f"task embedding model {self._model_name!r} is unavailable locally in {cache}"
+                ) from exc
+        try:
+            with _silence_io():
+                vectors = list(self._model.embed([query]))  # type: ignore[attr-defined]
+        except Exception as exc:
+            raise EmbeddingError(f"local task embedding failed: {exc}") from exc
+        if len(vectors) != 1:
+            raise EmbeddingError("task embedding returned an invalid vector count")
+        vector = [float(x) for x in vectors[0]]
+        self._dim = len(vector)
+        return vector
+
 
 class SentenceTransformerProvider:
     """Production embedder backed by ``sentence-transformers``.
@@ -359,6 +396,49 @@ def _embed_trace(message: str) -> None:
         _mcp_trace(f"embed: {message}")
     except (ImportError, OSError):
         return
+
+
+def _cached_fastembed_model(model_name: str, cache: Path) -> Path:
+    from fastembed import TextEmbedding
+    from huggingface_hub import try_to_load_from_cache
+
+    description = next(
+        (
+            item
+            for item in TextEmbedding.list_supported_models()
+            if str(item["model"]).casefold() == model_name.casefold()
+        ),
+        None,
+    )
+    if description is None:
+        raise EmbeddingError(f"unsupported local task embedding model {model_name!r}")
+    model_file = str(description["model_file"])
+    source = description["sources"].get("hf")
+    if source:
+        cached = try_to_load_from_cache(str(source), model_file, cache_dir=cache)
+        if isinstance(cached, str):
+            return Path(cached).parents[len(Path(model_file).parts) - 1]
+    for directory in (
+        cache / model_name.split("/")[-1],
+        cache / f"fast-{model_name.split('/')[-1]}",
+    ):
+        if (directory / model_file).is_file():
+            return directory
+    raise EmbeddingError(f"no existing local assets for task embedding model {model_name!r}")
+
+
+def embed_query_readonly(provider: EmbeddingProvider, query: str) -> list[float]:
+    """Use a provider's pure query route when available, retaining custom provider support."""
+    if isinstance(provider, FastEmbedProvider):
+        return provider.embed_query_readonly(query)
+    if isinstance(provider, SentenceTransformerProvider):
+        raise EmbeddingError(
+            "read-only task embedding requires FastEmbed or a local custom provider"
+        )
+    vectors = provider.embed([query])
+    if len(vectors) != 1:
+        raise EmbeddingError("task embedding returned an invalid vector count")
+    return vectors[0]
 
 
 def embedding_space_id(provider: EmbeddingProvider) -> str:

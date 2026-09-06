@@ -11,15 +11,20 @@ swallowing of SQLite exceptions is explicitly banned.
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
+import shutil
 import sqlite3
 import struct
+import subprocess
+import sys
 from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING, Any
 from uuid import uuid4
 
@@ -595,6 +600,7 @@ class DrawerStore:
         *,
         provenance: WriteProvenance | None = None,
         backup_migrations: bool = True,
+        read_only: bool = False,
     ) -> None:
         """Open (or create) the store at ``db_path`` using ``embedder``.
 
@@ -613,14 +619,70 @@ class DrawerStore:
         self._dim: int | None = None  # lazy; populated by _init_schema or first add
         self._transaction_depth = 0
         self._savepoint_counter = 0
-        self._conn = self._connect(db_path)
+        self._read_snapshot: TemporaryDirectory[str] | None = None
+        self._conn = self._connect_readonly(db_path) if read_only else self._connect(db_path)
         try:
+            if read_only:
+                self._require_embedding_space()
+                return
             if backup_migrations:
                 self._backup_before_migration()
             self._init_schema()
         except (EmbeddingError, MemoryStoreError):
-            self._conn.close()
+            self.close()
             raise
+
+    def _connect_readonly(self, path: Path) -> sqlite3.Connection:
+        conn: sqlite3.Connection | None = None
+        try:
+            self._read_snapshot = TemporaryDirectory(prefix="cairntir-context-")
+            copied = Path(self._read_snapshot.name) / path.name
+            subprocess.run(  # noqa: S603 - fixed interpreter and code; paths are arguments
+                [
+                    sys.executable,
+                    "-c",
+                    "from pathlib import Path; import sys; "
+                    "from cairntir.memory.store import _copy_locked_database; "
+                    "_copy_locked_database(Path(sys.argv[1]), Path(sys.argv[2]))",
+                    str(path.resolve()),
+                    str(copied),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            conn = sqlite3.connect(copied)
+            conn.execute("PRAGMA busy_timeout = 5000")
+            conn.enable_load_extension(True)
+            sqlite_vec.load(conn)
+            conn.enable_load_extension(False)
+            conn.row_factory = sqlite3.Row
+            version = int(conn.execute("PRAGMA user_version").fetchone()[0])
+            conn.execute("PRAGMA query_only = ON")
+        except (OSError, sqlite3.Error, subprocess.SubprocessError) as exc:
+            if conn is not None:
+                conn.close()
+            if self._read_snapshot is not None:
+                self._read_snapshot.cleanup()
+            detail = (
+                "snapshot helper failed: "
+                + (exc.stderr.strip()[-1000:] or f"exit status {exc.returncode}")
+                if isinstance(exc, subprocess.CalledProcessError)
+                else str(exc)
+            )
+            raise MemoryStoreError(
+                f"failed to open read-only database at {path}: {detail}"
+            ) from exc
+        if version != SCHEMA_VERSION:
+            conn.close()
+            self._read_snapshot.cleanup()
+            raise MemoryStoreError(
+                f"read-only task context requires schema v{SCHEMA_VERSION}, found v{version}; "
+                "open the store normally to migrate or upgrade Cairntir"
+            )
+        return conn
 
     def _backup_before_migration(self) -> None:
         """Create a timestamped online backup before altering an older schema."""
@@ -805,6 +867,8 @@ class DrawerStore:
     def close(self) -> None:
         """Close the underlying SQLite connection."""
         self._conn.close()
+        if self._read_snapshot is not None:
+            self._read_snapshot.cleanup()
 
     def checkpoint(self) -> None:
         """Flush this connection's WAL into the main database file."""
@@ -1292,6 +1356,87 @@ class DrawerStore:
             return WriteProvenance.from_json(str(row["provenance"]))
         except ValueError as exc:
             raise ProvenanceError(f"drawer {drawer_id} has invalid provenance: {exc}") from exc
+
+    def context_candidates(
+        self, *, wing: str, limit: int | None = None
+    ) -> tuple[list[tuple[Drawer, WriteProvenance]], int]:
+        """Read candidates and their receipts without validity filtering or access writes."""
+        try:
+            total = int(
+                self._conn.execute(
+                    "SELECT COUNT(*) FROM drawers WHERE wing = ?", (wing,)
+                ).fetchone()[0]
+            )
+            rows = self._conn.execute(
+                "SELECT * FROM drawers WHERE wing = ? ORDER BY id DESC LIMIT ?",
+                (wing, limit if limit is not None else -1),
+            ).fetchall()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"context candidate read failed: {exc}") from exc
+        return [_context_record(row) for row in rows], total
+
+    def context_relatives(
+        self, *, wing: str, drawer_ids: Sequence[int]
+    ) -> list[tuple[Drawer, WriteProvenance]]:
+        """Read complete same-wing relationship families independently of relevance."""
+        records: dict[int, tuple[Drawer, WriteProvenance]] = {}
+        try:
+            for start in range(0, len(drawer_ids), 400):
+                batch = drawer_ids[start : start + 400]
+                placeholders = ",".join("?" for _ in batch)
+                rows = self._conn.execute(
+                    f"""
+                    WITH RECURSIVE family(id, supersedes_id) AS (
+                        SELECT id, supersedes_id FROM drawers
+                        WHERE wing = ? AND id IN ({placeholders})
+                        UNION
+                        SELECT d.id, d.supersedes_id FROM drawers d JOIN family f
+                        ON d.supersedes_id = f.id OR d.id = f.supersedes_id
+                        WHERE d.wing = ?
+                    )
+                    SELECT d.* FROM drawers d JOIN family f ON d.id = f.id ORDER BY d.id
+                    """,  # noqa: S608 - only placeholder count is interpolated
+                    (wing, *batch, wing),
+                ).fetchall()
+                records.update((int(row["id"]), _context_record(row)) for row in rows)
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"context relationship read failed: {exc}") from exc
+        return [records[key] for key in sorted(records)]
+
+    def context_similarities(self, query: str, drawer_ids: Sequence[int]) -> dict[int, float]:
+        """Score stored vectors without touching drawers, beliefs, or the semantic index."""
+        if not drawer_ids:
+            return {}
+        status = self._require_embedding_space()
+        from cairntir.memory.embeddings import embed_query_readonly
+
+        vector = embed_query_readonly(self._embedder, query)
+        if len(vector) != status.stored_dimension or not all(math.isfinite(x) for x in vector):
+            raise EmbeddingSpaceError("task query embedding has invalid dimension or values")
+        if not any(vector):
+            raise EmbeddingError("task query embedding has zero magnitude")
+        scores: dict[int, float] = {}
+        try:
+            for start in range(0, len(drawer_ids), 400):
+                batch = drawer_ids[start : start + 400]
+                placeholders = ",".join("?" for _ in batch)
+                rows = self._conn.execute(
+                    "SELECT drawer_id, vec_distance_cosine(embedding, ?) AS distance "  # noqa: S608
+                    f"FROM vec_drawers WHERE drawer_id IN ({placeholders})",
+                    (_pack(vector), *batch),
+                ).fetchall()
+                for row in rows:
+                    score = 1.0 - float(row["distance"])
+                    if not math.isfinite(score):
+                        raise EmbeddingSpaceError("task candidate embedding has invalid values")
+                    scores[int(row["drawer_id"])] = score
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"context vector read failed: {exc}") from exc
+        if len(scores) != len(set(drawer_ids)):
+            raise EmbeddingSpaceError(
+                "task candidates are missing stored vectors; reindex required"
+            )
+        return scores
 
     def _touch(self, drawer_id: int, *, now: datetime | None = None) -> None:
         """Bump access_count and stamp last_accessed_at for one drawer."""
@@ -1790,6 +1935,46 @@ class DrawerStore:
         if rerank_by_belief:
             results = rerank_results(results)
         return results
+
+
+def _copy_locked_database(source: Path, destination: Path) -> None:
+    """Copy a quiescent database in a separate process, preserving committed WAL frames.
+
+    SQLite's PENDING/RESERVED/SHARED locking bytes occupy 512 bytes at 1 GiB.
+    WAL connections keep a shared database lock, so taking the entire region
+    exclusively rejects live clients. POSIX locks belong to the process: this
+    helper must never run in a process that also has SQLite connections.
+    """
+    with source.open("rb" if sys.platform == "win32" else "r+b") as handle:
+        try:
+            if sys.platform == "win32":
+                import msvcrt
+
+                handle.seek(0x40000000)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 512)
+            else:
+                import fcntl
+
+                fcntl.lockf(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB, 512, 0x40000000)
+        except OSError as exc:
+            raise MemoryStoreError(
+                f"task snapshot source is busy or cannot be locked: {exc}"
+            ) from exc
+        handle.seek(0)
+        with destination.open("xb") as target:
+            shutil.copyfileobj(handle, target)
+        for suffix in ("-wal", "-journal"):
+            sidecar = source.with_name(source.name + suffix)
+            if sidecar.exists():
+                shutil.copyfile(sidecar, destination.with_name(destination.name + suffix))
+
+
+def _context_record(row: sqlite3.Row) -> tuple[Drawer, WriteProvenance]:
+    try:
+        receipt = WriteProvenance.from_json(str(row["provenance"]))
+    except ValueError as exc:
+        raise ProvenanceError(f"drawer {row['id']} has invalid provenance") from exc
+    return _row_to_drawer(row), receipt
 
 
 def _row_to_drawer(row: sqlite3.Row) -> Drawer:

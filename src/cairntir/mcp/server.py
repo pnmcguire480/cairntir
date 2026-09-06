@@ -613,21 +613,34 @@ def _tool_specs() -> list[types.Tool]:
                 "Anything that did not fit the budget is listed by id and size so you "
                 "can spend one cairntir_get on exactly what you want instead of a "
                 "blind recall. The default drawer-only path is deterministic and "
-                "prompt-cache friendly; opt-in transcript recovery reflects host changes."
+                "prompt-cache friendly; opt-in transcript recovery reflects host changes. "
+                "Pass task for read-only relevant current evidence as JSON under a full "
+                "response budget, with exclusions, conflicts and abstention receipts. "
+                "Task mode requires cached local embeddings and separate transcript recovery."
             ),
             inputSchema={
                 "type": "object",
                 "required": ["wing"],
                 "properties": {
                     "wing": {"type": "string"},
+                    "task": {
+                        "type": "string",
+                        "description": "Task for relevant, current evidence as bounded JSON.",
+                    },
+                    "candidate_limit": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Task scan ceiling; incompleteness is disclosed.",
+                    },
                     "budget_chars": {
                         "type": "integer",
                         "minimum": 1,
                         "default": DEFAULT_BUDGET_CHARS,
                         "description": (
-                            "Hard ceiling on returned drawer content, in characters "
-                            "(roughly 4 chars per token). Whole drawers are dropped to "
-                            "stay under it; none is ever cut in half."
+                            "Character ceiling on drawer content normally; with task, "
+                            "on complete JSON text and serialized MCP CallToolResult. "
+                            "Outer JSON-RPC framing is excluded. Whole evidence only; "
+                            "token counts are estimates, not billing measurements."
                         ),
                     },
                     "files": {
@@ -1039,12 +1052,16 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
     @server.call_tool()
     async def _call(name: str, arguments: dict[str, Any]) -> list[types.TextContent]:
         nonlocal update_banner_shown
-        _trace(f"_call enter name={name!r} args_keys={sorted(arguments.keys())}")
+        task_mode = name == "cairntir_handoff" and arguments.get("task") is not None
+        if not task_mode:
+            _trace(f"_call enter name={name!r} args_keys={sorted(arguments.keys())}")
         try:
             text = _dispatch(backend, name, arguments)
-            _trace(f"_call dispatch ok name={name!r} text_len={len(text)}")
+            if not task_mode:
+                _trace(f"_call dispatch ok name={name!r} text_len={len(text)}")
         except CairntirError as exc:
-            _trace(f"_call CairntirError name={name!r} msg={exc}")
+            if not task_mode:
+                _trace(f"_call CairntirError name={name!r} msg={exc}")
             text = f"[cairntir error] {exc}"
         except ValidationError as exc:
             # Pydantic ValidationError is raised by Drawer construction when
@@ -1056,13 +1073,14 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
             # retry with a corrected argument.
             text = f"[cairntir error] invalid argument: {_format_validation_error(exc)}"
 
-        if not update_banner_shown:
+        if not task_mode and not update_banner_shown:
             banner = pending_update_banner()
             if banner is not None:
                 text = f"{banner}\n\n{text}"
             update_banner_shown = True
 
-        _trace(f"_call returning name={name!r} final_len={len(text)}")
+        if not task_mode:
+            _trace(f"_call returning name={name!r} final_len={len(text)}")
         return [types.TextContent(type="text", text=text)]
 
     return server

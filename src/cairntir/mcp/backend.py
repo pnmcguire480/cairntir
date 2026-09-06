@@ -27,6 +27,7 @@ from cairntir.codeglass import (
     retention_report,
     walkthrough_fingerprint,
 )
+from cairntir.context import compose_task_context
 from cairntir.durability import request_hash
 from cairntir.errors import AnchorError, MCPError
 from cairntir.handoff import DEFAULT_BUDGET_CHARS, Handoff
@@ -580,6 +581,8 @@ class CairntirBackend:
         max_deltas: int = 8,
         recover_transcripts: bool = False,
         recovery_budget_chars: int = DEFAULT_RECOVERY_BUDGET_CHARS,
+        task: str | None = None,
+        candidate_limit: int | None = None,
     ) -> str:
         """Compose one bounded brief for ``wing`` — the replacement for HANDOFF.md.
 
@@ -588,6 +591,21 @@ class CairntirBackend:
         with whole drawers and a hard ceiling. Drawers that do not fit are
         named, never cut. See :mod:`cairntir.handoff`.
         """
+        if task is not None:
+            if recover_transcripts:
+                raise MCPError(
+                    "task handoff cannot include transcript recovery; request recovery separately"
+                )
+            return compose_task_context(
+                self._store,
+                wing=wing,
+                task=task,
+                budget_chars=budget_chars,
+                files=files,
+                candidate_limit=candidate_limit,
+            )
+        if candidate_limit is not None:
+            raise MCPError("candidate_limit requires a task")
         try:
             brief = compose_handoff(
                 self._store,

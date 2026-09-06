@@ -16,20 +16,21 @@ _DB_FILENAME = "cairntir.db"
 _MODEL_DIRNAME = "models"
 
 
-def cairntir_home() -> Path:
-    """Return the Cairntir home directory, creating it if it does not exist."""
+def cairntir_home(*, create: bool = True) -> Path:
+    """Resolve the Cairntir home directory, optionally creating it."""
     env = os.environ.get("CAIRNTIR_HOME")
     home = Path(env) if env else Path(user_data_dir(_APP_NAME, appauthor=False))
-    home.mkdir(parents=True, exist_ok=True)
+    if create:
+        home.mkdir(parents=True, exist_ok=True)
     return home
 
 
-def db_path() -> Path:
+def db_path(*, create: bool = True) -> Path:
     """Return the absolute path to the sqlite-vec database file."""
-    return cairntir_home() / _DB_FILENAME
+    return cairntir_home(create=create) / _DB_FILENAME
 
 
-def model_cache_dir() -> Path:
+def model_cache_dir(*, create: bool = True) -> Path:
     """Return the directory holding the downloaded ONNX embedding model.
 
     Precedence: ``FASTEMBED_CACHE_PATH`` → ``cairntir_home()/models``.
@@ -51,6 +52,7 @@ def model_cache_dir() -> Path:
     client can find the database, it can find the model beside it.
     """
     env = os.environ.get("FASTEMBED_CACHE_PATH")
-    cache = Path(env) if env else cairntir_home() / _MODEL_DIRNAME
-    cache.mkdir(parents=True, exist_ok=True)
+    cache = Path(env) if env else cairntir_home(create=create) / _MODEL_DIRNAME
+    if create:
+        cache.mkdir(parents=True, exist_ok=True)
     return cache

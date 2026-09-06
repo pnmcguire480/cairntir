@@ -34,6 +34,7 @@ theme:
 nav:
   - Home: index.md
   - Getting Started: how-to-use.md
+  - Continuity Demo: context-demo.md
   - Concepts: concept.md
   - Architecture: architecture/multi-host-continuity.md
   - Integration: integration-guide.md

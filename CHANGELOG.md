@@ -13,6 +13,14 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Added
+
+- Task-aware handoff through the existing CLI and MCP tool, with pure local
+  selection, validity and supersession handling, conflict and abstention
+  receipts, and a character ceiling covering the serialized tool result.
+- An isolated `context-demo` command with repeatable cross-session retrieval,
+  measured synthetic payload sizes, and an escaped offline HTML report.
+
 ### Fixed
 
 - Portable exports now replace the destination atomically, preserving an
