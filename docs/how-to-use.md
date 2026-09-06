@@ -1,6 +1,6 @@
 # How to Use Cairntir
 
-**Current published release: 1.9.0.**
+**Current published release: 1.10.0.**
 
 ## Install
 
@@ -36,7 +36,7 @@ Cursor's **global** User Rule still has to be pasted into
 ## Check it worked
 
 ```bash
-cairntir version    # 1.9.0
+cairntir version    # 1.10.0
 cairntir status     # where the store lives, drawer counts
 cairntir doctor     # host wiring without changing anything
 ```
