@@ -89,8 +89,9 @@ the production installation as an incidental build step.
 Request #1262: remove false CLI busy errors with other SQLite clients open, then
 finish the remaining continuity milestones and delivery. Work is on
 `codex/v2-foundation`; candidate version 1.10.0 follows the additive release policy.
-Local acceptance is complete. Push/PR/CI/merge/publication are BLOCKED by
-automatic approval review pending explicit user authorization for public egress.
+Local acceptance is complete. Patrick explicitly approved public branch push,
+PR/CI, merge and release in request #1295. The candidate branch is now pushed;
+protected CI and publication remain in progress.
 
 Foundation and demo acceptance is preserved in the
 [historical result](plans/v2-foundation-result.md). The subsequent
@@ -119,14 +120,11 @@ to use installed 1.9.0; development commands use this checkout's `.venv`.
 
 Delivery checkpoint: runtime `3fe5e6f`, independent evidence `01e12f4`.
 Final wheel/sdist rebuilt after documentation changes; the final wheel package
-payload exactly matches the installed/tested wheel. Automatic approval review
-rejected `git push -u origin codex/v2-foundation` twice, including after verifying
-origin as the public `pnmcguire480/cairntir` repository and inspecting the tracked
-payload. The second rejection requires explicit user authorization for this
-public repository push. Do not retry through an alternate transport. Resume
-with user approval, then push this branch, open the PR, pass native CI, merge,
-publish the accepted 1.10.0 tag, verify artifacts/attestations and settle this
-record. No push, PR, merge, tag or publication occurred.
+payload exactly matches the installed/tested wheel. Two earlier automatic
+approval rejections were resolved by Patrick's explicit approval (#1295).
+`codex/v2-foundation` is pushed to the verified public repository. Complete
+native CI, merge the exact accepted PR head, publish 1.10.0, verify provenance
+and a fresh public-package installation, then settle the release record.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer
