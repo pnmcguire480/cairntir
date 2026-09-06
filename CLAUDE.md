@@ -67,7 +67,7 @@ release-tag, and local integrity gates. Tests use isolated stores and fixtures;
 do not experiment on the user's memory database.
 
 The maintainer's production MCP launcher currently uses the published
-site-packages installation, not this checkout (verified 2026-09-05).
+site-packages installation, not this checkout (verified 2026-09-06).
 The repository's `.venv` is the development environment. Inspect actual
 launchers before assuming a running host uses source edits, and do not change
 the production installation as an incidental build step.
@@ -99,11 +99,19 @@ The CodeQL composition repair passed the unchanged 193 sharing cases plus 14
 separately labeled supporting probes. Frozen inputs and historical evidence are
 preserved. [Release acceptance](docs/release/v1.10.0.md) links the complete proof.
 
-Production launchers still use installed 1.9.0. No production installation,
-live reindex, new dependency or license change occurred. The production Claude
-health check connected but reported tools-fetch failure; candidate host approval
-remains pending and is not counted as a passing real-client test. Isolated
-CLI/stdio MCP tests provide transport evidence.
+Production package and import now report 1.10.0 under explicit request #1305.
+The schema 6→7 migration preserved all 1,306 drawers/vectors and all 19 original
+tables and schemas, with zero embedding calls. Its automatic backup matches the
+private pre-install backup. Fresh CLI and actual MCP launcher checks passed:
+version 1.10.0, 21 tools, task handoff parity at 8,184/8,192 characters with MCP
+holding the live database, doctor, help and recipes. Old Cairntir MCP processes
+were stopped; Codex and Cline remain open and need restart/reconnect to reload
+the server. Their current sessions are not verified on 1.10.0. Independent
+installation audit passed: all 72 installed package files match the public wheel,
+MCP 1.28.1 satisfies the runtime requirement, and all required dependencies and
+selected imports pass. Claude's health command still reports connected with
+tools-fetch failure; the fresh stdio connection exposes 21 tools and passes task
+handoff.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer
