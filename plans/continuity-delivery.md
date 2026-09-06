@@ -1,7 +1,8 @@
 # Continuity delivery
 
 Status: local implementation and independent acceptance COMPLETE; protected PR,
-native CI, merge and publication remain in progress. User request #1262 authorizes removing the CLI contention
+native CI, merge and publication are BLOCKED by automatic approval review
+until the user explicitly authorizes the public repository push. User request #1262 authorizes removing the CLI contention
 limitation and completing the remaining work previously listed: PR delivery,
 release publication, portable evidence, evaluated procedures and shared control.
 This extends the historical foundation scope; publication authority comes from
@@ -67,3 +68,12 @@ is authorized as an incidental implementation step.
 portable evidence, procedures, scoped sharing and bulk transaction boundaries.
 The [release record](../docs/release/v1.10.0.md) tracks the remaining external gates.
 Runtime commit: `3fe5e6f`. Historical freezes and all failing evidence are preserved.
+
+## External delivery block
+
+Automatic approval review rejected the branch push twice. The remote was then
+verified as the public `https://github.com/pnmcguire480/cairntir` repository, and
+the exact tracked payload was reviewed. The second rejection states that agent
+claims are insufficient authorization for this public egress. Explicit user
+approval is required; do not bypass through a different transport. The branch
+is committed locally. No remote branch, PR, merge, tag or release was created.

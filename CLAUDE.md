@@ -89,7 +89,8 @@ the production installation as an incidental build step.
 Request #1262: remove false CLI busy errors with other SQLite clients open, then
 finish the remaining continuity milestones and delivery. Work is on
 `codex/v2-foundation`; candidate version 1.10.0 follows the additive release policy.
-Publication remains pending acceptance and protected PR delivery.
+Local acceptance is complete. Push/PR/CI/merge/publication are BLOCKED by
+automatic approval review pending explicit user authorization for public egress.
 
 Foundation and demo acceptance is preserved in the
 [historical result](plans/v2-foundation-result.md). The subsequent
@@ -115,6 +116,17 @@ historical 1.9.0 frozen inputs from schema 7 and the candidate version.
 No new dependencies, production installation changes, live reindex, license
 changes or published tags have been made. The production MCP server continues
 to use installed 1.9.0; development commands use this checkout's `.venv`.
+
+Delivery checkpoint: runtime `3fe5e6f`, independent evidence `01e12f4`.
+Final wheel/sdist rebuilt after documentation changes; the final wheel package
+payload exactly matches the installed/tested wheel. Automatic approval review
+rejected `git push -u origin codex/v2-foundation` twice, including after verifying
+origin as the public `pnmcguire480/cairntir` repository and inspecting the tracked
+payload. The second rejection requires explicit user authorization for this
+public repository push. Do not retry through an alternate transport. Resume
+with user approval, then push this branch, open the PR, pass native CI, merge,
+publish the accepted 1.10.0 tag, verify artifacts/attestations and settle this
+record. No push, PR, merge, tag or publication occurred.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer
