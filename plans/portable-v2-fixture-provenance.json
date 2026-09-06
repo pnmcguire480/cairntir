@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-09-06T02:21:03.289251+00:00",
+  "database_schema": 6,
+  "runtime_git_head": "84efdd64abc0954a65f03e49f6e5a8160035970e",
+  "path": "plans/portable-v2-v6.fixture",
+  "sha256": "ae20b045d2557e58ab5c072e5673b59ede94697aa5ce3f63710bd8fe48f50206",
+  "bytes": 311296,
+  "source": "Independent tester created an isolated temporary DrawerStore with the unmodified v6 writer and deterministic16-dimensional HashEmbeddingProvider, fixed original provenance/access/belief/workflow timestamps, closed it and used SQLite backup into this fixture. No production database was accessed.",
+  "contents": {
+    "drawers": 3,
+    "supersession": "2 supersedes1",
+    "structured_reference": "Discovery3 cites drawer2",
+    "provenance": "user_asserted/project/sensitive with fixed source metadata",
+    "access_count": 7,
+    "belief_mass": 2.5,
+    "committed_workflow": "v6-committed"
+  },
+  "generation_is_not_repeated_by_tests": true
+}
