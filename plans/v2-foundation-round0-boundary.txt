@@ -1,0 +1,18 @@
+....F.....                                                               [100%]
+================================== FAILURES ===================================
+_ test_task_cli_preserves_home_and_skips_registration_updates_and_pending_banner[True] _
+tests\unit\test_context_boundaries.py:109: in test_task_cli_preserves_home_and_skips_registration_updates_and_pending_banner
+    assert _tree(tmp_path) == before
+E   AssertionError: assert {'.': (178865...9389eb'), ...} == {'.': (178865...03f60b0029c')}
+E     
+E     Omitting 3 identical items, use -vv to show
+E     Differing items:
+E     {'memory-home': (1788657499570728100, '<directory>')} != {'memory-home': (1788657499549603700, '<directory>')}
+E     Left contains 2 more items:
+E     {'memory-home\\cairntir.db-shm': (1788657499570728100,
+E                                       'fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb'),...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+=========================== short test summary info ===========================
+FAILED tests/unit/test_context_boundaries.py::test_task_cli_preserves_home_and_skips_registration_updates_and_pending_banner[True]
+1 failed, 9 passed in 2.95s

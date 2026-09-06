@@ -1,0 +1,13 @@
+.....................................F...                                [100%]
+================================== FAILURES ===================================
+______ test_real_cached_embeddings_retrieve_paraphrase_and_reject_noise _______
+tests\unit\test_context_acceptance.py:568: in test_real_cached_embeddings_retrieve_paraphrase_and_reject_noise
+    assert _ids(payload) == {wanted.id}
+E   assert {1, 2} == {1}
+E     
+E     Extra items in the left set:
+E     2
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED tests/unit/test_context_acceptance.py::test_real_cached_embeddings_retrieve_paraphrase_and_reject_noise
+1 failed, 40 passed in 3.54s

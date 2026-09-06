@@ -1,0 +1,32 @@
+{
+  "source_store_sha256": "d44d19476cc56156fa51496f0373c27ca6e0066ab2523b0f3470f199f810aac0",
+  "closed_store_read": {
+    "new_files_while_open": [
+      "memory.db-shm",
+      "memory.db-wal"
+    ],
+    "observed_ids": [
+      1
+    ],
+    "new_files_after_close": [
+      "memory.db-shm",
+      "memory.db-wal"
+    ],
+    "changed_entries_after_close": [
+      "."
+    ]
+  },
+  "active_writer_read": {
+    "wal_exists": true,
+    "new_committed_id": 2,
+    "observed_ids": [
+      2,
+      1
+    ],
+    "committed_wal_visible": true,
+    "new_files": [],
+    "changed_entries": [
+      "memory.db-shm"
+    ]
+  }
+}

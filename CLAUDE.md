@@ -14,9 +14,11 @@ semantic and anchored recall, prediction settlements, discovery review, three
 skills, recipes, and 21 MCP tools. Transcript recovery supports Claude Code,
 Codex, and Qwen Code; Cursor returns an unsupported receipt.
 
-The next feature investigation is a pre-registered retrieval-preflight holdout,
-not autonomous execution or model training. See [plans/README.md](plans/README.md)
-and [docs/roadmap.md](docs/roadmap.md).
+The user authorized token-economical 2.0 preparation and a sales demo. The
+foundation runtime and isolated demo are **COMPLETE**, with independent acceptance
+PASS after one repair round. Resume from [the 2.0 plan](plans/v2-continuity.md) and
+[frozen acceptance contract](plans/v2-foundation-acceptance.md), tracked by
+[issue #88](https://github.com/pnmcguire480/cairntir/issues/88).
 
 ## Working rules
 
@@ -81,21 +83,38 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session — 2026-09-05
+## Last Session — 2026-09-06
 
-Shipping-hardening audit against the 1.9.0 tree. Independent regression artifact:
-`tests/unit/test_shipping_hardening.py`, SHA-256
-`d8d556ba94c0e893a49a76440f7c64d3d82c66f4f17c6a19dbe881c3796708fd`.
-Baseline: 19 failed, 1 passed.
+Resumed implementation on "continue?" (drawer #1244), following the independent
+41-case test freeze (#1243). Task-aware handoff, complete-response budgets,
+current-evidence selection, read-only cached queries and an isolated HTML demo
+are implemented on `codex/v2-foundation`. Published version remains 1.9.0.
+Local commits: `e19ba8e` freezes acceptance; `ac89c20` implements the foundation.
 
-Changes address interrupted export data loss, foreign history references and
-import trust, malformed capture input, and Obsidian path/marker ownership.
-Obsolete plans, session narratives, publishing drafts, and duplicate site
-configuration were retired; regression commitments and release records remain.
-The [audit record](docs/release/hardening-2026-09-05.md) records 826 passing
-tests, 85.04% coverage, independent acceptance, fresh-wheel transport smoke,
-and zero active advisories across the repaired dependency lock. Publication
-remains a separate human gate; 1.9.0 is still the published version.
+Independent round 0 found unrelated semantic evidence and cold CLI SQLite
+sidecar writes. Repair 1 fixes both: 41 original acceptance tests, 10 separately
+frozen boundary tests and 153 legacy gates PASS. [The independent record](plans/v2-foundation-result.md)
+preserves the failures and passing rerun. All frozen inputs remain unchanged.
+Source review and cold/busy/orphan-WAL source-purity probes also PASS.
+
+Local gates: 870 regression tests (83.56% coverage), seven offline model evaluations,
+Ruff/format, strict types, integrity/commitment/seam/link/advisory gates, docs
+build, wheel build and isolated wheel CLI/MCP/doctor smoke all pass. The demo
+measures 7,720 history characters versus 2,899 selected (62.45% synthetic payload
+reduction); it makes no billed-savings or commercial-host claim. Detailed
+[gate evidence](plans/v2-foundation-gates.md) and [demo instructions](docs/context-demo.md)
+are saved. The local preview is `.cairntir/context-demo-final/report.html`.
+
+Cold task CLI uses a locked private snapshot and reports busy while another WAL
+client is open. Already-open MCP task reads preserve persisted data/access/log
+state; SQLite shared-memory bookkeeping is outside that byte-purity claim.
+Windows execution is verified; POSIX received source review only.
+
+Next delivery gate: review the local `codex/v2-foundation` commits, then run a
+green cross-platform PR before landing. Later 2.0 milestones remain separate;
+portable evidence needs its own frozen acceptance. The broader request is
+#1237. No dependencies, production installation, version, license, tags or
+publication changed.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer
