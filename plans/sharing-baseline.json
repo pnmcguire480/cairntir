@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-09-06T02:40:09.151535+00:00",
+  "artifact_readiness": "PASS",
+  "implementation_acceptance": "FAIL",
+  "command": ".venv/Scripts/python.exe -m pytest tests/unit/test_sharing_acceptance.py -q --no-cov --tb=short --junitxml=plans/sharing-baseline.xml",
+  "acceptance": {
+    "cases": 29,
+    "passed": 0,
+    "failed": 29,
+    "errors": 0,
+    "skipped": 0,
+    "summary": "29 failed in 6.73s",
+    "classification": "27 missing-sharing-API failures; 2 actual startup failures demonstrate CLI/stdio owner-data disclosure under invalid grant configuration; no infrastructure failures"
+  },
+  "regressions": {
+    "cases": 160,
+    "passed": 160,
+    "summary": "160 passed in 10.46s",
+    "files": [
+      "tests/unit/test_hotfix.py",
+      "tests/unit/test_codeglass.py",
+      "tests/unit/test_temporal.py",
+      "tests/unit/test_learning.py",
+      "tests/unit/test_mcp_server.py",
+      "tests/integration/test_mcp_backend.py",
+      "tests/unit/test_portable.py"
+    ]
+  },
+  "git_head_at_baseline": "f17be58460f358ff31ab741bcd6ce257210d0f34",
+  "runtime_fingerprints_record_only": [
+    {
+      "path": "src/cairntir/memory/store.py",
+      "sha256": "d54715644aa4f97477795e56cd3cb9a2d51e22ad6f83bc1d30ced396682a5b49"
+    },
+    {
+      "path": "src/cairntir/mcp/backend.py",
+      "sha256": "2048747dcf1f49b5dcba7e448675a23d4c4c16ea5f5d7fffd5b7e1d6aa733bb7"
+    },
+    {
+      "path": "src/cairntir/mcp/server.py",
+      "sha256": "befa6332c57ee18151b06dc2f26bce704ea9e2d01a59d1242e1d84c4e935efac"
+    },
+    {
+      "path": "src/cairntir/cli.py",
+      "sha256": "ef142f1cecbbf8d1162c331363c78e2a2128a433fc2a6e147768361fe044f6cd"
+    },
+    {
+      "path": "src/cairntir/context.py",
+      "sha256": "ec73941ab3facfebb4d11ad310ec362d3977c3121ca728419cbf99dc1f8b3482"
+    },
+    {
+      "path": "src/cairntir/portable.py",
+      "sha256": "029728070b7a7c4071c62232141b1c8887deb998a0d696ce7cf1e7c0226a09b7"
+    },
+    {
+      "path": "src/cairntir/memory/temporal.py",
+      "sha256": "3f53862005bf06581c8075e003c1dfd26e26a7b3c6092aba2fa4229811a8043c"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "00a612ebd5de5988c4aefe10c9d66e96d8446854dfe55a7135f1da066ecc832f"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "40e5e67232fbb1521d22e9999e6836fe4418f1d8f73d419ee9dff5c6bc0c6909"
+    }
+  ],
+  "review": {
+    "reviewer": "/root/foundation_tester",
+    "delegated_by": "/root",
+    "verdict": "PASS",
+    "scope": "Independent bounded artifact coverage and harness review; not implementation acceptance"
+  },
+  "authoring_corrections_before_freeze": [
+    "Required Hotfix fixture idempotency keys supplied.",
+    "Sequential stdio handshake and process-close diagnostics prevent false startup PASS.",
+    "Windows asyncio loopback self-pipe allowed; external connections remain forbidden.",
+    "Hidden-successor task relevance has a positive control.",
+    "Same-scope Hotfix approval has negative and positive capability controls."
+  ]
+}

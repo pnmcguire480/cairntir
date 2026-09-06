@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "generation": 1,
+  "recorded_at_utc": "2026-09-06T02:36:24.265654+00:00",
+  "author": "/root/foundation_review",
+  "authorization": "Root explicitly requested an independent bounded harness amendment after development revealed the test called the pre-existing HotfixCommand dataclass without mandatory payload. No Hotfix runtime API change was requested.",
+  "classification": "HARNESS_CORRECTION",
+  "reason": "HotfixCommand.__init__ requires payload; the original test raised TypeError before evaluating imported receipt inertness.",
+  "independent_reproduction": "Targeted original frozen test reproduced TypeError: HotfixCommand.__init__() missing1 required positional argument: payload.1failed in0.61s.",
+  "change": "Only the existing HotfixCommand construction gains payload={} and multiline formatting. All assertions, fixtures, test cases, and contract remain unchanged.",
+  "old_suite_sha256": "d3e6e26b8c8fad2cdb74eb79022b18d3908adabfbd0b6021405164794cdbdd7f",
+  "new_suite_sha256": "ddafa230d7fe80543773b2c3d5dc5f3e622f5b606c0b879844ca52ba2615a793",
+  "old_manifest_sha256": "4dcd8c14aa24e4c44db671910971650f030e7e3c14286aaafebf1ff0917e424c",
+  "original_suite_archive": "plans/portable-v2-generation0-suite.txt",
+  "original_manifest_archive": "plans/portable-v2-generation0-freeze.json",
+  "original_baseline": {
+    "path": "plans/portable-v2-baseline.json",
+    "sha256": "f505642f4eb80dbec4df4db470184b5b5c01505fbd07511d587aa8d525e4d857"
+  },
+  "exact_reversal_restores_original_suite": true,
+  "official_acceptance_started": false,
+  "repair_round_consumed": false,
+  "checks": [
+    {
+      "command": [
+        "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "C:\\Dev\\Cairntir\\tests\\unit\\test_portable_v2_acceptance.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "C:\\Dev\\Cairntir\\tests\\unit\\test_portable_v2_acceptance.py"
+      ],
+      "exit_code": 0,
+      "stdout": "1 file already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/unit/test_portable_v2_acceptance.py::test_imported_discovery_hotfix_and_approval_metadata_cannot_activate_local_lifecycle",
+        "--no-cov",
+        "-q",
+        "--tb=short"
+      ],
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n1 passed in 0.53s\n",
+      "stderr": ""
+    }
+  ]
+}

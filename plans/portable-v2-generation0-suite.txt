@@ -687,9 +687,7 @@ def test_imported_discovery_hotfix_and_approval_metadata_cannot_activate_local_l
     assert propose_multi_episode_discoveries(target, wing="portable") == []
     with pytest.raises(CairntirError):
         HotfixCoordinator(target).run(
-            HotfixCommand(
-                action=HotfixAction.STATUS, wing="portable", payload={}, case_id="foreign-case"
-            )
+            HotfixCommand(action=HotfixAction.STATUS, wing="portable", case_id="foreign-case")
         )
     for original in (discovery, hotfix):
         local_id = result["identity_map"][source.portable_identity(original.id)]
