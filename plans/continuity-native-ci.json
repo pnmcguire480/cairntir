@@ -1,0 +1,300 @@
+{
+  "run_url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010286933",
+  "run_id": 34010286933,
+  "conclusion": "success",
+  "tested_head": "ddffede03d87c4fb3c67550d25223ec7a430cff0",
+  "matrix": [
+    {
+      "job": "Test (ubuntu-latest / Python 3.13)",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010286933/job/101424950864",
+      "conclusion": "success",
+      "passed": 984,
+      "skipped": 2,
+      "deselected": 8,
+      "warnings": 79,
+      "seconds": 74.87,
+      "summary_line": 1551,
+      "coverage_percent": 83.31,
+      "coverage_line": 1547,
+      "skip_reasons": [
+        {
+          "line": 1549,
+          "reason": "tests/unit/test_cli.py:39: Windows encoding regression"
+        },
+        {
+          "line": 1550,
+          "reason": "tests/unit/test_release_tags.py:29: no v*.*.* tags in this checkout"
+        }
+      ]
+    },
+    {
+      "job": "Test (macos-latest / Python 3.13)",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010286933/job/101424950865",
+      "conclusion": "success",
+      "passed": 984,
+      "skipped": 2,
+      "deselected": 8,
+      "warnings": 79,
+      "seconds": 71.02,
+      "summary_line": 2532,
+      "coverage_percent": 83.31,
+      "coverage_line": 2528,
+      "skip_reasons": [
+        {
+          "line": 2530,
+          "reason": "tests/unit/test_cli.py:39: Windows encoding regression"
+        },
+        {
+          "line": 2531,
+          "reason": "tests/unit/test_release_tags.py:29: no v*.*.* tags in this checkout"
+        }
+      ]
+    },
+    {
+      "job": "Test (macos-latest / Python 3.11)",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010286933/job/101424950887",
+      "conclusion": "success",
+      "passed": 984,
+      "skipped": 2,
+      "deselected": 8,
+      "warnings": 0,
+      "seconds": 55.53,
+      "summary_line": 3030,
+      "coverage_percent": 83.31,
+      "coverage_line": 3026,
+      "skip_reasons": [
+        {
+          "line": 3028,
+          "reason": "tests/unit/test_cli.py:39: Windows encoding regression"
+        },
+        {
+          "line": 3029,
+          "reason": "tests/unit/test_release_tags.py:29: no v*.*.* tags in this checkout"
+        }
+      ]
+    },
+    {
+      "job": "Test (macos-latest / Python 3.12)",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010286933/job/101424950893",
+      "conclusion": "success",
+      "passed": 984,
+      "skipped": 2,
+      "deselected": 8,
+      "warnings": 0,
+      "seconds": 82.58,
+      "summary_line": 3547,
+      "coverage_percent": 83.31,
+      "coverage_line": 3543,
+      "skip_reasons": [
+        {
+          "line": 3545,
+          "reason": "tests/unit/test_cli.py:39: Windows encoding regression"
+        },
+        {
+          "line": 3546,
+          "reason": "tests/unit/test_release_tags.py:29: no v*.*.* tags in this checkout"
+        }
+      ]
+    },
+    {
+      "job": "Test (ubuntu-latest / Python 3.12)",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010286933/job/101424950898",
+      "conclusion": "success",
+      "passed": 984,
+      "skipped": 2,
+      "deselected": 8,
+      "warnings": 0,
+      "seconds": 76.29,
+      "summary_line": 4093,
+      "coverage_percent": 83.31,
+      "coverage_line": 4089,
+      "skip_reasons": [
+        {
+          "line": 4091,
+          "reason": "tests/unit/test_cli.py:39: Windows encoding regression"
+        },
+        {
+          "line": 4092,
+          "reason": "tests/unit/test_release_tags.py:29: no v*.*.* tags in this checkout"
+        }
+      ]
+    },
+    {
+      "job": "Test (ubuntu-latest / Python 3.11)",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010286933/job/101424950915",
+      "conclusion": "success",
+      "passed": 984,
+      "skipped": 2,
+      "deselected": 8,
+      "warnings": 0,
+      "seconds": 77.73,
+      "summary_line": 4659,
+      "coverage_percent": 83.31,
+      "coverage_line": 4655,
+      "skip_reasons": [
+        {
+          "line": 4657,
+          "reason": "tests/unit/test_cli.py:39: Windows encoding regression"
+        },
+        {
+          "line": 4658,
+          "reason": "tests/unit/test_release_tags.py:29: no v*.*.* tags in this checkout"
+        }
+      ]
+    },
+    {
+      "job": "Test (windows-latest / Python 3.13)",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010286933/job/101424950924",
+      "conclusion": "success",
+      "passed": 985,
+      "skipped": 1,
+      "deselected": 8,
+      "warnings": 79,
+      "seconds": 371.17,
+      "summary_line": 5669,
+      "coverage_percent": 83.35,
+      "coverage_line": 5666,
+      "skip_reasons": [
+        {
+          "line": 5668,
+          "reason": "tests\\unit\\test_release_tags.py:29: no v*.*.* tags in this checkout"
+        }
+      ]
+    },
+    {
+      "job": "Test (windows-latest / Python 3.12)",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010286933/job/101424950926",
+      "conclusion": "success",
+      "passed": 985,
+      "skipped": 1,
+      "deselected": 8,
+      "warnings": 0,
+      "seconds": 257.75,
+      "summary_line": 6198,
+      "coverage_percent": 83.35,
+      "coverage_line": 6195,
+      "skip_reasons": [
+        {
+          "line": 6197,
+          "reason": "tests\\unit\\test_release_tags.py:29: no v*.*.* tags in this checkout"
+        }
+      ]
+    },
+    {
+      "job": "Test (windows-latest / Python 3.11)",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010286933/job/101424951344",
+      "conclusion": "success",
+      "passed": 985,
+      "skipped": 1,
+      "deselected": 8,
+      "warnings": 0,
+      "seconds": 165.18,
+      "summary_line": 6709,
+      "coverage_percent": 83.35,
+      "coverage_line": 6706,
+      "skip_reasons": [
+        {
+          "line": 6708,
+          "reason": "tests\\unit\\test_release_tags.py:29: no v*.*.* tags in this checkout"
+        }
+      ]
+    }
+  ],
+  "evaluation": {
+    "job": "LongMemEval R@5 Gate",
+    "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010286933/job/101425772075",
+    "conclusion": "success",
+    "passed": 7,
+    "skipped": 0,
+    "deselected": 987,
+    "warnings": 0,
+    "seconds": 11.86,
+    "summary_line": 7135,
+    "coverage_percent": null,
+    "coverage_line": null,
+    "skip_reasons": []
+  },
+  "frozen_inputs": {
+    "status": "PASS",
+    "accepted_tree": "632f211eaaafbedd5513cc51e3e1c764f7e157d0",
+    "final_pr_tree": "ddffede03d87c4fb3c67550d25223ec7a430cff0",
+    "merged_tree": "be9fdc408a040674d012dad60e2d0c4bd988ce05",
+    "manifests": 11,
+    "bound_references": 83,
+    "unique_files_including_manifests": 62,
+    "comparison": "Exact git blob identity across accepted, final PR, and merged trees. No byte or semantic changes to any frozen manifest or referenced input since the accepted tree.",
+    "git_blob_ids": {
+      "docs/recipes/finalization-mode/README.md": "1d96c88e914dc6bb85311bce88c9eae97135b7d1",
+      "plans/bulk-write-acceptance.md": "d4f2d2d0a8af12ca9cd074da737f1da92c536193",
+      "plans/bulk-write-baseline.json": "e461dc6d177da6454fe542d9bc09c48686c52198",
+      "plans/bulk-write-baseline.txt": "87d759f2750854c3312f8ece32fedcd9e62b2e0e",
+      "plans/bulk-write-freeze.json": "90bd79cd4904f625672199b8977d85c09b0928c4",
+      "plans/bulk-write-supplement-baseline.txt": "75d6b8d457d488a34279c6ce7e8e2f690ad16004",
+      "plans/bulk-write-supplement-freeze.json": "de056af7db6421c22a614a84f4474f4e831bd919",
+      "plans/context-concurrency-acceptance.md": "64fef87077457638f38629f963e236823553934b",
+      "plans/context-concurrency-baseline.json": "6004540f945cde0e370a2e454d693b9dfd14130e",
+      "plans/context-concurrency-baseline.txt": "3729fe7e3d70b2d03045b50e9331a57663d6e4ba",
+      "plans/context-concurrency-freeze.json": "45d28ac1a6ac60c832e66af02ea61bc1e252fd12",
+      "plans/portable-v2-acceptance.md": "4c18c6a1de43ccefb27b07d6b52419a18aa6d6a0",
+      "plans/portable-v2-amendment1.json": "45ac65d9ddd06c0db4a4b188913eac3f0c07024c",
+      "plans/portable-v2-baseline.json": "7445a293ebd67698d164c71b58352e56716709c1",
+      "plans/portable-v2-boundary-freeze.json": "c9923922a360cf27a541eea821ba32d402b11205",
+      "plans/portable-v2-fixture-provenance.json": "ee7a77b1dfe318baa5c0ab96939529514246fa8e",
+      "plans/portable-v2-freeze.json": "d57f66847133e48f7850fdf7d05bf45612f4590d",
+      "plans/portable-v2-generation0-freeze.json": "c6938dede2258f12dfba7772a1b35857b726e445",
+      "plans/portable-v2-generation0-suite.txt": "a513871f772058d149a4f9b46a74ff1f46e84b0c",
+      "plans/portable-v2-v6.fixture": "14711236397d9f8f5bb3476d425362d9912b62b6",
+      "plans/procedure-acceptance.md": "063bc1df3908793c5968de88aa46c3ff83f3f1ae",
+      "plans/procedure-baseline-acceptance.txt": "9ae4cb038adeeffacf5c80e0563cd81afd0f365c",
+      "plans/procedure-baseline-regression.txt": "c9b533ff0640ceab50667252cc92060510d9f6ff",
+      "plans/procedure-baseline.json": "92a0c7ca11f98730fe6b42ce4c535abe0f8e1635",
+      "plans/procedure-freeze.json": "3b231be5709ac2f614f10ebfee1a6958247ce151",
+      "plans/sharing-acceptance.md": "5161b076a4500c538a779a4ffc2786116e5326aa",
+      "plans/sharing-baseline-regression.txt": "db682b787399599f69d7eef2a8c799ef81ee8e85",
+      "plans/sharing-baseline.json": "602dd6cc89bfa2d6b87e07fd3b831d364a1aafe1",
+      "plans/sharing-baseline.txt": "6727c1f0bb73fbbfc12493e6b10e4fd4bb48267b",
+      "plans/sharing-baseline.xml": "0921dd837ce12bfb0864949939bcd01a67dbb4ad",
+      "plans/sharing-freeze.json": "60c34e063a6cc02224d55f2d9a10753a7ed207f2",
+      "plans/sharing-supplement-baseline.txt": "33dc7c9894ac0f0a95367cbb1595250c3635e4f5",
+      "plans/sharing-supplement-freeze.json": "73c07994e03d9ffbc9496ff756002bb699666844",
+      "plans/v2-foundation-acceptance.md": "398da291d5ef6cf045ef8a06b71ac8a4deca3672",
+      "plans/v2-foundation-baseline.json": "96c670a16e2685bda26b759b7532b62580ce5441",
+      "plans/v2-foundation-boundary-freeze.json": "55f833f2477087859595641ad26f811ffedfbe95",
+      "plans/v2-foundation-freeze.json": "c860a4d61bffc67a8769b213b39e11847a90d276",
+      "pyproject.toml": "b0443453030031c32d8ef5526593219eb5d219ec",
+      "tests/conftest.py": "fe38a2b39788f0c5871550f29cedddf03f2118be",
+      "tests/integration/test_mcp_backend.py": "d54189644abc462d131dcecd8872f1e914145d49",
+      "tests/unit/test_bulk_write_boundaries.py": "e5a59ccb1fbe19ca46a3ba4d3d6e8375c6f289bb",
+      "tests/unit/test_bulk_write_supplement.py": "c0d17048c78df069be30e282cfe1536f573abe1a",
+      "tests/unit/test_codeglass.py": "0bc5409358a67c07f2aa2c4bf97abfda28a66f88",
+      "tests/unit/test_context_acceptance.py": "a1d6238162ca86fe367258936ffa58755cb1f44b",
+      "tests/unit/test_context_boundaries.py": "24bd92851ab59cf64aca10c6469b00f0410b1722",
+      "tests/unit/test_context_concurrency_acceptance.py": "6896ef47f21423a1f8b0750526667d832a3d9a72",
+      "tests/unit/test_cost.py": "74d081bc8d4d38f89b1ae76064350513c5b2cd5e",
+      "tests/unit/test_handoff.py": "802390b1cccb38c027dd5e40d9c9f7a552d04012",
+      "tests/unit/test_hotfix.py": "04f42e8f50a9f17e3e2dd8a9978a29c6b6ab8fa3",
+      "tests/unit/test_learning.py": "4a8275632baee01da47612390113d9598ed872ef",
+      "tests/unit/test_mcp_server.py": "ee0341103d5c811abaab00e3f7c7e331843a439f",
+      "tests/unit/test_portable.py": "71d17a0d3c49f4dbbb1cbe6c9d5085f16ceee51e",
+      "tests/unit/test_portable_boundaries.py": "dd0ac53ffb429190f9b53d0a2e535272a1a59f4b",
+      "tests/unit/test_portable_v2_acceptance.py": "ef5e3dd2f933c32da0fbe5f25035d332e7bb48a2",
+      "tests/unit/test_procedure_acceptance.py": "f3b7371d921fb6543f6e1449c3142535a53e89e2",
+      "tests/unit/test_reason_loop.py": "21f08ff27ae35879cb1ab839713852f0c018aa2f",
+      "tests/unit/test_sharing_acceptance.py": "60ee3f5ede3433f89df9e8290d15d48f1e825ea6",
+      "tests/unit/test_sharing_supplement.py": "af8d6d28cd9bad163156e12116ca43d5d959b509",
+      "tests/unit/test_shipping_hardening.py": "82c95b218267595f50477b819463fbd7e5ba2fdd",
+      "tests/unit/test_temporal.py": "0a3d18ba61f5fbc1ef4e149eba73e35b19ebffe4",
+      "tests/unit/test_transcript.py": "362565b16c9d037a7d166123dfb3807f289c434c",
+      "uv.lock": "b8f9d1cf2b0e1f3de269a48e635e30ec25ff2ab4"
+    }
+  },
+  "artifact_sha256": {
+    "run.json": "123e60c97f5552b5cd929acc1528ed165811ddd0a67407afbccf8c583dd6044b",
+    "raw.log": "10480d1ad76d3e6263aa3dee802cbf3a066d89f5eab1921d436644fd5849fd04"
+  },
+  "hosted_preflight_skips": [
+    "No production store at hosted runner location (fresh environment).",
+    "CAIRNTIR_VAULT unset; hosted runner has no vault to compare."
+  ],
+  "scope": "Read-only GitHub log retrieval and local git object comparison; no source or documentation edits."
+}

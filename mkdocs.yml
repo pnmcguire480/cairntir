@@ -54,7 +54,7 @@ nav:
       - Deprecation Policy: deprecation-policy.md
       - Regression Contracts: landed-commitments.md
   - Releases:
-      - v1.10.0 Candidate: release/v1.10.0.md
+      - v1.10.0: release/v1.10.0.md
       - Shipping Hardening Audit: release/hardening-2026-09-05.md
       - v1.9.0: release/v1.9.0.md
       - v1.8.0: release/v1.8.0.md

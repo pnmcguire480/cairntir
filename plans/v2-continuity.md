@@ -1,8 +1,10 @@
 # 2.0 preparation: economical, portable working context
 
-Current continuation: [delivery plan](continuity-delivery.md), authorized by
-request #1262, fixes live CLI contention and completes the remaining milestones
-and publication. The foundation evidence below is the historical accepted base.
+Current continuation: [delivery plan](continuity-delivery.md) implemented live CLI
+concurrency, portable evidence, evaluated procedures and scoped sharing. Reviewed
+source was published as 1.10.0 with verified artifacts, attestations and fresh
+public-package smoke; delivery is **COMPLETE**. The foundation evidence below
+remains the historical accepted base and has not been rewritten.
 
 Status: foundation implementation and demo are **COMPLETE** locally on
 `codex/v2-foundation`; independent acceptance is PASS after one repair round.

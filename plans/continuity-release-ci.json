@@ -1,0 +1,36 @@
+{
+  "run_id": 34010797495,
+  "job_id": 101426149167,
+  "job_url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010797495/job/101426149167",
+  "passed": 992,
+  "skipped": 1,
+  "deselected": 1,
+  "seconds": 176.74,
+  "coverage_percent": 84.44,
+  "skip_reason": "tests/unit/test_cli.py:39: Windows encoding regression",
+  "deselection": "test_every_released_changelog_version_is_tagged (explicit -k exclusion)",
+  "scope": "Full suite including slow and eval markers; no marker exclusion in command.",
+  "raw_log_sha256": "1a1133eed39088e11b9617d0c4594a62693bb6329195c4ff3586a34d32ccf871",
+  "exact_log_evidence": [
+    {
+      "line": 461,
+      "text": "\ufeff2026-09-06T04:11:19.3544027Z ##[group]Run uv run pytest -q -k \"not test_every_released_changelog_version_is_tagged\""
+    },
+    {
+      "line": 462,
+      "text": "2026-09-06T04:11:19.3544657Z \u001b[36;1muv run pytest -q -k \"not test_every_released_changelog_version_is_tagged\"\u001b[0m"
+    },
+    {
+      "line": 549,
+      "text": "2026-09-06T04:14:17.7980041Z Required test coverage of 80% reached. Total coverage: 84.44%"
+    },
+    {
+      "line": 551,
+      "text": "2026-09-06T04:14:17.7981618Z SKIPPED [1] tests/unit/test_cli.py:39: Windows encoding regression"
+    },
+    {
+      "line": 552,
+      "text": "2026-09-06T04:14:17.7982247Z 992 passed, 1 skipped, 1 deselected in 176.74s (0:02:56)"
+    }
+  ]
+}

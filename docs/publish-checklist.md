@@ -58,8 +58,8 @@ Release operations:
 
 Evidence and known limits for each shipped release live under `docs/release/`.
 The latest published record is
-[`docs/release/v1.9.0.md`](release/v1.9.0.md); the prior release is
-[`docs/release/v1.8.0.md`](release/v1.8.0.md).
+[`docs/release/v1.10.0.md`](release/v1.10.0.md); the prior release is
+[`docs/release/v1.9.0.md`](release/v1.9.0.md).
 
 ## Local verification
 
@@ -85,7 +85,8 @@ Also confirm:
 - the public API snapshot and Store contract tests have not drifted;
 - `.github/workflows/release.yml` verifies before it builds and publishes only
   from a version tag;
-- the release artifacts contain the bundled recipes and plugin metadata;
+- the wheel and sdist contain bundled recipes; the versioned repository and
+  tag source archive contain the aligned `.claude-plugin/plugin.json`;
 - `git diff --check` is clean and no rehearsal database, virtual environment,
   secret, or local Cairntir home is staged.
 

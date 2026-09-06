@@ -1,0 +1,149 @@
+{
+  "status": "PASS",
+  "independent_tester": "/root/foundation_tester",
+  "verified_at_utc": "2026-09-06T04:17:58.409715+00:00",
+  "repository": "pnmcguire480/cairntir",
+  "tag": "v1.10.0",
+  "version": "1.10.0",
+  "source_commit": "be9fdc408a040674d012dad60e2d0c4bd988ce05",
+  "source_tree": "b85f72a6177e5fe2b74c829762f9ab3ae3d34d97",
+  "release_run_id": 34010797495,
+  "release_run_url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010797495",
+  "release_attempt": 1,
+  "release_event": "push",
+  "release_conclusion": "success",
+  "jobs": [
+    {
+      "name": "Verify release candidate",
+      "conclusion": "success",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010797495/job/101426149167"
+    },
+    {
+      "name": "Build",
+      "conclusion": "success",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010797495/job/101426686082"
+    },
+    {
+      "name": "Publish to PyPI",
+      "conclusion": "success",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010797495/job/101426718705"
+    },
+    {
+      "name": "Verify PyPI publication",
+      "conclusion": "success",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010797495/job/101426756723"
+    },
+    {
+      "name": "GitHub Release",
+      "conclusion": "success",
+      "url": "https://github.com/pnmcguire480/cairntir/actions/runs/34010797495/job/101426816856"
+    }
+  ],
+  "github_release_url": "https://github.com/pnmcguire480/cairntir/releases/tag/v1.10.0",
+  "pypi_metadata_url": "https://pypi.org/pypi/cairntir/1.10.0/json",
+  "distributions": [
+    {
+      "filename": "cairntir-1.10.0-py3-none-any.whl",
+      "sha256_by_channel": {
+        "workflow": "321a6275c52e09d3c7af44c0d4be878b4e176e0f3247621fb7bf653aa1f7b7e5",
+        "release": "321a6275c52e09d3c7af44c0d4be878b4e176e0f3247621fb7bf653aa1f7b7e5",
+        "pypi": "321a6275c52e09d3c7af44c0d4be878b4e176e0f3247621fb7bf653aa1f7b7e5"
+      },
+      "pypi_metadata_sha256": "321a6275c52e09d3c7af44c0d4be878b4e176e0f3247621fb7bf653aa1f7b7e5",
+      "github_asset_digest": "sha256:321a6275c52e09d3c7af44c0d4be878b4e176e0f3247621fb7bf653aa1f7b7e5",
+      "bytes": 280737,
+      "attestation_cli_exit_code": 0,
+      "verified_attestations": 1,
+      "attestation_subject_sha256": "321a6275c52e09d3c7af44c0d4be878b4e176e0f3247621fb7bf653aa1f7b7e5",
+      "verified_result_sha256": "265372922cae1febe097c1dd184fe942e1812a14d0c29e4e81d2f83fd38f1868"
+    },
+    {
+      "filename": "cairntir-1.10.0.tar.gz",
+      "sha256_by_channel": {
+        "workflow": "cc915da3afff5405cd9d4be23516327ed565a194bc6094223017663e6d41f2d5",
+        "release": "cc915da3afff5405cd9d4be23516327ed565a194bc6094223017663e6d41f2d5",
+        "pypi": "cc915da3afff5405cd9d4be23516327ed565a194bc6094223017663e6d41f2d5"
+      },
+      "pypi_metadata_sha256": "cc915da3afff5405cd9d4be23516327ed565a194bc6094223017663e6d41f2d5",
+      "github_asset_digest": "sha256:cc915da3afff5405cd9d4be23516327ed565a194bc6094223017663e6d41f2d5",
+      "bytes": 859683,
+      "attestation_cli_exit_code": 0,
+      "verified_attestations": 1,
+      "attestation_subject_sha256": "cc915da3afff5405cd9d4be23516327ed565a194bc6094223017663e6d41f2d5",
+      "verified_result_sha256": "265372922cae1febe097c1dd184fe942e1812a14d0c29e4e81d2f83fd38f1868"
+    }
+  ],
+  "attestation_policy": {
+    "repository": "pnmcguire480/cairntir",
+    "signer_workflow": "pnmcguire480/cairntir/.github/workflows/release.yml",
+    "signer_digest": "be9fdc408a040674d012dad60e2d0c4bd988ce05",
+    "source_digest": "be9fdc408a040674d012dad60e2d0c4bd988ce05",
+    "source_ref": "refs/tags/v1.10.0",
+    "certificate_identity": "https://github.com/pnmcguire480/cairntir/.github/workflows/release.yml@refs/tags/v1.10.0",
+    "oidc_issuer": "https://token.actions.githubusercontent.com",
+    "deny_self_hosted_runners": true,
+    "predicate_type": "https://slsa.dev/provenance/v1"
+  },
+  "authority_boundary": "Signed certificate/source fields enforced by gh attestation verify flags; the exact certificate identity pins the full signer workflow path and tag. User-controlled predicate claims alone are not treated as source identity proof.",
+  "preserved_harness_correction": "Initial invocation supplied mutually exclusive signer-workflow and cert-identity flags and failed before verification. Retry retains the stronger exact certificate identity plus signer/source digests and source-ref, removing only the redundant conflicting flag. Initial failure logs remain in private evidence.",
+  "scope": "Independent bytes/provenance verification only. No package execution, installation, source changes, publication, tag mutation or production-store access. Coordinator owns installed CLI/MCP smoke.",
+  "verifier": "gh version 2.87.3 (2026-02-23)\nhttps://github.com/cli/cli/releases/tag/v2.87.3",
+  "private_evidence": {
+    "annotated-tag-0.command.json": "feef1b4801d4e3762d23ecd8f33fe5d90ce53f850d25eedc133c71985e1c0d14",
+    "annotated-tag-0.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "annotated-tag-0.stdout.txt": "b6aaef79d705e3a47edbaa524f1ed4479679e47071394592c1e80d11a024891b",
+    "attestation-cairntir-1.10.0-py3-none-any.whl.command.json": "e04f506351ae5d980c175c9278babb7d9d35788988988fb8d0fd89c5fa70f026",
+    "attestation-cairntir-1.10.0-py3-none-any.whl.stderr.txt": "916891b1fe758ee295d6ef1deab32f15c3d65d772ab69a68768834b4fbe6873e",
+    "attestation-cairntir-1.10.0-py3-none-any.whl.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "attestation-v2-cairntir-1.10.0-py3-none-any.whl.command.json": "6a1ba437dfd62cc0555b59efa9800b383a6a46860112f74ca77c3233dc567b40",
+    "attestation-v2-cairntir-1.10.0-py3-none-any.whl.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "attestation-v2-cairntir-1.10.0-py3-none-any.whl.stdout.txt": "265372922cae1febe097c1dd184fe942e1812a14d0c29e4e81d2f83fd38f1868",
+    "attestation-v2-cairntir-1.10.0.tar.gz.command.json": "9bf2357c8b6bb3eb0d10b9325f7d250e48beccdf1b75d85c788d5dcbb4b557c8",
+    "attestation-v2-cairntir-1.10.0.tar.gz.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "attestation-v2-cairntir-1.10.0.tar.gz.stdout.txt": "265372922cae1febe097c1dd184fe942e1812a14d0c29e4e81d2f83fd38f1868",
+    "failure-20260906T041636.json": "ca178098e7989e4f0c3fb787104706837f47b26e107318ad65866767dcb0e277",
+    "gh-version.command.json": "3cfbeca21b57335e1bb40a3f939f956a056690146329f1eeb527cec8a94aa036",
+    "gh-version.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "gh-version.stdout.txt": "b854454a206472d98565ff7c406ff085b3df45b833044782c099302a09c280d9",
+    "github-release.command.json": "20f6e03b1fe0c369aadaf7f290177d57e2790b4702c76a7b9c8660e96089a352",
+    "github-release.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "github-release.stdout.txt": "97bbe920e37a818ac1e4fcf014e2f20b60c0bbc68ae3a35a5bfcb3efc1fbbb99",
+    "pypi.json": "6478fe480877bbdac937836a146e945a989d1d299a8324ed191f44e6874cfcfc",
+    "release-download.command.json": "249f35ce454d306e3286bbcbbbf2ca2c6449353770405064df1d45a7e4fa98fe",
+    "release-download.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "release-download.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "release-run.command.json": "ef87bdc7c7d1c09539b00b5be35e5f179bc8dbd8e927a6c05be3389ae29706a0",
+    "release-run.json": "ac706a8e8cebd71dde643d487323b3cbb81b587f902857fcd8cfe3a3f0371b87",
+    "release-run.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "release-run.stdout.txt": "a4e6d637401523d39ac5a088005cd36af2437524c5b0c6d5f270ad6f51f0eb5a",
+    "source-commit.command.json": "356ee65b3cab72a18fb6db5633a8ad6965229252e0e7a39f6ef9a1656d902726",
+    "source-commit.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source-commit.stdout.txt": "a971df2ee2a0c1889899a41b0e69bed9738de8fcb99b64f1ab7016ac234b2a8d",
+    "tag-ref.command.json": "28a092056e2782698c1a36226f55e3d70ed4e0b6efd262859d580faaccdfbbc0",
+    "tag-ref.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tag-ref.stdout.txt": "51b520f69c76ac1998c268f66f47549f03df24a68c55468ed695f371eb7955a7",
+    "verify_publication.py": "cd31b5e5fd1cb24895de5f56c2583ef18acda19d75b550037238ccdbac1c9e81",
+    "workflow-download.command.json": "311a265340446fee91700b4ff1dbd3342e6b88a46d5a4838e72f9fc1a537f338",
+    "workflow-download.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "workflow-download.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "verified_signed_certificate": {
+    "subjectAlternativeName": "https://github.com/pnmcguire480/cairntir/.github/workflows/release.yml@refs/tags/v1.10.0",
+    "issuer": "https://token.actions.githubusercontent.com",
+    "buildSignerURI": "https://github.com/pnmcguire480/cairntir/.github/workflows/release.yml@refs/tags/v1.10.0",
+    "buildSignerDigest": "be9fdc408a040674d012dad60e2d0c4bd988ce05",
+    "sourceRepositoryURI": "https://github.com/pnmcguire480/cairntir",
+    "sourceRepositoryDigest": "be9fdc408a040674d012dad60e2d0c4bd988ce05",
+    "sourceRepositoryRef": "refs/tags/v1.10.0",
+    "runnerEnvironment": "github-hosted",
+    "runInvocationURI": "https://github.com/pnmcguire480/cairntir/actions/runs/34010797495/attempts/1"
+  },
+  "verified_timestamps": [
+    {
+      "type": "Tlog",
+      "uri": "https://rekor.sigstore.dev",
+      "timestamp": "2026-09-06T00:14:37-04:00"
+    }
+  ],
+  "signed_run_identity_matches_release_run": true
+}
