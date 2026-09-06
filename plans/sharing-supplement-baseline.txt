@@ -1,0 +1,24 @@
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+__ test_write_only_anchor_operations_cannot_read_existing_paths[add_anchors] __
+tests\unit\test_sharing_supplement.py:54: in test_write_only_anchor_operations_cannot_read_existing_paths
+    with pytest.raises(AccessDenied):
+E   Failed: DID NOT RAISE <class 'cairntir.access.AccessDenied'>
+_ test_write_only_anchor_operations_cannot_read_existing_paths[repair_anchors] _
+tests\unit\test_sharing_supplement.py:54: in test_write_only_anchor_operations_cannot_read_existing_paths
+    with pytest.raises(AccessDenied):
+E   Failed: DID NOT RAISE <class 'cairntir.access.AccessDenied'>
+_ test_authentic_registry_payloads_cannot_disclose_hidden_typed_references[receipt-current] _
+tests\unit\test_sharing_supplement.py:113: in test_authentic_registry_payloads_cannot_disclose_hidden_typed_references
+    with pytest.raises(AccessDenied):
+E   Failed: DID NOT RAISE <class 'cairntir.access.AccessDenied'>
+_ test_authentic_registry_payloads_cannot_disclose_hidden_typed_references[procedure-evaluation] _
+tests\unit\test_sharing_supplement.py:113: in test_authentic_registry_payloads_cannot_disclose_hidden_typed_references
+    with pytest.raises(AccessDenied):
+E   Failed: DID NOT RAISE <class 'cairntir.access.AccessDenied'>
+=========================== short test summary info ===========================
+FAILED tests/unit/test_sharing_supplement.py::test_write_only_anchor_operations_cannot_read_existing_paths[add_anchors]
+FAILED tests/unit/test_sharing_supplement.py::test_write_only_anchor_operations_cannot_read_existing_paths[repair_anchors]
+FAILED tests/unit/test_sharing_supplement.py::test_authentic_registry_payloads_cannot_disclose_hidden_typed_references[receipt-current]
+FAILED tests/unit/test_sharing_supplement.py::test_authentic_registry_payloads_cannot_disclose_hidden_typed_references[procedure-evaluation]
+4 failed in 22.07s
