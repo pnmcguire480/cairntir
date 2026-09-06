@@ -1,0 +1,133 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                              [100%]
+================================== FAILURES ===================================
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+E   Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+C:\Dev\Cairntir\tests\unit\test_procedure_acceptance.py:93: Failed: PROCEDURE_NOT_IMPLEMENTED: public evaluated-procedure API is absent
+=========================== short test summary info ===========================
+FAILED tests/unit/test_procedure_acceptance.py::test_candidate_keeps_complete_method_evidence_and_discovery_lifecycle
+FAILED tests/unit/test_procedure_acceptance.py::test_incomplete_methods_are_rejected[prerequisites-value0]
+FAILED tests/unit/test_procedure_acceptance.py::test_incomplete_methods_are_rejected[steps-value1]
+FAILED tests/unit/test_procedure_acceptance.py::test_incomplete_methods_are_rejected[rollback-value2]
+FAILED tests/unit/test_procedure_acceptance.py::test_incomplete_methods_are_rejected[applicability- ]
+FAILED tests/unit/test_procedure_acceptance.py::test_candidate_references_are_scoped_and_complete[missing]
+FAILED tests/unit/test_procedure_acceptance.py::test_candidate_references_are_scoped_and_complete[foreign-wing]
+FAILED tests/unit/test_procedure_acceptance.py::test_candidate_references_are_scoped_and_complete[counterexample-outside-evidence]
+FAILED tests/unit/test_procedure_acceptance.py::test_development_and_independent_holdout_cannot_overlap[case-id]
+FAILED tests/unit/test_procedure_acceptance.py::test_development_and_independent_holdout_cannot_overlap[evidence-id]
+FAILED tests/unit/test_procedure_acceptance.py::test_development_and_independent_holdout_cannot_overlap[renamed-identical-evidence]
+FAILED tests/unit/test_procedure_acceptance.py::test_evaluation_threshold_must_be_finite_numeric_and_predeclared[nan]
+FAILED tests/unit/test_procedure_acceptance.py::test_evaluation_threshold_must_be_finite_numeric_and_predeclared[inf]
+FAILED tests/unit/test_procedure_acceptance.py::test_evaluation_threshold_must_be_finite_numeric_and_predeclared[True]
+FAILED tests/unit/test_procedure_acceptance.py::test_evaluation_threshold_must_be_finite_numeric_and_predeclared[0.0]
+FAILED tests/unit/test_procedure_acceptance.py::test_evaluation_threshold_must_be_finite_numeric_and_predeclared[-0.1]
+FAILED tests/unit/test_procedure_acceptance.py::test_evaluation_threshold_must_be_finite_numeric_and_predeclared[1.1]
+FAILED tests/unit/test_procedure_acceptance.py::test_actual_registered_runner_executes_every_variant_and_retains_failed_cases
+FAILED tests/unit/test_procedure_acceptance.py::test_failed_evaluation_is_stored_without_corroboration
+FAILED tests/unit/test_procedure_acceptance.py::test_unregistered_runner_strings_cannot_execute_or_corroborate
+FAILED tests/unit/test_procedure_acceptance.py::test_runner_exception_is_typed_and_retained_as_failure_evidence
+FAILED tests/unit/test_procedure_acceptance.py::test_promotion_requires_actual_local_operator_boolean_approval[None]
+FAILED tests/unit/test_procedure_acceptance.py::test_promotion_requires_actual_local_operator_boolean_approval[<lambda>0]
+FAILED tests/unit/test_procedure_acceptance.py::test_promotion_requires_actual_local_operator_boolean_approval[<lambda>1]
+FAILED tests/unit/test_procedure_acceptance.py::test_operator_approval_binds_exact_revision_and_evaluation_without_execution
+FAILED tests/unit/test_procedure_acceptance.py::test_ordinary_discovery_calls_cannot_mutate_registered_procedure[corroborated-transition]
+FAILED tests/unit/test_procedure_acceptance.py::test_ordinary_discovery_calls_cannot_mutate_registered_procedure[corroborated-record]
+FAILED tests/unit/test_procedure_acceptance.py::test_ordinary_discovery_calls_cannot_mutate_registered_procedure[promoted-transition]
+FAILED tests/unit/test_procedure_acceptance.py::test_ordinary_discovery_calls_cannot_mutate_registered_procedure[promoted-record]
+FAILED tests/unit/test_procedure_acceptance.py::test_cloned_receipts_and_model_metadata_never_gain_authority
+FAILED tests/unit/test_procedure_acceptance.py::test_changed_revision_invalidates_old_evaluation_and_approval
+FAILED tests/unit/test_procedure_acceptance.py::test_registered_manifest_change_invalidates_previous_promotion_request
+FAILED tests/unit/test_procedure_acceptance.py::test_revision_fingerprint_binds_every_method_field
+FAILED tests/unit/test_procedure_acceptance.py::test_promotion_binds_every_predeclared_manifest_component
+FAILED tests/unit/test_procedure_acceptance.py::test_holdout_manifest_cannot_pad_or_change_its_declared_test[duplicate-case-id]
+FAILED tests/unit/test_procedure_acceptance.py::test_holdout_manifest_cannot_pad_or_change_its_declared_test[duplicate-evidence]
+FAILED tests/unit/test_procedure_acceptance.py::test_holdout_manifest_cannot_pad_or_change_its_declared_test[single-case]
+FAILED tests/unit/test_procedure_acceptance.py::test_holdout_manifest_cannot_pad_or_change_its_declared_test[unknown-metric]
+FAILED tests/unit/test_procedure_acceptance.py::test_malformed_or_misbound_runner_outcomes_never_corroborate
+FAILED tests/unit/test_procedure_acceptance.py::test_changed_leaf_during_external_work_rejects_stale_final_write[runner]
+FAILED tests/unit/test_procedure_acceptance.py::test_changed_leaf_during_external_work_rejects_stale_final_write[operator]
+FAILED tests/unit/test_procedure_acceptance.py::test_competing_local_approvals_cannot_create_two_authorized_leaves
+FAILED tests/unit/test_procedure_acceptance.py::test_rollback_expires_active_method_and_reopen_retains_verbatim_history
+43 failed in 1.41s
