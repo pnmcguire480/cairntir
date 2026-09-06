@@ -58,5 +58,5 @@ The task CLI reads a private, committed snapshot even while another WAL client
 is open or holds an uncommitted write. Cold reads preserve all source files.
 Live CLI and MCP reads preserve stored evidence and access state; SQLite may
 maintain existing shared-memory read-lock bookkeeping. Genuine exclusive locks
-produce a bounded, explanatory failure. The [independent concurrency tests](../plans/context-concurrency-result.md)
+produce a bounded, explanatory failure. The [independent concurrency tests](https://github.com/pnmcguire480/cairntir/blob/main/plans/context-concurrency-result.md)
 cover concurrent writes, checkpoints and connection shutdown.

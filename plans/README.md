@@ -1,6 +1,7 @@
 # Plans
 
-- [2.0 continuity preparation](v2-continuity.md): foundation and demo complete locally; [independent acceptance PASS](v2-foundation-result.md). PR delivery and later milestones remain separate.
+- [Continuity delivery](continuity-delivery.md): independently accepted foundation, portable evidence, evaluated procedures and scoped sharing; completing the additive 1.10.0 release gates.
+- [2.0 continuity preparation](v2-continuity.md): historical foundation plan and frozen acceptance.
 - [Shipping hardening](shipping-hardening.md): completed audit and acceptance record.
 - [Retrieval preflight](evolving-mind.md): evaluation requirements for context selection.
 

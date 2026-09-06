@@ -1,0 +1,283 @@
+{
+  "status": "PASS_LOCAL_GATES",
+  "source_sha256": {
+    "src/cairntir/access.py": "0f6e2e028c83647b180199cea7d94d1b00afce8e797a636648933b37428edd7e",
+    "src/cairntir/calibration.py": "9b3fbd5f1e60e4bbdf9bb67b22a0c0b8fc5809bb3af48674aa57efaa9eaa7e37",
+    "src/cairntir/cli.py": "c92665b78d1b92c51e3e9137abf7eabd0b7008dee707db635a9660cc9080e3b9",
+    "src/cairntir/codeglass.py": "8868e577b906def219cb5cc2fd638877d54da99a25695a899622f6d91ba25677",
+    "src/cairntir/config.py": "77b7206ea45ce3dcecfb4213bc23855a897739657b5c184a89eb26bee6a9299d",
+    "src/cairntir/context.py": "05502c11cd64f12d2d51a5e1cc842d03760644c6ce27532ef17d4ab88a9ef020",
+    "src/cairntir/contracts.py": "9edf7d948c66c0489ec720f8de34650ecd52563cccbfdc769bd39edf569c4390",
+    "src/cairntir/cost.py": "1767e58c4ffe7ce8003ae9593cb57753bb3371d63b1311806d29ec6df582c8b2",
+    "src/cairntir/durability.py": "77b1ada357dbdb3b038787e75a711e66300495a61aee8edfc6243e9b56476644",
+    "src/cairntir/errors.py": "60d156722b3898e82ffdea14d35bb35144d5b8258d2c484177ee325fc1ec5e2d",
+    "src/cairntir/finalization.py": "12222c5aa5b7b2156543c62ef4b90729cd47841fc5a8be64242519195c11aebd",
+    "src/cairntir/handoff.py": "9e3e1db3ab773219300b3559f67fb776d02ae7abd8690d43e036134f3fdbb0c2",
+    "src/cairntir/health.py": "107dc563b4fa742d0cacc8375173923b8670913495bf59a6aadde41b39e0163c",
+    "src/cairntir/hosts.py": "968bbd42b657b3da613f406e1ecdb758d1cce54996ec66602761d1ea33c2ec13",
+    "src/cairntir/hotfix.py": "c11e10fc1b755e9f2b70b06e4acebae0b6b38ce855da4065cdb8e22ece2e9a20",
+    "src/cairntir/learning.py": "8e8e7224895a075862dc3889cc3a26c2aa72533d534da451913df3296d6b2004",
+    "src/cairntir/obsidian.py": "bbb069dfdd17130de01455523b480571a3b8801e9a4daf88a81150dd188eff69",
+    "src/cairntir/portable.py": "235412c8a3e70bcb8c8a08d02492507f15101e64dd585ab5ce06397b20130cd0",
+    "src/cairntir/procedures.py": "388b05e01690b105b37087696563a3ad0cc0cc43a432aaf20e2a3f25369566ec",
+    "src/cairntir/prompt_safety.py": "4e5164fa59545712faceada879394ca3fed8418ac3e57d60ff4f71c5bdc29bd7",
+    "src/cairntir/provenance.py": "bb93afdc7d35f38478826555497e8f9e2eafa53d769e44fa2c53a1521abe75b6",
+    "src/cairntir/register.py": "ced734ed53a59b9b6353f0c29924ccfc5adb033ab60a0a6d036155d937220594",
+    "src/cairntir/transcript.py": "db59658adb3e6aba2b60d84d30884023cc5434a2bbdda85a69af5d2e86b21bb6",
+    "src/cairntir/update.py": "1b51fda0d2de7a7f2f6101775fcc3b7e2ca3514e71ac70f8f8281d12c2811301",
+    "src/cairntir/vault.py": "57b4e0db82e1c71f8f5656041c326525563c1b4fb86e017cdb1648601de4db06",
+    "src/cairntir/__init__.py": "d51799d632b2ac82cabed7c3795df47b3efd13e1df5dab693a1ec4499b5cf642",
+    "src/cairntir/__main__.py": "a8ea76d756eaf5e07461a5abe223b308795f54b94433eb0670d7fcb04939edfc",
+    "src/cairntir/daemon/capture.py": "45f0e919531550c08c24e864af8b8ceaf466283c7df80aa32fa0e5797a43b47e",
+    "src/cairntir/daemon/spool.py": "f4d1f0c646d338539c583ebcfd272db4a9b7eac5b15da26830462eed90149d03",
+    "src/cairntir/daemon/__init__.py": "b30ce43cb2ade5433422f23cba7fb21b66ea6fa19cb8614369e957b87bed4380",
+    "src/cairntir/daemon/__main__.py": "0d33005ba15e34388408488ae0258596383de8e16058f97d910087ddf8e942b5",
+    "src/cairntir/impl/__init__.py": "4b00254604d60c8eb65b238b7a1366163a0d48a6b317fe4c96033b9b668387c9",
+    "src/cairntir/mcp/backend.py": "15604de8ba352e70711898ae85db94a33b27aece3a61aad8494ae4f6d3e68e8f",
+    "src/cairntir/mcp/server.py": "fd9ebbc7a7d40f3280630eb69db6dc76f07fe9abe18a86b2b4e9fd8f9d5a104e",
+    "src/cairntir/mcp/__init__.py": "fe3843ab1bb58587a91736c1c12570814428b9d72cce8fc039f72c6e7299ee2c",
+    "src/cairntir/memory/anchors.py": "0fc73e21333d22a17d8ae928fc5a86e4cde6638fac064d2608eb021e4541f79b",
+    "src/cairntir/memory/belief.py": "2f91319f2fef14855617d5da2c6009330c1dddf6b32c44e0056f44eccb086aaf",
+    "src/cairntir/memory/consolidate.py": "07c6ec7cf75b654ff8ece1dc080cb2c2c45195b4f938e0a3dd1bb1b861150ac4",
+    "src/cairntir/memory/embeddings.py": "9a7314e2c41a29b190c90fe8c21010fc735d57011a87f961901ae2e69df29724",
+    "src/cairntir/memory/retrieval.py": "14c006fd8a9fe63c27b7bb57990e7cab387265d733191f914a768f014741380b",
+    "src/cairntir/memory/store.py": "0c02d3bce45408bd922b4b0ee98681df225a4b136f6e1910e39b7e27868c14b8",
+    "src/cairntir/memory/taxonomy.py": "31c70f0ddf4af49ab54dd458704a062c0af0603951d6c22a556e056884b773e0",
+    "src/cairntir/memory/temporal.py": "8b90a7f7cc706877d45c923496803c5240f8e480071ebe57f4c91983d3d4e581",
+    "src/cairntir/memory/__init__.py": "88202aec8f64f12e3b1d4775227beb459f7cc55544bf03cc91f1f64995122943",
+    "src/cairntir/production/adapters.py": "3031d9ab2a09529b23ac7163ce15f638a216a16ae6fa79e383db2d63c9ea12f8",
+    "src/cairntir/production/llm.py": "5004d8f1c36a54394a104df6f6be96c8b8fdf4723e0f1c3234407ff319d53148",
+    "src/cairntir/production/__init__.py": "acb15b3d1042d07d11ee768d4555fcabd2c5b69c7a392578326283eb9e90ad30",
+    "src/cairntir/reason/loop.py": "862d489353e4d38282496686ee5199510e3d8035c9674df2d2a89cea60c6e1f0",
+    "src/cairntir/reason/model.py": "cc31144188e4900a81c51e5f60111c745b9560fd6e1819d08b34432d4df42f3d",
+    "src/cairntir/reason/ports.py": "3c79f7e9470fbb1ec0d4ff0dbc3ca77cd41b79d430f88d22cab3d605ec0dcca2",
+    "src/cairntir/reason/__init__.py": "715732c28e1f0df2747b41773b5cbf2dc539f0e41d0d4d66d612da24a3f97a17",
+    "src/cairntir/recipes/contract.py": "1bcff74087359540eed5437395692f30e2e4e57b2aa849a667659fdd47fde201",
+    "src/cairntir/recipes/discovery.py": "351616f07498a66eb178f9f8e598515fdef9e580821120f08eedd0e65bc25a04",
+    "src/cairntir/recipes/runner.py": "7451052679818b3010f8b49f69f7bd3f8b0e13e76c3327836ff87299f6db625f",
+    "src/cairntir/recipes/__init__.py": "9dad8578e9c60bcb5d800115bc8534b688315ce07babb47d5fe977fe97219b35",
+    "src/cairntir/skills/memory.py": "2f5e64c9d7b0e73e68abf1afb69155593f8d366849bd468b01109c95795bedcb",
+    "src/cairntir/skills/__init__.py": "141ffabeadff07460d0edf60584fa6f1b480105849f74f24442151e33a7c2c4e"
+  },
+  "regression": {
+    "full_run_passed": 983,
+    "documentation_failures": 3,
+    "documentation_cause": "Two independently authored result reports used CP1252 em dashes instead of UTF-8. Converted text to UTF-8 LF without changing runtime or assertions.",
+    "targeted_rerun": {
+      "passed": 18,
+      "files": [
+        "tests/unit/test_docs_links.py",
+        "tests/unit/test_landed_commitments.py"
+      ]
+    },
+    "selected_unique_tests": 986,
+    "coverage_percent": 83.37,
+    "full_run_log": "plans/continuity-regression.txt",
+    "initial_infrastructure_failure_log": "plans/continuity-regression-infrastructure-failure.txt",
+    "thread_limits": {
+      "OPENBLAS_NUM_THREADS": 1,
+      "OMP_NUM_THREADS": 1,
+      "MKL_NUM_THREADS": 1
+    },
+    "runtime_unchanged": true
+  },
+  "eval": {
+    "name": "eval",
+    "command": [
+      "$REPO\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-m",
+      "eval",
+      "--no-cov",
+      "--tb=short",
+      "-q"
+    ],
+    "exit_code": 0,
+    "started": "2026-09-06T03:11:33.736151+00:00",
+    "seconds": 20.525999,
+    "log": "plans/continuity-eval.txt",
+    "sha256": "9ae77ee13da619ace89ecae3ef10e5d73e3694ed2a24a66bae52771c90a8ddbf"
+  },
+  "portable_slow": "Included unchanged100003-record case in independent71casePASS",
+  "quality": {
+    "status": "PASS",
+    "runs": [
+      {
+        "name": "documentation-regression",
+        "exit_code": 0,
+        "command": [
+          "$REPO\\.venv\\Scripts\\python.exe",
+          "-m",
+          "pytest",
+          "tests/unit/test_docs_links.py",
+          "tests/unit/test_landed_commitments.py",
+          "--no-cov",
+          "-q"
+        ],
+        "sha256": "fc9bff4782ecd15c367789575087765104f0305a1867dc775130312293faf4a3"
+      },
+      {
+        "name": "ruff",
+        "exit_code": 0,
+        "command": [
+          "$REPO\\.venv\\Scripts\\ruff.exe",
+          "check",
+          "."
+        ],
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      {
+        "name": "format",
+        "exit_code": 0,
+        "command": [
+          "$REPO\\.venv\\Scripts\\ruff.exe",
+          "format",
+          "--check",
+          "."
+        ],
+        "sha256": "203e93364cb1cadf2891085bdf0d28057864d4a8c3d6594de13ce367c1fc9272"
+      },
+      {
+        "name": "types",
+        "exit_code": 0,
+        "command": [
+          "$REPO\\.venv\\Scripts\\mypy.exe",
+          "--strict",
+          "src"
+        ],
+        "sha256": "caf4cb276b1b834b69b4a51aa776668a80ee64e1a2fd04bb890970c67d4fd7e7"
+      },
+      {
+        "name": "no_silent_except",
+        "exit_code": 0,
+        "command": [
+          "$REPO\\.venv\\Scripts\\python.exe",
+          "scripts/check_no_silent_except.py"
+        ],
+        "sha256": "8b224915351ba85ccf826db63fe596a69b91dc82dbe61f8c3516eec686a69d4e"
+      },
+      {
+        "name": "landed_commitments",
+        "exit_code": 0,
+        "command": [
+          "$REPO\\.venv\\Scripts\\python.exe",
+          "scripts/check_landed_commitments.py"
+        ],
+        "sha256": "474753b1cafe24f56e572ae5504965a9cd184ae310affb069a00b7eacf01bda1"
+      },
+      {
+        "name": "seams",
+        "exit_code": 0,
+        "command": [
+          "$REPO\\.venv\\Scripts\\python.exe",
+          "scripts/check_seams.py"
+        ],
+        "sha256": "bbab4ac993f1f5ec259ed8166ae9daac194e4536e13772ebd4ae3d57abbf2e34"
+      },
+      {
+        "name": "docs_links",
+        "exit_code": 0,
+        "command": [
+          "$REPO\\.venv\\Scripts\\python.exe",
+          "scripts/check_docs_links.py"
+        ],
+        "sha256": "cee013b561af59d731c38d53d591173d3827fb952247a78116d72fa46ae33f56"
+      },
+      {
+        "name": "release_tags",
+        "exit_code": 0,
+        "command": [
+          "$REPO\\.venv\\Scripts\\python.exe",
+          "scripts/check_release_tags.py"
+        ],
+        "sha256": "70664408f580b5e6fc53b39ee502238841d436a35059696886a55cc9bd5127e4"
+      },
+      {
+        "name": "dependency_advisories",
+        "exit_code": 0,
+        "command": [
+          "$REPO\\.venv\\Scripts\\python.exe",
+          "scripts/check_dependency_advisories.py"
+        ],
+        "sha256": "788e2d603a6641fc20433ef28c23cb1435bcc5b83f3859eb17eaab90d6aeefd1"
+      },
+      {
+        "name": "mkdocs",
+        "exit_code": 0,
+        "command": [
+          "$REPO\\.venv\\Scripts\\python.exe",
+          "-m",
+          "mkdocs",
+          "build",
+          "--strict"
+        ],
+        "sha256": "093f20a56dc853ba433d7da18e41c07828bcc4908fa091eff5ad05fb63269726"
+      }
+    ]
+  },
+  "installed_wheel": {
+    "status": "PASS",
+    "package_version": "1.10.0",
+    "wheel_import_verified": true,
+    "cli_chars_including_newline": 1553,
+    "mcp_call_tool_result_chars": 1851,
+    "tool_count": 21,
+    "cli_mcp_parity": true,
+    "abstention": true,
+    "task_recovery_error": true,
+    "doctor_gate": {
+      "status": "PASS",
+      "drawers": 4,
+      "vectors": 4,
+      "dimension": 512,
+      "sqlite_integrity": "ok",
+      "foreign_key_errors": 0,
+      "scope": "isolated synthetic store",
+      "vault": "not supplied"
+    },
+    "demo_metrics": {
+      "full_history_chars": 7720,
+      "selected_chars": 2899,
+      "full_history_estimated_tokens": 1930,
+      "selected_estimated_tokens": 724,
+      "payload_reduction_percent": 62.44818652849741,
+      "token_basis": "estimate: characters divided by four, rounded down",
+      "billing_savings": null
+    },
+    "scope": "isolated synthetic store, cached production embeddings, isolated installed-package CLI and actual stdio MCP; no commercial host or billing evaluation",
+    "portable_v2_export_import_retry": "PASS",
+    "version_help_recipes": "PASS"
+  },
+  "independent": {
+    "foundation": "plans/v2-foundation-result.json",
+    "concurrency": "plans/context-concurrency-result.json",
+    "portable": "plans/portable-v2-result.json",
+    "procedures": "plans/procedure-result.json",
+    "sharing": "plans/sharing-result.json",
+    "bulk": "plans/bulk-write-result.json",
+    "migration": "plans/continuity-migration-result.json"
+  },
+  "scope": {
+    "platform": "Windows Python3.11.9",
+    "native_matrix": "pending remote CI",
+    "publication": "pending",
+    "production_installation": "unchanged1.9.0",
+    "live_reindex": false,
+    "new_dependencies": false,
+    "real_Claude_candidate": "pending project approval; not PASS",
+    "existing_Claude": "connected; tools fetch failed"
+  },
+  "artifacts": {
+    "plans/v2-foundation-result.json": "0b411b923af4ddbcab5ef8df66d859892ced60f0b7a85faaf1e56db26575fc18",
+    "plans/context-concurrency-result.json": "28c2c3e1ab6ac421be151cd1acc120817017beabdbc5666ddd1f356ab4d1192c",
+    "plans/portable-v2-result.json": "21b4df0dcc5c85334c329cc6e311ff92e97384bbd833147188d26446faedd608",
+    "plans/procedure-result.json": "27ae8d09ba2a578b9a1c9286df94a16345560f5d2f09b350c8821297c22d4290",
+    "plans/sharing-result.json": "b8784f6c700cb5ca96f7c9334c1ea949e12dabf040fd18a01786f483c164ce5a",
+    "plans/bulk-write-result.json": "922683b39e95b669b60e5df5238b99b2f43a415307c1ab30432713861eca51f2",
+    "plans/continuity-migration-result.json": "5ad40f99b0bfb550b7eb99e996416d9630519d17e1c93b9cdd289b2ef56df320",
+    "plans/continuity-regression.txt": "cc51dc9751e750cfba96159eb55f4e94658cd5ac5742f7f9f706d7284c6dfec2",
+    "plans/continuity-regression-infrastructure-failure.txt": "f29108f0019f9e511a76d70b972c1ea12440019c4aa2fce00e7586835a143201",
+    "plans/continuity-eval.txt": "9ae77ee13da619ace89ecae3ef10e5d73e3694ed2a24a66bae52771c90a8ddbf"
+  }
+}

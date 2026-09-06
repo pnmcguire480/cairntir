@@ -1,0 +1,130 @@
+........................................................................ [  7%]
+........................................................................ [ 14%]
+........................................................................ [ 21%]
+........................................................................ [ 29%]
+........................................................................ [ 36%]
+.............................................F.......................... [ 43%]
+........................................................................ [ 51%]
+...............................FF....................................... [ 58%]
+........................................................................ [ 65%]
+........................................................................ [ 73%]
+........................................................................ [ 80%]
+........................................................................ [ 87%]
+........................................................................ [ 94%]
+..................................................                       [100%]
+================================== FAILURES ===================================
+__________ test_the_maintained_repository_has_no_broken_local_links ___________
+tests\unit\test_docs_links.py:31: in test_the_maintained_repository_has_no_broken_local_links
+    assert CHECKER["missing_links"](CHECKER["REPO_ROOT"]) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts\check_docs_links.py:22: in missing_links
+    text = document.read_text(encoding="utf-8")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\pathlib.py:1059: in read_text
+    return f.read()
+           ^^^^^^^^
+<frozen codecs>:322: in decode
+    ???
+E   UnicodeDecodeError: 'utf-8' codec can't decode byte 0x97 in position 116: invalid start byte
+____________ test_the_real_repository_has_no_unlanded_commitments _____________
+tests\unit\test_landed_commitments.py:58: in test_the_real_repository_has_no_unlanded_commitments
+    assert result.returncode == 0, result.stdout + result.stderr
+E   AssertionError: Traceback (most recent call last):
+E       File "C:\Dev\Cairntir\scripts\check_landed_commitments.py", line 277, in <module>
+E         sys.exit(main())
+E                  ^^^^^^
+E       File "C:\Dev\Cairntir\scripts\check_landed_commitments.py", line 240, in main
+E         assertions = collect()
+E                      ^^^^^^^^^
+E       File "C:\Dev\Cairntir\scripts\check_landed_commitments.py", line 158, in collect
+E         text = doc.read_text(encoding="utf-8")
+E                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       File "C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\pathlib.py", line 1059, in read_text
+E         return f.read()
+E                ^^^^^^^^
+E       File "<frozen codecs>", line 322, in decode
+E     UnicodeDecodeError: 'utf-8' codec can't decode byte 0x97 in position 116: invalid start byte
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe', 'C:\\Dev\\Cairntir\\scripts\\check_landed_comm...ine 322, in decode\nUnicodeDecodeError: \'utf-8\' codec can\'t decode byte 0x97 in position 116: invalid start byte\n').returncode
+______ test_the_field_report_commitment_block_is_actually_being_checked _______
+tests\unit\test_landed_commitments.py:63: in test_the_field_report_commitment_block_is_actually_being_checked
+    assertions = script.collect()
+                 ^^^^^^^^^^^^^^^^
+scripts\check_landed_commitments.py:158: in collect
+    text = doc.read_text(encoding="utf-8")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\pathlib.py:1059: in read_text
+    return f.read()
+           ^^^^^^^^
+<frozen codecs>:322: in decode
+    ???
+E   UnicodeDecodeError: 'utf-8' codec can't decode byte 0x97 in position 116: invalid start byte
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.11.9-final-0 _______________
+
+Name                                  Stmts   Miss Branch BrPart  Cover   Missing
+---------------------------------------------------------------------------------
+src\cairntir\__init__.py                  9      0      0      0   100%
+src\cairntir\access.py                  323     49     80     10    84%   44-50, 55, 83-84, 130, 132, 134, 165-166, 190, 201-202, 242-243, 287, 382, 397, 405-407, 424, 439, 445, 453->449, 485, 510-511, 516-518, 523-524, 529-530, 653, 658-663, 675-677
+src\cairntir\calibration.py              52      2      4      1    95%   82-83
+src\cairntir\cli.py                     936    255    262     53    72%   81, 83->82, 133-137, 158-177, 204, 231-232, 269-271, 284-286, 292, 294-295, 354, 379-381, 386-388, 423-424, 440-446, 451-453, 459-460, 463-464, 468-470, 498-499, 503-505, 522-523, 526-528, 530-531, 540-542, 622-623, 627-629, 714-720, 774-776, 780-784, 789, 812-819, 865-867, 877-887, 899-901, 922-924, 939-949, 957-961, 970-984, 1041-1043, 1054-1056, 1101, 1103, 1124->1129, 1129->1134, 1208-1209, 1230, 1232, 1348-1353, 1376, 1388, 1390, 1392, 1399, 1403-1408, 1423-1425, 1465-1467, 1478->exit, 1498-1499, 1507-1513, 1538-1539, 1575, 1629-1631, 1646, 1654-1662, 1666-1667, 1674-1682, 1728, 1732-1734, 1797, 1800, 1818, 1904-1905, 1914->1923, 1942-1951, 1965-1967, 1981-1983, 1996-1998, 2023-2038, 2092-2093, 2098-2102, 2107-2108, 2112-2116, 2129, 2131, 2133, 2135-2143, 2162-2164, 2186-2197, 2202
+src\cairntir\codeglass.py               145     20     60     21    80%   65, 67, 69, 71, 73, 76, 82, 89, 91, 158, 160, 163, 165, 168, 170, 218->221, 301, 314, 345, 348, 357
+src\cairntir\config.py                   21      0      4      1    96%   56->58
+src\cairntir\context.py                 178     16     86     10    89%   26, 43-44, 104->102, 119, 121->123, 146, 148, 154, 187-189, 226, 255-256, 262-264
+src\cairntir\contracts.py                24      9      0      0    62%   49, 53, 70, 82, 86, 90, 94, 104, 108
+src\cairntir\cost.py                    147      4     20      3    96%   227->237, 270, 364, 409-410
+src\cairntir\daemon\__init__.py           4      0      0      0   100%
+src\cairntir\daemon\capture.py           67      7      6      1    89%   84-89, 114
+src\cairntir\daemon\spool.py             53      1      4      1    96%   97
+src\cairntir\durability.py               45      5      2      1    87%   49, 59, 70, 82-83
+src\cairntir\errors.py                   20      0      0      0   100%
+src\cairntir\finalization.py            166     15     50     15    86%   43, 46, 58, 106, 108, 110, 112, 155, 170, 175, 233, 259, 261, 280, 285
+src\cairntir\handoff.py                 160      3     32      4    96%   261->260, 263, 557, 671
+src\cairntir\health.py                   63      9     18      5    80%   48, 66, 83, 96, 122-130, 144
+src\cairntir\hosts.py                   281     30    108     11    89%   233, 260-261, 275->277, 287, 326, 350, 365-366, 416-421, 426-427, 433, 445, 450-455, 530, 539-540, 554-555, 559, 601-603
+src\cairntir\hotfix.py                  706     88    268     72    83%   114-115, 155, 164, 167, 219-220, 243, 254, 262, 272, 321, 338, 364, 370, 373, 380, 383, 443, 455, 460, 466, 533, 547, 551, 554, 562, 564, 600, 603, 608, 612, 616, 620, 623->627, 628, 631, 668, 677, 685, 688, 729, 737-738, 740, 743, 749, 789-790, 796, 802, 804, 807, 825, 866, 873, 881, 887, 892, 895, 913, 928, 965, 1028, 1035, 1052-1053, 1056, 1083, 1086, 1090, 1105, 1112-1120, 1137, 1144->1149, 1171, 1204-1205, 1244-1245, 1247, 1249, 1253, 1274, 1311, 1373
+src\cairntir\impl\__init__.py             6      0      0      0   100%
+src\cairntir\learning.py                227     30    104     30    82%   109, 111, 113, 115, 119, 123, 125, 127, 196, 200, 209-210, 249, 251, 273->272, 282, 298, 361, 363, 387, 450, 454, 456, 461, 465, 467, 515, 518, 527, 536, 545
+src\cairntir\mcp\__init__.py              3      0      0      0   100%
+src\cairntir\mcp\backend.py             421     42    158     17    89%   155-156, 158, 597, 612, 621-622, 627, 637-638, 661, 689, 701, 717, 725-726, 741, 749-750, 779-780, 792, 799-805, 816, 836, 879, 895, 906-907, 912, 939-940, 966, 1013, 1016, 1130, 1192, 1244, 1247
+src\cairntir\memory\__init__.py           9      0      0      0   100%
+src\cairntir\memory\anchors.py          175      4     74      2    98%   301->303, 396, 400, 409-412, 417->413
+src\cairntir\memory\belief.py            12      0      0      0   100%
+src\cairntir\memory\consolidate.py       65      0     26      1    99%   177->175
+src\cairntir\memory\embeddings.py       225    140     34      4    37%   44, 48, 198-239, 244-248, 252-265, 269-301, 324-326, 331, 334-352, 357-361, 365-382, 393-398, 402-427, 433, 435, 440, 457, 465, 478-498
+src\cairntir\memory\retrieval.py         32      0      4      0   100%
+src\cairntir\memory\store.py           1120    248    282     51    77%   181, 188, 203, 214, 231, 239-240, 272, 277, 289, 314, 334, 350-351, 357, 372, 375-376, 391, 393, 395, 405-406, 419-420, 422, 461-462, 491, 520-521, 529-530, 546-547, 671, 672->674, 697-698, 718-719, 798, 818-819, 830-831, 848-849, 856-857, 862, 872-873, 890-891, 987-988, 990, 1000-1001, 1003, 1016, 1018-1019, 1027-1028, 1037-1038, 1045-1046, 1060-1061, 1063, 1086-1087, 1100-1101, 1113-1116, 1134-1135, 1156, 1158, 1161-1162, 1197, 1206, 1215-1216, 1231-1232, 1239, 1258-1259, 1265-1266, 1320, 1326, 1342-1343, 1413-1414, 1423, 1429, 1435-1436, 1443, 1462, 1563-1564, 1577-1579, 1581, 1584-1585, 1601-1602, 1629-1630, 1642, 1644, 1658, 1660-1661, 1663, 1678-1679, 1696, 1746-1748, 1795, 1824-1826, 1848-1849, 1893-1894, 1929, 1951-1952, 1955-1956, 1998-1999, 2016-2017, 2031->2034, 2038-2039, 2057->2060, 2067-2068, 2087-2088, 2116, 2122->2125, 2126-2127, 2149-2150, 2160->2159, 2175-2183, 2191-2223, 2228-2284, 2288-2302, 2308-2309, 2342-2343, 2347, 2352-2353
+src\cairntir\memory\taxonomy.py          46      0      4      0   100%
+src\cairntir\memory\temporal.py          55      5     22      3    90%   76, 81, 104, 146-147
+src\cairntir\obsidian.py                117     16     28      9    83%   45, 74, 116, 126, 129, 159, 172, 180-181, 191, 199-200, 203-206
+src\cairntir\portable.py                328     31    142     21    89%   232, 243, 262-263, 278, 317->324, 320-321, 337, 442->exit, 493-494, 506-507, 509, 516, 519-520, 522, 528, 532, 535, 538-539, 542, 546, 549, 565, 651, 709, 718, 720, 737
+src\cairntir\procedures.py              330     20     92     18    91%   171, 210, 213, 237, 244, 248, 255, 273, 318, 323, 380, 425, 460, 527, 541, 581, 618-619, 625, 642
+src\cairntir\production\__init__.py       4      0      0      0   100%
+src\cairntir\production\adapters.py      68      3     12      3    92%   48, 54, 67
+src\cairntir\production\llm.py           54      0     12      0   100%
+src\cairntir\prompt_safety.py            24      0      0      0   100%
+src\cairntir\provenance.py               95      8     18      6    88%   75, 77, 79, 85, 200-201, 220, 232
+src\cairntir\reason\__init__.py           5      0      0      0   100%
+src\cairntir\reason\loop.py              98      8     46      6    90%   176, 270, 272, 281, 301, 316, 336-337
+src\cairntir\reason\model.py             24      0      0      0   100%
+src\cairntir\reason\ports.py             39     10      0      0    74%   48, 57, 72, 76, 85, 96, 112, 121, 132, 141
+src\cairntir\recipes\__init__.py          5      0      0      0   100%
+src\cairntir\recipes\contract.py         74      7     34      6    88%   81, 95, 104, 115, 120, 129, 132
+src\cairntir\recipes\discovery.py        34      2     16      2    92%   43, 78
+src\cairntir\recipes\runner.py          107      6     28      4    93%   126, 324, 413-414, 419, 423
+src\cairntir\register.py                 77      8     20      2    90%   63-70, 99, 116->111, 140-141, 203-204
+src\cairntir\skills\__init__.py          15      2      2      0    88%   37-38
+src\cairntir\skills\memory.py            32      0     12      0   100%
+src\cairntir\transcript.py              342     53    116     30    81%   70-83, 156, 158, 160, 174, 218, 221, 286->288, 289, 323, 331, 333, 347, 350, 365-366, 373, 384-385, 397, 399-400, 402, 420-421, 425, 430-432, 436, 451, 462, 472, 482, 485, 513, 525-535, 612, 628, 642, 676, 684-686, 690-693
+src\cairntir\update.py                  107     20     30      3    82%   115, 132-133, 140, 143-144, 146, 156-171, 193-194
+src\cairntir\vault.py                   110      0     34      0   100%
+---------------------------------------------------------------------------------
+TOTAL                                  7885   1176   2354    427    83%
+Coverage HTML written to dir htmlcov
+Required test coverage of 80% reached. Total coverage: 83.37%
+=========================== short test summary info ===========================
+FAILED tests/unit/test_docs_links.py::test_the_maintained_repository_has_no_broken_local_links
+FAILED tests/unit/test_landed_commitments.py::test_the_real_repository_has_no_unlanded_commitments
+FAILED tests/unit/test_landed_commitments.py::test_the_field_report_commitment_block_is_actually_being_checked
+3 failed, 983 passed, 8 deselected in 169.66s (0:02:49)

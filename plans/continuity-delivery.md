@@ -1,6 +1,7 @@
 # Continuity delivery
 
-Status: ready. User request #1262 authorizes removing the CLI contention
+Status: local implementation and independent acceptance COMPLETE; protected PR,
+native CI, merge and publication remain in progress. User request #1262 authorizes removing the CLI contention
 limitation and completing the remaining work previously listed: PR delivery,
 release publication, portable evidence, evaluated procedures and shared control.
 This extends the historical foundation scope; publication authority comes from
@@ -47,7 +48,7 @@ this request, not from the earlier foundation completion.
 
 The foundation manifests, tests and results remain historical immutable
 evidence of their recorded commits. Each new milestone has a separate tester
-and freeze. Existing test bytes remain unchanged. Necessary schema/version
+and freeze. Existing frozen test bytes remain unchanged. Necessary schema/version
 changes use a new acceptance generation with an explicit support-input change
 record; do not misreport a historical configuration hash as matching a newer
 release. The earlier support files remain recoverable from their recorded Git
@@ -59,3 +60,10 @@ Report COMPLETE only for verified items, BLOCKED for an external prerequisite,
 or EXHAUSTED when a bounded cycle cannot pass. No paid model evaluation, new
 dependency, production reindex, live configuration replacement or license change
 is authorized as an incidental implementation step.
+
+## Local completion evidence
+
+[Final local gates](continuity-gates.md) record independently accepted concurrency,
+portable evidence, procedures, scoped sharing and bulk transaction boundaries.
+The [release record](../docs/release/v1.10.0.md) tracks the remaining external gates.
+Runtime commit: `3fe5e6f`. Historical freezes and all failing evidence are preserved.

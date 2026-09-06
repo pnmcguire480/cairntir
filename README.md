@@ -12,8 +12,10 @@ Cairntir stores decisions, facts, unfinished work, and outcomes as verbatim
 *drawers* in a SQLite database you own. A budgeted handoff restores complete
 drawers across sessions; semantic and file-anchored recall find deeper evidence.
 
-Current published release: [1.9.0](https://github.com/pnmcguire480/cairntir/releases/tag/v1.9.0).
-See the [changelog](CHANGELOG.md) and [release evidence](docs/release/v1.9.0.md).
+Version **1.10.0**. See the [changelog](CHANGELOG.md) and
+[release evidence](docs/release/v1.10.0.md). Published downloads are on
+[PyPI](https://pypi.org/project/cairntir/) and
+[GitHub Releases](https://github.com/pnmcguire480/cairntir/releases).
 
 ## Install
 
@@ -45,6 +47,7 @@ room is a topic, and a drawer is one verbatim memory.
 
 ```bash
 cairntir handoff myproject
+cairntir handoff myproject --task "repair cache invalidation" --budget 8192
 cairntir recall "why did we choose Postgres?" --wing myproject
 cairntir recall-for-change src/auth.py
 cairntir recover --host codex --wing myproject
@@ -54,6 +57,11 @@ cairntir cost myproject
 Handoff returns whole drawers or names those omitted by its character budget.
 It includes recent default-layer writes, open predictions, and optional code
 anchors. Settlements append observed outcomes without rewriting predictions.
+
+[Portable evidence](docs/portable-evidence.md) preserves source identities and
+relationships across stores. [Evaluated procedures](docs/evaluated-procedures.md)
+require holdout evidence and local approval; [scoped sharing](docs/scoped-sharing.md)
+limits access with owner-issued grants.
 
 ## Host support
 

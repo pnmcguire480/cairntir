@@ -14,10 +14,11 @@ semantic and anchored recall, prediction settlements, discovery review, three
 skills, recipes, and 21 MCP tools. Transcript recovery supports Claude Code,
 Codex, and Qwen Code; Cursor returns an unsupported receipt.
 
-The user authorized token-economical 2.0 preparation and a sales demo. The
-foundation runtime and isolated demo are **COMPLETE**, with independent acceptance
-PASS after one repair round. Resume from [the 2.0 plan](plans/v2-continuity.md) and
-[frozen acceptance contract](plans/v2-foundation-acceptance.md), tracked by
+The continuity foundation and demo are independently accepted. Request #1262
+extends that work through concurrent CLI reads, portable evidence, evaluated
+procedures, scoped sharing and release delivery. The current additive candidate
+is **1.10.0**, with published version still 1.9.0. Follow the
+[delivery plan](plans/continuity-delivery.md), tracked by
 [issue #88](https://github.com/pnmcguire480/cairntir/issues/88).
 
 ## Working rules
@@ -85,36 +86,35 @@ the production installation as an incidental build step.
 
 ## Last Session — 2026-09-06
 
-Resumed implementation on "continue?" (drawer #1244), following the independent
-41-case test freeze (#1243). Task-aware handoff, complete-response budgets,
-current-evidence selection, read-only cached queries and an isolated HTML demo
-are implemented on `codex/v2-foundation`. Published version remains 1.9.0.
-Local commits: `e19ba8e` freezes acceptance; `ac89c20` implements the foundation.
+Request #1262: remove false CLI busy errors with other SQLite clients open, then
+finish the remaining continuity milestones and delivery. Work is on
+`codex/v2-foundation`; candidate version 1.10.0 follows the additive release policy.
+Publication remains pending acceptance and protected PR delivery.
 
-Independent round 0 found unrelated semantic evidence and cold CLI SQLite
-sidecar writes. Repair 1 fixes both: 41 original acceptance tests, 10 separately
-frozen boundary tests and 153 legacy gates PASS. [The independent record](plans/v2-foundation-result.md)
-preserves the failures and passing rerun. All frozen inputs remain unchanged.
-Source review and cold/busy/orphan-WAL source-purity probes also PASS.
+Foundation and demo acceptance is preserved in the
+[historical result](plans/v2-foundation-result.md). The subsequent
+[concurrency result](plans/context-concurrency-result.md) passes 210 tests with
+zero repair rounds: cold filesystem purity and coherent live WAL snapshots.
+The CLI uses a bounded private snapshot while other clients remain open.
 
-Local gates: 870 regression tests (83.56% coverage), seven offline model evaluations,
-Ruff/format, strict types, integrity/commitment/seam/link/advisory gates, docs
-build, wheel build and isolated wheel CLI/MCP/doctor smoke all pass. The demo
-measures 7,720 history characters versus 2,899 selected (62.45% synthetic payload
-reduction); it makes no billed-savings or commercial-host claim. Detailed
-[gate evidence](plans/v2-foundation-gates.md) and [demo instructions](docs/context-demo.md)
-are saved. The local preview is `.cairntir/context-demo-final/report.html`.
+Portable v2, evaluated procedures and scoped sharing are implemented against
+separate independent freezes. Integration review added frozen reproductions for
+nested-reference mapping, bulk-cache invalidation and private registry/anchor
+access. Those assertions remain unchanged during repairs. The unchanged
+100,003-record archive case passed in 70.5 seconds after bulk-write optimization;
+complete-candidate independent acceptance is PASS: portable71, procedures161,
+sharing193 and bulk8. All seven offline model evaluations pass. Regression
+covered986cases with83.37% coverage; three report-encoding failures were fixed
+and both affected test files reran18/18 green. [Gate evidence](plans/continuity-gates.md)
+retains the failed runs, infrastructure retry and exact scope. Runtime commit3fe5e6f.
 
-Cold task CLI uses a locked private snapshot and reports busy while another WAL
-client is open. Already-open MCP task reads preserve persisted data/access/log
-state; SQLite shared-memory bookkeeping is outside that byte-purity claim.
-Windows execution is verified; POSIX received source review only.
-
-Next delivery gate: review the local `codex/v2-foundation` commits, then run a
-green cross-platform PR before landing. Later 2.0 milestones remain separate;
-portable evidence needs its own frozen acceptance. The broader request is
-#1237. No dependencies, production installation, version, license, tags or
-publication changed.
+[Release acceptance](docs/release/v1.10.0.md) records the remaining PR, native CI,
+private migration rehearsal, package and publication gates. The
+[support change record](plans/continuity-support-changes.md) distinguishes
+historical 1.9.0 frozen inputs from schema 7 and the candidate version.
+No new dependencies, production installation changes, live reindex, license
+changes or published tags have been made. The production MCP server continues
+to use installed 1.9.0; development commands use this checkout's `.venv`.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer
