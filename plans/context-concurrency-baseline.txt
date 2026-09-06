@@ -1,0 +1,112 @@
+FFFFF.                                                                   [100%]
+================================== FAILURES ===================================
+__ test_cli_reads_committed_wal_without_mutating_owner_state[idle-wal-owner] __
+tests\unit\test_context_concurrency_acceptance.py:359: in test_cli_reads_committed_wal_without_mutating_owner_state
+    payload = _finish_cli(_start_cli(case), case)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\test_context_concurrency_acceptance.py:337: in _finish_cli
+    assert process.returncode == 0, stderr
+E   AssertionError: cairntir: failed to open read-only database at C:\Users\pnmcg\AppData\Local\Temp\pytest-of-pnmcg\pytest-147\test_cli_reads_committed_wal_w0\source\cairntir.db: snapshot helper failed: Traceback (most recent call last):
+E       File "C:\Dev\Cairntir\src\cairntir\memory\store.py", line 1954, in _copy_locked_database
+E         msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 512)
+E     PermissionError: [Errno 13] Permission denied
+E     
+E     The above exception was the direct cause of the following exception:
+E     
+E     Traceback (most recent call last):
+E       File "<string>", line 1, in <module>
+E       File "C:\Dev\Cairntir\src\cairntir\memory\store.py", line 1960, in _copy_locked_database
+E         raise MemoryStoreError(
+E     cairntir.errors.MemoryStoreError: task snapshot source is busy or cannot be locked: [Errno 13] Permission denied
+E     
+E   assert 1 == 0
+E    +  where 1 = <Popen: returncode: 1 args: ['C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe'...>.returncode
+_ test_cli_reads_committed_wal_without_mutating_owner_state[uncommitted-wal-writer] _
+tests\unit\test_context_concurrency_acceptance.py:359: in test_cli_reads_committed_wal_without_mutating_owner_state
+    payload = _finish_cli(_start_cli(case), case)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\test_context_concurrency_acceptance.py:337: in _finish_cli
+    assert process.returncode == 0, stderr
+E   AssertionError: cairntir: failed to open read-only database at C:\Users\pnmcg\AppData\Local\Temp\pytest-of-pnmcg\pytest-147\test_cli_reads_committed_wal_w1\source\cairntir.db: snapshot helper failed: Traceback (most recent call last):
+E       File "C:\Dev\Cairntir\src\cairntir\memory\store.py", line 1954, in _copy_locked_database
+E         msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 512)
+E     PermissionError: [Errno 13] Permission denied
+E     
+E     The above exception was the direct cause of the following exception:
+E     
+E     Traceback (most recent call last):
+E       File "<string>", line 1, in <module>
+E       File "C:\Dev\Cairntir\src\cairntir\memory\store.py", line 1960, in _copy_locked_database
+E         raise MemoryStoreError(
+E     cairntir.errors.MemoryStoreError: task snapshot source is busy or cannot be locked: [Errno 13] Permission denied
+E     
+E   assert 1 == 0
+E    +  where 1 = <Popen: returncode: 1 args: ['C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe'...>.returncode
+_____ test_cli_snapshot_is_coherent_during_atomic_commits_and_checkpoints _____
+tests\unit\test_context_concurrency_acceptance.py:382: in test_cli_snapshot_is_coherent_during_atomic_commits_and_checkpoints
+    payload = _finish_cli(_start_cli(case), case)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\test_context_concurrency_acceptance.py:337: in _finish_cli
+    assert process.returncode == 0, stderr
+E   AssertionError: cairntir: failed to open read-only database at C:\Users\pnmcg\AppData\Local\Temp\pytest-of-pnmcg\pytest-147\test_cli_snapshot_is_coherent_0\source\cairntir.db: snapshot helper failed: Traceback (most recent call last):
+E       File "C:\Dev\Cairntir\src\cairntir\memory\store.py", line 1954, in _copy_locked_database
+E         msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 512)
+E     PermissionError: [Errno 13] Permission denied
+E     
+E     The above exception was the direct cause of the following exception:
+E     
+E     Traceback (most recent call last):
+E       File "<string>", line 1, in <module>
+E       File "C:\Dev\Cairntir\src\cairntir\memory\store.py", line 1960, in _copy_locked_database
+E         raise MemoryStoreError(
+E     cairntir.errors.MemoryStoreError: task snapshot source is busy or cannot be locked: [Errno 13] Permission denied
+E     
+E   assert 1 == 0
+E    +  where 1 = <Popen: returncode: 1 args: ['C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe'...>.returncode
+_______ test_cli_retains_committed_evidence_when_wal_owner_closes[0.0] ________
+tests\unit\test_context_concurrency_acceptance.py:422: in test_cli_retains_committed_evidence_when_wal_owner_closes
+    _finish_cli(_start_cli(case), case)
+tests\unit\test_context_concurrency_acceptance.py:337: in _finish_cli
+    assert process.returncode == 0, stderr
+E   AssertionError: cairntir: failed to open read-only database at C:\Users\pnmcg\AppData\Local\Temp\pytest-of-pnmcg\pytest-147\test_cli_retains_committed_evi0\source\cairntir.db: snapshot helper failed: Traceback (most recent call last):
+E       File "C:\Dev\Cairntir\src\cairntir\memory\store.py", line 1954, in _copy_locked_database
+E         msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 512)
+E     PermissionError: [Errno 13] Permission denied
+E     
+E     The above exception was the direct cause of the following exception:
+E     
+E     Traceback (most recent call last):
+E       File "<string>", line 1, in <module>
+E       File "C:\Dev\Cairntir\src\cairntir\memory\store.py", line 1960, in _copy_locked_database
+E         raise MemoryStoreError(
+E     cairntir.errors.MemoryStoreError: task snapshot source is busy or cannot be locked: [Errno 13] Permission denied
+E     
+E   assert 1 == 0
+E    +  where 1 = <Popen: returncode: 1 args: ['C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe'...>.returncode
+_______ test_cli_retains_committed_evidence_when_wal_owner_closes[0.05] _______
+tests\unit\test_context_concurrency_acceptance.py:422: in test_cli_retains_committed_evidence_when_wal_owner_closes
+    _finish_cli(_start_cli(case), case)
+tests\unit\test_context_concurrency_acceptance.py:337: in _finish_cli
+    assert process.returncode == 0, stderr
+E   AssertionError: cairntir: failed to open read-only database at C:\Users\pnmcg\AppData\Local\Temp\pytest-of-pnmcg\pytest-147\test_cli_retains_committed_evi1\source\cairntir.db: snapshot helper failed: Traceback (most recent call last):
+E       File "C:\Dev\Cairntir\src\cairntir\memory\store.py", line 1954, in _copy_locked_database
+E         msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 512)
+E     PermissionError: [Errno 13] Permission denied
+E     
+E     The above exception was the direct cause of the following exception:
+E     
+E     Traceback (most recent call last):
+E       File "<string>", line 1, in <module>
+E       File "C:\Dev\Cairntir\src\cairntir\memory\store.py", line 1960, in _copy_locked_database
+E         raise MemoryStoreError(
+E     cairntir.errors.MemoryStoreError: task snapshot source is busy or cannot be locked: [Errno 13] Permission denied
+E     
+E   assert 1 == 0
+E    +  where 1 = <Popen: returncode: 1 args: ['C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe'...>.returncode
+=========================== short test summary info ===========================
+FAILED tests/unit/test_context_concurrency_acceptance.py::test_cli_reads_committed_wal_without_mutating_owner_state[idle-wal-owner]
+FAILED tests/unit/test_context_concurrency_acceptance.py::test_cli_reads_committed_wal_without_mutating_owner_state[uncommitted-wal-writer]
+FAILED tests/unit/test_context_concurrency_acceptance.py::test_cli_snapshot_is_coherent_during_atomic_commits_and_checkpoints
+FAILED tests/unit/test_context_concurrency_acceptance.py::test_cli_retains_committed_evidence_when_wal_owner_closes[0.0]
+FAILED tests/unit/test_context_concurrency_acceptance.py::test_cli_retains_committed_evidence_when_wal_owner_closes[0.05]
+5 failed, 1 passed in 21.47s

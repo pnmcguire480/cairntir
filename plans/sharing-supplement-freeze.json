@@ -1,0 +1,48 @@
+{
+  "status": "FROZEN",
+  "tester_id": "/root/context_core",
+  "coordinator_id": "/root",
+  "frozen_at_utc": "2026-09-06T03:05:03.171200+00:00",
+  "authorization": "Root explicitly approved authoring and freezing bounded supplementary sharing cases before reviewer fixes; original29 remain unchanged.",
+  "artifact_readiness": "PASS",
+  "implementation_acceptance": "FAIL",
+  "cases": 4,
+  "baseline": "4 failed in 22.07s",
+  "contract": [
+    "Write-only add_anchors and repair_anchors cannot read existing anchor paths or update any table before rejecting missing read capability.",
+    "Authenticated evaluation payload current_id and authenticated procedure payload evaluation_id must not disclose IDs outside the bound read grant. Complete-scope controls must still read authentic history/evaluation."
+  ],
+  "artifacts": [
+    {
+      "path": "tests/unit/test_sharing_supplement.py",
+      "sha256": "91775fe90286a061eac07ea1059db9f2457f96d0e0b3534aaaea0268b067c204"
+    },
+    {
+      "path": "plans/sharing-supplement-baseline.txt",
+      "sha256": "1be26231ab0c9a1bac9f42e63499e75bfea26a972066b2f9b84e3314de941dee"
+    },
+    {
+      "path": "tests/unit/test_procedure_acceptance.py",
+      "sha256": "7c224760156f14278d46f34bc3b6ddb24e43cf7bc0b7c11efaf4d2f64280e90b"
+    }
+  ],
+  "runtime_record_only": [
+    {
+      "path": "src/cairntir/access.py",
+      "sha256": "7c1f8d759996be4526768b6f468f4b41cf320cf938d27948c0d78656bd750f40"
+    },
+    {
+      "path": "src/cairntir/procedures.py",
+      "sha256": "388b05e01690b105b37087696563a3ad0cc0cc43a432aaf20e2a3f25369566ec"
+    },
+    {
+      "path": "src/cairntir/memory/store.py",
+      "sha256": "0c02d3bce45408bd922b4b0ee98681df225a4b136f6e1910e39b7e27868c14b8"
+    }
+  ],
+  "head": "2cedd545db48ac2d86c710e60535b575aad09a56",
+  "maximum_repair_rounds": 2,
+  "original29": "unchanged",
+  "line_endings": "LF",
+  "self_hash": "Reported externally to coordinator"
+}

@@ -10,16 +10,23 @@ swallowing of SQLite exceptions is explicitly banned.
 
 from __future__ import annotations
 
+import errno
 import json
+import math
 import os
 import re
+import shutil
 import sqlite3
 import struct
+import subprocess
+import sys
+import time
 from collections.abc import Callable, Iterator, Sequence
-from contextlib import contextmanager
-from dataclasses import dataclass
+from contextlib import ExitStack, closing, contextmanager
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING, Any
 from uuid import uuid4
 
@@ -55,7 +62,7 @@ def _pack(vec: list[float]) -> bytes:
     return struct.pack(f"{len(vec)}f", *vec)
 
 
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 7
 """Current drawer schema version.
 
 v1 — initial: wing, room, content, layer, metadata, created_at.
@@ -75,6 +82,8 @@ v5 — semantic-index integrity: store metadata records the embedding-space
 v6 — trust and durability: immutable write provenance on every drawer,
      trust/validity vector prefilters, and durable idempotency receipts for
      crash-safe multi-drawer workflows.
+v7 — portable identities and immutable original records, independent of local
+     retrieval state and numeric drawer ids.
 """
 
 _V2_COLUMNS: tuple[str, ...] = (
@@ -595,6 +604,7 @@ class DrawerStore:
         *,
         provenance: WriteProvenance | None = None,
         backup_migrations: bool = True,
+        read_only: bool = False,
     ) -> None:
         """Open (or create) the store at ``db_path`` using ``embedder``.
 
@@ -613,14 +623,71 @@ class DrawerStore:
         self._dim: int | None = None  # lazy; populated by _init_schema or first add
         self._transaction_depth = 0
         self._savepoint_counter = 0
-        self._conn = self._connect(db_path)
+        self._bulk_embedding: tuple[tuple[int, int, int, str], EmbeddingSpaceStatus] | None = None
+        self._read_snapshot: TemporaryDirectory[str] | None = None
+        self._conn = self._connect_readonly(db_path) if read_only else self._connect(db_path)
         try:
+            if read_only:
+                self._require_embedding_space()
+                return
             if backup_migrations:
                 self._backup_before_migration()
             self._init_schema()
         except (EmbeddingError, MemoryStoreError):
-            self._conn.close()
+            self.close()
             raise
+
+    def _connect_readonly(self, path: Path) -> sqlite3.Connection:
+        conn: sqlite3.Connection | None = None
+        try:
+            self._read_snapshot = TemporaryDirectory(prefix="cairntir-context-")
+            copied = Path(self._read_snapshot.name) / path.name
+            subprocess.run(  # noqa: S603 - fixed interpreter and code; paths are arguments
+                [
+                    sys.executable,
+                    "-c",
+                    "from pathlib import Path; import sys; "
+                    "from cairntir.memory.store import _copy_locked_database; "
+                    "_copy_locked_database(Path(sys.argv[1]), Path(sys.argv[2]))",
+                    str(path.resolve()),
+                    str(copied),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=12,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            conn = sqlite3.connect(copied)
+            conn.execute("PRAGMA busy_timeout = 5000")
+            conn.enable_load_extension(True)
+            sqlite_vec.load(conn)
+            conn.enable_load_extension(False)
+            conn.row_factory = sqlite3.Row
+            version = int(conn.execute("PRAGMA user_version").fetchone()[0])
+            conn.execute("PRAGMA query_only = ON")
+        except (OSError, sqlite3.Error, subprocess.SubprocessError) as exc:
+            if conn is not None:
+                conn.close()
+            if self._read_snapshot is not None:
+                self._read_snapshot.cleanup()
+            detail = (
+                "snapshot helper failed: "
+                + (exc.stderr.strip()[-1000:] or f"exit status {exc.returncode}")
+                if isinstance(exc, subprocess.CalledProcessError)
+                else str(exc)
+            )
+            raise MemoryStoreError(
+                f"failed to open read-only database at {path}: {detail}"
+            ) from exc
+        if version != SCHEMA_VERSION:
+            conn.close()
+            self._read_snapshot.cleanup()
+            raise MemoryStoreError(
+                f"read-only task context requires schema v{SCHEMA_VERSION}, found v{version}; "
+                "open the store normally to migrate or upgrade Cairntir"
+            )
+        return conn
 
     def _backup_before_migration(self) -> None:
         """Create a timestamped online backup before altering an older schema."""
@@ -723,10 +790,87 @@ class DrawerStore:
                     self._dim = self._embedder.dimension
                     _create_vector_table(self._conn, self._dim)
                 self._migrate()
+                self._initialize_portable_records()
+                self._initialize_procedures()
                 self._initialize_embedding_metadata_if_safe()
                 self._conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"failed to initialize schema: {exc}") from exc
+
+    def _initialize_procedures(self) -> None:
+        self._conn.execute(
+            "CREATE TABLE IF NOT EXISTS procedure_records ("
+            "drawer_id INTEGER PRIMARY KEY REFERENCES drawers(id), "
+            "root_id INTEGER NOT NULL REFERENCES drawers(id), "
+            "parent_id INTEGER UNIQUE REFERENCES procedure_records(drawer_id), "
+            "payload TEXT NOT NULL)"
+        )
+        self._conn.execute(
+            "CREATE TABLE IF NOT EXISTS procedure_evaluations ("
+            "drawer_id INTEGER PRIMARY KEY REFERENCES drawers(id), payload TEXT NOT NULL)"
+        )
+
+    def _procedure_record(self, drawer_id: int) -> dict[str, Any] | None:
+        try:
+            row = self._conn.execute(
+                "SELECT root_id, payload FROM procedure_records WHERE drawer_id=?", (drawer_id,)
+            ).fetchone()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"procedure registry read failed: {exc}") from exc
+        return {**json.loads(row["payload"]), "root_id": int(row["root_id"])} if row else None
+
+    def _procedure_records(self, wing: str | None = None) -> list[dict[str, Any]]:
+        try:
+            rows = self._conn.execute(
+                "SELECT p.root_id, p.payload FROM procedure_records p "
+                "JOIN drawers d ON d.id=p.drawer_id "
+                "WHERE (? IS NULL OR d.wing=?) ORDER BY p.drawer_id",
+                (wing, wing),
+            ).fetchall()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"procedure registry scan failed: {exc}") from exc
+        return [{**json.loads(row["payload"]), "root_id": int(row["root_id"])} for row in rows]
+
+    def is_registered_procedure(self, drawer_id: int) -> bool:
+        """Check durable procedure origin independently of drawer metadata."""
+        return self._procedure_record(drawer_id) is not None
+
+    def _register_procedure(
+        self, drawer_id: int, *, root_id: int, parent_id: int | None, payload: dict[str, Any]
+    ) -> None:
+        try:
+            with self._write_scope():
+                self._conn.execute(
+                    "INSERT INTO procedure_records(drawer_id,root_id,parent_id,payload) "
+                    "VALUES (?,?,?,?)",
+                    (drawer_id, root_id, parent_id, json.dumps(payload, sort_keys=True)),
+                )
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"procedure registration failed: {exc}") from exc
+
+    def _procedure_evaluation(self, drawer_id: int) -> dict[str, Any] | None:
+        try:
+            row = self._conn.execute(
+                "SELECT payload FROM procedure_evaluations WHERE drawer_id=?", (drawer_id,)
+            ).fetchone()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"procedure evaluation read failed: {exc}") from exc
+        if row is None:
+            return None
+        value = json.loads(row["payload"])
+        if not isinstance(value, dict):
+            raise MemoryStoreError("invalid procedure evaluation record")
+        return value
+
+    def _register_procedure_evaluation(self, drawer_id: int, payload: dict[str, Any]) -> None:
+        try:
+            with self._write_scope():
+                self._conn.execute(
+                    "INSERT INTO procedure_evaluations(drawer_id,payload) VALUES (?,?)",
+                    (drawer_id, json.dumps(payload, sort_keys=True)),
+                )
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"procedure evaluation registration failed: {exc}") from exc
 
     def _initialize_embedding_metadata_if_safe(self) -> None:
         """Stamp a brand-new/empty index; never guess the identity of legacy vectors."""
@@ -802,9 +946,110 @@ class DrawerStore:
             (legacy_provenance().to_json(),),
         )
 
+    def _initialize_portable_records(self) -> None:
+        self._conn.execute(
+            "CREATE TABLE IF NOT EXISTS portable_records ("
+            "identity TEXT PRIMARY KEY, drawer_id INTEGER NOT NULL UNIQUE "
+            "REFERENCES drawers(id), record TEXT)"
+        )
+        self._conn.execute(
+            "INSERT OR IGNORE INTO store_metadata(key, value) VALUES ('portable_store_id', ?)",
+            (str(uuid4()),),
+        )
+        rows = self._conn.execute(
+            "SELECT d.* FROM drawers d LEFT JOIN portable_records p ON d.id=p.drawer_id "
+            "WHERE p.drawer_id IS NULL"
+        ).fetchall()
+        self._conn.executemany(
+            "INSERT INTO portable_records(identity, drawer_id) VALUES (?, ?)",
+            [(str(uuid4()), int(row["id"])) for row in rows],
+        )
+        for row in rows:
+            self._capture_portable_record(int(row["id"]))
+
+    def _capture_portable_record(self, drawer_id: int) -> None:
+        from cairntir.portable import _make_source_record
+
+        row = self._conn.execute("SELECT * FROM drawers WHERE id=?", (drawer_id,)).fetchone()
+        drawer, provenance = _context_record(row)
+        record = _make_source_record(self, drawer, provenance)
+        self._conn.execute(
+            "UPDATE portable_records SET record=? WHERE drawer_id=?",
+            (json.dumps(record, ensure_ascii=False, sort_keys=True), drawer_id),
+        )
+
+    def portable_identity(self, drawer_id: int) -> str:
+        """Return the immutable UUID assigned when this evidence entered its origin store."""
+        try:
+            row = self._conn.execute(
+                "SELECT identity FROM portable_records WHERE drawer_id=?", (drawer_id,)
+            ).fetchone()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"portable identity read failed: {exc}") from exc
+        if row is None:
+            raise MemoryStoreError(f"no portable identity for drawer {drawer_id}")
+        return str(row[0])
+
+    def portable_source(self, drawer_id: int) -> dict[str, Any]:
+        """Read the exact original portable record without touching retrieval state."""
+        try:
+            row = self._conn.execute(
+                "SELECT record FROM portable_records WHERE drawer_id=?", (drawer_id,)
+            ).fetchone()
+            record = json.loads(row[0]) if row is not None and row[0] is not None else None
+        except (sqlite3.Error, json.JSONDecodeError) as exc:
+            raise MemoryStoreError(f"portable source read failed: {exc}") from exc
+        if not isinstance(record, dict):
+            raise MemoryStoreError(f"no portable original for drawer {drawer_id}")
+        return record
+
+    def portable_relations(self, drawer_id: int) -> list[dict[str, Any]]:
+        """Resolve original typed references to current local drawer ids."""
+        result = []
+        try:
+            for reference in self.portable_source(drawer_id)["references"]:
+                target = self._conn.execute(
+                    "SELECT drawer_id FROM portable_records WHERE identity=?",
+                    (reference["target_identity"],),
+                ).fetchone()
+                if target is None:
+                    raise MemoryStoreError("portable reference has no known target")
+                result.append({**reference, "target_drawer_id": int(target[0])})
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"portable relation read failed: {exc}") from exc
+        return result
+
+    def _portable_lookup(self, identity: str) -> int | None:
+        try:
+            row = self._conn.execute(
+                "SELECT drawer_id FROM portable_records WHERE identity=?", (identity,)
+            ).fetchone()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"portable identity lookup failed: {exc}") from exc
+        return int(row[0]) if row is not None else None
+
+    def _portable_replace(self, drawer_id: int, identity: str, record: dict[str, Any]) -> None:
+        try:
+            self._conn.execute(
+                "UPDATE portable_records SET identity=?, record=? WHERE drawer_id=?",
+                (identity, json.dumps(record, ensure_ascii=False, sort_keys=True), drawer_id),
+            )
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"portable original import failed: {exc}") from exc
+
+    def _portable_supersedes(self, drawer_id: int, target_id: int) -> None:
+        try:
+            self._conn.execute(
+                "UPDATE drawers SET supersedes_id=? WHERE id=?", (target_id, drawer_id)
+            )
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"portable supersession import failed: {exc}") from exc
+
     def close(self) -> None:
         """Close the underlying SQLite connection."""
         self._conn.close()
+        if self._read_snapshot is not None:
+            self._read_snapshot.cleanup()
 
     def checkpoint(self) -> None:
         """Flush this connection's WAL into the main database file."""
@@ -831,6 +1076,7 @@ class DrawerStore:
         savepoint: str | None = None
         try:
             if self._transaction_depth == 0:
+                self._bulk_embedding = None
                 self._conn.execute("BEGIN IMMEDIATE")
             else:
                 self._savepoint_counter += 1
@@ -844,6 +1090,7 @@ class DrawerStore:
             yield
         except BaseException:
             self._transaction_depth -= 1
+            self._bulk_embedding = None
             try:
                 if savepoint is None:
                     self._conn.rollback()
@@ -859,6 +1106,7 @@ class DrawerStore:
             self._transaction_depth -= 1
             try:
                 if savepoint is None:
+                    self._bulk_embedding = None
                     self._conn.commit()
                 else:
                     self._conn.execute(f"RELEASE SAVEPOINT {savepoint}")
@@ -953,6 +1201,9 @@ class DrawerStore:
 
         try:
             with self.transaction():
+                current = self.workflow_receipt(key)
+                if current is not None and current.state is WorkflowState.COMMITTED:
+                    return WorkflowExecution(receipt=current, replayed=True)
                 result = action()
                 try:
                     result_json = json.dumps(
@@ -995,7 +1246,7 @@ class DrawerStore:
                     """
                     UPDATE workflow_runs
                     SET state = ?, updated_at = ?, error = ?, result = NULL
-                    WHERE idempotency_key = ?
+                    WHERE idempotency_key = ? AND state != 'committed'
                     """,
                     (
                         WorkflowState.FAILED.value,
@@ -1015,6 +1266,10 @@ class DrawerStore:
             raise MemoryStoreError(f"failed to inspect embedding space: {exc}") from exc
 
     def _require_embedding_space(self) -> EmbeddingSpaceStatus:
+        if self._transaction_depth and self._bulk_embedding is not None:
+            key, verified = self._bulk_embedding
+            if key == self._bulk_embedding_key():
+                return verified
         status = self.embedding_status()
         if not status.verified:
             raise EmbeddingSpaceError(
@@ -1023,6 +1278,36 @@ class DrawerStore:
             )
         self._dim = status.stored_dimension
         return status
+
+    def _bulk_embedding_key(self) -> tuple[int, int, int, str]:
+        return (
+            self._conn.total_changes,
+            int(self._conn.execute("PRAGMA schema_version").fetchone()[0]),
+            int(self._conn.execute("PRAGMA temp.schema_version").fetchone()[0]),
+            embedding_space_id(self._embedder),
+        )
+
+    def _cache_verified_append(self, status: EmbeddingSpaceStatus) -> None:
+        # BEGIN IMMEDIATE excludes other writers; the key detects intervening
+        # local writes/DDL. Triggers make insert side effects unknown.
+        if (
+            self._transaction_depth
+            and self._conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='trigger' "
+                "UNION ALL SELECT 1 FROM sqlite_temp_master WHERE type='trigger' LIMIT 1"
+            ).fetchone()
+            is None
+        ):
+            self._bulk_embedding = (
+                self._bulk_embedding_key(),
+                replace(
+                    status,
+                    drawer_count=status.drawer_count + 1,
+                    vector_count=status.vector_count + 1,
+                ),
+            )
+        else:
+            self._bulk_embedding = None
 
     def reindex_embeddings(
         self,
@@ -1255,6 +1540,12 @@ class DrawerStore:
                         receipt.effective_valid_until,
                     ),
                 )
+                self._conn.execute(
+                    "INSERT INTO portable_records(identity, drawer_id) VALUES (?, ?)",
+                    (str(uuid4()), drawer_id),
+                )
+                self._capture_portable_record(drawer_id)
+                self._cache_verified_append(status)
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"failed to add drawer: {exc}") from exc
         return drawer.model_copy(update={"id": drawer_id})
@@ -1292,6 +1583,87 @@ class DrawerStore:
             return WriteProvenance.from_json(str(row["provenance"]))
         except ValueError as exc:
             raise ProvenanceError(f"drawer {drawer_id} has invalid provenance: {exc}") from exc
+
+    def context_candidates(
+        self, *, wing: str, limit: int | None = None
+    ) -> tuple[list[tuple[Drawer, WriteProvenance]], int]:
+        """Read candidates and their receipts without validity filtering or access writes."""
+        try:
+            total = int(
+                self._conn.execute(
+                    "SELECT COUNT(*) FROM drawers WHERE wing = ?", (wing,)
+                ).fetchone()[0]
+            )
+            rows = self._conn.execute(
+                "SELECT * FROM drawers WHERE wing = ? ORDER BY id DESC LIMIT ?",
+                (wing, limit if limit is not None else -1),
+            ).fetchall()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"context candidate read failed: {exc}") from exc
+        return [_context_record(row) for row in rows], total
+
+    def context_relatives(
+        self, *, wing: str, drawer_ids: Sequence[int]
+    ) -> list[tuple[Drawer, WriteProvenance]]:
+        """Read complete same-wing relationship families independently of relevance."""
+        records: dict[int, tuple[Drawer, WriteProvenance]] = {}
+        try:
+            for start in range(0, len(drawer_ids), 400):
+                batch = drawer_ids[start : start + 400]
+                placeholders = ",".join("?" for _ in batch)
+                rows = self._conn.execute(
+                    f"""
+                    WITH RECURSIVE family(id, supersedes_id) AS (
+                        SELECT id, supersedes_id FROM drawers
+                        WHERE wing = ? AND id IN ({placeholders})
+                        UNION
+                        SELECT d.id, d.supersedes_id FROM drawers d JOIN family f
+                        ON d.supersedes_id = f.id OR d.id = f.supersedes_id
+                        WHERE d.wing = ?
+                    )
+                    SELECT d.* FROM drawers d JOIN family f ON d.id = f.id ORDER BY d.id
+                    """,  # noqa: S608 - only placeholder count is interpolated
+                    (wing, *batch, wing),
+                ).fetchall()
+                records.update((int(row["id"]), _context_record(row)) for row in rows)
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"context relationship read failed: {exc}") from exc
+        return [records[key] for key in sorted(records)]
+
+    def context_similarities(self, query: str, drawer_ids: Sequence[int]) -> dict[int, float]:
+        """Score stored vectors without touching drawers, beliefs, or the semantic index."""
+        if not drawer_ids:
+            return {}
+        status = self._require_embedding_space()
+        from cairntir.memory.embeddings import embed_query_readonly
+
+        vector = embed_query_readonly(self._embedder, query)
+        if len(vector) != status.stored_dimension or not all(math.isfinite(x) for x in vector):
+            raise EmbeddingSpaceError("task query embedding has invalid dimension or values")
+        if not any(vector):
+            raise EmbeddingError("task query embedding has zero magnitude")
+        scores: dict[int, float] = {}
+        try:
+            for start in range(0, len(drawer_ids), 400):
+                batch = drawer_ids[start : start + 400]
+                placeholders = ",".join("?" for _ in batch)
+                rows = self._conn.execute(
+                    "SELECT drawer_id, vec_distance_cosine(embedding, ?) AS distance "  # noqa: S608
+                    f"FROM vec_drawers WHERE drawer_id IN ({placeholders})",
+                    (_pack(vector), *batch),
+                ).fetchall()
+                for row in rows:
+                    score = 1.0 - float(row["distance"])
+                    if not math.isfinite(score):
+                        raise EmbeddingSpaceError("task candidate embedding has invalid values")
+                    scores[int(row["drawer_id"])] = score
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"context vector read failed: {exc}") from exc
+        if len(scores) != len(set(drawer_ids)):
+            raise EmbeddingSpaceError(
+                "task candidates are missing stored vectors; reindex required"
+            )
+        return scores
 
     def _touch(self, drawer_id: int, *, now: datetime | None = None) -> None:
         """Bump access_count and stamp last_accessed_at for one drawer."""
@@ -1790,6 +2162,152 @@ class DrawerStore:
         if rerank_by_belief:
             results = rerank_results(results)
         return results
+
+
+def _copy_locked_database(source: Path, destination: Path) -> None:
+    """Snapshot in a separate process, retaining cold-store purity and live WAL readers.
+
+    SQLite's PENDING/RESERVED/SHARED locking bytes occupy 512 bytes at 1 GiB.
+    Cold stores are copied under an exclusive lock. Live WAL stores use a
+    shared lifecycle pin and SQLite's read-only online backup. POSIX locks
+    belong to the process: source handles must remain in this helper only.
+    """
+    deadline = time.monotonic() + 8
+    while time.monotonic() < deadline:
+        try:
+            _snapshot_database_attempt(source, destination, deadline)
+        except _SnapshotBusyError:
+            time.sleep(0.025)
+        else:
+            return
+    raise MemoryStoreError("task snapshot timed out waiting for the database lock")
+
+
+class _SnapshotBusyError(MemoryStoreError):
+    """A source lock or lifecycle transition permits a bounded retry."""
+
+
+def _snapshot_database_attempt(source: Path, destination: Path, deadline: float) -> None:
+    with source.open("rb" if sys.platform == "win32" else "r+b") as handle:
+        try:
+            if sys.platform == "win32":
+                import msvcrt
+
+                handle.seek(0x40000000)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 512)
+            else:
+                import fcntl
+
+                fcntl.lockf(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB, 512, 0x40000000)
+        except OSError as exc:
+            if exc.errno not in {errno.EACCES, errno.EAGAIN}:
+                raise
+            with ExitStack() as held:
+                with _snapshot_shared_lock(handle.fileno(), 0x40000000, 1):
+                    held.enter_context(_snapshot_shared_lock(handle.fileno(), 0x40000002, 510))
+                handle.seek(18)
+                if handle.read(2) != b"\x02\x02" or not all(
+                    path.is_file() for path in _sidecar_paths(source)
+                ):
+                    raise _SnapshotBusyError(
+                        "task snapshot is waiting for stable WAL sidecars"
+                    ) from exc
+                _backup_live_database(source, destination, deadline)
+            return
+        handle.seek(0)
+        with destination.open("xb") as target:
+            shutil.copyfileobj(handle, target)
+        for suffix in ("-wal", "-journal"):
+            sidecar = source.with_name(source.name + suffix)
+            if sidecar.exists():
+                shutil.copyfile(sidecar, destination.with_name(destination.name + suffix))
+
+
+@contextmanager
+def _snapshot_shared_lock(fd: int, start: int, length: int) -> Iterator[None]:
+    if sys.platform == "win32":
+        import ctypes
+        import msvcrt
+        from ctypes import wintypes
+
+        class Overlapped(ctypes.Structure):
+            _fields_ = [
+                ("Internal", ctypes.c_size_t),
+                ("InternalHigh", ctypes.c_size_t),
+                ("Offset", wintypes.DWORD),
+                ("OffsetHigh", wintypes.DWORD),
+                ("hEvent", wintypes.HANDLE),
+            ]
+
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.LockFileEx.argtypes = [
+            wintypes.HANDLE,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            ctypes.POINTER(Overlapped),
+        ]
+        kernel.LockFileEx.restype = wintypes.BOOL
+        kernel.UnlockFileEx.argtypes = [
+            wintypes.HANDLE,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            ctypes.POINTER(Overlapped),
+        ]
+        kernel.UnlockFileEx.restype = wintypes.BOOL
+        native = msvcrt.get_osfhandle(fd)
+        region = Overlapped(Offset=start)
+        if not kernel.LockFileEx(native, 1, 0, length, 0, ctypes.byref(region)):
+            error = ctypes.WinError(ctypes.get_last_error())
+            if error.winerror in {32, 33}:
+                raise _SnapshotBusyError("task snapshot source is locked") from error
+            raise error
+        try:
+            yield
+        finally:
+            if not kernel.UnlockFileEx(native, 0, length, 0, ctypes.byref(region)):
+                raise ctypes.WinError(ctypes.get_last_error())
+    else:
+        import fcntl
+
+        try:
+            fcntl.lockf(fd, fcntl.LOCK_SH | fcntl.LOCK_NB, length, start)
+        except OSError as exc:
+            if exc.errno in {errno.EACCES, errno.EAGAIN}:
+                raise _SnapshotBusyError("task snapshot source is locked") from exc
+            raise
+        try:
+            yield
+        finally:
+            fcntl.lockf(fd, fcntl.LOCK_UN, length, start)
+
+
+def _backup_live_database(source: Path, destination: Path, deadline: float) -> None:
+    def progress(_status: int, _remaining: int, _total: int) -> None:
+        if time.monotonic() >= deadline:
+            raise MemoryStoreError("task snapshot backup timed out")
+
+    with closing(sqlite3.connect(f"{source.as_uri()}?mode=ro", uri=True, timeout=0.25)) as origin:
+        origin.execute("PRAGMA query_only = ON")
+        try:
+            origin.execute("BEGIN")
+            origin.execute("SELECT name FROM sqlite_master LIMIT 1").fetchone()
+        except sqlite3.Error as exc:
+            if exc.sqlite_errorcode & 0xFF in {sqlite3.SQLITE_BUSY, sqlite3.SQLITE_LOCKED}:
+                raise _SnapshotBusyError("task snapshot source is locked") from exc
+            raise
+        with closing(sqlite3.connect(destination)) as target:
+            origin.backup(target, pages=256, progress=progress, sleep=0.025)
+
+
+def _context_record(row: sqlite3.Row) -> tuple[Drawer, WriteProvenance]:
+    try:
+        receipt = WriteProvenance.from_json(str(row["provenance"]))
+    except ValueError as exc:
+        raise ProvenanceError(f"drawer {row['id']} has invalid provenance") from exc
+    return _row_to_drawer(row), receipt
 
 
 def _row_to_drawer(row: sqlite3.Row) -> Drawer:

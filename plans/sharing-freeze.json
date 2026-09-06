@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN",
+  "frozen_at_utc": "2026-09-06T02:40:09.169629+00:00",
+  "tester_id": "/root/context_core",
+  "reviewer_id": "/root/foundation_tester",
+  "coordinator_id": "/root",
+  "authorization": "Coordinator approved public API and delegated independent review/freeze acknowledgment; reviewer PASS authorized freeze before sharing runtime implementation.",
+  "artifact_readiness": "PASS",
+  "implementation_acceptance": "FAIL",
+  "collected_cases": 29,
+  "mandatory_regression_cases": 160,
+  "maximum_repair_rounds": 2,
+  "verification_reserve": "Final quarter of milestone reserved for independent verification.",
+  "runtime_git_head_at_baseline": "f17be58460f358ff31ab741bcd6ce257210d0f34",
+  "owned_artifacts": [
+    "tests/unit/test_sharing_acceptance.py",
+    "plans/sharing-acceptance.md",
+    "plans/sharing-baseline.txt",
+    "plans/sharing-baseline.xml",
+    "plans/sharing-baseline-regression.txt",
+    "plans/sharing-baseline.json"
+  ],
+  "mandatory_regression_files": [
+    "tests/unit/test_hotfix.py",
+    "tests/unit/test_codeglass.py",
+    "tests/unit/test_temporal.py",
+    "tests/unit/test_learning.py",
+    "tests/unit/test_mcp_server.py",
+    "tests/integration/test_mcp_backend.py",
+    "tests/unit/test_portable.py"
+  ],
+  "artifacts": [
+    {
+      "path": "plans/sharing-acceptance.md",
+      "sha256": "72c83d0ad14eab117f309399dd75211de71e1b8ac3279f740d18cadcfcc1607f"
+    },
+    {
+      "path": "plans/sharing-baseline-regression.txt",
+      "sha256": "c498886f4c6a890637a69b5df04abd3f6db34182323f7db25f02777782fc38d8"
+    },
+    {
+      "path": "plans/sharing-baseline.json",
+      "sha256": "3d3b8ab4274543bbcdee42bd7d3faf21c7f73f57827628438f2b235defddcd57"
+    },
+    {
+      "path": "plans/sharing-baseline.txt",
+      "sha256": "8cad320e586dbeb5d58f70864513312451e9bc33fc2c79d625bf1386203610ee"
+    },
+    {
+      "path": "plans/sharing-baseline.xml",
+      "sha256": "fe472c9ee8cd4007122c5649351e53b79532d8438790eda9134683294eaa5f3d"
+    },
+    {
+      "path": "tests/conftest.py",
+      "sha256": "a43e93cbc6abc0f182239545fb77ca4d6a61945d9ec3781d2338380edeffdbef"
+    },
+    {
+      "path": "tests/integration/test_mcp_backend.py",
+      "sha256": "65ca1dfaafa1ce9959e2a91ac045f36baf080757411382d0800f1f6a826587dd"
+    },
+    {
+      "path": "tests/unit/test_codeglass.py",
+      "sha256": "0f20f2515b44bba151e85e081681b3a6aa8019849da849690fc3b845f22b294e"
+    },
+    {
+      "path": "tests/unit/test_hotfix.py",
+      "sha256": "e555ac6c04806b9ffae775d38500f4309bc4f0096fe2f59fa08341a76101fdd9"
+    },
+    {
+      "path": "tests/unit/test_learning.py",
+      "sha256": "6d3a7d6701009abd1f4590a9ce49ea101d8c5e7e5cb63188d58e34083d63b063"
+    },
+    {
+      "path": "tests/unit/test_mcp_server.py",
+      "sha256": "ac84eed7a941c176e0ffde88eda94582660485af8f76c9febae60612329dfd21"
+    },
+    {
+      "path": "tests/unit/test_portable.py",
+      "sha256": "ed379507af398d33cf0aabe2c88e77d05cc0647b4859bb8b61159f584aed51f9"
+    },
+    {
+      "path": "tests/unit/test_sharing_acceptance.py",
+      "sha256": "8e4d7c121c96643ff07c044a2db946897e04b04fcc90b309803dcbe31538ffd5"
+    },
+    {
+      "path": "tests/unit/test_temporal.py",
+      "sha256": "bd7909b1e930c69ec7d1a27174691a03f9b09e68042f838f7b0cabca95141d3d"
+    }
+  ],
+  "baseline": {
+    "acceptance": "29 failed in 6.73s",
+    "regression": "160 passed in 10.46s",
+    "harness": "PASS; no collection/setup/infrastructure errors; actual invalid startup probes expose owner canary before implementation."
+  },
+  "configuration_policy": "Runtime/schema/configuration hashes in baseline are provenance only, not immutable fixtures. Original earlier frozen acceptance generations remain unchanged.",
+  "changed_bound_hash_invalidates_run": true,
+  "line_endings": "All newly owned frozen artifacts use canonical LF bytes.",
+  "self_hash": "External SHA256 supplied to coordinator; excluded from own inventory."
+}

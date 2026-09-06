@@ -1,0 +1,112 @@
+........................F.FFF........................................... [ 37%]
+........................................................................ [ 74%]
+.................................................                        [100%]
+================================== FAILURES ===================================
+______ test_actual_cli_binds_grant_for_get_and_task_and_preserves_owner _______
+tests\unit\test_sharing_acceptance.py:744: in test_actual_cli_binds_grant_for_get_and_task_and_preserves_owner
+    assert got.returncode == 0 and TASK in got.stdout, got.stderr
+E   AssertionError: \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\access.py:62 in _authoritative_grant           \u2502
+E     \u2502                                                                             \u2502
+E     \u2502    59 \u2502   try:                                                              \u2502
+E     \u2502    60 \u2502   \u2502   with TemporaryDirectory(prefix="cairntir-grant-") as director \u2502
+E     \u2502    61 \u2502   \u2502   \u2502   copied = Path(directory) / "grant.db"                     \u2502
+E     \u2502 >  62 \u2502   \u2502   \u2502   subprocess.run(  # noqa: S603 - fixed interpreter/code an \u2502
+E     \u2502    63 \u2502   \u2502   \u2502   \u2502   [                                                     \u2502
+E     \u2502    64 \u2502   \u2502   \u2502   \u2502   \u2502   sys.executable,                                   \u2502
+E     \u2502    65 \u2502   \u2502   \u2502   \u2502   \u2502   "-c",                                             \u2502
+E     \u2502                                                                             \u2502
+E     \u2502 C:\\Users\\pnmcg\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\subprocess.py:57 \u2502
+E     \u2502 1 in run                                                                    \u2502
+E     \u2502                                                                             \u2502
+E     \u2502    568 \u2502   \u2502   \u2502   raise                                                    \u2502
+E     \u2502    569 \u2502   \u2502   retcode = process.poll()                                     \u2502
+E     \u2502    570 \u2502   \u2502   if check and retcode:                                        \u2502
+E     \u2502 >  571 \u2502   \u2502   \u2502   raise CalledProcessError(retcode, process.args,          \u2502
+E     \u2502    572 \u2502   \u2502   \u2502   \u2502   \u2502   \u2502   \u2502   \u2502   \u2502    output=stdout, stderr=stderr)   \u2502
+E     \u2502    573 \u2502   return CompletedProcess(process.args, retcode, stdout, stderr)   \u2502
+E     \u2502    574                                                                      \u2502
+E     \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E     CalledProcessError: Command '['C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe', 
+E     '-c', 'from pathlib import Path; import sys; from cairntir.memory.store import 
+E     _copy_locked_database; _copy_locked_database(Path(sys.argv[1]), 
+E     Path(sys.argv[2]))', 
+E     'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\pytest-of-pnmcg\\pytest-196\\test_actu
+E     al_cli_binds_grant_fo0\\.cairntir\\cairntir.db', 
+E     'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-grant-jsrob8hq\\grant.db']' 
+E     returned non-zero exit status 1.
+E     
+E     The above exception was the direct cause of the following exception:
+E     
+E     \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\cli.py:158 in _root                            \u2502
+E     \u2502                                                                             \u2502
+E     \u2502    155 \u2502   global _startup_grant                                            \u2502
+E     \u2502    156 \u2502   _startup_grant = startup_token()                                 \u2502
+E     \u2502    157 \u2502   if _startup_grant is not None:                                   \u2502
+E     \u2502 >  158 \u2502   \u2502   validate_startup(db_path(create=False), _startup_grant)      \u2502
+E     \u2502    159 \u2502   \u2502   if ctx.invoked_subcommand not in {                           \u2502
+E     \u2502    160 \u2502   \u2502   \u2502   "get",                                                   \u2502
+E     \u2502    161 \u2502   \u2502   \u2502   "recall",                                                \u2502
+E     \u2502                                                                             \u2502
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\access.py:55 in validate_startup               \u2502
+E     \u2502                                                                             \u2502
+E     \u2502    52                                                                       \u2502
+E     \u2502    53 def validate_startup(path: Path, token: str) -> None:                 \u2502
+E     \u2502    54 \u2502   """Reject an invalid configured grant before store initialization \u2502
+E     \u2502 >  55 \u2502   _active(_authoritative_grant(path, _digest(token)))               \u2502
+E     \u2502    56                                                                       \u2502
+E     \u2502    57                                                                       \u2502
+E     \u2502    58 def _authoritative_grant(path: Path, token_hash: str) -> sqlite3.Row  \u2502
+E     \u2502                                                                             \u2502
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\access.py:84 in _authoritative_grant           \u2502
+E     \u2502                                                                             \u2502
+E     \u2502    81 \u2502   \u2502   \u2502   \u2502   ).fetchone()                                          \u2502
+E     \u2502    82 \u2502   \u2502   \u2502   \u2502   return row                                            \u2502
+E     \u2502    83 \u2502   except (OSError, sqlite3.Error, subprocess.SubprocessError) as ex \u2502
+E     \u2502 >  84 \u2502   \u2502   raise AccessDenied(_DENIED) from exc                          \u2502
+E     \u2502    85                                                                       \u2502
+E     \u2502    86                                                                       \u2502
+E     \u2502    87 def _active(row: sqlite3.Row | None) -> sqlite3.Row:                  \u2502
+E     \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E     AccessDenied: access denied
+E     
+E   assert (1 == 0)
+E    +  where 1 = CompletedProcess(args=['C:\\\\Dev\\\\Cairntir\\\\.venv\\\\Scripts\\\\python.exe', 'C:\\\\Dev\\\\Cairntir\\\\tests\\\\unit\\\\test_sharing_...    \u2502\\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\\nAccessDenied: access denied\\n').returncode
+______ test_actual_cli_export_and_unsupported_administration_fail_closed ______
+tests\unit\test_sharing_acceptance.py:783: in test_actual_cli_export_and_unsupported_administration_fail_closed
+    before = _state(_db())
+             ^^^^^^^^^^^^^
+tests\unit\test_sharing_acceptance.py:112: in _state
+    tables.append((name, sorted(rows, key=repr)))
+                         ^^^^^^^^^^^^^^^^^^^^^^
+E   MemoryError
+______ test_real_stdio_startup_scope_is_immutable_and_revocation_is_live ______
+tests\unit\test_sharing_acceptance.py:896: in test_real_stdio_startup_scope_is_immutable_and_revocation_is_live
+    peer.initialize()
+tests\unit\test_sharing_acceptance.py:855: in initialize
+    response = self.request(
+tests\unit\test_sharing_acceptance.py:848: in request
+    raise _PeerClosedError(f"stdio exited with {self.process.returncode}")
+E   test_sharing_acceptance._PeerClosedError: stdio exited with 1
+____________ test_real_stdio_invalid_grant_never_serves_owner_data ____________
+tests\unit\test_sharing_acceptance.py:921: in test_real_stdio_invalid_grant_never_serves_owner_data
+    response = peer.request(
+tests\unit\test_sharing_acceptance.py:848: in request
+    raise _PeerClosedError(f"stdio exited with {self.process.returncode}")
+E   test_sharing_acceptance._PeerClosedError: stdio exited with 1
+
+During handling of the above exception, another exception occurred:
+tests\unit\test_sharing_acceptance.py:939: in test_real_stdio_invalid_grant_never_serves_owner_data
+    assert "AccessDenied" in peer.process.stderr.read()
+E   AssertionError: assert 'AccessDenied' in 'OpenBLAS error: Memory allocation still failed after 10 retries, giving up.\n'
+E    +  where 'OpenBLAS error: Memory allocation still failed after 10 retries, giving up.\n' = <built-in method read of _io.TextIOWrapper object at 0x000001927D176B50>()
+E    +    where <built-in method read of _io.TextIOWrapper object at 0x000001927D176B50> = <_io.TextIOWrapper name=13 encoding='utf-8'>.read
+E    +      where <_io.TextIOWrapper name=13 encoding='utf-8'> = <Popen: returncode: 1 args: ['C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe'...>.stderr
+E    +        where <Popen: returncode: 1 args: ['C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe'...> = <test_sharing_acceptance._McpPeer object at 0x000001927D478B90>.process
+=========================== short test summary info ===========================
+FAILED tests/unit/test_sharing_acceptance.py::test_actual_cli_binds_grant_for_get_and_task_and_preserves_owner
+FAILED tests/unit/test_sharing_acceptance.py::test_actual_cli_export_and_unsupported_administration_fail_closed
+FAILED tests/unit/test_sharing_acceptance.py::test_real_stdio_startup_scope_is_immutable_and_revocation_is_live
+FAILED tests/unit/test_sharing_acceptance.py::test_real_stdio_invalid_grant_never_serves_owner_data
+4 failed, 189 passed in 24.37s

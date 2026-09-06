@@ -1,7 +1,9 @@
 # Plans
 
-- [Shipping hardening](shipping-hardening.md): current audit and acceptance.
-- [Retrieval preflight](evolving-mind.md): next experiment, not a shipped feature.
+- [Continuity delivery](continuity-delivery.md): independently accepted foundation, portable evidence, evaluated procedures and scoped sharing; completing the additive 1.10.0 release gates.
+- [2.0 continuity preparation](v2-continuity.md): historical foundation plan and frozen acceptance.
+- [Shipping hardening](shipping-hardening.md): completed audit and acceptance record.
+- [Retrieval preflight](evolving-mind.md): evaluation requirements for context selection.
 
 Closed plans and unrelated product proposals were removed during the shipping
 cleanup. Their history remains in Git. Shipped assertions are preserved in

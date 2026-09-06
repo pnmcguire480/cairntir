@@ -124,6 +124,16 @@ def _find_child(store: DrawerStore, parent_id: int) -> Drawer | None:
     the caller that wrote them) we return the one with the lowest id —
     deterministic, so the walk is reproducible.
     """
+    from cairntir.access import ScopedStore
+
+    if isinstance(store, ScopedStore):
+        children = [
+            drawer
+            for drawer in store.list_by(limit=None, include_expired=True)
+            if drawer.supersedes_id == parent_id
+        ]
+        return min(children, key=lambda drawer: drawer.id or 0) if children else None
+
     # list_by doesn't filter on supersedes_id, so fall through to raw SQL.
     # This is a tight read on an append-only column, no concurrency risk.
     import sqlite3

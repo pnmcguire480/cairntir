@@ -11,7 +11,7 @@ import argparse
 import asyncio
 import os
 import threading
-from typing import Any, Final
+from typing import Any, Final, cast
 
 import mcp.types as types
 from mcp.server import Server
@@ -613,21 +613,34 @@ def _tool_specs() -> list[types.Tool]:
                 "Anything that did not fit the budget is listed by id and size so you "
                 "can spend one cairntir_get on exactly what you want instead of a "
                 "blind recall. The default drawer-only path is deterministic and "
-                "prompt-cache friendly; opt-in transcript recovery reflects host changes."
+                "prompt-cache friendly; opt-in transcript recovery reflects host changes. "
+                "Pass task for read-only relevant current evidence as JSON under a full "
+                "response budget, with exclusions, conflicts and abstention receipts. "
+                "Task mode requires cached local embeddings and separate transcript recovery."
             ),
             inputSchema={
                 "type": "object",
                 "required": ["wing"],
                 "properties": {
                     "wing": {"type": "string"},
+                    "task": {
+                        "type": "string",
+                        "description": "Task for relevant, current evidence as bounded JSON.",
+                    },
+                    "candidate_limit": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Task scan ceiling; incompleteness is disclosed.",
+                    },
                     "budget_chars": {
                         "type": "integer",
                         "minimum": 1,
                         "default": DEFAULT_BUDGET_CHARS,
                         "description": (
-                            "Hard ceiling on returned drawer content, in characters "
-                            "(roughly 4 chars per token). Whole drawers are dropped to "
-                            "stay under it; none is ever cut in half."
+                            "Character ceiling on drawer content normally; with task, "
+                            "on complete JSON text and serialized MCP CallToolResult. "
+                            "Outer JSON-RPC framing is excluded. Whole evidence only; "
+                            "token counts are estimates, not billing measurements."
                         ),
                     },
                     "files": {
@@ -1038,13 +1051,21 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
 
     @server.call_tool()
     async def _call(name: str, arguments: dict[str, Any]) -> list[types.TextContent]:
+        from cairntir.access import ScopedStore
+
         nonlocal update_banner_shown
-        _trace(f"_call enter name={name!r} args_keys={sorted(arguments.keys())}")
+        task_mode = isinstance(backend._store, ScopedStore) or (
+            name == "cairntir_handoff" and arguments.get("task") is not None
+        )
+        if not task_mode:
+            _trace(f"_call enter name={name!r} args_keys={sorted(arguments.keys())}")
         try:
             text = _dispatch(backend, name, arguments)
-            _trace(f"_call dispatch ok name={name!r} text_len={len(text)}")
+            if not task_mode:
+                _trace(f"_call dispatch ok name={name!r} text_len={len(text)}")
         except CairntirError as exc:
-            _trace(f"_call CairntirError name={name!r} msg={exc}")
+            if not task_mode:
+                _trace(f"_call CairntirError name={name!r} msg={exc}")
             text = f"[cairntir error] {exc}"
         except ValidationError as exc:
             # Pydantic ValidationError is raised by Drawer construction when
@@ -1056,13 +1077,14 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
             # retry with a corrected argument.
             text = f"[cairntir error] invalid argument: {_format_validation_error(exc)}"
 
-        if not update_banner_shown:
+        if not task_mode and not update_banner_shown:
             banner = pending_update_banner()
             if banner is not None:
                 text = f"{banner}\n\n{text}"
             update_banner_shown = True
 
-        _trace(f"_call returning name={name!r} final_len={len(text)}")
+        if not task_mode:
+            _trace(f"_call returning name={name!r} final_len={len(text)}")
         return [types.TextContent(type="text", text=text)]
 
     return server
@@ -1130,6 +1152,11 @@ def warm_embedder_in_background(store: DrawerStore) -> threading.Thread | None:
 
 
 async def _amain(*, host: str = "unknown", model: str = "unknown") -> None:
+    from cairntir.access import bind_grant, startup_token, validate_startup
+
+    token = startup_token()
+    if token is not None:
+        validate_startup(db_path(create=False), token)
     # Force HuggingFace Hub fully offline so local model providers never
     # try to revalidate cached assets against the network during load.
     # The model files are cached locally after first download; phoning
@@ -1140,12 +1167,14 @@ async def _amain(*, host: str = "unknown", model: str = "unknown") -> None:
     os.environ.setdefault("HF_HUB_OFFLINE", "1")
     os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 
-    _trace("amain start")
+    if token is None:
+        _trace("amain start")
     # Kick off the background PyPI check so the *next* tool call (or
     # the one after) sees the latest-version cache. The check runs in
     # a daemon thread, fail-silent on network or permission errors.
-    maybe_check_in_background()
-    _trace("update check spawned")
+    if token is None:
+        maybe_check_in_background()
+        _trace("update check spawned")
 
     store = DrawerStore(
         db_path(),
@@ -1157,7 +1186,15 @@ async def _amain(*, host: str = "unknown", model: str = "unknown") -> None:
             model=model,
         ),
     )
-    _trace("DrawerStore opened")
+    if token is not None:
+        try:
+            # The facade implements permitted store operations and denies every other access.
+            store = cast(DrawerStore, bind_grant(store, token))
+        except BaseException:
+            store.close()
+            raise
+    if token is None:
+        _trace("DrawerStore opened")
     recovery_context = (
         RecoveryContext.current(host, live_session=True) if host in TRANSCRIPT_HOSTS else None
     )
@@ -1171,14 +1208,20 @@ async def _amain(*, host: str = "unknown", model: str = "unknown") -> None:
     # survival mechanism — kept opt-in via CAIRNTIR_ENABLE_EMBEDDER_WARMUP
     # for the same race-safety reasons documented on
     # warm_embedder_in_background().
-    warm_embedder_in_background(store)
-    _trace("warmup considered")
+    if token is None:
+        warm_embedder_in_background(store)
+        _trace("warmup considered")
 
     server = build_server(backend)
-    _trace("server built; entering stdio_server")
-    async with stdio_server() as (read, write):
-        _trace("stdio_server entered; starting server.run")
-        await server.run(read, write, server.create_initialization_options())
+    if token is None:
+        _trace("server built; entering stdio_server")
+    try:
+        async with stdio_server() as (read, write):
+            if token is None:
+                _trace("stdio_server entered; starting server.run")
+            await server.run(read, write, server.create_initialization_options())
+    finally:
+        store.close()
 
 
 def main() -> None:

@@ -1,0 +1,296 @@
+{
+  "status": "PASS",
+  "milestone": "private production-snapshot schema 6 to 7 migration rehearsal",
+  "independent_tester": "/root/foundation_tester",
+  "captured_at_utc": "2026-09-06T03:06:36.144321+00:00",
+  "base_head": "74a92bcd6dea606d143996e6a485ca5c7c5c83a0",
+  "source_protection": "Production source was used only by a separate-process readonly snapshot helper; DrawerStore opened only the private copy. Live SQLite may update existing SHM bookkeeping. No source migration, reindex or application write occurred.",
+  "privacy": "Public evidence contains only schema names, counts and canonical hashes; no drawer contents, IDs or private paths.",
+  "canonicalization": "SHA-256 of sorted JSON row encodings with explicit Python value-type tags, BLOB hex and ordered column names; original table SQL hashed separately.",
+  "before_schema_version": 6,
+  "after_schema_version": 7,
+  "embedding_calls": 0,
+  "all_original_rows_unchanged": true,
+  "all_original_table_schemas_unchanged": true,
+  "automatic_pre_v7_backup_matches": true,
+  "sqlite_integrity_before_after": "ok",
+  "runtime_stable": true,
+  "runtime_sha256": {
+    "src/cairntir/memory/store.py": "0c02d3bce45408bd922b4b0ee98681df225a4b136f6e1910e39b7e27868c14b8",
+    "src/cairntir/portable.py": "235412c8a3e70bcb8c8a08d02492507f15101e64dd585ab5ce06397b20130cd0",
+    "src/cairntir/procedures.py": "388b05e01690b105b37087696563a3ad0cc0cc43a432aaf20e2a3f25369566ec"
+  },
+  "original_tables": {
+    "drawers": {
+      "before": {
+        "rows": 1280,
+        "sha256": "220f0c491f4665dba238eb9eb27cb9777e6935ca6a71135c4b434c78b082bfc7",
+        "schema_sha256": "fe2c328e02f66b0e3ecdc3b3ec3e7ad41d80ef43c44be2a3442cf5bba3c56a6a"
+      },
+      "after": {
+        "rows": 1280,
+        "sha256": "220f0c491f4665dba238eb9eb27cb9777e6935ca6a71135c4b434c78b082bfc7",
+        "schema_sha256": "fe2c328e02f66b0e3ecdc3b3ec3e7ad41d80ef43c44be2a3442cf5bba3c56a6a"
+      },
+      "original_rows_unchanged": true
+    },
+    "sqlite_sequence": {
+      "before": {
+        "rows": 3,
+        "sha256": "a2c5163c6614c098d277d91d256b822ee26720e5bf9b273ba037bdd0f730a8e5",
+        "schema_sha256": "4cb1eaf14467f226196148cb5688569660cb290d414bae4c1c450b149b62befd"
+      },
+      "after": {
+        "rows": 3,
+        "sha256": "a2c5163c6614c098d277d91d256b822ee26720e5bf9b273ba037bdd0f730a8e5",
+        "schema_sha256": "4cb1eaf14467f226196148cb5688569660cb290d414bae4c1c450b149b62befd"
+      },
+      "original_rows_unchanged": true
+    },
+    "store_metadata": {
+      "before": {
+        "rows": 4,
+        "sha256": "5a16db2ee298cc127ea1e6960e8b5d1e0e8bb039fe57ce32f6a8db9003d57158",
+        "schema_sha256": "8915eb837983cce0e0ef3f2e331d4fbad7b027d5892a742173769673a89c8da7"
+      },
+      "after": {
+        "rows": 5,
+        "sha256": "82a662f5aabdf4098cac8c0ed4e72b8a938a07fdd322c4f23de3fb9949256d6a",
+        "schema_sha256": "8915eb837983cce0e0ef3f2e331d4fbad7b027d5892a742173769673a89c8da7"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers": {
+      "before": {
+        "rows": 1280,
+        "sha256": "885c9a5e6b4251fda72f5af1d8fd5558671983e2cf951e626ad1b2f140346e77",
+        "schema_sha256": "322fa014eeb0d2ec06133728aa8dd5850370761f5f70fb280f3e1812b0ebc78a"
+      },
+      "after": {
+        "rows": 1280,
+        "sha256": "885c9a5e6b4251fda72f5af1d8fd5558671983e2cf951e626ad1b2f140346e77",
+        "schema_sha256": "322fa014eeb0d2ec06133728aa8dd5850370761f5f70fb280f3e1812b0ebc78a"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_chunks": {
+      "before": {
+        "rows": 2,
+        "sha256": "4f1552c0e19032b318e861a7f633e5145f4d5e24e0fb33c25330aab97f2b8f9f",
+        "schema_sha256": "6b09a082d7c97be9cb7f1a87356addd40480818a490f22177de5301c3ad10501"
+      },
+      "after": {
+        "rows": 2,
+        "sha256": "4f1552c0e19032b318e861a7f633e5145f4d5e24e0fb33c25330aab97f2b8f9f",
+        "schema_sha256": "6b09a082d7c97be9cb7f1a87356addd40480818a490f22177de5301c3ad10501"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_info": {
+      "before": {
+        "rows": 4,
+        "sha256": "1aea3e10e361d5f021170cfb93bd3b2635dd755c1aac569bb241ae4169e79750",
+        "schema_sha256": "92e892940291c5cf584749ea3d2cfb48652e0cd7eab2df0d2da255a450671d55"
+      },
+      "after": {
+        "rows": 4,
+        "sha256": "1aea3e10e361d5f021170cfb93bd3b2635dd755c1aac569bb241ae4169e79750",
+        "schema_sha256": "92e892940291c5cf584749ea3d2cfb48652e0cd7eab2df0d2da255a450671d55"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_metadatachunks00": {
+      "before": {
+        "rows": 2,
+        "sha256": "731844558ca66a9f61900f1afc380eff55dee5876f560a0eaa8d911853d67626",
+        "schema_sha256": "11293e82e7b2868933498ec152f56697c84030f2d83d4a91fb6c7ff69fbf2844"
+      },
+      "after": {
+        "rows": 2,
+        "sha256": "731844558ca66a9f61900f1afc380eff55dee5876f560a0eaa8d911853d67626",
+        "schema_sha256": "11293e82e7b2868933498ec152f56697c84030f2d83d4a91fb6c7ff69fbf2844"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_metadatachunks01": {
+      "before": {
+        "rows": 2,
+        "sha256": "7606ff0b4a54119c707dd0b1ef10dcc4fb71a7a882967698e15f542f91c82e9a",
+        "schema_sha256": "a9b639744dc04c1a24e503ae32443cacd164ce34c409bd37344f3eaf231d8402"
+      },
+      "after": {
+        "rows": 2,
+        "sha256": "7606ff0b4a54119c707dd0b1ef10dcc4fb71a7a882967698e15f542f91c82e9a",
+        "schema_sha256": "a9b639744dc04c1a24e503ae32443cacd164ce34c409bd37344f3eaf231d8402"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_metadatachunks02": {
+      "before": {
+        "rows": 2,
+        "sha256": "3ab0ff2c828cd99739ddb298a8d534925b1ffea63e540b5c24e557c986a9d627",
+        "schema_sha256": "0b6f89ffa3467727d8ccd93c343fc7dde1b5b719480cbd3fdfcaf5639540923f"
+      },
+      "after": {
+        "rows": 2,
+        "sha256": "3ab0ff2c828cd99739ddb298a8d534925b1ffea63e540b5c24e557c986a9d627",
+        "schema_sha256": "0b6f89ffa3467727d8ccd93c343fc7dde1b5b719480cbd3fdfcaf5639540923f"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_metadatachunks03": {
+      "before": {
+        "rows": 2,
+        "sha256": "2a8b2fe2a783b49ee41ea4c8582ce2907ee655c8f1e67458dde695094590690f",
+        "schema_sha256": "1eb82cc42a422d4b7ca5b5645ff9eba58407bdcc5336f499d5eca129ce702629"
+      },
+      "after": {
+        "rows": 2,
+        "sha256": "2a8b2fe2a783b49ee41ea4c8582ce2907ee655c8f1e67458dde695094590690f",
+        "schema_sha256": "1eb82cc42a422d4b7ca5b5645ff9eba58407bdcc5336f499d5eca129ce702629"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_metadatachunks04": {
+      "before": {
+        "rows": 2,
+        "sha256": "1f67a0424a2951e14245686effff0c3695a4f46ea3309873ef88d8495bf4d7e7",
+        "schema_sha256": "e7e07b3728937a19ab6cbf5f919b42fcaafb9e42152c9db8172be5aaa573001e"
+      },
+      "after": {
+        "rows": 2,
+        "sha256": "1f67a0424a2951e14245686effff0c3695a4f46ea3309873ef88d8495bf4d7e7",
+        "schema_sha256": "e7e07b3728937a19ab6cbf5f919b42fcaafb9e42152c9db8172be5aaa573001e"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_metadatatext00": {
+      "before": {
+        "rows": 812,
+        "sha256": "f9c0bd2f57e39b733b2816bd9db96754d2373c39ddf971ee31ffccfa601ab20c",
+        "schema_sha256": "8cc40feba7bb32a46af3e7bde68f2dcb8fcbbd59de7535886dfc9574912e7b0a"
+      },
+      "after": {
+        "rows": 812,
+        "sha256": "f9c0bd2f57e39b733b2816bd9db96754d2373c39ddf971ee31ffccfa601ab20c",
+        "schema_sha256": "8cc40feba7bb32a46af3e7bde68f2dcb8fcbbd59de7535886dfc9574912e7b0a"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_metadatatext01": {
+      "before": {
+        "rows": 534,
+        "sha256": "967fb60456c6cebdd57e52d6e89543b3da5821b3f1bae7b2a3dcbd48af6fec7f",
+        "schema_sha256": "48b63592f0946957a929620845b24da6f0d819d5d1988e46a823488c27cbcdfb"
+      },
+      "after": {
+        "rows": 534,
+        "sha256": "967fb60456c6cebdd57e52d6e89543b3da5821b3f1bae7b2a3dcbd48af6fec7f",
+        "schema_sha256": "48b63592f0946957a929620845b24da6f0d819d5d1988e46a823488c27cbcdfb"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_metadatatext02": {
+      "before": {
+        "rows": 0,
+        "sha256": "85d69e29632aefecce6a799a166d329a9436334b4d5518d0c8db588e208b2494",
+        "schema_sha256": "81a0991fecc0090baa43aaa888aef0c97f43587bedd6510d6c9aa36d2241b787"
+      },
+      "after": {
+        "rows": 0,
+        "sha256": "85d69e29632aefecce6a799a166d329a9436334b4d5518d0c8db588e208b2494",
+        "schema_sha256": "81a0991fecc0090baa43aaa888aef0c97f43587bedd6510d6c9aa36d2241b787"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_metadatatext03": {
+      "before": {
+        "rows": 1278,
+        "sha256": "988c69211f9e69a2bd8847963c53e69ad356955eb2943def0d029493be4322ba",
+        "schema_sha256": "b590f79a2d273d090619fadc8a0ba46278cc28dfde6aca013df6940984a2a6c6"
+      },
+      "after": {
+        "rows": 1278,
+        "sha256": "988c69211f9e69a2bd8847963c53e69ad356955eb2943def0d029493be4322ba",
+        "schema_sha256": "b590f79a2d273d090619fadc8a0ba46278cc28dfde6aca013df6940984a2a6c6"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_metadatatext04": {
+      "before": {
+        "rows": 1280,
+        "sha256": "0c1d2865e1a08d421b8018017555ebb665b2449ac2d5a67d9ddafeede3283a00",
+        "schema_sha256": "20255d1a94eca00d59d0885e76e8fdd4d4997153c1d46d5f2cf5f2a54cdeb05e"
+      },
+      "after": {
+        "rows": 1280,
+        "sha256": "0c1d2865e1a08d421b8018017555ebb665b2449ac2d5a67d9ddafeede3283a00",
+        "schema_sha256": "20255d1a94eca00d59d0885e76e8fdd4d4997153c1d46d5f2cf5f2a54cdeb05e"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_rowids": {
+      "before": {
+        "rows": 1280,
+        "sha256": "0eeb760cffa695a878ecf290dc45d2c6464406b03cb5bd645fd0f23d03f4e889",
+        "schema_sha256": "66d950f00e374159eeb4b85e4890d1e7533e777651b5bd7a92140f1f6d92e5d5"
+      },
+      "after": {
+        "rows": 1280,
+        "sha256": "0eeb760cffa695a878ecf290dc45d2c6464406b03cb5bd645fd0f23d03f4e889",
+        "schema_sha256": "66d950f00e374159eeb4b85e4890d1e7533e777651b5bd7a92140f1f6d92e5d5"
+      },
+      "original_rows_unchanged": true
+    },
+    "vec_drawers_vector_chunks00": {
+      "before": {
+        "rows": 2,
+        "sha256": "153a81180a5a1c0bb4118ab7213e35893d6e2a2207d0fcbf76af68115d8986da",
+        "schema_sha256": "4cd86219dc8a0213d29c755cc2b8df4beef0ddfbd432c32c740890052bf128a4"
+      },
+      "after": {
+        "rows": 2,
+        "sha256": "153a81180a5a1c0bb4118ab7213e35893d6e2a2207d0fcbf76af68115d8986da",
+        "schema_sha256": "4cd86219dc8a0213d29c755cc2b8df4beef0ddfbd432c32c740890052bf128a4"
+      },
+      "original_rows_unchanged": true
+    },
+    "workflow_runs": {
+      "before": {
+        "rows": 0,
+        "sha256": "4879897cd300b549e87ea149b5a95a0f42cf4a60aced0898c32d6ac2633699da",
+        "schema_sha256": "5d850388ce8e560f3521a1086de2478ad3a80e68e206a951cfde77c3e581668f"
+      },
+      "after": {
+        "rows": 0,
+        "sha256": "4879897cd300b549e87ea149b5a95a0f42cf4a60aced0898c32d6ac2633699da",
+        "schema_sha256": "5d850388ce8e560f3521a1086de2478ad3a80e68e206a951cfde77c3e581668f"
+      },
+      "original_rows_unchanged": true
+    }
+  },
+  "new_tables": {
+    "portable_records": {
+      "rows": 1280,
+      "sha256": "17108a22c5fbe42958b97e03a035dcca9e6458fef850a9116f73be40edf69d92",
+      "schema_sha256": "61776ae1745540becf2b924a904bcd345c7bcfb4af13b72d7ea27b5c6be21d6f"
+    },
+    "procedure_evaluations": {
+      "rows": 0,
+      "sha256": "9e97e3d1a83c2408e44ad50beb38722b07cab57bfeafcfc9e06813f5f2a8c3eb",
+      "schema_sha256": "900267fb0e83adea4ee8babf71e2a4bcb47749fb88caa2d1e51887b362c8f0eb"
+    },
+    "procedure_records": {
+      "rows": 0,
+      "sha256": "c16c235b7cdb51c98004639feeba2776f71803b6560f19e73c3392e4f59fc591",
+      "schema_sha256": "120b59127c937fa325b40f4971556782bba53add3778d5e624f7b2cb738bb942"
+    }
+  },
+  "allowed_new_metadata_keys": [
+    "portable_store_id"
+  ],
+  "original_metadata_sha256": "5a16db2ee298cc127ea1e6960e8b5d1e0e8bb039fe57ce32f6a8db9003d57158",
+  "new_portable_identity_sha256": "de2a3e78bc65b27bd0ce53c3047bc06a41e9ce260145f3bc51fe9147bc228d3e",
+  "reproducibility": "Run the tester-owned private migration_probe.py with the workspace Python. It creates a unique ignored private rehearsal directory, invokes _copy_locked_database in a bounded child, inventories all original and physical vector tables, opens only the copy with a provider that raises on every use, then verifies exact preservation and the automatic backup.",
+  "private_probe_sha256": "f29024f14ae1c8618216a28781fb957d4c4a7db58a4e04bfd9b13d23a231b6ea"
+}

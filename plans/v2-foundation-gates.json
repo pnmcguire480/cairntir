@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "recorded_at_utc": "2026-09-06T01:38:35.437935+00:00",
+  "coordinator": "/root",
+  "independent_acceptance": "plans/v2-foundation-result.json",
+  "runtime_sha256": {
+    "src/cairntir/cli.py": "38f0114b1fec31965595591b973ac37fdf459aab478c0b131d2529d7206fb1de",
+    "src/cairntir/config.py": "77b7206ea45ce3dcecfb4213bc23855a897739657b5c184a89eb26bee6a9299d",
+    "src/cairntir/context.py": "ec73941ab3facfebb4d11ad310ec362d3977c3121ca728419cbf99dc1f8b3482",
+    "src/cairntir/cost.py": "1767e58c4ffe7ce8003ae9593cb57753bb3371d63b1311806d29ec6df582c8b2",
+    "src/cairntir/mcp/backend.py": "2048747dcf1f49b5dcba7e448675a23d4c4c16ea5f5d7fffd5b7e1d6aa733bb7",
+    "src/cairntir/mcp/server.py": "befa6332c57ee18151b06dc2f26bce704ea9e2d01a59d1242e1d84c4e935efac",
+    "src/cairntir/memory/embeddings.py": "9a7314e2c41a29b190c90fe8c21010fc735d57011a87f961901ae2e69df29724",
+    "src/cairntir/memory/store.py": "e352c5e68c21405eeebffb990fc3bcc0743c4c38398be19b03d6197316e570e5"
+  },
+  "full_regression": {
+    "command": "python -m pytest -m \"not slow\" --tb=short -q",
+    "passed": 870,
+    "deselected_slow": 7,
+    "coverage_percent": 83.56,
+    "seconds": 49.41,
+    "output": "plans/v2-foundation-regression.txt"
+  },
+  "model_evaluation": {
+    "command": "python -m pytest -m eval --no-cov --tb=short -q",
+    "passed": 7,
+    "deselected": 870,
+    "seconds": 40.39,
+    "output": "plans/v2-foundation-eval.txt",
+    "network": "offline cached models",
+    "corpus_window_scope": "four synthetic drawers in an isolated home, not the production memory database",
+    "model_cache": "separate copies of existing FastEmbed and MiniLM assets"
+  },
+  "quality_gates": {
+    "ruff": "PASS",
+    "ruff_format": "133 files PASS",
+    "mypy_strict": "55 source files PASS",
+    "silent_exceptions": "PASS",
+    "landed_commitments": "157 PASS",
+    "seams": "9 PASS",
+    "docs_links": "PASS",
+    "dependency_advisories": "134 locked packages, 0 findings",
+    "release_tags": "all non-exempt released versions tagged and on PyPI",
+    "mkdocs_strict": "PASS",
+    "uv_sync_locked_all_extras_offline": "PASS",
+    "uv_build_offline": "wheel and source archive PASS"
+  },
+  "wheel_transport": {
+    "status": "PASS",
+    "package_version": "1.9.0",
+    "wheel_import_verified": true,
+    "cli_chars_including_newline": 1553,
+    "mcp_call_tool_result_chars": 1851,
+    "tool_count": 21,
+    "cli_mcp_parity": true,
+    "abstention": true,
+    "task_recovery_error": true,
+    "demo_metrics": {
+      "full_history_chars": 7720,
+      "selected_chars": 2899,
+      "full_history_estimated_tokens": 1930,
+      "selected_estimated_tokens": 724,
+      "payload_reduction_percent": 62.44818652849741,
+      "token_basis": "estimate: characters divided by four, rounded down",
+      "billing_savings": null
+    },
+    "scope": "isolated synthetic store, cached production embeddings, built-wheel CLI and actual stdio MCP; no commercial host or billing evaluation",
+    "doctor_gate": {
+      "status": "PASS",
+      "drawers": 4,
+      "vectors": 4,
+      "dimension": 512,
+      "sqlite_integrity": "ok",
+      "foreign_key_errors": 0,
+      "scope": "isolated synthetic store",
+      "vault_drift": "not evaluated; no vault supplied"
+    }
+  },
+  "demo": {
+    "command": "python -m cairntir.cli context-demo OUTPUT --budget 8192",
+    "full_history_chars": 7720,
+    "selected_chars": 2899,
+    "payload_reduction_percent": 62.44818652849741,
+    "rendered_html_sha256": "3baf8e4e1796f38e6ad676f8f2387ef8f3eca2f1e447171620e1adb3f37c70c2",
+    "visual_review": "browser accessibility tree and screenshot inspected; final HTML bytes match inspected preview",
+    "scope": "synthetic local backend demonstration; no billed-token, commercial-host or general task-success result"
+  },
+  "scope": {
+    "platform": "Windows, Python 3.11.9",
+    "posix_snapshot": "source-reviewed against SQLite locking docs; native Linux/macOS not executed locally",
+    "version": "1.9.0 unchanged; no release",
+    "production": "no installation or memory database experimentation",
+    "dependency_changes": false
+  },
+  "artifacts": {
+    "plans\\v2-foundation-regression.txt": "c325a6024001cf9d6d2f8cb236d78d2d3fc28be6a5a4cd138822752fa8482a57",
+    "plans\\v2-foundation-eval.txt": "23ffff7fd0c86e03b80871bb5d1876450d03ba826568e1bd836b43f92e3a449f",
+    "dist\\cairntir-1.9.0-py3-none-any.whl": "11a4bbc34386d39b8f5f03072c98378a0c6022973684b694d88541652cdf24c8",
+    "dist\\cairntir-1.9.0.tar.gz": "11630bc248bfe45cb768abd1fbd1bc55aca13b487d7026ee631589af931a387d"
+  },
+  "harness_corrections": [
+    "The first wheel smoke assumed MCP isError=true. Existing Cairntir returns a [cairntir error] text receipt; the smoke was corrected to assert the exact incompatibility receipt. Runtime and frozen tests were unchanged."
+  ],
+  "local_commits": {
+    "acceptance_freeze": "e19ba8e",
+    "runtime": "ac89c20"
+  }
+}

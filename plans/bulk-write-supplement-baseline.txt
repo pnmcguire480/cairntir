@@ -1,0 +1,14 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+______ test_temp_trigger_cannot_hide_corrupt_index_from_the_next_append _______
+tests\unit\test_bulk_write_supplement.py:43: in test_temp_trigger_cannot_hide_corrupt_index_from_the_next_append
+    with pytest.raises(EmbeddingSpaceError):
+E   Failed: DID NOT RAISE <class 'cairntir.errors.EmbeddingSpaceError'>
+_______ test_savepoint_rollback_revalidates_restored_embedding_metadata _______
+tests\unit\test_bulk_write_supplement.py:64: in test_savepoint_rollback_revalidates_restored_embedding_metadata
+    with pytest.raises(EmbeddingSpaceError):
+E   Failed: DID NOT RAISE <class 'cairntir.errors.EmbeddingSpaceError'>
+=========================== short test summary info ===========================
+FAILED tests/unit/test_bulk_write_supplement.py::test_temp_trigger_cannot_hide_corrupt_index_from_the_next_append
+FAILED tests/unit/test_bulk_write_supplement.py::test_savepoint_rollback_revalidates_restored_embedding_metadata
+2 failed in 0.76s

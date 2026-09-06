@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN",
+  "frozen_at_utc": "2026-09-06T02:32:57.641002+00:00",
+  "tester_id": "/root/foundation_tester",
+  "reviewer_id": "/root",
+  "review_verdict": "PASS: coordinator reviewed full API contract and43case suite; no amendment requested; explicit author/freeze authorization before implementation.",
+  "artifact_readiness": "PASS",
+  "implementation_acceptance": "FAIL",
+  "collected_cases": 43,
+  "mandatory_regression_cases": 118,
+  "maximum_repair_rounds": 2,
+  "verification_reserve": "Final quarter of milestone protected for independent verification.",
+  "runtime_git_head_at_baseline": "8ab79951efd1aa4a9163190c26de0bab27d455d0",
+  "owned_artifacts": [
+    "tests/unit/test_procedure_acceptance.py",
+    "plans/procedure-acceptance.md",
+    "plans/procedure-baseline.json",
+    "plans/procedure-baseline-acceptance.txt",
+    "plans/procedure-baseline-regression.txt"
+  ],
+  "mandatory_regression_files": [
+    "tests/unit/test_learning.py",
+    "tests/unit/test_reason_loop.py",
+    "tests/unit/test_mcp_server.py",
+    "tests/integration/test_mcp_backend.py"
+  ],
+  "artifacts": [
+    {
+      "path": "plans/procedure-acceptance.md",
+      "sha256": "b7dd86a8666fed41938b77ae4df550ef146beae40047b2b095efc31d62433ef4"
+    },
+    {
+      "path": "plans/procedure-baseline-acceptance.txt",
+      "sha256": "73e3b3e9e42b269d7ba94ea1129f5cd888da19d7bf052725915fa0af05c4ef5c"
+    },
+    {
+      "path": "plans/procedure-baseline-regression.txt",
+      "sha256": "71d1f3af8cc82e7df8b6a1d5cc341614062fe256379bddb74acdbc8d5c853fdf"
+    },
+    {
+      "path": "plans/procedure-baseline.json",
+      "sha256": "bf46e9cc4572743e66eea778f04f6bc6317f9ae81e40632363a749af9c2374c2"
+    },
+    {
+      "path": "tests/conftest.py",
+      "sha256": "a43e93cbc6abc0f182239545fb77ca4d6a61945d9ec3781d2338380edeffdbef"
+    },
+    {
+      "path": "tests/integration/test_mcp_backend.py",
+      "sha256": "65ca1dfaafa1ce9959e2a91ac045f36baf080757411382d0800f1f6a826587dd"
+    },
+    {
+      "path": "tests/unit/test_learning.py",
+      "sha256": "6d3a7d6701009abd1f4590a9ce49ea101d8c5e7e5cb63188d58e34083d63b063"
+    },
+    {
+      "path": "tests/unit/test_mcp_server.py",
+      "sha256": "ac84eed7a941c176e0ffde88eda94582660485af8f76c9febae60612329dfd21"
+    },
+    {
+      "path": "tests/unit/test_procedure_acceptance.py",
+      "sha256": "7c224760156f14278d46f34bc3b6ddb24e43cf7bc0b7c11efaf4d2f64280e90b"
+    },
+    {
+      "path": "tests/unit/test_reason_loop.py",
+      "sha256": "cf6c67a0ce8940b738769ac48aa21509a6874ea6bd2992819ad63fb54564133c"
+    }
+  ],
+  "baseline": {
+    "acceptance": "43 failed in1.41s: API absent",
+    "regression": "118 passed in4.50s",
+    "harness": "PASS; no collection/setup/infrastructure errors; actual6case local evaluator outcomes verified."
+  },
+  "configuration_policy": "Schema/version/dependency configuration fingerprints are baseline provenance, not permanent immutable support bindings. Existing historical manifests/artifacts remain unchanged; later generations explicitly record necessary support transitions.",
+  "changed_bound_hash_invalidates_run": true,
+  "line_endings": "All newly owned artifacts use canonical LF bytes.",
+  "self_hash": "External SHA256 sent to coordinator; excluded from own inventory."
+}

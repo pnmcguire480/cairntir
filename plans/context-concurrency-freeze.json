@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN",
+  "frozen_at_utc": "2026-09-06T02:11:19.245451+00:00",
+  "tester_id": "/root/foundation_tester",
+  "authorization": "Coordinator explicitly approved the six-case concurrency contract and authorized author/freeze before runtime edits; core confirmed the public behavior and live SHM boundary.",
+  "artifact_readiness": "PASS",
+  "implementation_acceptance": "FAIL",
+  "collected_cases": 6,
+  "maximum_repair_rounds": 2,
+  "runtime_git_head": "82fda1582dbe89583323b86797433f30c4640149",
+  "owned_artifacts": [
+    "tests/unit/test_context_concurrency_acceptance.py",
+    "plans/context-concurrency-acceptance.md",
+    "plans/context-concurrency-baseline.json",
+    "plans/context-concurrency-baseline.txt"
+  ],
+  "original_foundation_bound_artifacts_verified": 13,
+  "original_manifest_sha256": "21a836728fad91f3a98cb1325a6ac08d91d421def183628c9acff8935a3a85c1",
+  "supplemental_manifest_sha256": "f36250dfadb5ca57737891e4154ec098884f5946010791a57695b430e637ff51",
+  "artifacts": [
+    {
+      "path": "docs/recipes/finalization-mode/README.md",
+      "sha256": "e3936d4089e919529c7b901f80a21132998f1b538cc2294736e12a75d6839294"
+    },
+    {
+      "path": "plans/context-concurrency-acceptance.md",
+      "sha256": "1323cbd696fbf36b47ea079cf9e230fd17a06da1195d3f3a74d677541d848de5"
+    },
+    {
+      "path": "plans/context-concurrency-baseline.json",
+      "sha256": "4fada196c300866ae088d68fdffb5270799a8f0a920fec075371b3ba3a011f4e"
+    },
+    {
+      "path": "plans/context-concurrency-baseline.txt",
+      "sha256": "2f1ce9cb686ac849b8e336e56d0b6c4e0a64cddeeea60f8df75c15817559e487"
+    },
+    {
+      "path": "plans/v2-foundation-acceptance.md",
+      "sha256": "a39c2ac0a841a0930289160c3e1ee58f99335e5a930d2091018b3fa6346e8e79"
+    },
+    {
+      "path": "plans/v2-foundation-baseline.json",
+      "sha256": "02e5d3d2a76750e0f69f6c63d1a933e2287f279145193e1675157a953763f71f"
+    },
+    {
+      "path": "plans/v2-foundation-boundary-freeze.json",
+      "sha256": "f36250dfadb5ca57737891e4154ec098884f5946010791a57695b430e637ff51"
+    },
+    {
+      "path": "plans/v2-foundation-freeze.json",
+      "sha256": "21a836728fad91f3a98cb1325a6ac08d91d421def183628c9acff8935a3a85c1"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "00a612ebd5de5988c4aefe10c9d66e96d8446854dfe55a7135f1da066ecc832f"
+    },
+    {
+      "path": "tests/conftest.py",
+      "sha256": "a43e93cbc6abc0f182239545fb77ca4d6a61945d9ec3781d2338380edeffdbef"
+    },
+    {
+      "path": "tests/integration/test_mcp_backend.py",
+      "sha256": "65ca1dfaafa1ce9959e2a91ac045f36baf080757411382d0800f1f6a826587dd"
+    },
+    {
+      "path": "tests/unit/test_context_acceptance.py",
+      "sha256": "1a14baa44ac0b5b9d3e2702796ced0b9e13adbe660055aa1eb3895f9e6c709d2"
+    },
+    {
+      "path": "tests/unit/test_context_boundaries.py",
+      "sha256": "b82a3a60fa3b4562925e8448e0d2683ea8ff976f16f457231032ef97906bdbf3"
+    },
+    {
+      "path": "tests/unit/test_context_concurrency_acceptance.py",
+      "sha256": "1bdfc47f69ff34840705589dc22864df228bc20462fe6e13deec87a3b072e007"
+    },
+    {
+      "path": "tests/unit/test_cost.py",
+      "sha256": "0c51f6512beb62fa5a2de3f25fd90e00701fa176b6ce4d941aafeb994ad9960a"
+    },
+    {
+      "path": "tests/unit/test_handoff.py",
+      "sha256": "7fd1ae077c1ca54fa85ac8b890156c106922cb98ac60ae76e2ee630b43da251d"
+    },
+    {
+      "path": "tests/unit/test_mcp_server.py",
+      "sha256": "ac84eed7a941c176e0ffde88eda94582660485af8f76c9febae60612329dfd21"
+    },
+    {
+      "path": "tests/unit/test_transcript.py",
+      "sha256": "ab4ec64131f01e2df4155600115e8604df9fa12aab565b0b654cfbeaace949cb"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "40e5e67232fbb1521d22e9999e6836fe4418f1d8f73d419ee9dff5c6bc0c6909"
+    }
+  ],
+  "mandatory_complete_gates": [
+    {
+      "path": "tests/unit/test_context_concurrency_acceptance.py",
+      "cases": 6
+    },
+    {
+      "path": "tests/unit/test_context_acceptance.py",
+      "cases": 41
+    },
+    {
+      "path": "tests/unit/test_context_boundaries.py",
+      "cases": 10
+    },
+    {
+      "paths": [
+        "tests/unit/test_handoff.py",
+        "tests/unit/test_transcript.py",
+        "tests/unit/test_mcp_server.py",
+        "tests/integration/test_mcp_backend.py",
+        "tests/unit/test_cost.py"
+      ],
+      "cases": 153
+    }
+  ],
+  "baseline_summary": "5 failed, 1 passed in 21.47s",
+  "changed_hash_invalidates_run": true,
+  "historical_probe": "plans/v2-foundation-round1-wal-probe.py remains immutable historical foundation evidence; its busy expectation is superseded only for this newly authorized concurrency milestone.",
+  "line_endings": "All newly frozen owned artifacts are canonical LF bytes.",
+  "self_hash": "External SHA256 supplied to coordinator; excluded from own inventory."
+}

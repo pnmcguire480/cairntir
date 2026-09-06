@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="29" skipped="0" tests="29" time="6.564" timestamp="2026-09-05T22:38:41.971872-04:00" hostname="PNMDevDesign"><testcase classname="tests.unit.test_sharing_acceptance" name="test_owner_compatibility_and_random_hash_only_tokens" time="0.119"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_scope_intersection_union_and_input_immutability" time="0.189"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_empty_scopes_and_empty_filters_never_mean_owner" time="0.075"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_unknown_empty_expired_and_revoked_tokens_fail_closed" time="0.049"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_hidden_ids_and_missing_ids_are_indistinguishable_and_pure" time="0.065"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_read_scope_filters_before_limits_and_never_touches" time="0.266"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_capabilities_are_independent_including_manage" time="0.066"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_read_only_grant_denies_all_mutation_routes_without_writes" time="0.101"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_id_only_write_scope_cannot_create_or_append" time="0.065"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_cross_scope_references_are_denied_before_workflow_or_access_writes" time="0.074"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_ordinary_content_metadata_principal_and_model_cannot_authorize" time="0.051"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_required_hidden_reference_omits_whole_record_without_rewriting" time="0.189"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_temporal_direct_sql_and_context_relatives_cannot_cross_scope" time="0.111"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_aggregate_existence_and_stale_queries_use_only_visible_records" time="0.084"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_context_and_global_identity_do_not_leak_scope_or_scan_counts" time="0.092"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_learning_anchor_and_codeglass_read_surfaces_are_scoped" time="0.091"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_workflow_keys_and_results_are_isolated_between_grants" time="0.057"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_grant_management_is_owner_only_even_with_manage_capability" time="0.051"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_hotfix_read_write_and_approval_paths_preserve_scope" time="0.541"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_live_revocation_and_expiry_deny_future_access" time="0.066"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_expiry_at_transaction_commit_rolls_back_every_write" time="0.033"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_readonly_snapshot_rechecks_authoritative_live_revocation" time="0.074"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_export_permission_is_independent_and_cannot_escape_reference_closure" time="0.073"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_portable_imported_approval_metadata_never_confers_capabilities" time="0.135"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_actual_cli_binds_grant_for_get_and_task_and_preserves_owner" time="0.082"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_actual_cli_invalid_configured_grant_fails_closed" time="1.198"><failure message="assert 0 != 0&#10; +  where 0 = CompletedProcess(args=['C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe', 'C:\\Dev\\Cairntir\\tests\\unit\\test_sharing_...c&quot;,\n  &quot;security_signals&quot;: [],\n  &quot;supersedes_id&quot;: null,\n  &quot;suspicious&quot;: false,\n  &quot;wing&quot;: &quot;juniper&quot;\n}\n', stderr='').returncode">tests\unit\test_sharing_acceptance.py:764: in test_actual_cli_invalid_configured_grant_fails_closed
+    assert result.returncode != 0
+E   assert 0 != 0
+E    +  where 0 = CompletedProcess(args=['C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe', 'C:\\Dev\\Cairntir\\tests\\unit\\test_sharing_...c",\n  "security_signals": [],\n  "supersedes_id": null,\n  "suspicious": false,\n  "wing": "juniper"\n}\n', stderr='').returncode</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_actual_cli_export_and_unsupported_administration_fail_closed" time="0.113"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_real_stdio_startup_scope_is_immutable_and_revocation_is_live" time="0.057"><failure message="Failed: SHARING_UNIMPLEMENTED: cairntir.access">No module named 'cairntir.access'
+
+During handling of the above exception, another exception occurred:
+SHARING_UNIMPLEMENTED: cairntir.access</failure></testcase><testcase classname="tests.unit.test_sharing_acceptance" name="test_real_stdio_invalid_grant_never_serves_owner_data" time="1.206"><failure message="assert 'private-record-canary-b81d' not in '{&quot;jsonrpc&quot;:...or&quot;: false}}'&#10;  &#10;  'private-record-canary-b81d' is contained here:&#10;  ?           ^^^^^&#10;    tent\&quot;: \&quot;private-record-canary-b81d\&quot;,\n  \&quot;content_hash\&quot;: \&quot;e1978d222a91fff84dae239ddcadffa9c22f9186861cf4f6a8ab365039fc8f29\&quot;,\n  \&quot;content_length\&quot;: 26,\n  \&quot;created_at\&quot;: \&quot;2026-09-06T02:38:47.353536+00:00\&quot;,\n  \&quot;delta\&quot;: null,\n  \&quot;id\&quot;: 1,\n  \&quot;instruction_authority\&quot;: \&quot;none\&quot;,\n  \&quot;layer\&quot;: \&quot;on_demand\&quot;,\n  \&quot;metadata\&quot;: {},\n  \&quot;observed_outcome\&quot;: null,\n  \&quot;predicted_outcome\&quot;: null,\n  \&quot;provenance\&quot;: {\n    \&quot;capture_path\&quot;: \&quot;sharing.acceptance\&quot;,\n    \&quot;client_name\&quot;: \&quot;independent-shar...&#10;  &#10;  ...Full output truncated (2 lines hidden), use '-vv' to show">tests\unit\test_sharing_acceptance.py:934: in test_real_stdio_invalid_grant_never_serves_owner_data
+    assert HIDDEN not in output
+E   assert 'private-record-canary-b81d' not in '{"jsonrpc":...or": false}}'
+E     
+E     'private-record-canary-b81d' is contained here:
+E     ?           ^^^^^
+E       tent\": \"private-record-canary-b81d\",\n  \"content_hash\": \"e1978d222a91fff84dae239ddcadffa9c22f9186861cf4f6a8ab365039fc8f29\",\n  \"content_length\": 26,\n  \"created_at\": \"2026-09-06T02:38:47.353536+00:00\",\n  \"delta\": null,\n  \"id\": 1,\n  \"instruction_authority\": \"none\",\n  \"layer\": \"on_demand\",\n  \"metadata\": {},\n  \"observed_outcome\": null,\n  \"predicted_outcome\": null,\n  \"provenance\": {\n    \"capture_path\": \"sharing.acceptance\",\n    \"client_name\": \"independent-shar...
+E     
+E     ...Full output truncated (2 lines hidden), use '-vv' to show</failure></testcase></testsuite></testsuites>

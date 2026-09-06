@@ -1,0 +1,178 @@
+{
+  "recorded_at_utc": "2026-09-06T01:22:41.402421+00:00",
+  "kind": "independent synthetic local-model supporting evidence",
+  "provider": "FastEmbedProvider",
+  "model": "jinaai/jina-embeddings-v2-small-en",
+  "dimension": 512,
+  "network_attempts": 0,
+  "documents": [
+    {
+      "id": "package-activation",
+      "text": "Publish downloaded application packages only after their SHA-256 digest is verified successfully; until then keep the previous version active."
+    },
+    {
+      "id": "event-deduplication",
+      "text": "Message handlers must record each event's unique ID and ignore repeated deliveries so one event cannot create the same invoice twice."
+    },
+    {
+      "id": "attachment-size",
+      "text": "Reject uploaded attachments larger than ten mebibytes before accepting their contents into the document store."
+    }
+  ],
+  "queries": [
+    {
+      "id": "activation-paraphrase",
+      "text": "When is it safe to switch users over to a newly downloaded build?",
+      "expected": [
+        "package-activation"
+      ]
+    },
+    {
+      "id": "queue-paraphrase",
+      "text": "How does the billing worker prevent duplicate effects when the queue redelivers a message?",
+      "expected": [
+        "event-deduplication"
+      ]
+    },
+    {
+      "id": "upload-paraphrase",
+      "text": "Which size limit should reject an attachment before accepting its contents?",
+      "expected": [
+        "attachment-size"
+      ]
+    },
+    {
+      "id": "migration-control",
+      "text": "How do whales navigate during seasonal migration?",
+      "expected": []
+    },
+    {
+      "id": "gardening-control",
+      "text": "Which soil conditions suit tomato seedlings?",
+      "expected": []
+    },
+    {
+      "id": "eclipse-control",
+      "text": "What causes an eclipse of the Moon?",
+      "expected": []
+    }
+  ],
+  "measurements": [
+    {
+      "query_id": "activation-paraphrase",
+      "document_id": "package-activation",
+      "relevant": true,
+      "cosine": 0.7694896703926445
+    },
+    {
+      "query_id": "activation-paraphrase",
+      "document_id": "event-deduplication",
+      "relevant": false,
+      "cosine": 0.6312038370984361
+    },
+    {
+      "query_id": "activation-paraphrase",
+      "document_id": "attachment-size",
+      "relevant": false,
+      "cosine": 0.706149222107932
+    },
+    {
+      "query_id": "queue-paraphrase",
+      "document_id": "package-activation",
+      "relevant": false,
+      "cosine": 0.686480188374143
+    },
+    {
+      "query_id": "queue-paraphrase",
+      "document_id": "event-deduplication",
+      "relevant": true,
+      "cosine": 0.8386162723091448
+    },
+    {
+      "query_id": "queue-paraphrase",
+      "document_id": "attachment-size",
+      "relevant": false,
+      "cosine": 0.707093704984655
+    },
+    {
+      "query_id": "upload-paraphrase",
+      "document_id": "package-activation",
+      "relevant": false,
+      "cosine": 0.7352136866589192
+    },
+    {
+      "query_id": "upload-paraphrase",
+      "document_id": "event-deduplication",
+      "relevant": false,
+      "cosine": 0.7207731924049912
+    },
+    {
+      "query_id": "upload-paraphrase",
+      "document_id": "attachment-size",
+      "relevant": true,
+      "cosine": 0.9057559605026702
+    },
+    {
+      "query_id": "migration-control",
+      "document_id": "package-activation",
+      "relevant": false,
+      "cosine": 0.6513041480501781
+    },
+    {
+      "query_id": "migration-control",
+      "document_id": "event-deduplication",
+      "relevant": false,
+      "cosine": 0.6730247502812565
+    },
+    {
+      "query_id": "migration-control",
+      "document_id": "attachment-size",
+      "relevant": false,
+      "cosine": 0.6507873165884288
+    },
+    {
+      "query_id": "gardening-control",
+      "document_id": "package-activation",
+      "relevant": false,
+      "cosine": 0.6701496466837064
+    },
+    {
+      "query_id": "gardening-control",
+      "document_id": "event-deduplication",
+      "relevant": false,
+      "cosine": 0.6482985747074005
+    },
+    {
+      "query_id": "gardening-control",
+      "document_id": "attachment-size",
+      "relevant": false,
+      "cosine": 0.6990302243275747
+    },
+    {
+      "query_id": "eclipse-control",
+      "document_id": "package-activation",
+      "relevant": false,
+      "cosine": 0.6278736855849314
+    },
+    {
+      "query_id": "eclipse-control",
+      "document_id": "event-deduplication",
+      "relevant": false,
+      "cosine": 0.6538285725651695
+    },
+    {
+      "query_id": "eclipse-control",
+      "document_id": "attachment-size",
+      "relevant": false,
+      "cosine": 0.636214035026399
+    }
+  ],
+  "locked_before_reveal_sha256": "52e3636e8c5a59186cefe01ae126fb0b0e91afb64b5e8374afbbc553574d31c0",
+  "threshold_fixed_before_reveal": 0.75,
+  "threshold_evaluation": {
+    "comparisons": 18,
+    "correct": 18,
+    "mistakes": [],
+    "verdict": "PASS"
+  }
+}

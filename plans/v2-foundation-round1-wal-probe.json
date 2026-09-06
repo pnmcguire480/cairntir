@@ -1,0 +1,33 @@
+{
+  "probe_kind": "independent isolated source-purity and WAL visibility verification",
+  "runtime_store_sha256": "e352c5e68c21405eeebffb990fc3bcc0743c4c38398be19b03d6197316e570e5",
+  "frozen_snapshot_helper_sha256": "b82a3a60fa3b4562925e8448e0d2683ea8ff976f16f457231032ef97906bdbf3",
+  "cold_quiescent": {
+    "evidence_visible": true,
+    "source_unchanged_during_and_after_read": true,
+    "private_snapshot_removed": true
+  },
+  "idle_live_wal_connection": {
+    "error_type": "MemoryStoreError",
+    "detail": "failed to open read-only database at C:\\Dev\\Cairntir\\.cairntir\\foundation-repair1-probe-60vpyw6n\\source\\memory.db: snapshot helper failed: Traceback (most recent call last):\n  File \"C:\\Dev\\Cairntir\\src\\cairntir\\memory\\store.py\", line 1954, in _copy_locked_database\n    msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 512)\nPermissionError: [Errno 13] Permission denied\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"C:\\Dev\\Cairntir\\src\\cairntir\\memory\\store.py\", line 1960, in _copy_locked_database\n    raise MemoryStoreError(\ncairntir.errors.MemoryStoreError: task snapshot source is busy or cannot be locked: [Errno 13] Permission denied",
+    "private_snapshot_removed": true,
+    "source_unchanged": true
+  },
+  "active_write_transaction": {
+    "error_type": "MemoryStoreError",
+    "detail": "failed to open read-only database at C:\\Dev\\Cairntir\\.cairntir\\foundation-repair1-probe-60vpyw6n\\source\\memory.db: snapshot helper failed: Traceback (most recent call last):\n  File \"C:\\Dev\\Cairntir\\src\\cairntir\\memory\\store.py\", line 1954, in _copy_locked_database\n    msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 512)\nPermissionError: [Errno 13] Permission denied\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"C:\\Dev\\Cairntir\\src\\cairntir\\memory\\store.py\", line 1960, in _copy_locked_database\n    raise MemoryStoreError(\ncairntir.errors.MemoryStoreError: task snapshot source is busy or cannot be locked: [Errno 13] Permission denied",
+    "private_snapshot_removed": true,
+    "source_unchanged_during_rejected_read": true,
+    "observer": "read-only mmap preserves full hashes/mtimes while Windows byte locks prevent ordinary SHM reads"
+  },
+  "orphan_committed_wal": {
+    "new_content_absent_from_main_database": true,
+    "new_content_present_in_wal": true,
+    "committed_id": 3,
+    "exact_content_visible_through_readonly_store": true,
+    "source_unchanged_during_and_after_read": true,
+    "private_snapshot_removed": true
+  },
+  "owned_probe_workspace_cleaned": true,
+  "verdict": "PASS"
+}

@@ -1,0 +1,170 @@
+{
+  "recorded_at_utc": "2026-09-06T01:22:41.361879+00:00",
+  "kind": "independent synthetic local-model supporting evidence",
+  "provider": "FastEmbedProvider",
+  "model": "jinaai/jina-embeddings-v2-small-en",
+  "dimension": 512,
+  "network_attempts": 0,
+  "documents": [
+    {
+      "id": "archives",
+      "text": "Nightly archives must keep the previous seven complete copies; prune older snapshots only after the new archive passes verification."
+    },
+    {
+      "id": "throttling",
+      "text": "When the service replies HTTP 429, wait for the Retry-After interval before sending the request again."
+    },
+    {
+      "id": "form-errors",
+      "text": "Associate each invalid input with its error text using aria-describedby and set aria-invalid to true."
+    }
+  ],
+  "queries": [
+    {
+      "id": "archive-paraphrase",
+      "text": "How many recovery archives should remain, and when may older ones be discarded?",
+      "expected": [
+        "archives"
+      ]
+    },
+    {
+      "id": "throttle-paraphrase",
+      "text": "How should a client respond when the remote endpoint throttles its traffic?",
+      "expected": [
+        "throttling"
+      ]
+    },
+    {
+      "id": "form-paraphrase",
+      "text": "How can assistive technology discover which fields failed validation and why?",
+      "expected": [
+        "form-errors"
+      ]
+    },
+    {
+      "id": "cooking-control",
+      "text": "Which ingredients belong in a sourdough starter?",
+      "expected": []
+    },
+    {
+      "id": "music-control",
+      "text": "How does a violin bow generate sound?",
+      "expected": []
+    },
+    {
+      "id": "astronomy-control",
+      "text": "Why do Jupiter's clouds form colorful bands?",
+      "expected": []
+    }
+  ],
+  "measurements": [
+    {
+      "query_id": "archive-paraphrase",
+      "document_id": "archives",
+      "relevant": true,
+      "cosine": 0.8121268971236372
+    },
+    {
+      "query_id": "archive-paraphrase",
+      "document_id": "throttling",
+      "relevant": false,
+      "cosine": 0.7189131413259131
+    },
+    {
+      "query_id": "archive-paraphrase",
+      "document_id": "form-errors",
+      "relevant": false,
+      "cosine": 0.6652292077414678
+    },
+    {
+      "query_id": "throttle-paraphrase",
+      "document_id": "archives",
+      "relevant": false,
+      "cosine": 0.6094432935822833
+    },
+    {
+      "query_id": "throttle-paraphrase",
+      "document_id": "throttling",
+      "relevant": true,
+      "cosine": 0.7800642924631817
+    },
+    {
+      "query_id": "throttle-paraphrase",
+      "document_id": "form-errors",
+      "relevant": false,
+      "cosine": 0.6578020411943135
+    },
+    {
+      "query_id": "form-paraphrase",
+      "document_id": "archives",
+      "relevant": false,
+      "cosine": 0.6607612103164944
+    },
+    {
+      "query_id": "form-paraphrase",
+      "document_id": "throttling",
+      "relevant": false,
+      "cosine": 0.6850574967227804
+    },
+    {
+      "query_id": "form-paraphrase",
+      "document_id": "form-errors",
+      "relevant": true,
+      "cosine": 0.775350471318634
+    },
+    {
+      "query_id": "cooking-control",
+      "document_id": "archives",
+      "relevant": false,
+      "cosine": 0.6844766418769308
+    },
+    {
+      "query_id": "cooking-control",
+      "document_id": "throttling",
+      "relevant": false,
+      "cosine": 0.6365153581642953
+    },
+    {
+      "query_id": "cooking-control",
+      "document_id": "form-errors",
+      "relevant": false,
+      "cosine": 0.6777600838383994
+    },
+    {
+      "query_id": "music-control",
+      "document_id": "archives",
+      "relevant": false,
+      "cosine": 0.6254350965065594
+    },
+    {
+      "query_id": "music-control",
+      "document_id": "throttling",
+      "relevant": false,
+      "cosine": 0.6340469348404797
+    },
+    {
+      "query_id": "music-control",
+      "document_id": "form-errors",
+      "relevant": false,
+      "cosine": 0.6473746152556339
+    },
+    {
+      "query_id": "astronomy-control",
+      "document_id": "archives",
+      "relevant": false,
+      "cosine": 0.6360108114792986
+    },
+    {
+      "query_id": "astronomy-control",
+      "document_id": "throttling",
+      "relevant": false,
+      "cosine": 0.6361094214842092
+    },
+    {
+      "query_id": "astronomy-control",
+      "document_id": "form-errors",
+      "relevant": false,
+      "cosine": 0.631812259464394
+    }
+  ]
+}

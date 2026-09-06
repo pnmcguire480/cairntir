@@ -27,6 +27,7 @@ from cairntir.codeglass import (
     retention_report,
     walkthrough_fingerprint,
 )
+from cairntir.context import compose_task_context
 from cairntir.durability import request_hash
 from cairntir.errors import AnchorError, MCPError
 from cairntir.handoff import DEFAULT_BUDGET_CHARS, Handoff
@@ -580,6 +581,8 @@ class CairntirBackend:
         max_deltas: int = 8,
         recover_transcripts: bool = False,
         recovery_budget_chars: int = DEFAULT_RECOVERY_BUDGET_CHARS,
+        task: str | None = None,
+        candidate_limit: int | None = None,
     ) -> str:
         """Compose one bounded brief for ``wing`` — the replacement for HANDOFF.md.
 
@@ -588,6 +591,25 @@ class CairntirBackend:
         with whole drawers and a hard ceiling. Drawers that do not fit are
         named, never cut. See :mod:`cairntir.handoff`.
         """
+        from cairntir.access import AccessDenied, ScopedStore
+
+        if recover_transcripts and isinstance(self._store, ScopedStore):
+            raise AccessDenied("transcript recovery is unavailable in restricted sessions")
+        if task is not None:
+            if recover_transcripts:
+                raise MCPError(
+                    "task handoff cannot include transcript recovery; request recovery separately"
+                )
+            return compose_task_context(
+                self._store,
+                wing=wing,
+                task=task,
+                budget_chars=budget_chars,
+                files=files,
+                candidate_limit=candidate_limit,
+            )
+        if candidate_limit is not None:
+            raise MCPError("candidate_limit requires a task")
         try:
             brief = compose_handoff(
                 self._store,
@@ -883,6 +905,11 @@ class CairntirBackend:
             )
         except (KeyError, TypeError, ValueError) as exc:
             raise MCPError(f"invalid teach-back response: {exc}") from exc
+        from cairntir.access import ScopedStore
+
+        if isinstance(self._store, ScopedStore):
+            self._store.authorize("read", drawer_id=walkthrough_id)
+            self._store.authorize("write")
         request = {
             "walkthrough_id": walkthrough_id,
             "phase": phase,
@@ -916,6 +943,10 @@ class CairntirBackend:
 
     def codeglass_retention(self, *, walkthrough_id: int) -> str:
         """Show immediate-versus-delayed comprehension and concepts to revisit."""
+        from cairntir.access import ScopedStore
+
+        if isinstance(self._store, ScopedStore):
+            self._store.authorize("read", drawer_id=walkthrough_id)
         return render_retention(retention_report(self._store, walkthrough_id=walkthrough_id))
 
     def timeline(self, *, wing: str, entity: str, limit: int = 50) -> str:

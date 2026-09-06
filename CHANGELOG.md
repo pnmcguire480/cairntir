@@ -13,8 +13,31 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.10.0] — 2026-09-06
+
+### Added
+
+- Task-aware handoff through the existing CLI and MCP tool, with pure local
+  selection, validity and supersession handling, conflict and abstention
+  receipts, and a character ceiling covering the serialized tool result.
+- An isolated `context-demo` command with repeatable cross-session retrieval,
+  measured synthetic payload sizes, and an escaped offline HTML report.
+- Portable v2 bundles with stable UUIDs, immutable source records, mapped
+  relationships, complete archives, atomic imports and concurrent deduplication.
+  Imported approvals remain inactive evidence; sensitivity and validity survive.
+- Evaluated procedures retain prerequisites, evidence and counterexamples,
+  require independent holdout results and local operator approval, and preserve
+  an append-only revision and rollback history through Discovery and Reason.
+- Owner-issued grants constrain CLI and MCP reads, writes, exports and approvals
+  to explicit scopes, with expiry, live revocation and no implicit identity authority.
+
 ### Fixed
 
+- Task handoff from the CLI now reads a committed snapshot while other WAL
+  clients are open, including writers with uncommitted changes. Genuine lock
+  failures remain bounded; cold-store reads retain filesystem purity.
+- Bulk writes reuse verified embedding counts within a transaction while
+  rechecking after writes, schema changes, triggers, provider changes and rollback.
 - Portable exports now replace the destination atomically, preserving an
   existing backup when serialization or the input stream fails.
 - Portable imports remain untrusted and reject version-1 source-local history

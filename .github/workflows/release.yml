@@ -18,6 +18,10 @@ jobs:
   verify:
     name: Verify release candidate
     runs-on: ubuntu-latest
+    env:
+      CAIRNTIR_HOME: ${{ github.workspace }}/.cairntir/release-eval
+      FASTEMBED_CACHE_PATH: ${{ github.workspace }}/.cairntir/release-models
+      CAIRNTIR_ACCEPTANCE_MODEL_CACHE: ${{ github.workspace }}/.cairntir/release-models
     permissions:
       contents: read
     steps:
@@ -44,9 +48,14 @@ jobs:
           uv run ruff format --check .
       - name: Mypy strict
         run: uv run mypy --strict src
+      - name: Provision evaluation models and isolated corpus
+        run: uv run python scripts/provision_eval.py --home "$CAIRNTIR_HOME"
       - name: Tests and coverage
         # PyPI cannot contain this version until the publish job below. The
         # one self-referential integration test runs after trusted publishing.
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: uv run pytest -q -k "not test_every_released_changelog_version_is_tagged"
       - name: No silent exceptions
         run: uv run python scripts/check_no_silent_except.py

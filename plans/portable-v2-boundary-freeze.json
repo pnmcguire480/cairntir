@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN",
+  "frozen_at_utc": "2026-09-06T02:40:19.249680+00:00",
+  "tester_id": "/root/foundation_review",
+  "case_count": 1,
+  "parent_manifest_sha256": "d48d68bade0309331040bd71ff8489ce795c7a1b35ac8c7ef40b29801a5ba01b",
+  "contract": "Imported nested metadata named supersedes_id remains preserved source evidence and cannot create a top-level local Drawer.supersedes_id edge. Only the original top-level /supersedes_id mapping can activate that projection field.",
+  "severity": "T2",
+  "baseline": "FAIL: independently reproduced new local supersession from a source with no top-level supersession. This is a development boundary supplement; the original25case suite is unchanged.",
+  "artifacts": [
+    {
+      "path": "tests/unit/test_portable_boundaries.py",
+      "sha256": "1b5fa388d4c1fc53b0e77aa13f603657554fbf61137b4ba71b4b3c581236b887"
+    }
+  ],
+  "baseline_run": {
+    "command": [
+      "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/unit/test_portable_boundaries.py",
+      "--no-cov",
+      "-q",
+      "--tb=short"
+    ],
+    "exit_code": 1,
+    "stdout": "F                                                                        [100%]\n================================== FAILURES ===================================\n___ test_nested_supersedes_metadata_cannot_create_a_top_level_supersession ____\ntests\\unit\\test_portable_boundaries.py:38: in test_nested_supersedes_metadata_cannot_create_a_top_level_supersession\n    assert imported.supersedes_id is None, (\nE   AssertionError: Nested source metadata created a new local lifecycle edge; only the original top-level /supersedes_id reference may activate Drawer.supersedes_id.\nE   assert 2 is None\nE    +  where 2 = Drawer(id=1, wing='portable', room='archive', content='A record with no top-level supersession.', layer=<Layer.ON_DEMA...timezone.utc), claim=None, predicted_outcome=None, observed_outcome=None, delta=None, supersedes_id=2, belief_mass=1.0).supersedes_id\n=========================== short test summary info ===========================\nFAILED tests/unit/test_portable_boundaries.py::test_nested_supersedes_metadata_cannot_create_a_top_level_supersession\n1 failed in 0.69s\n",
+    "stderr": ""
+  }
+}

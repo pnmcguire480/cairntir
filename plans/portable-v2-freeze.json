@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN",
+  "frozen_at_utc": "2026-09-06T02:36:24.281277+00:00",
+  "tester_id": "/root/foundation_review",
+  "draft_reviewer_id": "/root",
+  "artifact_readiness": "PASS",
+  "implementation_acceptance": "FAIL",
+  "baseline": "24 expected missing-API failures,1 fixture pass;45 legacy cases PASS",
+  "case_count": 25,
+  "mandatory_slow_cases": 1,
+  "owned_artifacts": [
+    "tests/unit/test_portable_v2_acceptance.py",
+    "plans/portable-v2-acceptance.md",
+    "plans/portable-v2-v6.fixture",
+    "plans/portable-v2-fixture-provenance.json",
+    "plans/portable-v2-baseline.json"
+  ],
+  "mandatory_regression_files": [
+    "tests/unit/test_portable.py",
+    "tests/unit/test_shipping_hardening.py"
+  ],
+  "artifacts": [
+    {
+      "path": "tests/unit/test_portable_v2_acceptance.py",
+      "sha256": "ddafa230d7fe80543773b2c3d5dc5f3e622f5b606c0b879844ca52ba2615a793"
+    },
+    {
+      "path": "plans/portable-v2-acceptance.md",
+      "sha256": "7b14208718199de0ddbbb76de09096d2e8c4acedba1e5dfbc8ac5119f88a8620"
+    },
+    {
+      "path": "plans/portable-v2-v6.fixture",
+      "sha256": "ae20b045d2557e58ab5c072e5673b59ede94697aa5ce3f63710bd8fe48f50206"
+    },
+    {
+      "path": "plans/portable-v2-fixture-provenance.json",
+      "sha256": "cbe3c93de292d8c862f0b40be548293a6160809edbc3c0454122d99805e39f9b"
+    },
+    {
+      "path": "plans/portable-v2-baseline.json",
+      "sha256": "f505642f4eb80dbec4df4db470184b5b5c01505fbd07511d587aa8d525e4d857"
+    },
+    {
+      "path": "tests/unit/test_portable.py",
+      "sha256": "ed379507af398d33cf0aabe2c88e77d05cc0647b4859bb8b61159f584aed51f9"
+    },
+    {
+      "path": "tests/unit/test_shipping_hardening.py",
+      "sha256": "d8d556ba94c0e893a49a76440f7c64d3d82c66f4f17c6a19dbe881c3796708fd"
+    },
+    {
+      "path": "plans/portable-v2-generation0-suite.txt",
+      "sha256": "d3e6e26b8c8fad2cdb74eb79022b18d3908adabfbd0b6021405164794cdbdd7f"
+    },
+    {
+      "path": "plans/portable-v2-generation0-freeze.json",
+      "sha256": "4dcd8c14aa24e4c44db671910971650f030e7e3c14286aaafebf1ff0917e424c"
+    },
+    {
+      "path": "plans/portable-v2-amendment1.json",
+      "sha256": "ede997fcb4b3e3f18ca839c3daa22a3aba8a92654e67f4bc233bff8ec8d2e0af"
+    }
+  ],
+  "forbidden": "Implementer edits to these frozen inputs, skipped completeness case, acceptance rebasing, fixture-specific implementation logic, partial-suite substitution",
+  "mutable_execution_inputs": "Runtime source, pyproject.toml, uv.lock, schema/release configuration and result outputs are intentionally outside this frozen generation. Original foundation artifacts remain unchanged.",
+  "repair_round_limit": 2,
+  "verification_reserve": "Final25percent of milestone work",
+  "execution_prerequisites": "Existing Python development dependencies and sqlite-vec; no model downloads, paid services or production database access.",
+  "generation": 1,
+  "amendment": "plans/portable-v2-amendment1.json",
+  "previous_manifest_sha256": "4dcd8c14aa24e4c44db671910971650f030e7e3c14286aaafebf1ff0917e424c",
+  "historical_baseline_generation": 0
+}

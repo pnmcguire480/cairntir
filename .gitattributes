@@ -39,3 +39,12 @@
 
 # Jupyter notebooks — diff as JSON
 *.ipynb text
+
+# Preserve SHA-256-bound foundation evidence across checkouts.
+plans/v2-foundation-*.json -text whitespace=cr-at-eol
+plans/v2-foundation-*.txt -text whitespace=-blank-at-eol,cr-at-eol
+plans/sharing-result-round0*.txt -text whitespace=-blank-at-eol,cr-at-eol
+plans/sharing-result-round0*.xml -text whitespace=-blank-at-eol,cr-at-eol
+plans/continuity-regression*.txt -text whitespace=-blank-at-eol,cr-at-eol
+plans/*.xml -text whitespace=-blank-at-eol,cr-at-eol
+plans/sharing-codeql-repair-result*.txt -text whitespace=-blank-at-eol,cr-at-eol

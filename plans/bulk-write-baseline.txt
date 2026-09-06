@@ -1,0 +1,11 @@
+F.....                                                                   [100%]
+================================== FAILURES ===================================
+____ test_fifty_adds_in_one_transaction_have_bounded_full_vector_recounts _____
+tests\unit\test_bulk_write_boundaries.py:35: in test_fifty_adds_in_one_transaction_have_bounded_full_vector_recounts
+    assert 1 <= _counts(trace) <= 3, "full-vector COUNT must not run once per addition"
+E   AssertionError: full-vector COUNT must not run once per addition
+E   assert 50 <= 3
+E    +  where 50 = _counts(['BEGIN IMMEDIATE', "SELECT 1 FROM sqlite_master WHERE type='table' AND name = 'drawers'", 'SELECT COUNT(*) FROM drawe...'", "SELECT 1 FROM sqlite_master WHERE type='table' AND name = 'vec_drawers'", 'SELECT COUNT(*) FROM vec_drawers', ...])
+=========================== short test summary info ===========================
+FAILED tests/unit/test_bulk_write_boundaries.py::test_fifty_adds_in_one_transaction_have_bounded_full_vector_recounts
+1 failed, 5 passed in 0.70s

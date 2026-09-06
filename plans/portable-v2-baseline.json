@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-06T02:21:06.679429+00:00",
+  "tester": "/root/foundation_review",
+  "runtime_git_head": "84efdd64abc0954a65f03e49f6e5a8160035970e",
+  "database_schema": 6,
+  "python": "3.11.9",
+  "suite_sha256": "d3e6e26b8c8fad2cdb74eb79022b18d3908adabfbd0b6021405164794cdbdd7f",
+  "disposition": "FAIL",
+  "classification": "Expected preimplementation baseline:24 missing-API failures and1 genuine-v6-fixture pass; no collection errors, skips or xfails.",
+  "harness_probes": {
+    "all_table_snapshot_detects_access_change": "PASS",
+    "mid_transaction_fault_and_vector_rollback_detectable": "PASS",
+    "snapshot_handles_close_before_windows_cleanup": "PASS",
+    "bounded_two_process_readiness_release_and_cleanup": "PASS"
+  },
+  "runs": [
+    {
+      "gate": "acceptance_baseline",
+      "command": [
+        "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/unit/test_portable_v2_acceptance.py",
+        "--no-cov",
+        "-q",
+        "--tb=no"
+      ],
+      "exit_code": 1,
+      "stdout": ".FFFFFFFFFFFFFFFFFFFFFFFF                                                [100%]\n=========================== short test summary info ===========================\nFAILED tests/unit/test_portable_v2_acceptance.py::test_v6_migration_preserves_every_existing_column_vector_and_receipt\nFAILED tests/unit/test_portable_v2_acceptance.py::test_identity_survives_local_mutation_restart_and_clone_without_new_collisions\nFAILED tests/unit/test_portable_v2_acceptance.py::test_three_store_roundtrip_preserves_original_envelopes_and_numeric_source_references\nFAILED tests/unit/test_portable_v2_acceptance.py::test_reference_map_names_typed_paths_without_rewriting_specialized_metadata\nFAILED tests/unit/test_portable_v2_acceptance.py::test_new_local_reference_to_imported_evidence_keeps_referring_origin_namespace\nFAILED tests/unit/test_portable_v2_acceptance.py::test_competing_successors_remain_two_branches_after_import\nFAILED tests/unit/test_portable_v2_acceptance.py::test_hash_binds_identity_provenance_and_reference_mapping\nFAILED tests/unit/test_portable_v2_acceptance.py::test_existing_identity_conflict_rolls_back_new_records\nFAILED tests/unit/test_portable_v2_acceptance.py::test_conflicting_duplicate_identity_inside_bundle_is_rejected\nFAILED tests/unit/test_portable_v2_acceptance.py::test_dangling_required_relation_rejects_entire_import\nFAILED tests/unit/test_portable_v2_acceptance.py::test_numeric_reference_cannot_be_rebound_by_a_validly_rehashed_map\nFAILED tests/unit/test_portable_v2_acceptance.py::test_unmapped_numeric_uri_is_not_silently_bound_to_destination\nFAILED tests/unit/test_portable_v2_acceptance.py::test_import_failures_roll_back_graph_vectors_maps_and_committed_receipt_then_retry\nFAILED tests/unit/test_portable_v2_acceptance.py::test_separate_process_concurrent_imports_preserve_one_graph_and_receipt\nFAILED tests/unit/test_portable_v2_acceptance.py::test_overlapping_reordered_bundles_deduplicate_by_identity_not_file_hash\nFAILED tests/unit/test_portable_v2_acceptance.py::test_hmac_verification_never_promotes_imported_trust\nFAILED tests/unit/test_portable_v2_acceptance.py::test_imported_discovery_hotfix_and_approval_metadata_cannot_activate_local_lifecycle\nFAILED tests/unit/test_portable_v2_acceptance.py::test_whole_export_includes_more_than_old_one_hundred_thousand_cap\nFAILED tests/unit/test_portable_v2_acceptance.py::test_selected_closure_cannot_silently_expand_explicit_wing_or_room_scope\nFAILED tests/unit/test_portable_v2_acceptance.py::test_failed_export_preserves_existing_destination_without_partial_temp_files\nFAILED tests/unit/test_portable_v2_acceptance.py::test_v2_preserves_external_urls_without_network_while_v1_still_rejects\nFAILED tests/unit/test_portable_v2_acceptance.py::test_malformed_input_has_typed_errors_and_no_committed_partial_state\nFAILED tests/unit/test_portable_v2_acceptance.py::test_identity_source_relation_reads_and_export_preserve_all_persisted_state\nFAILED tests/unit/test_portable_v2_acceptance.py::test_idempotency_key_cannot_be_reused_for_different_bundle\n24 failed, 1 passed in 0.57s\n",
+      "stderr": ""
+    },
+    {
+      "gate": "legacy_portable_shipping",
+      "command": [
+        "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/unit/test_portable.py",
+        "tests/unit/test_shipping_hardening.py",
+        "--no-cov",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": ".............................................                            [100%]\n45 passed in 1.50s\n",
+      "stderr": ""
+    },
+    {
+      "gate": "ruff",
+      "command": [
+        "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "tests/unit/test_portable_v2_acceptance.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "gate": "format",
+      "command": [
+        "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "tests/unit/test_portable_v2_acceptance.py"
+      ],
+      "exit_code": 0,
+      "stdout": "1 file already formatted\n",
+      "stderr": ""
+    }
+  ],
+  "portable_runtime_unimplemented": true
+}

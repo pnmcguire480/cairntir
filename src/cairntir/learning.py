@@ -54,6 +54,11 @@ _ALLOWED_TRANSITIONS: Final[dict[DiscoveryState, frozenset[DiscoveryState]]] = {
 }
 
 
+def _registered_procedure(store: Store, drawer_id: int | None) -> bool:
+    lookup = getattr(store, "is_registered_procedure", None)
+    return drawer_id is not None and lookup is not None and bool(lookup(drawer_id))
+
+
 @dataclass(frozen=True, slots=True)
 class Discovery:
     """Structured projection of a Discovery Ledger drawer."""
@@ -96,6 +101,8 @@ def record_discovery(
     evidence_fingerprint: str | None = None,
 ) -> Discovery:
     """Append one evidence-backed discovery or lifecycle transition."""
+    if _registered_procedure(store, supersedes_id):
+        raise ValueError("registered procedures transition only through ProcedureBook")
     clean_title = title.strip()
     clean_summary = summary.strip()
     if not clean_title:
@@ -182,6 +189,8 @@ def transition_discovery(
     note: str,
 ) -> Discovery:
     """Append a lifecycle transition that supersedes the current discovery."""
+    if _registered_procedure(store, drawer_id):
+        raise ValueError("registered procedures transition only through ProcedureBook")
     source = store.get(drawer_id)
     if source is None:
         raise MemoryStoreError(f"no drawer with id {drawer_id}")
@@ -355,7 +364,16 @@ def list_discoveries(
     scan = None if limit is None else max(limit * 10, 100)
     drawers = store.list_by(wing=wing, room=DISCOVERY_ROOM, limit=scan)
     discovery_drawers = [
-        drawer for drawer in drawers if drawer.metadata.get("kind") == _DISCOVERY_KIND
+        drawer
+        for drawer in drawers
+        if drawer.metadata.get("kind") == _DISCOVERY_KIND
+        and (
+            not (
+                "procedure_revision" in drawer.metadata
+                or _registered_procedure(store, drawer.supersedes_id)
+            )
+            or _registered_procedure(store, drawer.id)
+        )
     ]
     superseded = {
         drawer.supersedes_id for drawer in discovery_drawers if drawer.supersedes_id is not None

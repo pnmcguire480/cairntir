@@ -64,6 +64,7 @@ inspect and recover context directly:
 ```bash
 cairntir recall "database decisions" --wing myapp
 cairntir handoff myapp
+cairntir handoff myapp --task "repair cache invalidation" --budget 8192
 cairntir recover --host codex --wing myapp
 cairntir cost myapp
 ```
@@ -74,6 +75,17 @@ non-live transcript tail. Qwen Code, Claude Code, and Codex are supported.
 Cursor returns an unsupported receipt rather than guessing at undocumented
 SQLite tables. Recovered text is untrusted evidence and is never stored unless
 you explicitly pass `--write N` to `recover`.
+
+With `--task`, handoff selects current relevant evidence and returns JSON with
+provenance, exclusion and conflict receipts, and an explicit abstention when
+nothing matches. The character ceiling covers the complete response, including
+CLI and MCP result wrapping. Task selection uses cached local embeddings and
+does not update access state or download models. Run transcript recovery as a
+separate request when using task mode. `--candidate-limit N` bounds the initial
+candidate scan and discloses incomplete scans in the result.
+
+Try the [isolated continuity demo](context-demo.md) to inspect exact recalled
+requests, excluded stale evidence, and measured payload sizes across store sessions.
 
 ## Bounded hotfixes
 

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN",
+  "frozen_at_utc": "2026-09-06T01:16:45.422622+00:00",
+  "tester_id": "/root/foundation_tester",
+  "purpose": "Independent supplementary proofs for observed foundation purity and current-evidence boundaries. Additive; never substitutes or changes the original frozen acceptance.",
+  "original_manifest": "plans/v2-foundation-freeze.json",
+  "original_manifest_sha256": "21a836728fad91f3a98cb1325a6ac08d91d421def183628c9acff8935a3a85c1",
+  "original_bound_artifacts_verified": 12,
+  "artifacts": [
+    {
+      "path": "tests/unit/test_context_boundaries.py",
+      "sha256": "b82a3a60fa3b4562925e8448e0d2683ea8ff976f16f457231032ef97906bdbf3"
+    }
+  ],
+  "collected_cases": 10,
+  "scope": [
+    "Cold DrawerStore(read_only=True) rejects missing-parent, missing-file and outdated schema stores without creation, migration or file changes.",
+    "Real CLI task path bypasses registration and background update hooks; pending banners cannot break complete stdout budget; missing and existing homes remain identical.",
+    "Cold and warm FastEmbedProvider.embed_query_readonly calls use isolated cached assets with networking forbidden and no cache/log/file changes.",
+    "Current secret and suspicious successors suppress stale predecessors; a withheld branch remains an explicit unresolved conflict without secret text or source metadata."
+  ],
+  "snapshot_contract": "Whole isolated tree including root/directory mtimes and file mtimes plus SHA-256. Includes DB sidecars, caches and logs; directory timestamps also detect transient file creation/removal.",
+  "infrastructure": "Actual model gate requires CAIRNTIR_ACCEPTANCE_MODEL_CACHE. Missing cached assets are INCONCLUSIVE, never skip/xfail or semantic PASS.",
+  "invocation": ".\\.venv\\Scripts\\python.exe -m pytest tests/unit/test_context_boundaries.py --no-cov -q",
+  "prefreeze_checks": {
+    "ruff": "PASS",
+    "format": "PASS",
+    "collection": "10 cases; no collection errors"
+  },
+  "changed_hash_invalidates_supplementary_run": true,
+  "manifest_self_hash": "External SHA-256 supplied to coordinator; excluded from its own inventory."
+}

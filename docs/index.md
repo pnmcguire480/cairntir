@@ -6,6 +6,10 @@ Start with [installation and usage](how-to-use.md), then read
 [concepts and data handling](concept.md) for retrieval budgets, provenance,
 transcript recovery, backup, and portability.
 
+[Task-aware continuity](context-demo.md), [portable evidence](portable-evidence.md),
+[evaluated procedures](evaluated-procedures.md), and [scoped sharing](scoped-sharing.md)
+have separate usage guides and acceptance evidence.
+
 ## Recipes
 
 - [CodeGlass](recipes/codeglass/README.md): preserve evidence-cited code understanding.
@@ -27,7 +31,7 @@ See the [roadmap](roadmap.md), [release policy](release-cadence.md),
 
 ## Release evidence
 
-[1.9.0](release/v1.9.0.md) · [1.8.0](release/v1.8.0.md) ·
+[1.10.0](release/v1.10.0.md) · [1.9.0](release/v1.9.0.md) · [1.8.0](release/v1.8.0.md) ·
 [1.7.1](release/v1.7.1.md) · [1.7.0](release/v1.7.0.md) ·
 [1.2.0 candidate](release/v1.2.0-rc.md)
 
