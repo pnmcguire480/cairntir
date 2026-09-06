@@ -11,7 +11,7 @@ import argparse
 import asyncio
 import os
 import threading
-from typing import Any, Final
+from typing import Any, Final, cast
 
 import mcp.types as types
 from mcp.server import Server
@@ -1188,7 +1188,8 @@ async def _amain(*, host: str = "unknown", model: str = "unknown") -> None:
     )
     if token is not None:
         try:
-            store = bind_grant(store, token)
+            # The facade implements permitted store operations and denies every other access.
+            store = cast(DrawerStore, bind_grant(store, token))
         except BaseException:
             store.close()
             raise

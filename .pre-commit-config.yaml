@@ -4,9 +4,9 @@ repos:
     rev: v4.6.0
     hooks:
       - id: trailing-whitespace
-        exclude: ^plans/(v2-foundation-.*\.(json|txt)|sharing-result-round0.*\.(txt|xml)|continuity-regression.*\.txt)$
+        exclude: ^plans/(v2-foundation-.*\.(json|txt)|sharing-result-round0.*\.(txt|xml)|continuity-regression.*\.txt|.*\.xml)$
       - id: end-of-file-fixer
-        exclude: ^plans/(v2-foundation-.*\.(json|txt)|sharing-result-round0.*\.(txt|xml)|continuity-regression.*\.txt)$
+        exclude: ^plans/(v2-foundation-.*\.(json|txt)|sharing-result-round0.*\.(txt|xml)|continuity-regression.*\.txt|.*\.xml)$
       - id: check-yaml
       - id: check-toml
       - id: check-added-large-files
@@ -15,7 +15,7 @@ repos:
       - id: check-case-conflict
       - id: mixed-line-ending
         args: ["--fix=lf"]
-        exclude: ^plans/(v2-foundation-.*\.(json|txt)|sharing-result-round0.*\.(txt|xml)|continuity-regression.*\.txt)$
+        exclude: ^plans/(v2-foundation-.*\.(json|txt)|sharing-result-round0.*\.(txt|xml)|continuity-regression.*\.txt|.*\.xml)$
       - id: detect-private-key
 
   - repo: https://github.com/compilerla/conventional-pre-commit

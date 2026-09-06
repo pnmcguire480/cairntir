@@ -175,7 +175,7 @@ def bind_grant(store: DrawerStore, token: str) -> ScopedStore:
     return scoped
 
 
-class ScopedStore(DrawerStore):
+class ScopedStore:
     """A capability-limited store; raw owner SQL is never exposed through this view."""
 
     def __init__(self, owner: DrawerStore, token_hash: str) -> None:
@@ -186,8 +186,16 @@ class ScopedStore(DrawerStore):
         self._import_depth = 0
 
     def __getattr__(self, name: str) -> NoReturn:
-        """Deny unsupported inherited operations instead of exposing owner state."""
+        """Deny unsupported operations instead of exposing owner state."""
         raise AccessDenied(_DENIED)
+
+    def __enter__(self) -> ScopedStore:
+        """Enter the bound view without opening another store."""
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        """Close the owner store on context exit."""
+        self.close()
 
     def _grant(self) -> dict[str, Any]:
         try:

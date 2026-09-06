@@ -8,7 +8,7 @@ import sys
 from datetime import UTC, datetime
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import typer
 
@@ -131,7 +131,8 @@ def _open_store(
     )
     if _startup_grant is not None:
         try:
-            store = bind_grant(store, _startup_grant)
+            # The facade implements permitted store operations and denies every other access.
+            store = cast(DrawerStore, bind_grant(store, _startup_grant))
         except BaseException:
             store.close()
             raise

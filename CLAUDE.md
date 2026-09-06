@@ -126,6 +126,13 @@ approval rejections were resolved by Patrick's explicit approval (#1295).
 native CI, merge the exact accepted PR head, publish 1.10.0, verify provenance
 and a fresh public-package installation, then settle the release record.
 
+PR #89 first native matrix/build/eval passed. CodeQL's separate result check
+flagged the scoped facade's skipped base initializer. Repair 1 uses composition
+with explicit context cleanup; independent193 tests and14 supporting probes
+pass, with frozen assertions unchanged. See
+[repair evidence](plans/sharing-codeql-repair-result.md). Repaired-head native
+CI and CodeQL must pass before merge; no alert was suppressed or dismissed.
+
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer
 

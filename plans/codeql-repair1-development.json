@@ -1,0 +1,58 @@
+{
+  "purpose": "CodeQL skipped-base-initialization repair development verification; independent acceptance follows separately",
+  "repair": 1,
+  "changes": [
+    "ScopedStore uses composition without opening a second database",
+    "Explicit context entry returns the same facade; exit closes the owner",
+    "CLI and MCP startup retain legacy annotations through two narrow casts; no authority behavior changed"
+  ],
+  "command": [
+    "-m",
+    "pytest",
+    "tests/unit/test_sharing_acceptance.py",
+    "tests/unit/test_sharing_supplement.py",
+    "tests/unit/test_hotfix.py",
+    "tests/unit/test_codeglass.py",
+    "tests/unit/test_temporal.py",
+    "tests/unit/test_learning.py",
+    "tests/unit/test_mcp_server.py",
+    "tests/integration/test_mcp_backend.py",
+    "tests/unit/test_portable.py",
+    "--no-cov",
+    "-q",
+    "--tb=short",
+    "--junitxml=plans/codeql-repair1-development.xml"
+  ],
+  "exit_code": 0,
+  "seconds": 35.91,
+  "environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "source_before": {
+    "src/cairntir/access.py": "a071e5571f23b055e726cf36d46756eff59e75faabdc2084fb88399e672fdae7",
+    "src/cairntir/cli.py": "a784f035eea9029e1b358788f0e86efeb208c771229233efe7c7f024dd5f1119",
+    "src/cairntir/mcp/server.py": "1f52531694c604f8d295ae6ddaa8c339048d976cde064f6d94bb418b41aff7ea"
+  },
+  "source_after": {
+    "src/cairntir/access.py": "a071e5571f23b055e726cf36d46756eff59e75faabdc2084fb88399e672fdae7",
+    "src/cairntir/cli.py": "a784f035eea9029e1b358788f0e86efeb208c771229233efe7c7f024dd5f1119",
+    "src/cairntir/mcp/server.py": "1f52531694c604f8d295ae6ddaa8c339048d976cde064f6d94bb418b41aff7ea"
+  },
+  "source_stable": true,
+  "quality": {
+    "ruff": "PASS",
+    "format": "PASS",
+    "strict_mypy": "PASS"
+  },
+  "log_sha256": "b4d1ee632a9930824a6dd6722d500cf9147d0c1baba48869ed88f3231adf22b3",
+  "tests": {
+    "tests": 193,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 193
+  },
+  "codeql": "Awaiting native CI rerun; no suppression or dismissal"
+}
