@@ -23,6 +23,9 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ### Fixed
 
+- Task handoff from the CLI now reads a committed snapshot while other WAL
+  clients are open, including writers with uncommitted changes. Genuine lock
+  failures remain bounded; cold-store reads retain filesystem purity.
 - Portable exports now replace the destination atomically, preserving an
   existing backup when serialization or the input stream fails.
 - Portable imports remain untrusted and reject version-1 source-local history

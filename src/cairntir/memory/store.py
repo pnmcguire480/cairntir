@@ -10,6 +10,7 @@ swallowing of SQLite exceptions is explicitly banned.
 
 from __future__ import annotations
 
+import errno
 import json
 import math
 import os
@@ -19,8 +20,9 @@ import sqlite3
 import struct
 import subprocess
 import sys
+import time
 from collections.abc import Callable, Iterator, Sequence
-from contextlib import contextmanager
+from contextlib import ExitStack, closing, contextmanager
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -650,7 +652,7 @@ class DrawerStore:
                 check=True,
                 capture_output=True,
                 text=True,
-                timeout=30,
+                timeout=12,
                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
             )
             conn = sqlite3.connect(copied)
@@ -1938,13 +1940,29 @@ class DrawerStore:
 
 
 def _copy_locked_database(source: Path, destination: Path) -> None:
-    """Copy a quiescent database in a separate process, preserving committed WAL frames.
+    """Snapshot in a separate process, retaining cold-store purity and live WAL readers.
 
     SQLite's PENDING/RESERVED/SHARED locking bytes occupy 512 bytes at 1 GiB.
-    WAL connections keep a shared database lock, so taking the entire region
-    exclusively rejects live clients. POSIX locks belong to the process: this
-    helper must never run in a process that also has SQLite connections.
+    Cold stores are copied under an exclusive lock. Live WAL stores use a
+    shared lifecycle pin and SQLite's read-only online backup. POSIX locks
+    belong to the process: source handles must remain in this helper only.
     """
+    deadline = time.monotonic() + 8
+    while time.monotonic() < deadline:
+        try:
+            _snapshot_database_attempt(source, destination, deadline)
+        except _SnapshotBusyError:
+            time.sleep(0.025)
+        else:
+            return
+    raise MemoryStoreError("task snapshot timed out waiting for the database lock")
+
+
+class _SnapshotBusyError(MemoryStoreError):
+    """A source lock or lifecycle transition permits a bounded retry."""
+
+
+def _snapshot_database_attempt(source: Path, destination: Path, deadline: float) -> None:
     with source.open("rb" if sys.platform == "win32" else "r+b") as handle:
         try:
             if sys.platform == "win32":
@@ -1957,9 +1975,20 @@ def _copy_locked_database(source: Path, destination: Path) -> None:
 
                 fcntl.lockf(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB, 512, 0x40000000)
         except OSError as exc:
-            raise MemoryStoreError(
-                f"task snapshot source is busy or cannot be locked: {exc}"
-            ) from exc
+            if exc.errno not in {errno.EACCES, errno.EAGAIN}:
+                raise
+            with ExitStack() as held:
+                with _snapshot_shared_lock(handle.fileno(), 0x40000000, 1):
+                    held.enter_context(_snapshot_shared_lock(handle.fileno(), 0x40000002, 510))
+                handle.seek(18)
+                if handle.read(2) != b"\x02\x02" or not all(
+                    path.is_file() for path in _sidecar_paths(source)
+                ):
+                    raise _SnapshotBusyError(
+                        "task snapshot is waiting for stable WAL sidecars"
+                    ) from exc
+                _backup_live_database(source, destination, deadline)
+            return
         handle.seek(0)
         with destination.open("xb") as target:
             shutil.copyfileobj(handle, target)
@@ -1967,6 +1996,85 @@ def _copy_locked_database(source: Path, destination: Path) -> None:
             sidecar = source.with_name(source.name + suffix)
             if sidecar.exists():
                 shutil.copyfile(sidecar, destination.with_name(destination.name + suffix))
+
+
+@contextmanager
+def _snapshot_shared_lock(fd: int, start: int, length: int) -> Iterator[None]:
+    if sys.platform == "win32":
+        import ctypes
+        import msvcrt
+        from ctypes import wintypes
+
+        class Overlapped(ctypes.Structure):
+            _fields_ = [
+                ("Internal", ctypes.c_size_t),
+                ("InternalHigh", ctypes.c_size_t),
+                ("Offset", wintypes.DWORD),
+                ("OffsetHigh", wintypes.DWORD),
+                ("hEvent", wintypes.HANDLE),
+            ]
+
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.LockFileEx.argtypes = [
+            wintypes.HANDLE,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            ctypes.POINTER(Overlapped),
+        ]
+        kernel.LockFileEx.restype = wintypes.BOOL
+        kernel.UnlockFileEx.argtypes = [
+            wintypes.HANDLE,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            ctypes.POINTER(Overlapped),
+        ]
+        kernel.UnlockFileEx.restype = wintypes.BOOL
+        native = msvcrt.get_osfhandle(fd)
+        region = Overlapped(Offset=start)
+        if not kernel.LockFileEx(native, 1, 0, length, 0, ctypes.byref(region)):
+            error = ctypes.WinError(ctypes.get_last_error())
+            if error.winerror in {32, 33}:
+                raise _SnapshotBusyError("task snapshot source is locked") from error
+            raise error
+        try:
+            yield
+        finally:
+            if not kernel.UnlockFileEx(native, 0, length, 0, ctypes.byref(region)):
+                raise ctypes.WinError(ctypes.get_last_error())
+    else:
+        import fcntl
+
+        try:
+            fcntl.lockf(fd, fcntl.LOCK_SH | fcntl.LOCK_NB, length, start)
+        except OSError as exc:
+            if exc.errno in {errno.EACCES, errno.EAGAIN}:
+                raise _SnapshotBusyError("task snapshot source is locked") from exc
+            raise
+        try:
+            yield
+        finally:
+            fcntl.lockf(fd, fcntl.LOCK_UN, length, start)
+
+
+def _backup_live_database(source: Path, destination: Path, deadline: float) -> None:
+    def progress(_status: int, _remaining: int, _total: int) -> None:
+        if time.monotonic() >= deadline:
+            raise MemoryStoreError("task snapshot backup timed out")
+
+    with closing(sqlite3.connect(f"{source.as_uri()}?mode=ro", uri=True, timeout=0.25)) as origin:
+        origin.execute("PRAGMA query_only = ON")
+        try:
+            origin.execute("BEGIN")
+            origin.execute("SELECT name FROM sqlite_master LIMIT 1").fetchone()
+        except sqlite3.Error as exc:
+            if exc.sqlite_errorcode & 0xFF in {sqlite3.SQLITE_BUSY, sqlite3.SQLITE_LOCKED}:
+                raise _SnapshotBusyError("task snapshot source is locked") from exc
+            raise
+        with closing(sqlite3.connect(destination)) as target:
+            origin.backup(target, pages=256, progress=progress, sleep=0.025)
 
 
 def _context_record(row: sqlite3.Row) -> tuple[Drawer, WriteProvenance]:

@@ -54,8 +54,9 @@ or append diagnostic logs. Provision the store and model through the normal
 setup flow before using it. Use `cairntir recover` separately for opt-in
 transcript recovery. Handoff without a task retains the existing behavior.
 
-The task CLI reads a temporary snapshot while preserving the source files.
-It reports a retryable busy error when another SQLite connection prevents a
-safe snapshot, including an idle MCP connection using WAL mode. Task calls on
-an already-running MCP backend preserve stored evidence and access state;
-SQLite may still maintain its shared-memory read-lock bookkeeping.
+The task CLI reads a private, committed snapshot even while another WAL client
+is open or holds an uncommitted write. Cold reads preserve all source files.
+Live CLI and MCP reads preserve stored evidence and access state; SQLite may
+maintain existing shared-memory read-lock bookkeeping. Genuine exclusive locks
+produce a bounded, explanatory failure. The [independent concurrency tests](../plans/context-concurrency-result.md)
+cover concurrent writes, checkpoints and connection shutdown.
