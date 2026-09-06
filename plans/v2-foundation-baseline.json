@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-06T00:53:13.540546+00:00",
+  "runtime_git_head": "ad3ccee95d6d4c0bc5cb5b57e1ec76d799d23c3e",
+  "python": "3.11.9",
+  "suite_sha256": "1a14baa44ac0b5b9d3e2702796ced0b9e13adbe660055aa1eb3895f9e6c709d2",
+  "runtime_changed": false,
+  "model_cache_prerequisite_configured": false,
+  "prefreeze_harness_correction": "Snapshot and demo-inspection SQLite handles now close explicitly. A separate probe exposed WinError 32 during temporary cleanup before freeze; behavioral assertions were unchanged.",
+  "harness_probes": {
+    "all_table_snapshot_detects_public_get_access_mutation": "PASS",
+    "file_snapshot_detects_transcript_mutation": "PASS",
+    "temporary_database_cleanup": "PASS"
+  },
+  "runs": [
+    {
+      "gate": "unchanged_legacy_regression",
+      "invocation": ".\\.venv\\Scripts\\python.exe -m pytest tests/unit/test_handoff.py tests/unit/test_transcript.py tests/unit/test_mcp_server.py tests/integration/test_mcp_backend.py tests/unit/test_cost.py --no-cov -q",
+      "exit_code": 0,
+      "verdict": "PASS",
+      "observed_summary": "153 passed in 14.73s",
+      "evidence_source": "Independent tester prefreeze run; runtime and these complete regression files unchanged by subsequent acceptance-helper handle closure."
+    },
+    {
+      "gate": "deterministic_acceptance",
+      "invocation": ".\\.venv\\Scripts\\python.exe -m pytest tests/unit/test_context_acceptance.py --no-cov -q -m \"not eval\" --tb=no",
+      "exit_code": 1,
+      "stdout": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFFFFFFFF                                 [100%]\n=========================== short test summary info ===========================\nFAILED tests/unit/test_context_acceptance.py::test_exact_original_and_full_provenance_are_delivered\nFAILED tests/unit/test_context_acceptance.py::test_deterministic_semantic_route_is_not_exact_matching\nFAILED tests/unit/test_context_acceptance.py::test_anchor_relevance_respects_file_boundaries\nFAILED tests/unit/test_context_acceptance.py::test_no_match_explicitly_abstains[False]\nFAILED tests/unit/test_context_acceptance.py::test_no_match_explicitly_abstains[True]\nFAILED tests/unit/test_context_acceptance.py::test_unsafe_or_invalid_matches_cannot_enter_any_receipt[expired]\nFAILED tests/unit/test_context_acceptance.py::test_unsafe_or_invalid_matches_cannot_enter_any_receipt[future_valid]\nFAILED tests/unit/test_context_acceptance.py::test_unsafe_or_invalid_matches_cannot_enter_any_receipt[secret]\nFAILED tests/unit/test_context_acceptance.py::test_unsafe_or_invalid_matches_cannot_enter_any_receipt[suspicious]\nFAILED tests/unit/test_context_acceptance.py::test_validity_timestamps_are_preserved_for_current_evidence\nFAILED tests/unit/test_context_acceptance.py::test_unmatched_successor_suppresses_matching_original\nFAILED tests/unit/test_context_acceptance.py::test_inapplicable_successor_does_not_hide_current_evidence[future]\nFAILED tests/unit/test_context_acceptance.py::test_inapplicable_successor_does_not_hide_current_evidence[other-wing]\nFAILED tests/unit/test_context_acceptance.py::test_current_branching_successors_are_an_unresolved_conflict\nFAILED tests/unit/test_context_acceptance.py::test_candidate_scan_limit_is_disclosed_and_never_claims_complete\nFAILED tests/unit/test_context_acceptance.py::test_rendered_budget_counts_escaping_provenance_and_all_receipts[2048]\nFAILED tests/unit/test_context_acceptance.py::test_rendered_budget_counts_escaping_provenance_and_all_receipts[4096]\nFAILED tests/unit/test_context_acceptance.py::test_rendered_budget_counts_escaping_provenance_and_all_receipts[8192]\nFAILED tests/unit/test_context_acceptance.py::test_many_omission_receipts_cannot_escape_the_total_budget\nFAILED tests/unit/test_context_acceptance.py::test_invalid_or_impossibly_small_budget_has_a_typed_error[0]\nFAILED tests/unit/test_context_acceptance.py::test_invalid_or_impossibly_small_budget_has_a_typed_error[-1]\nFAILED tests/unit/test_context_acceptance.py::test_invalid_or_impossibly_small_budget_has_a_typed_error[1]\nFAILED tests/unit/test_context_acceptance.py::test_invalid_or_impossibly_small_budget_has_a_typed_error[32]\nFAILED tests/unit/test_context_acceptance.py::test_invalid_or_impossibly_small_budget_has_a_typed_error[True]\nFAILED tests/unit/test_context_acceptance.py::test_invalid_or_impossibly_small_budget_has_a_typed_error[2.5]\nFAILED tests/unit/test_context_acceptance.py::test_invalid_or_impossibly_small_budget_has_a_typed_error[4096]\nFAILED tests/unit/test_context_acceptance.py::test_explicit_empty_task_is_not_silent_legacy_fallback[]\nFAILED tests/unit/test_context_acceptance.py::test_explicit_empty_task_is_not_silent_legacy_fallback[  \\n  ]\nFAILED tests/unit/test_context_acceptance.py::test_repeated_selection_preserves_every_persisted_table_and_source_file\nFAILED tests/unit/test_context_acceptance.py::test_selection_works_with_network_connections_forbidden\nFAILED tests/unit/test_context_acceptance.py::test_existing_mcp_surface_adds_parameters_without_a_new_tool\nFAILED tests/unit/test_context_acceptance.py::test_cli_mcp_backend_parity_and_pure_transport_reads\nFAILED tests/unit/test_context_acceptance.py::test_actual_mcp_envelope_fits_despite_escaping_and_pending_update_banner\nFAILED tests/unit/test_context_acceptance.py::test_cli_and_mcp_invalid_budget_errors_are_surfaced\nFAILED tests/unit/test_context_acceptance.py::test_task_mode_does_not_read_transcripts_without_opt_in\nFAILED tests/unit/test_context_acceptance.py::test_task_recovery_is_explicit_or_correctly_budgeted_never_silently_ignored\nFAILED tests/unit/test_context_acceptance.py::test_isolated_demo_closes_reopens_and_measures_actual_payloads\nFAILED tests/unit/test_context_acceptance.py::test_demo_report_escapes_untrusted_html_and_loads_no_remote_assets\nFAILED tests/unit/test_context_acceptance.py::test_demo_repeats_the_same_selection_and_measurements\n39 failed, 1 passed, 1 deselected in 2.02s\n",
+      "stderr": "",
+      "verdict": "FAIL"
+    },
+    {
+      "gate": "real_embedding_acceptance",
+      "invocation": ".\\.venv\\Scripts\\python.exe -m pytest tests/unit/test_context_acceptance.py --no-cov -q -m eval --tb=short",
+      "exit_code": 1,
+      "stdout": "F                                                                        [100%]\n================================== FAILURES ===================================\n______ test_real_cached_embeddings_retrieve_paraphrase_and_reject_noise _______\ntests\\unit\\test_context_acceptance.py:542: in test_real_cached_embeddings_retrieve_paraphrase_and_reject_noise\n    assert cache and Path(cache).is_dir(), (\nE   AssertionError: FOUNDATION_INFRASTRUCTURE: set CAIRNTIR_ACCEPTANCE_MODEL_CACHE to a locally provisioned FastEmbed cache; the gate never downloads a model\nE   assert (None)\n=========================== short test summary info ===========================\nFAILED tests/unit/test_context_acceptance.py::test_real_cached_embeddings_retrieve_paraphrase_and_reject_noise\n1 failed, 40 deselected in 1.17s\n",
+      "stderr": "",
+      "verdict": "INCONCLUSIVE",
+      "classification": "Missing explicit local model-cache prerequisite; pytest reports failure, semantic behavior unexecuted."
+    },
+    {
+      "gate": "ruff",
+      "invocation": ".\\.venv\\Scripts\\python.exe -m ruff check tests/unit/test_context_acceptance.py",
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "verdict": "PASS"
+    },
+    {
+      "gate": "format",
+      "invocation": ".\\.venv\\Scripts\\python.exe -m ruff format --check tests/unit/test_context_acceptance.py",
+      "exit_code": 0,
+      "stdout": "1 file already formatted\n",
+      "stderr": "",
+      "verdict": "PASS"
+    }
+  ]
+}
