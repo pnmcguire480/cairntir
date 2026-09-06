@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN",
+  "milestone": "bulk-write performance and integrity",
+  "independent_tester": "/root/foundation_tester",
+  "parent_authorized_freeze": true,
+  "base_head": "2fe55d7ef789c6ab5b7114c3c4920940302b3ec9",
+  "frozen_at_utc": "2026-09-06T02:51:13.540525+00:00",
+  "artifacts": [
+    {
+      "path": "tests/unit/test_bulk_write_boundaries.py",
+      "sha256": "79646ffd9a7610d9d73753561aceae841d0304df9844ef3a1c92552b121fea4d",
+      "bytes": 5739
+    },
+    {
+      "path": "plans/bulk-write-acceptance.md",
+      "sha256": "9df1e17567d2ee33ff65fe32751ddb6b09263ae232f24df089fc4cc9fa4ef42b",
+      "bytes": 2272
+    },
+    {
+      "path": "plans/bulk-write-baseline.json",
+      "sha256": "473f6e2bd3bd2f27c17e34069f89bff0d2fd7d61f9114166f146c06d1edb5c9e",
+      "bytes": 1655
+    },
+    {
+      "path": "plans/bulk-write-baseline.txt",
+      "sha256": "2fe876a53678f89bcb77f3ac296dc50cb2d2352cab14858a5f43513e6ce4f679",
+      "bytes": 1028
+    }
+  ],
+  "cases": 6,
+  "baseline_passed": 5,
+  "baseline_failed": 1,
+  "infrastructure_errors": 0,
+  "artifact_readiness": "PASS",
+  "implementation_acceptance": "FAIL",
+  "maximum_repair_rounds": 2,
+  "original_frozen_artifacts": "unchanged; this is an additive generation",
+  "source_provenance_only": {
+    "src/cairntir/memory/store.py": "7fa836b386c8eae1e258ac66184fe418d67a511ac189ce5c54e017ebb5469b76"
+  },
+  "self_hash": "Recorded externally; no circular self-binding."
+}

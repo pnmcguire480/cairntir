@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "milestone": "bulk-write performance and integrity",
+  "independent_tester": "/root/foundation_tester",
+  "artifact_readiness": "PASS",
+  "implementation_acceptance": "FAIL",
+  "baseline": {
+    "passed": 5,
+    "failed": 1,
+    "infrastructure_errors": 0,
+    "exit_code": 1,
+    "invocation": [
+      "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/unit/test_bulk_write_boundaries.py",
+      "--no-cov",
+      "-q",
+      "--tb=short"
+    ],
+    "raw_evidence": "plans/bulk-write-baseline.txt",
+    "expected_failure": "50 full vector COUNT statements for 50 additions; required <=3"
+  },
+  "checks": [
+    {
+      "invocation": [
+        "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "tests/unit/test_bulk_write_boundaries.py"
+      ],
+      "exit_code": 0,
+      "output": "All checks passed!\n"
+    },
+    {
+      "invocation": [
+        "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "tests/unit/test_bulk_write_boundaries.py"
+      ],
+      "exit_code": 0,
+      "output": "1 file already formatted\n"
+    }
+  ],
+  "base_head": "2fe55d7ef789c6ab5b7114c3c4920940302b3ec9",
+  "source_fingerprints": {
+    "src/cairntir/memory/store.py": "7fa836b386c8eae1e258ac66184fe418d67a511ac189ce5c54e017ebb5469b76"
+  },
+  "original_slow_gate": "100003-record portable acceptance unchanged; root reported still running after about 15 minutes before optimization. This new gate does not replace it.",
+  "captured_at_utc": "2026-09-06T02:51:13.539525+00:00"
+}
