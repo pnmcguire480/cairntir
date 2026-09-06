@@ -1,6 +1,6 @@
 # Plans
 
-- [Continuity delivery](continuity-delivery.md): independently accepted foundation, portable evidence, evaluated procedures and scoped sharing; completing the additive 1.10.0 release gates.
+- [Continuity delivery](continuity-delivery.md): COMPLETE; independently accepted continuity milestones published as 1.10.0 with verified artifacts, attestations and fresh public-package smoke.
 - [2.0 continuity preparation](v2-continuity.md): historical foundation plan and frozen acceptance.
 - [Shipping hardening](shipping-hardening.md): completed audit and acceptance record.
 - [Retrieval preflight](evolving-mind.md): evaluation requirements for context selection.

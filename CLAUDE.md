@@ -5,21 +5,20 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Published version: **1.9.0**. The release record is
-[docs/release/v1.9.0.md](docs/release/v1.9.0.md); pending changes belong under
-[Unreleased](CHANGELOG.md#unreleased), not an invented release header.
+Published version: **1.10.0**. The
+[release record](docs/release/v1.10.0.md) contains publication and fresh-package
+verification. Pending changes belong under
+[Unreleased](CHANGELOG.md#unreleased).
 
-The core has verbatim SQLite drawers, explicit provenance, budgeted handoff,
-semantic and anchored recall, prediction settlements, discovery review, three
-skills, recipes, and 21 MCP tools. Transcript recovery supports Claude Code,
-Codex, and Qwen Code; Cursor returns an unsupported receipt.
+The core has verbatim SQLite drawers, explicit provenance, task-aware budgeted
+handoff, semantic and anchored recall, portable evidence, evaluated procedures,
+scoped local sharing, prediction settlements, discovery review, three skills,
+recipes, and 21 MCP tools. Transcript recovery supports Claude Code, Codex, and
+Qwen Code; Cursor returns an unsupported receipt.
 
-The continuity foundation and demo are independently accepted. Request #1262
-extends that work through concurrent CLI reads, portable evidence, evaluated
-procedures, scoped sharing and release delivery. The current additive candidate
-is **1.10.0**, with published version still 1.9.0. Follow the
-[delivery plan](plans/continuity-delivery.md), tracked by
-[issue #88](https://github.com/pnmcguire480/cairntir/issues/88).
+The [continuity delivery](plans/continuity-delivery.md) is **COMPLETE** and
+published as 1.10.0. The additive release retains the public tool surface and
+introduces schema 7 without new dependencies.
 
 ## Working rules
 
@@ -86,52 +85,25 @@ the production installation as an incidental build step.
 
 ## Last Session — 2026-09-06
 
-Request #1262: remove false CLI busy errors with other SQLite clients open, then
-finish the remaining continuity milestones and delivery. Work is on
-`codex/v2-foundation`; candidate version 1.10.0 follows the additive release policy.
-Local acceptance is complete. Patrick explicitly approved public branch push,
-PR/CI, merge and release in request #1295. The candidate branch is now pushed;
-protected CI and publication remain in progress.
+Continuity delivery is merged through [PR #89](https://github.com/pnmcguire480/cairntir/pull/89).
+Final reviewed head `ddffede` passed all nine native OS/Python jobs, Build Package,
+seven model evaluations and CodeQL. Merge `be9fdc4` has the same tree; immutable
+annotated tag `v1.10.0` points to it. All five release jobs passed; independent
+verification matched workflow/GitHub/PyPI artifacts and their signed provenance.
+A fresh public-PyPI installation passed CLI and actual stdio MCP smoke with
+21 tools. Continuity delivery is COMPLETE.
 
-Foundation and demo acceptance is preserved in the
-[historical result](plans/v2-foundation-result.md). The subsequent
-[concurrency result](plans/context-concurrency-result.md) passes 210 tests with
-zero repair rounds: cold filesystem purity and coherent live WAL snapshots.
-The CLI uses a bounded private snapshot while other clients remain open.
+Independent acceptance passed concurrency 210, portable 71 (including the
+100,003-record archive), procedures 161, bulk boundaries 8 and sharing 193.
+The CodeQL composition repair passed the unchanged 193 sharing cases plus 14
+separately labeled supporting probes. Frozen inputs and historical evidence are
+preserved. [Release acceptance](docs/release/v1.10.0.md) links the complete proof.
 
-Portable v2, evaluated procedures and scoped sharing are implemented against
-separate independent freezes. Integration review added frozen reproductions for
-nested-reference mapping, bulk-cache invalidation and private registry/anchor
-access. Those assertions remain unchanged during repairs. The unchanged
-100,003-record archive case passed in 70.5 seconds after bulk-write optimization;
-complete-candidate independent acceptance is PASS: portable71, procedures161,
-sharing193 and bulk8. All seven offline model evaluations pass. Regression
-covered986cases with83.37% coverage; three report-encoding failures were fixed
-and both affected test files reran18/18 green. [Gate evidence](plans/continuity-gates.md)
-retains the failed runs, infrastructure retry and exact scope. Runtime commit3fe5e6f.
-
-[Release acceptance](docs/release/v1.10.0.md) records the remaining PR, native CI,
-private migration rehearsal, package and publication gates. The
-[support change record](plans/continuity-support-changes.md) distinguishes
-historical 1.9.0 frozen inputs from schema 7 and the candidate version.
-No new dependencies, production installation changes, live reindex, license
-changes or published tags have been made. The production MCP server continues
-to use installed 1.9.0; development commands use this checkout's `.venv`.
-
-Delivery checkpoint: runtime `3fe5e6f`, independent evidence `01e12f4`.
-Final wheel/sdist rebuilt after documentation changes; the final wheel package
-payload exactly matches the installed/tested wheel. Two earlier automatic
-approval rejections were resolved by Patrick's explicit approval (#1295).
-`codex/v2-foundation` is pushed to the verified public repository. Complete
-native CI, merge the exact accepted PR head, publish 1.10.0, verify provenance
-and a fresh public-package installation, then settle the release record.
-
-PR #89 first native matrix/build/eval passed. CodeQL's separate result check
-flagged the scoped facade's skipped base initializer. Repair 1 uses composition
-with explicit context cleanup; independent193 tests and14 supporting probes
-pass, with frozen assertions unchanged. See
-[repair evidence](plans/sharing-codeql-repair-result.md). Repaired-head native
-CI and CodeQL must pass before merge; no alert was suppressed or dismissed.
+Production launchers still use installed 1.9.0. No production installation,
+live reindex, new dependency or license change occurred. The production Claude
+health check connected but reported tools-fetch failure; candidate host approval
+remains pending and is not counted as a passing real-client test. Isolated
+CLI/stdio MCP tests provide transport evidence.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer

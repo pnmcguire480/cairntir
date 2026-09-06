@@ -1,11 +1,9 @@
 # Continuity delivery
 
-Status: local implementation and independent acceptance COMPLETE; protected PR,
-native CI, merge and publication are in progress after explicit approval #1295. User request #1262 authorizes removing the CLI contention
-limitation and completing the remaining work previously listed: PR delivery,
-release publication, portable evidence, evaluated procedures and shared control.
-This extends the historical foundation scope; publication authority comes from
-this request, not from the earlier foundation completion.
+Status: **COMPLETE — 1.10.0 published and verified on 2026-09-06**.
+User request #1262 extended the foundation through concurrent CLI reads, portable
+evidence, evaluated procedures, scoped sharing and release delivery. Publication
+was explicitly approved in request #1295.
 
 ## Execution order
 
@@ -61,16 +59,26 @@ or EXHAUSTED when a bounded cycle cannot pass. No paid model evaluation, new
 dependency, production reindex, live configuration replacement or license change
 is authorized as an incidental implementation step.
 
-## Local completion evidence
+## Completion evidence
 
-[Final local gates](continuity-gates.md) record independently accepted concurrency,
-portable evidence, procedures, scoped sharing and bulk transaction boundaries.
-The [release record](../docs/release/v1.10.0.md) tracks the remaining external gates.
-Runtime commit: `3fe5e6f`. Historical freezes and all failing evidence are preserved.
+[Local gates](continuity-gates.md) and the separate independent results accept
+concurrency, portable evidence, procedures, scoped sharing and bulk boundaries.
+[Composition repair](sharing-codeql-repair-result.md) preserves the frozen suite
+and adds no database connection. Historical freezes and failing evidence remain
+unchanged.
 
-## External delivery approval
+[PR #89](https://github.com/pnmcguire480/cairntir/pull/89) merged final reviewed head
+`ddffede` as `be9fdc4` with an identical tree. All nine native OS/Python jobs,
+Build Package, seven model evaluations and CodeQL passed before merge.
+The immutable annotated tag `v1.10.0` points to the merged commit.
 
-Two earlier automatic approval rejections required explicit authorization for
-public egress. Patrick supplied it in request #1295: "you have my explicit
-approval". The verified public `pnmcguire480/cairntir` candidate branch is pushed.
-Protected PR acceptance, merge and publication continue under that authorization.
+[Independent publication verification](continuity-publication-independent.md)
+matched workflow, GitHub Release and PyPI distributions and verified their
+signed provenance. [Fresh public-package smoke](continuity-publication-smoke.json)
+passed CLI, actual stdio MCP and portable v2 behavior against the public wheel.
+All five release jobs succeeded. The
+[release record](../docs/release/v1.10.0.md) collects native CI, artifact hashes,
+attestations and operational boundaries.
+Production remains installed 1.9.0; no live reindex or production configuration
+replacement occurred. Actual host limits and the repository-only plugin metadata
+boundary remain explicit in the release record.
