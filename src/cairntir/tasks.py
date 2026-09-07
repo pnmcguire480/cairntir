@@ -43,6 +43,10 @@ class TaskError(WorkflowError):
 def _text(value: object, name: str) -> None:
     if not isinstance(value, str) or not value.strip():
         raise TaskError(f"{name} must be a nonempty string")
+    try:
+        value.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise TaskError(f"{name} must contain valid UTF-8 text") from exc
 
 
 def _checkpoint(value: object) -> dict[str, Any]:
@@ -68,10 +72,10 @@ def _checkpoint(value: object) -> dict[str, Any]:
     evidence = result["evidence_ids"]
     if (
         not isinstance(evidence, list)
-        or any(type(key) is not int or key <= 0 for key in evidence)
+        or any(type(key) is not int or not 0 < key <= 2**63 - 1 for key in evidence)
         or len(set(evidence)) != len(evidence)
     ):
-        raise TaskError("evidence_ids must be unique positive integers")
+        raise TaskError("evidence_ids must be unique positive signed 64-bit integers")
     status = result["status"]
     if not isinstance(status, str) or status not in {"active", "completed", "cancelled"}:
         raise TaskError("status must be active, completed, or cancelled")

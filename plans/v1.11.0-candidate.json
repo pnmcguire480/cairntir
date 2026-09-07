@@ -1,0 +1,72 @@
+{
+  "status": "LOCAL_ACCEPTANCE_PASS",
+  "version": "1.11.0",
+  "publication": "PENDING_APPROVAL",
+  "production_installation": "UNCHANGED_1.10.0",
+  "issue": "https://github.com/pnmcguire480/cairntir/issues/94",
+  "independent_acceptance": {
+    "passed": 124,
+    "original_unchanged": 70,
+    "policy": 21,
+    "input_boundaries": 33,
+    "official_repairs": 0,
+    "verified_source_and_frozen_files": 84,
+    "policy_receipt_sha256": "b22bcad1449c446591f0b1439010b83ad179c5f4dadb23b863214651a8b90630",
+    "boundary_receipt_sha256": "42d3d51db3a302ad557c99e02f9e82f82e401845564749b4201ba340ed33d3a3"
+  },
+  "regression": {
+    "passed": 1110,
+    "slow_deselected": 8,
+    "coverage_percent": 83.7
+  },
+  "offline_model_evaluation": {
+    "passed": 7,
+    "model_prompts": 0
+  },
+  "gates": {
+    "ruff_lint_and_format": "PASS",
+    "strict_mypy_58_sources": "PASS",
+    "strict_docs_and_links": "PASS",
+    "commitments_157_and_seams_11": "PASS",
+    "silent_exception_scan": "PASS",
+    "release_tags": "PASS",
+    "locked_advisories_134_packages": "PASS_ZERO_FINDINGS",
+    "local_store_health": "PASS",
+    "vault_drift": "SKIP_UNCONFIGURED",
+    "sdist_and_wheel": "PASS"
+  },
+  "claude_health": {
+    "status": "PASS",
+    "claude_version": "2.1.197 (Claude Code)",
+    "source_sha256": "30832f8546f809d37cfe98128a14a7ae0684311bafdcf8c2adbe2c6209cc4d7e",
+    "harness_sha256": "3b8589dade0607f07cb8a1427b109b69bed892b56866fe7f0f1343d7a2872f67",
+    "production_config_unchanged": true,
+    "model_calls": 0,
+    "direct_stdio": {
+      "server_version": "1.11.0",
+      "tool_count": 21,
+      "all_input_schemas_object_root": true,
+      "checkpoint_resume_parameters": true
+    },
+    "scope": "Actual Claude CLI health against isolated development1.11.0; no model prompts, no production settings changes"
+  },
+  "package_smoke": {
+    "status": "PASS",
+    "version": "1.11.0",
+    "modules_matched": 58,
+    "wheel_sha256": "9bef308fb34a591d4aea9826e1340e353a8f5c3e324dc9b27d896ae25fb04d90",
+    "installed_wheel_import": true,
+    "tool_count": 21,
+    "all_tool_schema_roots_object": true,
+    "stdio_version": "1.11.0",
+    "distinct_host_resume": true,
+    "cli_mcp_parity_with_server_open": true,
+    "typed_invalid_checkpoint": true,
+    "unicode_verbatim": true,
+    "redirected_windows_help": true,
+    "bundled_recipes": true,
+    "isolated_doctor": true,
+    "model_prompts": 0
+  },
+  "harness_note": "The private unfrozen wheel harness initially compared MCP budget8192 to CLI default12000. The original harness was preserved; identical assertions passed with both inputs8192. No runtime or frozen-test change."
+}

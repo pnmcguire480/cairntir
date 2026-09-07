@@ -13,6 +13,10 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.11.0] — 2026-09-07
+
+Release candidate; publication is pending.
+
 ### Added
 
 - Durable task checkpoints through `cairntir_remember` and the `checkpoint`
@@ -25,8 +29,15 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ### Fixed
 
+- Host policy explicitly resumes and verifies saved task state after compaction
+  before further task work. Capture covers multi-step requests and corrections;
+  checkpoint triggers include implementation steps, verification and blockers.
+  A shorter capture/update/finish flow preserves the saved project identity,
+  keeps corrections with the same task, and handles unavailable or closed tasks.
 - Advertise the required object root on the hotfix tool's input schema so
   Claude Code accepts the MCP tool list.
+- Reject invalid Unicode and evidence IDs outside SQLite's integer range with
+  typed checkpoint errors before writing any task state.
 
 ## [1.10.0] — 2026-09-06
 

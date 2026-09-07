@@ -4,7 +4,7 @@ repos:
     rev: v4.6.0
     hooks:
       - id: trailing-whitespace
-        exclude: ^plans/(v2-foundation-.*\.(json|txt)|task-resume-acceptance.*\.(json|txt)|sharing-(result-round0.*|codeql-repair-result.*)\.(txt|xml)|continuity-regression.*\.txt|.*\.xml)$
+        exclude: ^plans/(v2-foundation-.*\.(json|txt)|task-resume-acceptance.*\.(json|txt)|task-checkpoint-boundaries.*\.txt|sharing-(result-round0.*|codeql-repair-result.*)\.(txt|xml)|continuity-regression.*\.txt|.*\.xml)$
       - id: end-of-file-fixer
         exclude: ^plans/(v2-foundation-.*\.(json|txt)|sharing-(result-round0.*|codeql-repair-result.*)\.(txt|xml)|continuity-regression.*\.txt|.*\.xml)$
       - id: check-yaml

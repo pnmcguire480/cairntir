@@ -1,0 +1,37 @@
+FFFF...F.............                                                    [100%]
+================================== FAILURES ===================================
+_ test_policy_reuses_known_project_identity_and_carries_it_across_compaction __
+tests\unit\test_host_continuity_policy_acceptance.py:40: in test_policy_reuses_known_project_identity_and_carries_it_across_compaction
+    assert re.search(
+E   AssertionError: assert None
+E    +  where None = <function search at 0x000001824EF6F920>('(?:reuse|preserve|keep|retain|prefer|use).{0,70}(?:known|saved|existing) wing', '# cairntir — memory-first reasoning layer you have access to persistent memory through the cairntir_* mcp tools. at c... write the same cairntir store so work can move between claude code, codex, cursor, and qwen code without a re-brief. ')
+E    +    where <function search at 0x000001824EF6F920> = re.search
+____ test_exact_corrections_are_attached_to_the_same_task_before_more_work ____
+tests\unit\test_host_continuity_policy_acceptance.py:48: in test_exact_corrections_are_attached_to_the_same_task_before_more_work
+    assert _clause_containing(
+E   AssertionError: assert False
+E    +  where False = _clause_containing('correction', 'constraint', '(?:exact|verbatim)', '(?:same|existing|current|selected) task', 'checkpoint', 'content', 'outstanding', 'before')
+______ test_terminal_or_unavailable_task_does_not_switch_to_another_task ______
+tests\unit\test_host_continuity_policy_acceptance.py:61: in test_terminal_or_unavailable_task_does_not_switch_to_another_task
+    assert _clause_containing(
+E   AssertionError: assert False
+E    +  where False = _clause_containing('unavailable', 'terminal', '(?:stop|report|check)', '(?:identity|wing|task_id)')
+_________ test_open_requests_remain_within_selected_authorized_scope __________
+tests\unit\test_host_continuity_policy_acceptance.py:74: in test_open_requests_remain_within_selected_authorized_scope
+    assert _clause_containing(r"owed", r"(?:authoriz|selected|current conversation)")
+E   AssertionError: assert False
+E    +  where False = _clause_containing('owed', '(?:authoriz|selected|current conversation)')
+___________ test_policy_is_shorter_than_the_reviewed_775_word_draft ___________
+tests\unit\test_host_continuity_policy_acceptance.py:108: in test_policy_is_shorter_than_the_reviewed_775_word_draft
+    assert len(MEMORY_POLICY.split()) < 775
+E   AssertionError: assert 775 < 775
+E    +  where 775 = len(['#', 'Cairntir', '—', 'memory-first', 'reasoning', 'layer', ...])
+E    +    where ['#', 'Cairntir', '—', 'memory-first', 'reasoning', 'layer', ...] = <built-in method split of str object at 0x000001824F743650>()
+E    +      where <built-in method split of str object at 0x000001824F743650> = '# Cairntir — memory-first reasoning layer\n\nYou have access to persistent memory through the `cairntir_*` MCP tools....ite the same Cairntir\nstore so work can move between Claude Code, Codex, Cursor, and Qwen Code\nwithout a re-brief.\n'.split
+=========================== short test summary info ===========================
+FAILED tests/unit/test_host_continuity_policy_acceptance.py::test_policy_reuses_known_project_identity_and_carries_it_across_compaction
+FAILED tests/unit/test_host_continuity_policy_acceptance.py::test_exact_corrections_are_attached_to_the_same_task_before_more_work
+FAILED tests/unit/test_host_continuity_policy_acceptance.py::test_terminal_or_unavailable_task_does_not_switch_to_another_task
+FAILED tests/unit/test_host_continuity_policy_acceptance.py::test_open_requests_remain_within_selected_authorized_scope
+FAILED tests/unit/test_host_continuity_policy_acceptance.py::test_policy_is_shorter_than_the_reviewed_775_word_draft
+5 failed, 16 passed in 0.62s

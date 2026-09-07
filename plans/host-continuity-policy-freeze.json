@@ -1,0 +1,15 @@
+{
+  "schema": "cairntir.acceptance-freeze.v1",
+  "author": "/root/resume_acceptance",
+  "recorded_at": "2026-09-07T06:58:09.493030+00:00",
+  "source_head": "4214a0042f970514e0dbaeaf510e84bf281ce78a",
+  "cases": 21,
+  "baseline_result": "FAIL",
+  "baseline_summary": "5 failed, 16 passed in 0.62s",
+  "files": {
+    "tests/unit/test_host_continuity_policy_acceptance.py": "5c592364c775937003e2df8653f8839a677c7bd207c3d131216f1e6e551bd1c3",
+    "plans/host-continuity-policy-acceptance.md": "a5327426420db525809a4f72a2d4a269aa8e4e068d862933d28dc99f22256298",
+    "plans/host-continuity-policy-baseline.json": "886fee42fb553559ffcbeb9a31744fa14b316fbb15ff0847e008f5ccf3e87fc0",
+    "plans/host-continuity-policy-baseline.txt": "46b7392588cf2a441e5b3bb405a9954786021359067a458867819fe0df5fce5f"
+  }
+}

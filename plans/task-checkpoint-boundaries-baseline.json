@@ -1,0 +1,38 @@
+{
+  "invocation": [
+    "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/unit/test_task_checkpoint_boundaries_acceptance.py",
+    "--no-cov",
+    "-q",
+    "--tb=short"
+  ],
+  "exit_code": 1,
+  "captured_at_utc": "2026-09-07T07:02:28.701601+00:00",
+  "base_head": "4214a0042f970514e0dbaeaf510e84bf281ce78a",
+  "runtime_before": {
+    "src/cairntir/tasks.py": "cebdf9bd56d5f4e3e1d0431143eddd93b16ab89ab84dfa614a8804ecaf713be8",
+    "src/cairntir/memory/store.py": "79b23a81389a6fc78abdb71d30282e54ee3c5a52d22244f06e9480beea14830b",
+    "src/cairntir/mcp/backend.py": "916d6cb44d4d2baacdd6acc2b3818cf95fe443fdad75f2a6be8301ad1bde7acb",
+    "src/cairntir/mcp/server.py": "30832f8546f809d37cfe98128a14a7ae0684311bafdcf8c2adbe2c6209cc4d7e",
+    "src/cairntir/cli.py": "c4d1c9f27ced9d102007784c9c0d7155dcaba7ea4b3c0d232f495ef435555eac"
+  },
+  "runtime_after": {
+    "src/cairntir/tasks.py": "cebdf9bd56d5f4e3e1d0431143eddd93b16ab89ab84dfa614a8804ecaf713be8",
+    "src/cairntir/memory/store.py": "79b23a81389a6fc78abdb71d30282e54ee3c5a52d22244f06e9480beea14830b",
+    "src/cairntir/mcp/backend.py": "916d6cb44d4d2baacdd6acc2b3818cf95fe443fdad75f2a6be8301ad1bde7acb",
+    "src/cairntir/mcp/server.py": "30832f8546f809d37cfe98128a14a7ae0684311bafdcf8c2adbe2c6209cc4d7e",
+    "src/cairntir/cli.py": "c4d1c9f27ced9d102007784c9c0d7155dcaba7ea4b3c0d232f495ef435555eac"
+  },
+  "kind": "superseded_prefreeze_harness_diagnostic",
+  "cases": 40,
+  "passed": 16,
+  "failed": 24,
+  "elapsed_seconds": 166.7,
+  "nonapplication_parser_cases": 7,
+  "final_baseline": "plans/task-checkpoint-boundaries-baseline-v2.json",
+  "raw_output": "plans/task-checkpoint-boundaries-baseline.txt",
+  "raw_output_sha256": "c161b586b9a70b67d933e13e7f239e4299a5b7303de421925b3bce1cdfa33a4e",
+  "classification": "Includes seven MCP parser rejections and bounded harness waits; not the final application acceptance baseline. Raw output retained unchanged."
+}

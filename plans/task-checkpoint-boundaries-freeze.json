@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN",
+  "independent_tester": "/root/foundation_tester",
+  "scope": "TaskBook checkpoint integer and Unicode input boundaries; requests #1352/#1353",
+  "frozen_at_utc": "2026-09-07T07:06:32.240346+00:00",
+  "base_head": "4214a0042f970514e0dbaeaf510e84bf281ce78a",
+  "review": "/root approved final 33-case suite and contract before runtime fix",
+  "cases": 33,
+  "artifact_readiness": "PASS",
+  "preimplementation_acceptance": "FAIL",
+  "baseline": {
+    "passed": 16,
+    "failed": 17,
+    "infrastructure_failures": 0,
+    "path": "plans/task-checkpoint-boundaries-baseline-v2.json"
+  },
+  "repair_round_limit": 2,
+  "artifacts": {
+    "tests/unit/test_task_checkpoint_boundaries_acceptance.py": "f5490b9a88011b4a7be179f11f9ee8b6e7768fb7941c4bd263afba68c1ec42f7",
+    "plans/task-checkpoint-boundaries-acceptance.md": "0a57b68ebc2f4bb83a6527bfced76999de6ad7ce600c83cc3268b53742659277",
+    "plans/task-checkpoint-boundaries-baseline-v2.json": "e3a297d5006129defd2f00b5e1f1cfd04f8c39bb501e2333d6dff2aa861f65a6",
+    "plans/task-checkpoint-boundaries-baseline-v2.txt": "1144a855ec3501b596c681682d5b17fb457ad610ea855ecf8f5e7819e39606e3",
+    "plans/task-checkpoint-boundaries-baseline.json": "68cbbe1d1290884fbb0e06b34b5909bc9b86abde6da4b15e71efe6ef299e0b90",
+    "plans/task-checkpoint-boundaries-baseline.txt": "c161b586b9a70b67d933e13e7f239e4299a5b7303de421925b3bce1cdfa33a4e",
+    "tests/conftest.py": "a43e93cbc6abc0f182239545fb77ca4d6a61945d9ec3781d2338380edeffdbef",
+    "tests/unit/test_task_resume_acceptance.py": "30dce372e94deb111a62d199f72b4510aada8dea8dff1daa9a0ee439232ebea0",
+    "tests/unit/test_task_resume_supporting.py": "9ea04696368ae718fa08f5c474ff1a5c0bd605e5b26850f8ff336bdee9b23da9",
+    "tests/unit/test_task_resume_budget.py": "79d8305c6b92493730ff75cb7b63b9f09b2c348bb1694906f6e5929c8c1b4089"
+  },
+  "runtime_provenance": {
+    "src/cairntir/tasks.py": "cebdf9bd56d5f4e3e1d0431143eddd93b16ab89ab84dfa614a8804ecaf713be8",
+    "src/cairntir/memory/store.py": "79b23a81389a6fc78abdb71d30282e54ee3c5a52d22244f06e9480beea14830b",
+    "src/cairntir/mcp/backend.py": "916d6cb44d4d2baacdd6acc2b3818cf95fe443fdad75f2a6be8301ad1bde7acb",
+    "src/cairntir/mcp/server.py": "30832f8546f809d37cfe98128a14a7ae0684311bafdcf8c2adbe2c6209cc4d7e",
+    "src/cairntir/cli.py": "c4d1c9f27ced9d102007784c9c0d7155dcaba7ea4b3c0d232f495ef435555eac"
+  },
+  "excluded_mutable_inputs": [
+    "pyproject.toml",
+    "uv.lock",
+    ".gitattributes",
+    ".pre-commit-config.yaml",
+    "CLAUDE.md"
+  ],
+  "amendment_policy": "No frozen bytes may change without a new explicit independent amendment. Manifest self-hash is published externally. Historical support is bound for this gate, not all future releases.",
+  "final_gate_ownership": {
+    "/root/foundation_tester": "new 33 cases",
+    "/root/resume_acceptance": "original 70 cases and host-policy cases"
+  }
+}

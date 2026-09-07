@@ -87,6 +87,31 @@ candidate scan and discloses incomplete scans in the result.
 Try the [isolated continuity demo](context-demo.md) to inspect exact recalled
 requests, excluded stale evidence, and measured payload sizes across store sessions.
 
+## Recovering after compaction (1.11.0 candidate)
+
+The shared host policy asks agents to save each multi-step request before work,
+then checkpoint after an implementation step, verification result, changed
+decision or blocker, before starting the next work block. Corrections and new
+constraints are captured as they arrive. Each checkpoint preserves completed
+and outstanding work, the next action, changed files and verification evidence.
+
+After compaction or lost continuity, the policy asks the agent to resume its
+saved task and compare the checkpoint with current working state before further
+task reasoning or actions. The saved wing and task ID select the same task
+even when the checkout folder changes. Ambiguous tasks require selection;
+terminal tasks stay closed, and unavailable tasks require checking identity
+and access. Corrections belong in the same task's checkpoint content and
+outstanding work. Missing progress must be investigated or clarified.
+Other saved tasks do not authorize work outside the current conversation.
+
+This is an instruction to the host agent, not a compaction detector or an
+automatic transcript recorder. Recovery depends on acknowledged writes and the
+agent following the policy. With an older server that lacks checkpoint/resume
+arguments, agents save ordinary request and progress memories and disclose that
+structured task resumption requires an upgrade. Published 1.10.0 has that older
+surface; the checkpoint implementation and policy are in the unpublished 1.11.0
+candidate. See [task resumption](task-resumption.md) for the complete workflow.
+
 ## Bounded hotfixes
 
 Use `cairntir_hotfix` when a repair must follow an explicit, inspectable order:
