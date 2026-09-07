@@ -10,16 +10,21 @@ review, and recipes over a 21-tool MCP surface.
 Claude Code, Codex, and Qwen Code, with an honest unsupported receipt for Cursor.
 [1.9.0](release/v1.9.0.md) added the bounded hotfix ledger and hardened the
 bindings between hypotheses, experiments, observations, and learning evidence.
+[1.10.0](release/v1.10.0.md) added task-aware context selection, portable evidence,
+evaluated procedures, and scoped local sharing.
 
 Release records describe tested versions and limits. The
 [landed-commitment registry](landed-commitments.md) preserves their regression
 contracts independently of retired execution plans.
 
-## Current: shipping hardening
+## Current: interrupted task resumption
 
-Fix reproduced data-loss and trust-boundary bugs; simplify the repository and
-documentation; verify packaging and the complete release-check inventory.
-See the [active plan](https://github.com/pnmcguire480/cairntir/blob/main/plans/shipping-hardening.md).
+Persist acknowledged task checkpoints and recover them from another host with
+only a shared wing or task ID. Freeze independent acceptance for interruption,
+concurrent updates, scoped visibility, terminal states and exact evidence.
+See the [active plan](https://github.com/pnmcguire480/cairntir/blob/main/plans/task-resume.md)
+and [task resumption guide](task-resumption.md). Actual autonomous host behavior
+and billed token savings require separate evaluations.
 
 ## Next: retrieval preflight evaluation
 

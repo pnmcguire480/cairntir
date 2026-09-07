@@ -1,0 +1,11 @@
+{
+  "schema": "cairntir.acceptance-supporting-freeze.v1",
+  "author": "/root/resume_acceptance",
+  "recorded_at": "2026-09-07T06:17:20.962557+00:00",
+  "cases": 2,
+  "original_cases_unchanged": 66,
+  "files": {
+    "tests/unit/test_task_resume_supporting.py": "9ea04696368ae718fa08f5c474ff1a5c0bd605e5b26850f8ff336bdee9b23da9",
+    "plans/task-resume-acceptance-supporting.md": "19bcd1ac0354cd1fbf1c76a595becca185d3772d251adc28ad01e0886dae2240"
+  }
+}

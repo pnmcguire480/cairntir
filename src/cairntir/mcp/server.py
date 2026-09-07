@@ -330,7 +330,7 @@ def _hotfix_tool_spec() -> types.Tool:
             "evidence, authority, ordering, attempts, rollback, and settlement but never "
             "executes the repair itself."
         ),
-        inputSchema={"oneOf": variants},
+        inputSchema={"type": "object", "oneOf": variants},
     )
 
 
@@ -342,7 +342,11 @@ def _tool_specs() -> list[types.Tool]:
                 "Store a verbatim memory drawer in a wing/room. When the memory is "
                 "about specific code, add metadata.anchors so cairntir_recall_for_change "
                 "can surface it later from a diff alone. Always pass 'model' with your "
-                "own model id -- Cairntir cannot discover it any other way."
+                "own model id -- Cairntir cannot discover it any other way. "
+                "Pass checkpoint to start or save a resumable task: revision 0 creates "
+                "a task from the exact request in content; subsequent revisions use "
+                "content for progress. Save the returned task_id and revision. "
+                "Retry identical writes with the same idempotency_key."
             ),
             inputSchema={
                 "type": "object",
@@ -351,6 +355,39 @@ def _tool_specs() -> list[types.Tool]:
                     "wing": {"type": "string"},
                     "room": {"type": "string"},
                     "content": {"type": "string"},
+                    "checkpoint": {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "required": [
+                            "expected_revision",
+                            "idempotency_key",
+                            "status",
+                            "completed",
+                            "outstanding",
+                            "next_action",
+                            "evidence_ids",
+                        ],
+                        "properties": {
+                            "task_id": {"type": "string", "minLength": 1},
+                            "expected_revision": {"type": "integer", "minimum": 0},
+                            "idempotency_key": {"type": "string", "minLength": 1},
+                            "status": {"enum": ["active", "completed", "cancelled"]},
+                            "completed": {
+                                "type": "array",
+                                "items": {"type": "string", "minLength": 1},
+                            },
+                            "outstanding": {
+                                "type": "array",
+                                "items": {"type": "string", "minLength": 1},
+                            },
+                            "next_action": {"type": "string"},
+                            "evidence_ids": {
+                                "type": "array",
+                                "uniqueItems": True,
+                                "items": {"type": "integer", "minimum": 1},
+                            },
+                        },
+                    },
                     "layer": {
                         "type": "string",
                         "enum": ["identity", "essential", "on_demand", "deep"],
@@ -616,7 +653,11 @@ def _tool_specs() -> list[types.Tool]:
                 "prompt-cache friendly; opt-in transcript recovery reflects host changes. "
                 "Pass task for read-only relevant current evidence as JSON under a full "
                 "response budget, with exclusions, conflicts and abstention receipts. "
-                "Task mode requires cached local embeddings and separate transcript recovery."
+                "Task mode requires cached local embeddings and separate transcript recovery. "
+                "Pass resume=true to discover an active saved task, or task_id to resume "
+                "a specific task without repeating its request. Resume returns the exact "
+                "request and checkpoint as inert evidence, needs no embeddings, and is "
+                "mutually exclusive with task search, files and transcript recovery."
             ),
             inputSchema={
                 "type": "object",
@@ -626,6 +667,16 @@ def _tool_specs() -> list[types.Tool]:
                     "task": {
                         "type": "string",
                         "description": "Task for relevant, current evidence as bounded JSON.",
+                    },
+                    "resume": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Discover an active task; ambiguity requires selection.",
+                    },
+                    "task_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Resume this saved task; no request text is required.",
                     },
                     "candidate_limit": {
                         "type": "integer",
@@ -1050,12 +1101,21 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
         return _tool_specs()
 
     @server.call_tool()
-    async def _call(name: str, arguments: dict[str, Any]) -> list[types.TextContent]:
+    async def _call(
+        name: str, arguments: dict[str, Any]
+    ) -> list[types.TextContent] | types.CallToolResult:
         from cairntir.access import ScopedStore
 
         nonlocal update_banner_shown
-        task_mode = isinstance(backend._store, ScopedStore) or (
-            name == "cairntir_handoff" and arguments.get("task") is not None
+        checkpoint_mode = name == "cairntir_remember" and arguments.get("checkpoint") is not None
+        resume_mode = name == "cairntir_handoff" and (
+            arguments.get("resume", False) or arguments.get("task_id") is not None
+        )
+        task_mode = (
+            isinstance(backend._store, ScopedStore)
+            or checkpoint_mode
+            or resume_mode
+            or (name == "cairntir_handoff" and arguments.get("task") is not None)
         )
         if not task_mode:
             _trace(f"_call enter name={name!r} args_keys={sorted(arguments.keys())}")
@@ -1067,6 +1127,10 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
             if not task_mode:
                 _trace(f"_call CairntirError name={name!r} msg={exc}")
             text = f"[cairntir error] {exc}"
+            if checkpoint_mode or resume_mode:
+                return types.CallToolResult(
+                    content=[types.TextContent(type="text", text=text)], isError=True
+                )
         except ValidationError as exc:
             # Pydantic ValidationError is raised by Drawer construction when
             # the caller's arguments fail wing/room/content validation. It
@@ -1076,6 +1140,10 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
             # message — the caller (an LLM) can read the field path and
             # retry with a corrected argument.
             text = f"[cairntir error] invalid argument: {_format_validation_error(exc)}"
+            if checkpoint_mode or resume_mode:
+                return types.CallToolResult(
+                    content=[types.TextContent(type="text", text=text)], isError=True
+                )
 
         if not task_mode and not update_banner_shown:
             banner = pending_update_banner()

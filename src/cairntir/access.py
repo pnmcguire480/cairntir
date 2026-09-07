@@ -586,6 +586,27 @@ class ScopedStore:
         self.authorize("read")
         return self._owner.workflow_receipt(self._workflow_key(idempotency_key))
 
+    def _task_records(self, *, wing: str) -> list[dict[str, Any]]:
+        self.authorize("read")
+        records = self._owner._task_records(wing=wing)
+        visible = self._rows()
+        hidden = set()
+        for record in records:
+            required = {
+                record["original_drawer_id"],
+                record["checkpoint_drawer_id"],
+                *record["_task"]["evidence_ids"],
+            }
+            if not required <= visible.keys():
+                hidden.add(record["task_id"])
+        return [record for record in records if record["task_id"] not in hidden]
+
+    def _task_drawers(self, drawer_ids: Sequence[int]) -> dict[int, tuple[Drawer, WriteProvenance]]:
+        visible = self._rows()
+        if not set(drawer_ids) <= visible.keys():
+            raise AccessDenied(_DENIED)
+        return {key: _context_record(visible[key]) for key in drawer_ids}
+
     def execute_once(
         self,
         *,

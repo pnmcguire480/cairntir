@@ -198,8 +198,17 @@ class CairntirBackend:
         anchors: list[dict[str, Any]] | None = None,
         claim: str | None = None,
         predicted_outcome: str | None = None,
+        checkpoint: dict[str, Any] | None = None,
     ) -> str:
         """Store a verbatim drawer. Returns a human-readable confirmation."""
+        if checkpoint is not None:
+            from cairntir.tasks import TaskBook
+
+            if any(value is not None for value in (metadata, anchors, claim, predicted_outcome)):
+                raise MCPError("checkpoint cannot combine with metadata, anchors or predictions")
+            return TaskBook(self._store).checkpoint(
+                wing=wing, room=room, content=content, checkpoint=checkpoint, model=model
+            )
         try:
             layer_enum = Layer(layer)
         except ValueError as exc:
@@ -583,6 +592,8 @@ class CairntirBackend:
         recovery_budget_chars: int = DEFAULT_RECOVERY_BUDGET_CHARS,
         task: str | None = None,
         candidate_limit: int | None = None,
+        resume: bool = False,
+        task_id: str | None = None,
     ) -> str:
         """Compose one bounded brief for ``wing`` — the replacement for HANDOFF.md.
 
@@ -593,6 +604,23 @@ class CairntirBackend:
         """
         from cairntir.access import AccessDenied, ScopedStore
 
+        if type(resume) is not bool:
+            raise MCPError("resume must be a boolean")
+        if resume or task_id is not None:
+            from cairntir.tasks import TaskBook
+
+            if (
+                task is not None
+                or files is not None
+                or candidate_limit is not None
+                or recover_transcripts
+            ):
+                raise MCPError(
+                    "resume cannot combine with task search, files or transcript recovery"
+                )
+            return TaskBook(self._store).resume(
+                wing=wing, task_id=task_id, budget_chars=budget_chars
+            )
         if recover_transcripts and isinstance(self._store, ScopedStore):
             raise AccessDenied("transcript recovery is unavailable in restricted sessions")
         if task is not None:
