@@ -1,7 +1,7 @@
-# Cairntir â€” project brief
+# Cairntir — project brief
 
 Host-neutral, local-first memory and reasoning through MCP. Owner:
-Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11â€“3.13.
+Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
@@ -119,7 +119,7 @@ The historical candidate receipt remains unchanged. No broader runtime work or
 2.0.0 version change is outstanding from this release.
 
 <!-- cairntir:begin -->
-# Cairntir â€” memory-first reasoning layer
+# Cairntir — memory-first reasoning layer
 
 You have access to persistent memory through the `cairntir_*` MCP tools.
 At conversation start, after context compaction, and whenever continuity is lost:
