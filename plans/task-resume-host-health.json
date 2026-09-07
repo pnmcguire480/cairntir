@@ -1,0 +1,16 @@
+{
+  "result": "PASS",
+  "observer": "/root/host_health",
+  "claude_version": "2.1.197",
+  "environment": "isolated development source, not published 1.10.0",
+  "health": "Connected",
+  "health_exit_code": 0,
+  "tool_count": 21,
+  "all_input_schemas_object_root": true,
+  "checkpoint_resume_parameters": true,
+  "production_config_unchanged": true,
+  "model_calls": 0,
+  "model_downloads": 0,
+  "server_source_sha256": "30832f8546f809d37cfe98128a14a7ae0684311bafdcf8c2adbe2c6209cc4d7e",
+  "harness_sha256": "3b8589dade0607f07cb8a1427b109b69bed892b56866fe7f0f1343d7a2872f67"
+}

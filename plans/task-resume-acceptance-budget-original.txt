@@ -1,0 +1,42 @@
+"""Independent required-budget retry proof; original acceptance stays frozen."""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+from mcp import types
+from test_task_resume_acceptance import WING, _embedder, _save, _state
+
+from cairntir.mcp.backend import CairntirBackend
+from cairntir.memory.store import DrawerStore
+
+
+@pytest.mark.parametrize("request", ["exact text " * 1000, 'Exact "café"\\path\n' * 1600])
+def test_advertised_required_chars_is_sufficient_for_exact_retry(
+    tmp_cairntir_home: Path, monkeypatch: pytest.MonkeyPatch, request: str
+) -> None:
+    monkeypatch.delenv("CAIRNTIR_GRANT_FILE", raising=False)
+    with DrawerStore(tmp_cairntir_home / "cairntir.db", _embedder()) as store:
+        saved = _save(store, content=request)
+        backend = CairntirBackend(store)
+        before = _state()
+        omitted = json.loads(
+            backend.handoff(wing=WING, task_id=saved["task_id"], budget_chars=1024)
+        )
+        assert omitted["status"] == "omitted" and omitted["checkpoint"] is None
+        advertised = omitted["required_chars"]
+        assert advertised > 9999
+        raw = backend.handoff(wing=WING, task_id=saved["task_id"], budget_chars=advertised)
+        resumed = json.loads(raw)
+        assert resumed["status"] == "ready", resumed
+        assert resumed["checkpoint"]["original_request"] == request
+        assert resumed["budget"]["limit_chars"] == advertised
+        assert resumed["budget"]["rendered_chars"] == len(raw)
+        assert len(raw + "\n") <= advertised
+        envelope = types.CallToolResult(
+            content=[types.TextContent(type="text", text=raw)], isError=False
+        )
+        assert len(envelope.model_dump_json()) <= advertised
+        assert _state() == before

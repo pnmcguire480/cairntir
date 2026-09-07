@@ -1,0 +1,23 @@
+{
+  "schema": "cairntir.acceptance-supporting-freeze.v3",
+  "author": "/root/resume_acceptance",
+  "recorded_at": "2026-09-07T06:25:27.372365+00:00",
+  "cases": 2,
+  "original_cases_unchanged": 68,
+  "supersedes": "plans/task-resume-acceptance-budget-freeze-v2.json",
+  "superseded_status": "INCONCLUSIVE: long pytest Unicode parameter ID exceeded Windows environment limit before test setup",
+  "amendment": "Only add compact parameter display IDs; AST equality confirmed after excluding the ids keyword",
+  "collection": "PASS: 2 tests collected with compact IDs",
+  "lint": "PASS",
+  "format": "PASS",
+  "files": {
+    "tests/unit/test_task_resume_budget.py": "79d8305c6b92493730ff75cb7b63b9f09b2c348bb1694906f6e5929c8c1b4089",
+    "plans/task-resume-acceptance-budget.md": "16155a54959682c9a6b61599d77f613ad16da2b93a5532023de08f24d8e86d5c",
+    "plans/task-resume-acceptance-budget-v2.txt": "0c9fcd08de6aefb34b3332c3524974f6b589191df3cac43370d5d77e194cd12b",
+    "plans/task-resume-acceptance-budget-v2.md": "e607ee99b3997fadbcc47a63035df3281e725887ce0f6398c68c498dfa3211a8",
+    "plans/task-resume-acceptance-budget-v2-original-freeze.json": "db10600cdcc1feb4ed9b33a1bbede1d0e0d0cfa094c352f1488aaa06f7b7245a",
+    "plans/task-resume-acceptance-budget-original.txt": "262ef63eba0e78b03c8c667305b501a245feb6e4dd05c7718ebf269f2e8c4602",
+    "plans/task-resume-acceptance-budget-original.md": "7a187c7c7aecf65d416bfd48c860d0e97038aeb15bd129e7b0483bca0ff748f1",
+    "plans/task-resume-acceptance-budget-original-freeze.json": "2d57572ec83ed2831cfa74f26e1aef6beef9c4a15695e84004b7787cf0abe2af"
+  }
+}

@@ -70,6 +70,26 @@ class Seam:
 
 SEAMS: tuple[Seam, ...] = (
     Seam(
+        name="acknowledged checkpoints survive a fresh MCP host process",
+        sides=(
+            Side(Path("src/cairntir/tasks.py"), "TaskBook"),
+            Side(Path("src/cairntir/mcp/backend.py"), "remember"),
+            Side(Path("src/cairntir/mcp/backend.py"), "handoff"),
+            Side(Path("src/cairntir/mcp/server.py")),
+        ),
+        test_path=Path("tests/unit/test_task_resume_acceptance.py"),
+        test_name="test_acknowledged_checkpoint_survives_kill_and_fresh_distinct_host_without_rebrief",
+    ),
+    Seam(
+        name="CLI resume agrees with the live MCP connection",
+        sides=(
+            Side(Path("src/cairntir/cli.py"), "handoff_cmd"),
+            Side(Path("src/cairntir/mcp/server.py")),
+        ),
+        test_path=Path("tests/unit/test_task_resume_acceptance.py"),
+        test_name="test_cli_checkpoint_and_resume_match_live_mcp_under_existing_connection",
+    ),
+    Seam(
         name="TOOL_SURFACE_VERSION tracks the tool list",
         sides=(
             Side(Path("src/cairntir/provenance.py"), "TOOL_SURFACE_VERSION"),

@@ -1,0 +1,830 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF       [100%]
+================================== FAILURES ===================================
+__________ test_all_existing_mcp_tools_advertise_object_root_schemas __________
+tests\unit\test_task_resume_acceptance.py:277: in test_all_existing_mcp_tools_advertise_object_root_schemas
+    assert malformed == [], f"MCP tools require object-root input schemas: {malformed}"
+E   AssertionError: MCP tools require object-root input schemas: ['cairntir_hotfix']
+E   assert ['cairntir_hotfix'] == []
+E     
+E     Left contains one more item: 'cairntir_hotfix'
+E     Use -v to get more diff
+___________ test_real_stdio_advertises_21_object_root_tool_schemas ____________
+tests\unit\test_task_resume_acceptance.py:288: in test_real_stdio_advertises_21_object_root_tool_schemas
+    assert all(tool["inputSchema"].get("type") == "object" for tool in tools)
+E   assert False
+E    +  where False = all(<generator object test_real_stdio_advertises_21_object_root_tool_schemas.<locals>.<genexpr> at 0x00000239B14DC820>)
+_________ test_checkpoint_arguments_are_advertised_on_existing_tools __________
+tests\unit\test_task_resume_acceptance.py:297: in test_checkpoint_arguments_are_advertised_on_existing_tools
+    assert "checkpoint" in tools["cairntir_remember"].inputSchema["properties"]
+E   AssertionError: assert 'checkpoint' in {'anchors': {'description': 'Code this drawer is about. PASS THIS whenever the drawer mentions a file -- it is the onl...ng'}, 'layer': {'default': 'on_demand', 'enum': ['identity', 'essential', 'on_demand', 'deep'], 'type': 'string'}, ...}
+___ test_exact_request_and_latest_full_checkpoint_preserve_original_drawer ____
+tests\unit\test_task_resume_acceptance.py:305: in test_exact_request_and_latest_full_checkpoint_preserve_original_drawer
+    created = _save(owner, checkpoint=_checkpoint(evidence_ids=[source]))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+______ test_idempotent_retries_survive_new_revisions_without_overwriting ______
+tests\unit\test_task_resume_acceptance.py:338: in test_idempotent_retries_survive_new_revisions_without_overwriting
+    created = _save(owner)
+              ^^^^^^^^^^^^
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+______ test_invalid_checkpoint_fields_are_atomic[expected_revision-True] ______
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_______ test_invalid_checkpoint_fields_are_atomic[expected_revision--1] _______
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+______ test_invalid_checkpoint_fields_are_atomic[expected_revision-1.0] _______
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_______ test_invalid_checkpoint_fields_are_atomic[expected_revision-0] ________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+________ test_invalid_checkpoint_fields_are_atomic[idempotency_key- ] _________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+________ test_invalid_checkpoint_fields_are_atomic[idempotency_key-12] ________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+__________ test_invalid_checkpoint_fields_are_atomic[status-paused] ___________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+________ test_invalid_checkpoint_fields_are_atomic[completed-finished] ________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_________ test_invalid_checkpoint_fields_are_atomic[completed-value8] _________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_________ test_invalid_checkpoint_fields_are_atomic[completed-value9] _________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_______ test_invalid_checkpoint_fields_are_atomic[outstanding-value10] ________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_________ test_invalid_checkpoint_fields_are_atomic[outstanding-None] _________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+___________ test_invalid_checkpoint_fields_are_atomic[next_action-] ___________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+__________ test_invalid_checkpoint_fields_are_atomic[next_action-3] ___________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_______ test_invalid_checkpoint_fields_are_atomic[evidence_ids-value14] _______
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_______ test_invalid_checkpoint_fields_are_atomic[evidence_ids-value15] _______
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_______ test_invalid_checkpoint_fields_are_atomic[evidence_ids-value16] _______
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_______ test_invalid_checkpoint_fields_are_atomic[evidence_ids-value17] _______
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_______ test_invalid_checkpoint_fields_are_atomic[evidence_ids-value18] _______
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+__________ test_invalid_checkpoint_fields_are_atomic[evidence_ids-1] __________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_____________ test_invalid_checkpoint_fields_are_atomic[task_id-] _____________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+____________ test_invalid_checkpoint_fields_are_atomic[task_id-8] _____________
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+____ test_invalid_checkpoint_fields_are_atomic[unexpected_authority-True] _____
+tests\unit\test_task_resume_acceptance.py:387: in test_invalid_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+____ test_missing_required_checkpoint_fields_are_atomic[expected_revision] ____
+tests\unit\test_task_resume_acceptance.py:404: in test_missing_required_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_____ test_missing_required_checkpoint_fields_are_atomic[idempotency_key] _____
+tests\unit\test_task_resume_acceptance.py:404: in test_missing_required_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_________ test_missing_required_checkpoint_fields_are_atomic[status] __________
+tests\unit\test_task_resume_acceptance.py:404: in test_missing_required_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+________ test_missing_required_checkpoint_fields_are_atomic[completed] ________
+tests\unit\test_task_resume_acceptance.py:404: in test_missing_required_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_______ test_missing_required_checkpoint_fields_are_atomic[outstanding] _______
+tests\unit\test_task_resume_acceptance.py:404: in test_missing_required_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_______ test_missing_required_checkpoint_fields_are_atomic[next_action] _______
+tests\unit\test_task_resume_acceptance.py:404: in test_missing_required_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+______ test_missing_required_checkpoint_fields_are_atomic[evidence_ids] _______
+tests\unit\test_task_resume_acceptance.py:404: in test_missing_required_checkpoint_fields_are_atomic
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+________________ test_empty_request_or_progress_is_rejected[] _________________
+tests\unit\test_task_resume_acceptance.py:412: in test_empty_request_or_progress_is_rejected
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+______________ test_empty_request_or_progress_is_rejected[ \n\t] ______________
+tests\unit\test_task_resume_acceptance.py:412: in test_empty_request_or_progress_is_rejected
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+___________ test_checkpoint_rejects_other_remember_modes[argument0] ___________
+tests\unit\test_task_resume_acceptance.py:430: in test_checkpoint_rejects_other_remember_modes
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+___________ test_checkpoint_rejects_other_remember_modes[argument1] ___________
+tests\unit\test_task_resume_acceptance.py:430: in test_checkpoint_rejects_other_remember_modes
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+___________ test_checkpoint_rejects_other_remember_modes[argument2] ___________
+tests\unit\test_task_resume_acceptance.py:430: in test_checkpoint_rejects_other_remember_modes
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+___________ test_checkpoint_rejects_other_remember_modes[argument3] ___________
+tests\unit\test_task_resume_acceptance.py:430: in test_checkpoint_rejects_other_remember_modes
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_______ test_references_and_task_identity_cannot_cross_project_or_room ________
+tests\unit\test_task_resume_acceptance.py:435: in test_references_and_task_identity_cannot_cross_project_or_room
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+__ test_terminal_tasks_survive_reopen_and_never_implicitly_resume[completed] __
+tests\unit\test_task_resume_acceptance.py:451: in test_terminal_tasks_survive_reopen_and_never_implicitly_resume
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+__ test_terminal_tasks_survive_reopen_and_never_implicitly_resume[cancelled] __
+tests\unit\test_task_resume_acceptance.py:451: in test_terminal_tasks_survive_reopen_and_never_implicitly_resume
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_________ test_discovery_is_explicit_and_never_guesses_between_tasks __________
+tests\unit\test_task_resume_acceptance.py:480: in test_discovery_is_explicit_and_never_guesses_between_tasks
+    assert _resume(owner)["status"] == "none"
+           ^^^^^^^^^^^^^^
+tests\unit\test_task_resume_acceptance.py:120: in _resume
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_______ test_readonly_resume_never_embeds_or_mutates_any_database_table _______
+tests\unit\test_task_resume_acceptance.py:505: in test_readonly_resume_never_embeds_or_mutates_any_database_table
+    created = _save(owner)
+              ^^^^^^^^^^^^
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_ test_untrusted_approval_text_is_exact_evidence_and_ordinary_metadata_cannot_activate _
+tests\unit\test_task_resume_acceptance.py:532: in test_untrusted_approval_text_is_exact_evidence_and_ordinary_metadata_cannot_activate
+    assert _resume(owner)["status"] == "none"
+           ^^^^^^^^^^^^^^
+tests\unit\test_task_resume_acceptance.py:120: in _resume
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+___________ test_scope_is_applied_to_entire_chain_before_discovery ____________
+tests\unit\test_task_resume_acceptance.py:546: in test_scope_is_applied_to_entire_chain_before_discovery
+    hidden_task = _save(owner, checkpoint=_checkpoint(evidence_ids=[private]))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_____ test_hidden_evidence_and_revoked_retries_cannot_mutate_or_disclose ______
+tests\unit\test_task_resume_acceptance.py:572: in test_hidden_evidence_and_revoked_retries_cannot_mutate_or_disclose
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_____ test_restricted_idempotency_namespaces_do_not_replay_another_grant ______
+tests\unit\test_task_resume_acceptance.py:591: in test_restricted_idempotency_namespaces_do_not_replay_another_grant
+    left = _save(first)
+           ^^^^^^^^^^^^
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+____________ test_invalid_resume_budgets_fail_without_writes[True] ____________
+tests\unit\test_task_resume_acceptance.py:599: in test_invalid_resume_budgets_fail_without_writes
+    _save(owner)
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_____________ test_invalid_resume_budgets_fail_without_writes[0] ______________
+tests\unit\test_task_resume_acceptance.py:599: in test_invalid_resume_budgets_fail_without_writes
+    _save(owner)
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+____________ test_invalid_resume_budgets_fail_without_writes[1023] ____________
+tests\unit\test_task_resume_acceptance.py:599: in test_invalid_resume_budgets_fail_without_writes
+    _save(owner)
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+____________ test_invalid_resume_budgets_fail_without_writes[8192] ____________
+tests\unit\test_task_resume_acceptance.py:599: in test_invalid_resume_budgets_fail_without_writes
+    _save(owner)
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+___________ test_invalid_resume_budgets_fail_without_writes[1024.5] ___________
+tests\unit\test_task_resume_acceptance.py:599: in test_invalid_resume_budgets_fail_without_writes
+    _save(owner)
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+____ test_budget_omits_mandatory_state_whole_and_offers_exact_get_receipts ____
+tests\unit\test_task_resume_acceptance.py:609: in test_budget_omits_mandatory_state_whole_and_offers_exact_get_receipts
+    created = _save(owner, content=long_request)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+___ test_candidate_budget_discloses_omissions_and_never_resolves_ambiguity ____
+tests\unit\test_task_resume_acceptance.py:649: in test_candidate_budget_discloses_omissions_and_never_resolves_ambiguity
+    _save(
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_____________ test_resume_rejects_mixed_handoff_modes[arguments0] _____________
+tests\unit\test_task_resume_acceptance.py:678: in test_resume_rejects_mixed_handoff_modes
+    _save(owner)
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_____________ test_resume_rejects_mixed_handoff_modes[arguments1] _____________
+tests\unit\test_task_resume_acceptance.py:678: in test_resume_rejects_mixed_handoff_modes
+    _save(owner)
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_____________ test_resume_rejects_mixed_handoff_modes[arguments2] _____________
+tests\unit\test_task_resume_acceptance.py:678: in test_resume_rejects_mixed_handoff_modes
+    _save(owner)
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_____________ test_resume_rejects_mixed_handoff_modes[arguments3] _____________
+tests\unit\test_task_resume_acceptance.py:678: in test_resume_rejects_mixed_handoff_modes
+    _save(owner)
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+___________ test_ordinary_remember_and_handoff_do_not_create_tasks ____________
+tests\unit\test_task_resume_acceptance.py:683: in test_ordinary_remember_and_handoff_do_not_create_tasks
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+____ test_failure_after_real_drawer_append_rolls_back_the_whole_checkpoint ____
+tests\unit\test_task_resume_acceptance.py:694: in test_failure_after_real_drawer_append_rolls_back_the_whole_checkpoint
+    created = _save(owner)
+              ^^^^^^^^^^^^
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_ test_acknowledged_checkpoint_survives_kill_and_fresh_distinct_host_without_rebrief _
+tests\unit\test_task_resume_acceptance.py:714: in test_acknowledged_checkpoint_survives_kill_and_fresh_distinct_host_without_rebrief
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+_____ test_two_live_mcp_writers_cas_one_revision_and_surface_typed_errors _____
+tests\unit\test_task_resume_acceptance.py:779: in test_two_live_mcp_writers_cas_one_revision_and_surface_typed_errors
+    created = _save(owner)
+              ^^^^^^^^^^^^
+tests\unit\test_task_resume_acceptance.py:107: in _save
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+___ test_cli_checkpoint_and_resume_match_live_mcp_under_existing_connection ___
+tests\unit\test_task_resume_acceptance.py:838: in test_cli_checkpoint_and_resume_match_live_mcp_under_existing_connection
+    _require_api()
+tests\unit\test_task_resume_acceptance.py:79: in _require_api
+    assert "checkpoint" in inspect.signature(CairntirBackend.remember).parameters, (
+E   AssertionError: TASK_RESUME_UNIMPLEMENTED: remember(checkpoint=...)
+E   assert 'checkpoint' in mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)]))
+E    +  where mappingproxy(OrderedDict([('self', <Parameter "self">), ('wing', <Parameter "wing: 'str'">), ('room', <Parameter "room...arameter "claim: 'str | None' = None">), ('predicted_outcome', <Parameter "predicted_outcome: 'str | None' = None">)])) = <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'>.parameters
+E    +    where <Signature (self, *, wing: 'str', room: 'str', content: 'str', layer: 'str' = 'on_demand', metadata: 'dict[str, Any] |...rs: 'list[dict[str, Any]] | None' = None, claim: 'str | None' = None, predicted_outcome: 'str | None' = None) -> 'str'> = <function signature at 0x000002398BBBA8E0>(<function CairntirBackend.remember at 0x00000239B1451A80>)
+E    +      where <function signature at 0x000002398BBBA8E0> = inspect.signature
+E    +      and   <function CairntirBackend.remember at 0x00000239B1451A80> = CairntirBackend.remember
+=========================== short test summary info ===========================
+FAILED tests/unit/test_task_resume_acceptance.py::test_all_existing_mcp_tools_advertise_object_root_schemas
+FAILED tests/unit/test_task_resume_acceptance.py::test_real_stdio_advertises_21_object_root_tool_schemas
+FAILED tests/unit/test_task_resume_acceptance.py::test_checkpoint_arguments_are_advertised_on_existing_tools
+FAILED tests/unit/test_task_resume_acceptance.py::test_exact_request_and_latest_full_checkpoint_preserve_original_drawer
+FAILED tests/unit/test_task_resume_acceptance.py::test_idempotent_retries_survive_new_revisions_without_overwriting
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[expected_revision-True]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[expected_revision--1]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[expected_revision-1.0]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[expected_revision-0]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[idempotency_key- ]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[idempotency_key-12]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[status-paused]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[completed-finished]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[completed-value8]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[completed-value9]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[outstanding-value10]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[outstanding-None]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[next_action-]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[next_action-3]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[evidence_ids-value14]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[evidence_ids-value15]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[evidence_ids-value16]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[evidence_ids-value17]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[evidence_ids-value18]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[evidence_ids-1]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[task_id-]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[task_id-8]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_checkpoint_fields_are_atomic[unexpected_authority-True]
+FAILED tests/unit/test_task_resume_acceptance.py::test_missing_required_checkpoint_fields_are_atomic[expected_revision]
+FAILED tests/unit/test_task_resume_acceptance.py::test_missing_required_checkpoint_fields_are_atomic[idempotency_key]
+FAILED tests/unit/test_task_resume_acceptance.py::test_missing_required_checkpoint_fields_are_atomic[status]
+FAILED tests/unit/test_task_resume_acceptance.py::test_missing_required_checkpoint_fields_are_atomic[completed]
+FAILED tests/unit/test_task_resume_acceptance.py::test_missing_required_checkpoint_fields_are_atomic[outstanding]
+FAILED tests/unit/test_task_resume_acceptance.py::test_missing_required_checkpoint_fields_are_atomic[next_action]
+FAILED tests/unit/test_task_resume_acceptance.py::test_missing_required_checkpoint_fields_are_atomic[evidence_ids]
+FAILED tests/unit/test_task_resume_acceptance.py::test_empty_request_or_progress_is_rejected[]
+FAILED tests/unit/test_task_resume_acceptance.py::test_empty_request_or_progress_is_rejected[ \n\t]
+FAILED tests/unit/test_task_resume_acceptance.py::test_checkpoint_rejects_other_remember_modes[argument0]
+FAILED tests/unit/test_task_resume_acceptance.py::test_checkpoint_rejects_other_remember_modes[argument1]
+FAILED tests/unit/test_task_resume_acceptance.py::test_checkpoint_rejects_other_remember_modes[argument2]
+FAILED tests/unit/test_task_resume_acceptance.py::test_checkpoint_rejects_other_remember_modes[argument3]
+FAILED tests/unit/test_task_resume_acceptance.py::test_references_and_task_identity_cannot_cross_project_or_room
+FAILED tests/unit/test_task_resume_acceptance.py::test_terminal_tasks_survive_reopen_and_never_implicitly_resume[completed]
+FAILED tests/unit/test_task_resume_acceptance.py::test_terminal_tasks_survive_reopen_and_never_implicitly_resume[cancelled]
+FAILED tests/unit/test_task_resume_acceptance.py::test_discovery_is_explicit_and_never_guesses_between_tasks
+FAILED tests/unit/test_task_resume_acceptance.py::test_readonly_resume_never_embeds_or_mutates_any_database_table
+FAILED tests/unit/test_task_resume_acceptance.py::test_untrusted_approval_text_is_exact_evidence_and_ordinary_metadata_cannot_activate
+FAILED tests/unit/test_task_resume_acceptance.py::test_scope_is_applied_to_entire_chain_before_discovery
+FAILED tests/unit/test_task_resume_acceptance.py::test_hidden_evidence_and_revoked_retries_cannot_mutate_or_disclose
+FAILED tests/unit/test_task_resume_acceptance.py::test_restricted_idempotency_namespaces_do_not_replay_another_grant
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_resume_budgets_fail_without_writes[True]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_resume_budgets_fail_without_writes[0]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_resume_budgets_fail_without_writes[1023]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_resume_budgets_fail_without_writes[8192]
+FAILED tests/unit/test_task_resume_acceptance.py::test_invalid_resume_budgets_fail_without_writes[1024.5]
+FAILED tests/unit/test_task_resume_acceptance.py::test_budget_omits_mandatory_state_whole_and_offers_exact_get_receipts
+FAILED tests/unit/test_task_resume_acceptance.py::test_candidate_budget_discloses_omissions_and_never_resolves_ambiguity
+FAILED tests/unit/test_task_resume_acceptance.py::test_resume_rejects_mixed_handoff_modes[arguments0]
+FAILED tests/unit/test_task_resume_acceptance.py::test_resume_rejects_mixed_handoff_modes[arguments1]
+FAILED tests/unit/test_task_resume_acceptance.py::test_resume_rejects_mixed_handoff_modes[arguments2]
+FAILED tests/unit/test_task_resume_acceptance.py::test_resume_rejects_mixed_handoff_modes[arguments3]
+FAILED tests/unit/test_task_resume_acceptance.py::test_ordinary_remember_and_handoff_do_not_create_tasks
+FAILED tests/unit/test_task_resume_acceptance.py::test_failure_after_real_drawer_append_rolls_back_the_whole_checkpoint
+FAILED tests/unit/test_task_resume_acceptance.py::test_acknowledged_checkpoint_survives_kill_and_fresh_distinct_host_without_rebrief
+FAILED tests/unit/test_task_resume_acceptance.py::test_two_live_mcp_writers_cas_one_revision_and_surface_typed_errors
+FAILED tests/unit/test_task_resume_acceptance.py::test_cli_checkpoint_and_resume_match_live_mcp_under_existing_connection
+66 failed in 5.22s

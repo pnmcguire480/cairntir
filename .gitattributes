@@ -41,6 +41,8 @@
 *.ipynb text
 
 # Preserve SHA-256-bound foundation evidence across checkouts.
+plans/task-resume-acceptance*.json -text whitespace=cr-at-eol
+plans/task-resume-acceptance*.txt -text whitespace=-blank-at-eol,cr-at-eol
 plans/v2-foundation-*.json -text whitespace=cr-at-eol
 plans/v2-foundation-*.txt -text whitespace=-blank-at-eol,cr-at-eol
 plans/sharing-result-round0*.txt -text whitespace=-blank-at-eol,cr-at-eol

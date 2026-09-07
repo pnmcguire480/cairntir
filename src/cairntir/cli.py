@@ -161,6 +161,7 @@ def _root(ctx: typer.Context) -> None:
             "get",
             "recall",
             "handoff",
+            "checkpoint",
             "cross-recall",
             "recall-for-change",
             "anchor",
@@ -176,7 +177,7 @@ def _root(ctx: typer.Context) -> None:
         }:
             raise AccessDenied("restricted session: administrative command denied")
         return
-    if ctx.invoked_subcommand in {"handoff", "context-demo"}:
+    if ctx.invoked_subcommand in {"handoff", "checkpoint", "context-demo"}:
         return
     # Best-effort self-heal: TRUE-until-FALSE registration. Once
     # cairntir is installed, every CLI run guarantees the user-scope
@@ -655,6 +656,10 @@ def handoff_cmd(
     candidate_limit: int | None = typer.Option(
         None, "--candidate-limit", help="Optional task scan ceiling, disclosed in receipts."
     ),
+    resume: bool = typer.Option(False, "--resume", help="Resume a saved task without rebriefing."),
+    task_id: str | None = typer.Option(
+        None, "--task-id", help="Resume this saved task instead of discovering active tasks."
+    ),
     recover_from: str | None = typer.Option(
         None,
         "--recover-from",
@@ -676,11 +681,12 @@ def handoff_cmd(
     The default drawer-only path is deterministic. Opt-in transcript recovery
     reflects changes in the host-owned transcript tail.
     """
-    if task is None:
+    read_only = task is not None or resume or task_id is not None
+    if not read_only:
         ensure_registered()
         maybe_check_in_background()
         ctx.call_on_close(_print_update_banner)
-    if not (db_path(create=False) if task is not None else db_path()).exists():
+    if not (db_path(create=False) if read_only else db_path()).exists():
         typer.echo("cairntir: no store yet — nothing to hand off.", err=True)
         raise typer.Exit(code=1)
     try:
@@ -688,7 +694,7 @@ def handoff_cmd(
         typer.echo(
             _backend(
                 recovery_context=recovery_context,
-                read_only=task is not None,
+                read_only=read_only,
                 close_with=ctx,
             ).handoff(
                 wing=wing,
@@ -699,9 +705,36 @@ def handoff_cmd(
                 recovery_budget_chars=recovery_budget,
                 task=task,
                 candidate_limit=candidate_limit,
+                resume=resume,
+                task_id=task_id,
             )
         )
     except CairntirError as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("checkpoint")
+def checkpoint_cmd(
+    ctx: typer.Context,
+    wing: str,
+    room: str = typer.Option("tasks", "--room", help="Room containing this task's checkpoints."),
+    input_file: Path = typer.Option(  # noqa: B008
+        ..., "--input", help="UTF-8 JSON file with content, checkpoint, and optional model."
+    ),
+) -> None:
+    """Persist an acknowledged task checkpoint for another host to resume."""
+    try:
+        payload = json.loads(input_file.read_text(encoding="utf-8"))
+        if (
+            not isinstance(payload, dict)
+            or set(payload) - {"content", "checkpoint", "model"}
+            or not {"content", "checkpoint"} <= payload.keys()
+            or not isinstance(payload["checkpoint"], dict)
+        ):
+            raise MCPError("input requires content and checkpoint, with optional model only")
+        typer.echo(_backend(close_with=ctx).remember(wing=wing, room=room, **payload))
+    except (OSError, UnicodeError, ValueError, CairntirError) as exc:
         typer.echo(f"cairntir: {exc}", err=True)
         raise typer.Exit(code=1) from exc
 

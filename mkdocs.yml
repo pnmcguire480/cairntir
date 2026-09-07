@@ -38,6 +38,7 @@ nav:
   - Portable Evidence: portable-evidence.md
   - Evaluated Procedures: evaluated-procedures.md
   - Scoped Sharing: scoped-sharing.md
+  - Task Resumption: task-resumption.md
   - Concepts: concept.md
   - Architecture: architecture/multi-host-continuity.md
   - Integration: integration-guide.md

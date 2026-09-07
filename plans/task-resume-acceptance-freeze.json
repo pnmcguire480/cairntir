@@ -1,0 +1,15 @@
+{
+  "schema": "cairntir.acceptance-freeze.v1",
+  "author": "/root/resume_acceptance",
+  "recorded_at": "2026-09-07T06:15:45.020813+00:00",
+  "runtime_head": "bf02c9a1bca2b909b4c34bf2acd836a99938769c",
+  "cases": 66,
+  "baseline_result": "FAIL",
+  "files": {
+    "plans/task-resume.md": "8085c7ebd8bcd742cede46d631b702815c1394e71f9eaa2cd6f88ecb1c23cb90",
+    "plans/task-resume-acceptance.md": "dc0e4d82bc718ad05dfd0259bc623c533f9f409de353147d60c3a93bd3370741",
+    "tests/unit/test_task_resume_acceptance.py": "30dce372e94deb111a62d199f72b4510aada8dea8dff1daa9a0ee439232ebea0",
+    "plans/task-resume-acceptance-baseline.json": "c67ca5e188bab69d2c6dd1c3bf48e45de4bdff689e9797639728c21e10b72e34",
+    "plans/task-resume-acceptance-baseline.txt": "6ebb84a7f4affc6d40195340a6420e2c0d890d36e2e67cdc980af8944260f789"
+  }
+}

@@ -13,6 +13,21 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Added
+
+- Durable task checkpoints through `cairntir_remember` and the `checkpoint`
+  CLI command. Resume from another host using `cairntir_handoff` or
+  `handoff --resume`, with the exact original request and latest saved progress.
+  Atomic revisions, idempotent retries, terminal states, whole-chain access
+  checks and bounded read-only receipts preserve acknowledged work.
+- Generated host policy discovers resumable tasks and records progress through
+  the existing 21-tool surface. No schema migration or new dependency is needed.
+
+### Fixed
+
+- Advertise the required object root on the hotfix tool's input schema so
+  Claude Code accepts the MCP tool list.
+
 ## [1.10.0] — 2026-09-06
 
 ### Added

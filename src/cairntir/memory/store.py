@@ -1135,6 +1135,58 @@ class DrawerStore:
             raise WorkflowError(f"failed to read workflow receipt: {exc}") from exc
         return _row_to_workflow_receipt(row) if row is not None else None
 
+    def _task_records(self, *, wing: str) -> list[dict[str, Any]]:
+        try:
+            rows = self._conn.execute(
+                "SELECT result FROM workflow_runs "
+                "WHERE operation = 'task.checkpoint.v1' AND state = 'committed'"
+            ).fetchall()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"task registry read failed: {exc}") from exc
+        records = []
+        for row in rows:
+            try:
+                record = json.loads(row["result"])
+                state = record["_task"]
+                valid = (
+                    record["schema"] == "cairntir.task-checkpoint.v1"
+                    and isinstance(record["task_id"], str)
+                    and isinstance(state, dict)
+                    and all(
+                        type(record[name]) is int and record[name] > 0
+                        for name in ("revision", "original_drawer_id", "checkpoint_drawer_id")
+                    )
+                    and record["status"] in {"active", "completed", "cancelled"}
+                    and isinstance(state["wing"], str)
+                    and isinstance(state["room"], str)
+                    and isinstance(state["evidence_ids"], list)
+                    and all(type(key) is int and key > 0 for key in state["evidence_ids"])
+                    and {"parent_drawer_id", "completed", "outstanding", "next_action"}
+                    <= state.keys()
+                )
+            except (ValueError, TypeError, KeyError) as exc:
+                raise MemoryStoreError("invalid committed task registry record") from exc
+            if not valid:
+                raise MemoryStoreError("invalid committed task registry record")
+            if state["wing"] == wing:
+                records.append(record)
+        return records
+
+    def _task_drawers(self, drawer_ids: Sequence[int]) -> dict[int, tuple[Drawer, WriteProvenance]]:
+        records: dict[int, tuple[Drawer, WriteProvenance]] = {}
+        try:
+            for start in range(0, len(drawer_ids), 400):
+                batch = drawer_ids[start : start + 400]
+                placeholders = ",".join("?" for _ in batch)
+                rows = self._conn.execute(
+                    f"SELECT * FROM drawers WHERE id IN ({placeholders})",  # noqa: S608
+                    tuple(batch),
+                ).fetchall()
+                records.update((int(row["id"]), _context_record(row)) for row in rows)
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"task drawer read failed: {exc}") from exc
+        return records
+
     def execute_once(
         self,
         *,

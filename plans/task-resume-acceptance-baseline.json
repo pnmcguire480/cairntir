@@ -1,0 +1,29 @@
+{
+  "recorded_at": "2026-09-07T06:15:45.019813+00:00",
+  "runtime_head": "bf02c9a1bca2b909b4c34bf2acd836a99938769c",
+  "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "command": [
+    "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/unit/test_task_resume_acceptance.py",
+    "--no-cov",
+    "-q",
+    "--tb=short"
+  ],
+  "returncode": 1,
+  "result": "FAIL",
+  "summary": "66 failed in 5.22s",
+  "expected_missing_behavior": [
+    "remember checkpoint argument",
+    "handoff resume/task_id arguments",
+    "checkpoint/resume MCP schemas",
+    "hotfix object-root schema"
+  ],
+  "skips": 0,
+  "xfails": 0,
+  "lint": "PASS",
+  "format": "PASS",
+  "production_store_used": false,
+  "runtime_edits_before_freeze": false
+}
