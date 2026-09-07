@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN",
+  "version": "1.12.0",
+  "issue": "https://github.com/pnmcguire480/cairntir/issues/103",
+  "independent_tester": "/root/foundation_tester",
+  "frozen_at_utc": "2026-09-07T18:14:28.308578+00:00",
+  "accepted_base_head": "e27fe04a21eeb4db32fadb6804ee3afb7c617a58",
+  "artifact_readiness": "PASS",
+  "baseline_source_gate": "FAIL_EXPECTED_METADATA_NOT_UPDATED",
+  "baseline_expected_failures": 6,
+  "baseline_infrastructure_failures": 0,
+  "source_nonversion_hashes": 58,
+  "historical_frozen_hashes": 7,
+  "expected_package_files": 74,
+  "expected_mcp_tools": 21,
+  "artifacts": {
+    "tests/release/verify_v1_12_0.py": "6d3d10761aa2d857969aec30aed023d640cc37c4cd026873d2e3ff1e0794b299",
+    "plans/v1.12.0-release-acceptance.md": "b30ff03a89b3a1ebc4541b5d598779838c21b4cb8835fd46991c43e6c1c5a816",
+    "plans/v1.12.0-release-acceptance-inputs.json": "ff43f99ad59216f53347e0cc6dd39ccaa1b7bba0cdb3fdc4a196e4076570eceb",
+    "plans/v1.12.0-release-acceptance-baseline.json": "0f51a814e515d387bd77834b45d45afe08bc6495aad4b0972d70d98c6fb85550",
+    "plans/v1.12.0-release-acceptance-baseline.txt": "1fbe6b26d3163e615db31d6041f86b35982a8629b8cdd09d92f01265bf355b91"
+  },
+  "reuse_behavioral_gates": [
+    "tests/acceptance/test_automatic_backups.py",
+    "tests/unit/test_store.py",
+    "tests/unit/test_backup_failure_boundaries.py"
+  ],
+  "maximum_repair_rounds": 2,
+  "verification_reserve_minimum_percent": 25,
+  "publication": "PENDING_ACTUAL_PUBLIC_VERIFICATION",
+  "fresh_installation": "PENDING_ACTUAL_FRESH_ENVIRONMENT",
+  "production_preservation_and_activation": "PENDING_POSTPUBLICATION_HOLD_AND_PROOFS",
+  "amendment_policy": "Do not mutate frozen inputs. Future versions use a new generation. This one-off verifier is not automatically collected. Manifest self-hash is published externally."
+}

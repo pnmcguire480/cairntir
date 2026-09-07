@@ -5,9 +5,10 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Published version: **1.11.0**. The
-[release record](docs/release/v1.11.0.md) tracks the combined version change,
-publication and installation evidence. Pending changes belong under
+Published version: **1.11.0**; approved release candidate: **1.12.0**. The
+[1.12.0 release record](docs/release/v1.12.0.md) tracks backup publication and
+installation. The [1.11.0 record](docs/release/v1.11.0.md) remains immutable
+publication evidence. Pending changes belong under
 [Unreleased](CHANGELOG.md#unreleased).
 
 The core has verbatim SQLite drawers, explicit provenance, task-aware budgeted
@@ -92,8 +93,8 @@ recorded in [the release record](docs/release/v1.11.0.md). PR #97 merged at
 1,401 audited embeddings and restored-store write/rollback fidelity. No repair
 or reindex was needed; verified manual recovery baselines were saved separately.
 
-The [automatic backup plan](plans/automatic-backups.md), issue #101, is implemented
-on `codex/automatic-store-backups` under Unreleased. Opt-in per-database policy
+The [automatic backup plan](plans/automatic-backups.md), issue #101, merged through
+PR #102 and is included in the approved 1.12.0 candidate. Opt-in per-database policy
 checks a default 12-hour interval at writable owner startup and before an outer
 write. Isolated processes verify complete snapshots and publish timestamped
 archives; managed retention keeps seven recent days and four older ISO weeks.
@@ -110,8 +111,11 @@ strict documentation, links, commitments, seams, silent-exception, release-tag
 and locked-dependency advisory checks passed. Existing manual snapshots remain
 outside automatic retention. The machine's 12-hour policy is saved for the
 user-approved separate drive and its first managed snapshot was verified.
-PR delivery and package installation are pending; production 1.11.0 does not yet
-run this new automatic policy.
+PR #102 merged at `e27fe04` with all 14 checks passing. The user explicitly
+approved 1.12.0 publication and installation on 2026-09-07; issue #103 and the
+[release record](docs/release/v1.12.0.md) track the remaining gates. Production
+1.11.0 does not yet run the new automatic policy. Accepted runtime and frozen
+artifacts remain unchanged apart from the package version.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer
