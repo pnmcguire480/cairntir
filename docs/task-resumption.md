@@ -1,8 +1,8 @@
 # Resume interrupted work
 
 Task checkpoints let another host recover the exact request and the latest
-saved progress from the same Cairntir store. This capability is under
-development for the next release; it is not part of published 1.10.0.
+saved progress from the same Cairntir store. This capability is included in the
+1.11.0 candidate; it is not part of published 1.10.0.
 
 Both hosts must use the same store and wing. A wing is your shared project
 identity; different host checkout paths do not automatically identify a project.
@@ -29,11 +29,16 @@ Before starting work, call the existing `cairntir_remember` tool:
 }
 ```
 
-Pass your own model ID when known. Save the returned task_id and revision.
+Pass your own model ID when known. Keep the wing, room, returned task_id and revision.
 To checkpoint progress, call remember again with that task_id and revision as
 expected_revision. Supply a new idempotency_key, a progress summary as content,
 and the complete replacement completed/outstanding/next_action/evidence_ids.
 The original request is preserved unchanged.
+
+Include incoming corrections and constraints verbatim in the same task's next
+checkpoint content, preserving earlier constraints and updating outstanding
+work before proceeding. Include the wing, room, task ID and acknowledged
+revision in a handoff or compaction summary.
 
 Checkpoint after meaningful progress, before switching hosts, and before work
 that may outlast the session. If the response is lost, retry the identical call
@@ -57,6 +62,12 @@ from recency. You can also resume directly:
 ```bash
 cairntir handoff myapp --resume --task-id TASK_ID --budget 8192
 ```
+
+Reuse the saved wing even if the new checkout has a different folder name.
+An unavailable task requires checking that identity and access; never silently
+switch to a different active task. A terminal receipt means the task stays
+closed. If the checkpoint's room was not retained, read it from the checkpoint
+drawer with `cairntir_get` before writing the next revision.
 
 No request text needs to be supplied again. The receipt preserves the source
 host, session, and model of the original request and progress. Evidence IDs are

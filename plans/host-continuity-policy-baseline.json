@@ -1,0 +1,27 @@
+{
+  "result": "FAIL",
+  "recorded_at": "2026-09-07T06:58:09.492260+00:00",
+  "source_head": "4214a0042f970514e0dbaeaf510e84bf281ce78a",
+  "host_source_sha256": "f85bb2923100f0fe5ff0fe1466ffbd96ba6bf540bfd89c19721259278030f6f5",
+  "command": [
+    "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/unit/test_host_continuity_policy_acceptance.py",
+    "--no-cov",
+    "-q",
+    "--tb=short"
+  ],
+  "returncode": 1,
+  "summary": "5 failed, 16 passed in 0.62s",
+  "cases": 21,
+  "passed": 16,
+  "failed": 5,
+  "skips": 0,
+  "xfails": 0,
+  "policy_words": 775,
+  "lint": "PASS",
+  "format": "PASS",
+  "original_70_frozen_hashes": "UNCHANGED",
+  "production_memory_or_configuration_used": false
+}

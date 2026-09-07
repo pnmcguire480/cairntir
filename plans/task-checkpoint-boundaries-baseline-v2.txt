@@ -1,0 +1,288 @@
+.F......F.....FF.FFFFFFFFFFFFF...                                        [100%]
+================================== FAILURES ===================================
+__ test_direct_surrogate_rejection_is_typed_and_atomic[high-idempotency_key] __
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:114: in test_direct_surrogate_rejection_is_typed_and_atomic
+    _save(owner, payload)
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:59: in _save
+    return json.loads(TaskBook(owner).checkpoint(wing=WING, room=ROOM, **payload))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cairntir\tasks.py:162: in checkpoint
+    key = "task:" + hashlib.sha256(state["idempotency_key"].encode("utf-8")).hexdigest()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   UnicodeEncodeError: 'utf-8' codec can't encode character '\ud800' in position 6: surrogates not allowed
+__ test_direct_surrogate_rejection_is_typed_and_atomic[low-idempotency_key] ___
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:114: in test_direct_surrogate_rejection_is_typed_and_atomic
+    _save(owner, payload)
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:59: in _save
+    return json.loads(TaskBook(owner).checkpoint(wing=WING, room=ROOM, **payload))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cairntir\tasks.py:162: in checkpoint
+    key = "task:" + hashlib.sha256(state["idempotency_key"].encode("utf-8")).hexdigest()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   UnicodeEncodeError: 'utf-8' codec can't encode character '\udfff' in position 6: surrogates not allowed
+___ test_direct_oversized_evidence_ids_are_typed_and_atomic[int64-overflow] ___
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:128: in test_direct_oversized_evidence_ids_are_typed_and_atomic
+    _save(owner, payload)
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:59: in _save
+    return json.loads(TaskBook(owner).checkpoint(wing=WING, room=ROOM, **payload))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cairntir\tasks.py:223: in checkpoint
+    self._evidence(state["evidence_ids"])
+src\cairntir\tasks.py:137: in _evidence
+    if self._store._task_drawers(ids).keys() != set(ids):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cairntir\memory\store.py:1181: in _task_drawers
+    rows = self._conn.execute(
+E   OverflowError: Python int too large to convert to SQLite INTEGER
+________ test_direct_oversized_evidence_ids_are_typed_and_atomic[huge] ________
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:128: in test_direct_oversized_evidence_ids_are_typed_and_atomic
+    _save(owner, payload)
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:59: in _save
+    return json.loads(TaskBook(owner).checkpoint(wing=WING, room=ROOM, **payload))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cairntir\tasks.py:223: in checkpoint
+    self._evidence(state["evidence_ids"])
+src\cairntir\tasks.py:137: in _evidence
+    if self._store._task_drawers(ids).keys() != set(ids):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cairntir\memory\store.py:1181: in _task_drawers
+    rows = self._conn.execute(
+E   OverflowError: Python int too large to convert to SQLite INTEGER
+__ test_invalid_creation_leaves_no_task_or_failure_receipt[idempotency_key] ___
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:149: in test_invalid_creation_leaves_no_task_or_failure_receipt
+    _save(owner, payload)
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:59: in _save
+    return json.loads(TaskBook(owner).checkpoint(wing=WING, room=ROOM, **payload))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cairntir\tasks.py:162: in checkpoint
+    key = "task:" + hashlib.sha256(state["idempotency_key"].encode("utf-8")).hexdigest()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   UnicodeEncodeError: 'utf-8' codec can't encode character '\ud800' in position 6: surrogates not allowed
+_ test_invalid_creation_leaves_no_task_or_failure_receipt[evidence-overflow] __
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:149: in test_invalid_creation_leaves_no_task_or_failure_receipt
+    _save(owner, payload)
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:59: in _save
+    return json.loads(TaskBook(owner).checkpoint(wing=WING, room=ROOM, **payload))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cairntir\tasks.py:223: in checkpoint
+    self._evidence(state["evidence_ids"])
+src\cairntir\tasks.py:137: in _evidence
+    if self._store._task_drawers(ids).keys() != set(ids):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cairntir\memory\store.py:1181: in _task_drawers
+    rows = self._conn.execute(
+E   OverflowError: Python int too large to convert to SQLite INTEGER
+_______ test_cli_surfaces_clean_boundary_errors_without_writes[content] _______
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:165: in test_cli_surfaces_clean_boundary_errors_without_writes
+    _clean_error(rejected.stdout + rejected.stderr, "cairntir:")
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:86: in _clean_error
+    assert not any(
+E   AssertionError: cairntir: workflow request is not JSON-serializable: 'utf-8' codec can't encode character '\ud800' in position 276: surrogates not allowed
+E     
+E   assert not True
+E    +  where True = any(<generator object _clean_error.<locals>.<genexpr> at 0x0000027E17762260>)
+___ test_cli_surfaces_clean_boundary_errors_without_writes[idempotency_key] ___
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:165: in test_cli_surfaces_clean_boundary_errors_without_writes
+    _clean_error(rejected.stdout + rejected.stderr, "cairntir:")
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:86: in _clean_error
+    assert not any(
+E   AssertionError: cairntir: 'utf-8' codec can't encode character '\ud800' in position 6: surrogates not allowed
+E     
+E   assert not True
+E    +  where True = any(<generator object _clean_error.<locals>.<genexpr> at 0x0000027E17760660>)
+_______ test_cli_surfaces_clean_boundary_errors_without_writes[task_id] _______
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:165: in test_cli_surfaces_clean_boundary_errors_without_writes
+    _clean_error(rejected.stdout + rejected.stderr, "cairntir:")
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:86: in _clean_error
+    assert not any(
+E   AssertionError: cairntir: workflow request is not JSON-serializable: 'utf-8' codec can't encode character '\ud800' in position 226: surrogates not allowed
+E     
+E   assert not True
+E    +  where True = any(<generator object _clean_error.<locals>.<genexpr> at 0x0000027E17760900>)
+______ test_cli_surfaces_clean_boundary_errors_without_writes[completed] ______
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:165: in test_cli_surfaces_clean_boundary_errors_without_writes
+    _clean_error(rejected.stdout + rejected.stderr, "cairntir:")
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:86: in _clean_error
+    assert not any(
+E   AssertionError: cairntir: workflow request is not JSON-serializable: 'utf-8' codec can't encode character '\ud800' in position 35: surrogates not allowed
+E     
+E   assert not True
+E    +  where True = any(<generator object _clean_error.<locals>.<genexpr> at 0x0000027E16EEFE60>)
+_____ test_cli_surfaces_clean_boundary_errors_without_writes[outstanding] _____
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:165: in test_cli_surfaces_clean_boundary_errors_without_writes
+    _clean_error(rejected.stdout + rejected.stderr, "cairntir:")
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:86: in _clean_error
+    assert not any(
+E   AssertionError: cairntir: workflow request is not JSON-serializable: 'utf-8' codec can't encode character '\ud800' in position 169: surrogates not allowed
+E     
+E   assert not True
+E    +  where True = any(<generator object _clean_error.<locals>.<genexpr> at 0x0000027E17760740>)
+_____ test_cli_surfaces_clean_boundary_errors_without_writes[next_action] _____
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:165: in test_cli_surfaces_clean_boundary_errors_without_writes
+    _clean_error(rejected.stdout + rejected.stderr, "cairntir:")
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:86: in _clean_error
+    assert not any(
+E   AssertionError: cairntir: workflow request is not JSON-serializable: 'utf-8' codec can't encode character '\ud800' in position 127: surrogates not allowed
+E     
+E   assert not True
+E    +  where True = any(<generator object _clean_error.<locals>.<genexpr> at 0x0000027E17761C40>)
+________ test_cli_surfaces_clean_boundary_errors_without_writes[model] ________
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:165: in test_cli_surfaces_clean_boundary_errors_without_writes
+    _clean_error(rejected.stdout + rejected.stderr, "cairntir:")
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:86: in _clean_error
+    assert not any(
+E   AssertionError: cairntir: workflow request is not JSON-serializable: 'utf-8' codec can't encode character '\ud800' in position 345: surrogates not allowed
+E     
+E   assert not True
+E    +  where True = any(<generator object _clean_error.<locals>.<genexpr> at 0x0000027E16EEF300>)
+__ test_cli_surfaces_clean_boundary_errors_without_writes[evidence-overflow] __
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:165: in test_cli_surfaces_clean_boundary_errors_without_writes
+    _clean_error(rejected.stdout + rejected.stderr, "cairntir:")
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:86: in _clean_error
+    assert not any(
+E   AssertionError: \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\cli.py:736 in checkpoint_cmd                   \u2502
+E     \u2502                                                                             \u2502
+E     \u2502    733 \u2502   \u2502   \u2502   or not isinstance(payload["checkpoint"], dict)           \u2502
+E     \u2502    734 \u2502   \u2502   ):                                                           \u2502
+E     \u2502    735 \u2502   \u2502   \u2502   raise MCPError("input requires content and checkpoint, w \u2502
+E     \u2502 >  736 \u2502   \u2502   typer.echo(_backend(close_with=ctx).remember(wing=wing, room \u2502
+E     \u2502    737 \u2502   except (OSError, UnicodeError, ValueError, CairntirError) as exc \u2502
+E     \u2502    738 \u2502   \u2502   typer.echo(f"cairntir: {exc}", err=True)                     \u2502
+E     \u2502    739 \u2502   \u2502   raise typer.Exit(code=1) from exc                            \u2502
+E     \u2502                                                                             \u2502
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\mcp\\backend.py:209 in remember                 \u2502
+E     \u2502                                                                             \u2502
+E     \u2502    206 \u2502   \u2502   \u2502                                                            \u2502
+E     \u2502    207 \u2502   \u2502   \u2502   if any(value is not None for value in (metadata, anchors \u2502
+E     \u2502    208 \u2502   \u2502   \u2502   \u2502   raise MCPError("checkpoint cannot combine with metad \u2502
+E     \u2502 >  209 \u2502   \u2502   \u2502   return TaskBook(self._store).checkpoint(                 \u2502
+E     \u2502    210 \u2502   \u2502   \u2502   \u2502   wing=wing, room=room, content=content, checkpoint=ch \u2502
+E     \u2502    211 \u2502   \u2502   \u2502   )                                                        \u2502
+E     \u2502    212 \u2502   \u2502   try:                                                         \u2502
+E     \u2502                                                                             \u2502
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\tasks.py:223 in checkpoint                     \u2502
+E     \u2502                                                                             \u2502
+E     \u2502   220 \u2502   \u2502   with self._store.transaction():                               \u2502
+E     \u2502   221 \u2502   \u2502   \u2502   self._authorize("read", wing=wing, room=room)             \u2502
+E     \u2502   222 \u2502   \u2502   \u2502   self._authorize("write", wing=wing, room=room)            \u2502
+E     \u2502 > 223 \u2502   \u2502   \u2502   self._evidence(state["evidence_ids"])                     \u2502
+E     \u2502   224 \u2502   \u2502   \u2502   execution = self._store.execute_once(                     \u2502
+E     \u2502   225 \u2502   \u2502   \u2502   \u2502   idempotency_key=key, operation=_OPERATION, request=re \u2502
+E     \u2502   226 \u2502   \u2502   \u2502   )                                                         \u2502
+E     \u2502                                                                             \u2502
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\tasks.py:137 in _evidence                      \u2502
+E     \u2502                                                                             \u2502
+E     \u2502   134 \u2502   \u2502   \u2502   self._store.authorize(capability, wing=wing, room=room)   \u2502
+E     \u2502   135 \u2502                                                                     \u2502
+E     \u2502   136 \u2502   def _evidence(self, ids: list[int]) -> None:                      \u2502
+E     \u2502 > 137 \u2502   \u2502   if self._store._task_drawers(ids).keys() != set(ids):         \u2502
+E     \u2502   138 \u2502   \u2502   \u2502   raise TaskError("task evidence is unavailable")           \u2502
+E     \u2502   139 \u2502                                                                     \u2502
+E     \u2502   140 \u2502   def checkpoint(                                                   \u2502
+E     \u2502                                                                             \u2502
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\memory\\store.py:1181 in _task_drawers          \u2502
+E     \u2502                                                                             \u2502
+E     \u2502   1178 \u2502   \u2502   \u2502   for start in range(0, len(drawer_ids), 400):             \u2502
+E     \u2502   1179 \u2502   \u2502   \u2502   \u2502   batch = drawer_ids[start : start + 400]              \u2502
+E     \u2502   1180 \u2502   \u2502   \u2502   \u2502   placeholders = ",".join("?" for _ in batch)          \u2502
+E     \u2502 > 1181 \u2502   \u2502   \u2502   \u2502   rows = self._conn.execute(                           \u2502
+E     \u2502   1182 \u2502   \u2502   \u2502   \u2502   \u2502   f"SELECT * FROM drawers WHERE id IN ({placeholde \u2502
+E     \u2502   1183 \u2502   \u2502   \u2502   \u2502   \u2502   tuple(batch),                                    \u2502
+E     \u2502   1184 \u2502   \u2502   \u2502   \u2502   ).fetchall()                                         \u2502
+E     \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E     OverflowError: Python int too large to convert to SQLite INTEGER
+E     
+E   assert not True
+E    +  where True = any(<generator object _clean_error.<locals>.<genexpr> at 0x0000027E16EEF140>)
+____ test_cli_surfaces_clean_boundary_errors_without_writes[evidence-huge] ____
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:165: in test_cli_surfaces_clean_boundary_errors_without_writes
+    _clean_error(rejected.stdout + rejected.stderr, "cairntir:")
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:86: in _clean_error
+    assert not any(
+E   AssertionError: \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\cli.py:736 in checkpoint_cmd                   \u2502
+E     \u2502                                                                             \u2502
+E     \u2502    733 \u2502   \u2502   \u2502   or not isinstance(payload["checkpoint"], dict)           \u2502
+E     \u2502    734 \u2502   \u2502   ):                                                           \u2502
+E     \u2502    735 \u2502   \u2502   \u2502   raise MCPError("input requires content and checkpoint, w \u2502
+E     \u2502 >  736 \u2502   \u2502   typer.echo(_backend(close_with=ctx).remember(wing=wing, room \u2502
+E     \u2502    737 \u2502   except (OSError, UnicodeError, ValueError, CairntirError) as exc \u2502
+E     \u2502    738 \u2502   \u2502   typer.echo(f"cairntir: {exc}", err=True)                     \u2502
+E     \u2502    739 \u2502   \u2502   raise typer.Exit(code=1) from exc                            \u2502
+E     \u2502                                                                             \u2502
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\mcp\\backend.py:209 in remember                 \u2502
+E     \u2502                                                                             \u2502
+E     \u2502    206 \u2502   \u2502   \u2502                                                            \u2502
+E     \u2502    207 \u2502   \u2502   \u2502   if any(value is not None for value in (metadata, anchors \u2502
+E     \u2502    208 \u2502   \u2502   \u2502   \u2502   raise MCPError("checkpoint cannot combine with metad \u2502
+E     \u2502 >  209 \u2502   \u2502   \u2502   return TaskBook(self._store).checkpoint(                 \u2502
+E     \u2502    210 \u2502   \u2502   \u2502   \u2502   wing=wing, room=room, content=content, checkpoint=ch \u2502
+E     \u2502    211 \u2502   \u2502   \u2502   )                                                        \u2502
+E     \u2502    212 \u2502   \u2502   try:                                                         \u2502
+E     \u2502                                                                             \u2502
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\tasks.py:223 in checkpoint                     \u2502
+E     \u2502                                                                             \u2502
+E     \u2502   220 \u2502   \u2502   with self._store.transaction():                               \u2502
+E     \u2502   221 \u2502   \u2502   \u2502   self._authorize("read", wing=wing, room=room)             \u2502
+E     \u2502   222 \u2502   \u2502   \u2502   self._authorize("write", wing=wing, room=room)            \u2502
+E     \u2502 > 223 \u2502   \u2502   \u2502   self._evidence(state["evidence_ids"])                     \u2502
+E     \u2502   224 \u2502   \u2502   \u2502   execution = self._store.execute_once(                     \u2502
+E     \u2502   225 \u2502   \u2502   \u2502   \u2502   idempotency_key=key, operation=_OPERATION, request=re \u2502
+E     \u2502   226 \u2502   \u2502   \u2502   )                                                         \u2502
+E     \u2502                                                                             \u2502
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\tasks.py:137 in _evidence                      \u2502
+E     \u2502                                                                             \u2502
+E     \u2502   134 \u2502   \u2502   \u2502   self._store.authorize(capability, wing=wing, room=room)   \u2502
+E     \u2502   135 \u2502                                                                     \u2502
+E     \u2502   136 \u2502   def _evidence(self, ids: list[int]) -> None:                      \u2502
+E     \u2502 > 137 \u2502   \u2502   if self._store._task_drawers(ids).keys() != set(ids):         \u2502
+E     \u2502   138 \u2502   \u2502   \u2502   raise TaskError("task evidence is unavailable")           \u2502
+E     \u2502   139 \u2502                                                                     \u2502
+E     \u2502   140 \u2502   def checkpoint(                                                   \u2502
+E     \u2502                                                                             \u2502
+E     \u2502 C:\\Dev\\Cairntir\\src\\cairntir\\memory\\store.py:1181 in _task_drawers          \u2502
+E     \u2502                                                                             \u2502
+E     \u2502   1178 \u2502   \u2502   \u2502   for start in range(0, len(drawer_ids), 400):             \u2502
+E     \u2502   1179 \u2502   \u2502   \u2502   \u2502   batch = drawer_ids[start : start + 400]              \u2502
+E     \u2502   1180 \u2502   \u2502   \u2502   \u2502   placeholders = ",".join("?" for _ in batch)          \u2502
+E     \u2502 > 1181 \u2502   \u2502   \u2502   \u2502   rows = self._conn.execute(                           \u2502
+E     \u2502   1182 \u2502   \u2502   \u2502   \u2502   \u2502   f"SELECT * FROM drawers WHERE id IN ({placeholde \u2502
+E     \u2502   1183 \u2502   \u2502   \u2502   \u2502   \u2502   tuple(batch),                                    \u2502
+E     \u2502   1184 \u2502   \u2502   \u2502   \u2502   ).fetchall()                                         \u2502
+E     \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E     OverflowError: Python int too large to convert to SQLite INTEGER
+E     
+E   assert not True
+E    +  where True = any(<generator object _clean_error.<locals>.<genexpr> at 0x0000027E17762260>)
+_ test_stdio_surfaces_typed_boundary_errors_and_remains_usable[evidence-overflow] _
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:184: in test_stdio_surfaces_typed_boundary_errors_and_remains_usable
+    _clean_error("\n".join(item["text"] for item in rejected["content"]), "[cairntir error]")
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:85: in _clean_error
+    assert prefix in text and text.strip() != prefix
+E   AssertionError: assert ('[cairntir error]' in 'Python int too large to convert to SQLite INTEGER')
+_ test_stdio_surfaces_typed_boundary_errors_and_remains_usable[evidence-huge] _
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:184: in test_stdio_surfaces_typed_boundary_errors_and_remains_usable
+    _clean_error("\n".join(item["text"] for item in rejected["content"]), "[cairntir error]")
+tests\unit\test_task_checkpoint_boundaries_acceptance.py:85: in _clean_error
+    assert prefix in text and text.strip() != prefix
+E   AssertionError: assert ('[cairntir error]' in 'Python int too large to convert to SQLite INTEGER')
+=========================== short test summary info ===========================
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_direct_surrogate_rejection_is_typed_and_atomic[high-idempotency_key]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_direct_surrogate_rejection_is_typed_and_atomic[low-idempotency_key]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_direct_oversized_evidence_ids_are_typed_and_atomic[int64-overflow]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_direct_oversized_evidence_ids_are_typed_and_atomic[huge]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_invalid_creation_leaves_no_task_or_failure_receipt[idempotency_key]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_invalid_creation_leaves_no_task_or_failure_receipt[evidence-overflow]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_cli_surfaces_clean_boundary_errors_without_writes[content]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_cli_surfaces_clean_boundary_errors_without_writes[idempotency_key]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_cli_surfaces_clean_boundary_errors_without_writes[task_id]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_cli_surfaces_clean_boundary_errors_without_writes[completed]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_cli_surfaces_clean_boundary_errors_without_writes[outstanding]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_cli_surfaces_clean_boundary_errors_without_writes[next_action]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_cli_surfaces_clean_boundary_errors_without_writes[model]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_cli_surfaces_clean_boundary_errors_without_writes[evidence-overflow]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_cli_surfaces_clean_boundary_errors_without_writes[evidence-huge]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_stdio_surfaces_typed_boundary_errors_and_remains_usable[evidence-overflow]
+FAILED tests/unit/test_task_checkpoint_boundaries_acceptance.py::test_stdio_surfaces_typed_boundary_errors_and_remains_usable[evidence-huge]
+17 failed, 16 passed in 20.28s

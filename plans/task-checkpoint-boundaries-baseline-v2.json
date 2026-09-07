@@ -1,0 +1,50 @@
+{
+  "invocation": [
+    "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/unit/test_task_checkpoint_boundaries_acceptance.py",
+    "--no-cov",
+    "-q",
+    "--tb=short"
+  ],
+  "exit_code": 1,
+  "captured_at_utc": "2026-09-07T07:03:02.280060+00:00",
+  "base_head": "4214a0042f970514e0dbaeaf510e84bf281ce78a",
+  "runtime_before": {
+    "src/cairntir/tasks.py": "cebdf9bd56d5f4e3e1d0431143eddd93b16ab89ab84dfa614a8804ecaf713be8",
+    "src/cairntir/memory/store.py": "79b23a81389a6fc78abdb71d30282e54ee3c5a52d22244f06e9480beea14830b",
+    "src/cairntir/mcp/backend.py": "916d6cb44d4d2baacdd6acc2b3818cf95fe443fdad75f2a6be8301ad1bde7acb",
+    "src/cairntir/mcp/server.py": "30832f8546f809d37cfe98128a14a7ae0684311bafdcf8c2adbe2c6209cc4d7e",
+    "src/cairntir/cli.py": "c4d1c9f27ced9d102007784c9c0d7155dcaba7ea4b3c0d232f495ef435555eac"
+  },
+  "runtime_after": {
+    "src/cairntir/tasks.py": "cebdf9bd56d5f4e3e1d0431143eddd93b16ab89ab84dfa614a8804ecaf713be8",
+    "src/cairntir/memory/store.py": "79b23a81389a6fc78abdb71d30282e54ee3c5a52d22244f06e9480beea14830b",
+    "src/cairntir/mcp/backend.py": "916d6cb44d4d2baacdd6acc2b3818cf95fe443fdad75f2a6be8301ad1bde7acb",
+    "src/cairntir/mcp/server.py": "30832f8546f809d37cfe98128a14a7ae0684311bafdcf8c2adbe2c6209cc4d7e",
+    "src/cairntir/cli.py": "c4d1c9f27ced9d102007784c9c0d7155dcaba7ea4b3c0d232f495ef435555eac"
+  },
+  "kind": "final_preimplementation_baseline",
+  "artifact_readiness": "PASS",
+  "implementation_acceptance": "FAIL",
+  "cases": 33,
+  "passed": 16,
+  "failed": 17,
+  "infrastructure_failures": 0,
+  "elapsed_seconds": 20.28,
+  "raw_output": "plans/task-checkpoint-boundaries-baseline-v2.txt",
+  "raw_output_sha256": "1144a855ec3501b596c681682d5b17fb457ad610ea855ecf8f5e7819e39606e3",
+  "runtime_unchanged": true,
+  "lint": "PASS",
+  "format": "PASS",
+  "original_70": "Hashes unchanged; 70 collected. Final execution delegated to /root/resume_acceptance.",
+  "failure_classification": {
+    "direct_idempotency_key_surrogate": 2,
+    "direct_evidence_integer_overflow": 2,
+    "invalid_creation": 2,
+    "cli_boundary_errors": 9,
+    "stdio_integer_error_envelope": 2
+  },
+  "prefreeze_harness_correction": "Removed seven MCP unpaired-surrogate cases before freeze because the SDK JSON parser rejects them before tool dispatch. Direct and CLI retain invalid-string coverage; real MCP retains integer and valid-Unicode coverage. Original 40-case diagnostic preserved separately."
+}
