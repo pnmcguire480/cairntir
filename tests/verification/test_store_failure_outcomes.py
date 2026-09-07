@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sqlite3
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from test_recovery_outcomes import (
@@ -13,7 +13,8 @@ from test_recovery_outcomes import (
 from cairntir.errors import CairntirError, EmbeddingSpaceError, MemoryStoreError, WorkflowError
 from cairntir.memory.embeddings import HashEmbeddingProvider
 from cairntir.memory.store import DrawerStore, inspect_embedding_space
-from cairntir.memory.taxonomy import Layer
+from cairntir.memory.taxonomy import Drawer, Layer
+from cairntir.provenance import TrustLevel, WriteProvenance
 from cairntir.tasks import TaskBook
 
 
@@ -490,3 +491,31 @@ def test_failed_reindex_preparation_preserves_the_working_index(seeded, boundary
             store._conn.set_authorizer(None)
         assert contents(database) == before
         assert store.search(TEXT, wing="recovery", room="evidence", limit=1)[0][0].content == TEXT
+
+
+def test_semantic_trust_and_expiry_filters_cannot_return_untrusted_or_expired_evidence(seeded):
+    database, _, _ = seeded
+    with DrawerStore(database, HashEmbeddingProvider(dimension=32)) as store:
+        trusted = store.add(
+            Drawer(wing="recovery", room="evidence", content=TEXT),
+            provenance=WriteProvenance.create(
+                host="test", capture_path="test", trust=TrustLevel.SYSTEM
+            ),
+        )
+        expired = store.add(
+            Drawer(wing="recovery", room="evidence", content=TEXT),
+            provenance=WriteProvenance.create(
+                host="test",
+                capture_path="test",
+                trust=TrustLevel.SYSTEM,
+                valid_until=datetime.now(UTC) - timedelta(days=1),
+            ),
+        )
+        normal = store.search(TEXT, wing="recovery", trust=TrustLevel.SYSTEM)
+        assert [drawer.id for drawer, _ in normal] == [trusted.id]
+        historical = store.search(
+            TEXT, wing="recovery", trust=TrustLevel.SYSTEM, include_expired=True
+        )
+        assert {drawer.id for drawer, _ in historical} == {trusted.id, expired.id}
+        assert all(drawer.content == TEXT for drawer, _ in historical)
+        assert store.get(1).content == TEXT

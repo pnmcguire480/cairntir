@@ -86,22 +86,28 @@ the production installation as an incidental build step.
 
 ## Last Session — 2026-09-07
 
-Verification follow-up for issue #107 is implemented on
-`codex/verification-structure`; cross-platform PR checks remain pending.
+Verification follow-up for issue #107 is implemented in [PR #108](https://github.com/pnmcguire480/cairntir/pull/108).
+The PR records CI and merge status; this brief records the verified behavior.
 The [verification plan](plans/verification-structure.md) and
 [receipt](plans/verification-evidence.json) record five actual historical
 red/green comparisons, seven caught mutations with passing controls, restored
 memories/vectors/provenance/task history, real SQLite and backup failures, and
 built/installed wheel CLI/MCP interruption and resumption.
 
-The clean local CI selection passed 1,655 tests at 92.16% combined coverage
-(93.48% statements, 87.76% branches). The combined gate is now 92%, with unchanged
+The clean local CI selection passed 1,661 tests at 92.23% combined coverage
+(93.52% statements, 87.92% branches). The combined gate is now 92% with six-place threshold precision and unchanged
 coverage exclusions. All seven model evaluation tests passed against a disposable
 corpus; the remaining slow acceptance check passed. Together the selections
-cover all 1,663 tests without skips. Preservation checks passed 24 manifests and 115 frozen artifacts.
+cover all 1,669 tests without skips. Preservation checks passed 24 manifests and 115 frozen artifacts.
 Static, types, documentation, seam/commitment, release-tag and dependency checks
 passed. New tests are solo-authored under the explicit no-subagent constraint;
 no independent review is claimed.
+
+Finalization repair 1 corrected a false-green coverage threshold (91.96% rounded
+to 92%) and the Windows interruption fixture. The latter now kills its owned
+process tree, reopens through Cairntir and compares every table plus the resumed
+task; all 27 focused recovery/gate checks passed after that refinement. First
+CI results were rejected; the PR records subsequent strict verification.
 
 Reproducers found and minimally repaired workflow result validation after commit,
 raw SQLite receipt errors, invalid float32 embeddings, access-history changes on

@@ -6,7 +6,7 @@ import pytest
 from test_recovery_outcomes import TEXT, contents
 
 from cairntir.context import compose_task_context
-from cairntir.errors import EmbeddingSpaceError, ProvenanceError, RetrievalError
+from cairntir.errors import EmbeddingError, EmbeddingSpaceError, ProvenanceError, RetrievalError
 from cairntir.memory.embeddings import HashEmbeddingProvider
 from cairntir.memory.store import DrawerStore
 
@@ -100,3 +100,24 @@ def test_equal_vector_count_with_wrong_identity_cannot_produce_a_false_context_s
         with pytest.raises(EmbeddingSpaceError, match="missing stored vectors"):
             compose_task_context(store, wing="recovery", task=TEXT, budget_chars=10000)
         assert contents(database) == before
+
+
+@pytest.mark.parametrize("vector", [[1.0] * 31, [0.0] * 32, [float("nan")] * 32])
+def test_invalid_query_vectors_cannot_claim_relevant_context_or_touch_evidence(
+    seeded, monkeypatch, vector
+):
+    database, _, _ = seeded
+    provider = HashEmbeddingProvider(dimension=32)
+    before = contents(database)
+    with DrawerStore(database, provider) as store:
+        with monkeypatch.context() as patch:
+            patch.setattr(provider, "embed", lambda texts: [vector])
+            with pytest.raises((EmbeddingError, EmbeddingSpaceError), match="embedding"):
+                compose_task_context(store, wing="recovery", task=TEXT, budget_chars=10000)
+        assert contents(database) == before
+        result = json.loads(
+            compose_task_context(store, wing="recovery", task=TEXT, budget_chars=10000)
+        )
+        assert any(
+            item["drawer_id"] == 1 and item["content"] == TEXT for item in result["evidence"]
+        )

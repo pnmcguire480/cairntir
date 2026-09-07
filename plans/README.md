@@ -1,6 +1,6 @@
 # Plans
 
-- [Behavioral verification](verification-structure.md): historical regression, mutation, recovery and installed-package gates; final verification in progress.
+- [Behavioral verification](verification-structure.md): historical regression, mutation, recovery and installed-package gates; implemented and locally verified; delivery tracked in PR #108.
 - [Automatic store backups](automatic-backups.md): COMPLETE, published and installed as 1.12.1 with independently verified activation; failed 1.12.0 remains withheld.
 - [Interrupted task resumption delivery](task-resume-delivery.md): independently accepted and published as 1.11.0.
 - [Continuity delivery](continuity-delivery.md): COMPLETE; independently accepted continuity milestones published as 1.10.0 with verified artifacts, attestations and fresh public-package smoke.

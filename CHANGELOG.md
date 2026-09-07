@@ -30,6 +30,8 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ### Fixed
 
+- Coverage gating rejects below-threshold results instead of accepting 91.96%
+  after rounding it to 92%; a real subprocess regression checks both sides.
 - Transcript recovery preserves original whitespace and Unicode across supported
   hosts, including text blocks, while retaining Qwen's hook-context exclusion.
 - Workflow results are validated before commit. Invalid result types roll back

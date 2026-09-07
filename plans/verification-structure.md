@@ -1,6 +1,7 @@
 # Verification that detects incorrect behavior
 
-Status: **IN PROGRESS**. Tracking: [issue #107](https://github.com/pnmcguire480/cairntir/issues/107).
+Status: **IMPLEMENTED; locally verified**. Delivery: [PR #108](https://github.com/pnmcguire480/cairntir/pull/108).
+Tracking: [issue #107](https://github.com/pnmcguire480/cairntir/issues/107).
 Base: `dc2607f2146b931e4fa9243fc847583d6bf99ebb`. Implementation is authorized;
 publication, production installation, application restarts and subagents are not.
 The preceding publication run completed before this work began.
@@ -94,18 +95,25 @@ advisory checks pass (134 locked registry packages; no advisory findings).
 All seven model evaluation tests pass against a provisioned disposable corpus.
 The live production corpus is outside this work's authority.
 
-The fresh CI selection passed **1,655 tests** with eight slow tests deselected.
-Coverage is **92.16% combined**: 8,012/8,571 statements (93.48%) and 2,259/2,574
-branches (87.76%). The enforced combined floor is now **92%** in pytest and CI;
-`coverage report --fail-under=92` passes. No exclusions or frozen artifacts changed.
+The fresh CI selection passed **1,661 tests** with eight slow tests deselected.
+Coverage is **92.23% combined**: 8,016/8,571 statements (93.52%) and 2,263/2,574
+branches (87.92%). The enforced combined floor is now **92%** in pytest and CI;
+`coverage report --fail-under=92` passes. Threshold precision is six places. No exclusions or frozen artifacts changed.
 These are clean-run numbers; earlier appended development figures are not used
 as final evidence. The separate provisioned model evaluation passed all seven tests, and the remaining
-slow acceptance check passed. Together the selections cover all 1,663 tests with
+slow acceptance check passed. Together the selections cover all 1,669 tests with
 no skips or omissions.
 
 Finalization uses the remaining verification reserve, with at most two repair
-rounds. New work is solo-authored and no independent review is claimed. The [verification receipt](verification-evidence.json) binds the tested source,
-new tests, scripts and behavioral results. Cross-platform CI remains pending. Publication and
+rounds; one has been used. Initial CI was rejected even where its icons were green:
+Linux/macOS reported 91.96% after threshold rounding. An actual child pytest
+reproducer now rejects 91.96% and accepts exactly 92%. The Windows crash fixture
+also now terminates its owned process tree and opens through Cairntir before
+independently comparing all tables and the resumed task. That refinement passed
+27 recovery/gate checks after the fresh suite. CI fetches tags to exercise the
+release-tag test instead of skipping for shallow checkout setup. New work is solo-authored and no independent review is claimed. The [verification receipt](verification-evidence.json) binds the tested source,
+new tests, scripts and behavioral results. The delivery PR records cross-platform
+CI and merge status. Publication and
 production installation remain outside this follow-up.
 
 Limitations: targeted mutations are seven deliberate faults, not an exhaustive

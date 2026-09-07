@@ -1,37 +1,38 @@
 {
-  "status": "local gates passed; cross-platform CI pending",
+  "status": "local verification passed",
   "base_commit": "dc2607f2146b931e4fa9243fc847583d6bf99ebb",
   "issue": 107,
   "authorship": "solo; no independent review claimed",
   "finalization": {
     "verification_reserve_percent": 25,
     "maximum_repair_rounds": 2,
-    "repair_rounds_used": 0
+    "repair_rounds_used": 1
   },
   "coverage": {
-    "covered_lines": 8012,
+    "covered_lines": 8016,
     "num_statements": 8571,
-    "percent_covered": 92.15791834903544,
-    "percent_covered_display": "92",
-    "missing_lines": 559,
+    "percent_covered": 92.22969941677883,
+    "percent_covered_display": "92.229699",
+    "missing_lines": 555,
     "excluded_lines": 48,
-    "percent_statements_covered": 93.47800723369502,
-    "percent_statements_covered_display": "93",
+    "percent_statements_covered": 93.52467623381169,
+    "percent_statements_covered_display": "93.524676",
     "num_branches": 2574,
-    "num_partial_branches": 285,
-    "covered_branches": 2259,
-    "missing_branches": 315,
-    "percent_branches_covered": 87.76223776223776,
-    "percent_branches_covered_display": "88"
+    "num_partial_branches": 281,
+    "covered_branches": 2263,
+    "missing_branches": 311,
+    "percent_branches_covered": 87.91763791763792,
+    "percent_branches_covered_display": "87.917638"
   },
   "coverage_gate": 92,
   "coverage_surface": "unchanged statement and branch denominator, exclusions and omissions; subprocess measurement enabled",
   "fresh_ci_selection": {
-    "sha256": "120a832312707960e9251d4741e59894b90abe59959ef5c101efa9f5136e76fc",
-    "tests": 1655,
+    "sha256": "36da509ea8542371e4f271b654de265b3bf21e06921425b33082171c191e35b1",
+    "tests": 1661,
     "failures": 0,
     "errors": 0,
-    "skipped": 0
+    "skipped": 0,
+    "scope": "Fresh application coverage; the Windows crash fixture was subsequently strengthened and separately verified."
   },
   "model_evaluation": {
     "sha256": "589315d54b51228722f7dc84f2928111cb1187485b45b312c3eda86e1dbd4e2d",
@@ -172,7 +173,7 @@
         "returncode": 0,
         "test": "tests/verification/test_store_failure_outcomes.py::test_nonobject_workflow_result_rolls_back_before_reporting_failure[done]",
         "source_sha256": "8aa343b3a57b277aba5c0e04224a7c9a346cbe403cfec9440ba44a1d49029f2e",
-        "test_sha256": "ba454e07ebf22fd886df56fd6852da460a82700da0b8bbb672397181c4d7b813"
+        "test_sha256": "0cb2bf5ebed13a2aab5196338ddbd2e2bbe7c0cb4588271ce3c14ddf0136991b"
       },
       {
         "mutation": "commit-invalid-workflow-result",
@@ -181,7 +182,7 @@
         "returncode": 1,
         "test": "tests/verification/test_store_failure_outcomes.py::test_nonobject_workflow_result_rolls_back_before_reporting_failure[done]",
         "source_sha256": "47fb95213157dd71cf16a523d1771cfdbdec2bda24cd1bc14cef100f97b97d5a",
-        "test_sha256": "ba454e07ebf22fd886df56fd6852da460a82700da0b8bbb672397181c4d7b813"
+        "test_sha256": "0cb2bf5ebed13a2aab5196338ddbd2e2bbe7c0cb4588271ce3c14ddf0136991b"
       },
       {
         "mutation": "discard-valid-transcript",
@@ -208,7 +209,7 @@
         "returncode": 0,
         "test": "tests/verification/test_recovery_outcomes.py::test_restored_backup_preserves_every_table_and_resumes_task",
         "source_sha256": "e5d2412f64559d7295e37013084761ee39b6a6beae6a2df36e24abd9b52fc273",
-        "test_sha256": "94cacdc5762067db7a9b300d07796353b01940a2e6bd3f58563dd1362e1035a8"
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
       },
       {
         "mutation": "omit-memory",
@@ -217,7 +218,7 @@
         "returncode": 1,
         "test": "tests/verification/test_recovery_outcomes.py::test_restored_backup_preserves_every_table_and_resumes_task",
         "source_sha256": "991ac3b6985d29cd0c34fa18d04146e85a05a5e063d7503f45c7a854c5f1d151",
-        "test_sha256": "94cacdc5762067db7a9b300d07796353b01940a2e6bd3f58563dd1362e1035a8"
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
       },
       {
         "mutation": "omit-vector",
@@ -226,7 +227,7 @@
         "returncode": 0,
         "test": "tests/verification/test_recovery_outcomes.py::test_restored_backup_preserves_every_table_and_resumes_task",
         "source_sha256": "e5d2412f64559d7295e37013084761ee39b6a6beae6a2df36e24abd9b52fc273",
-        "test_sha256": "94cacdc5762067db7a9b300d07796353b01940a2e6bd3f58563dd1362e1035a8"
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
       },
       {
         "mutation": "omit-vector",
@@ -235,7 +236,7 @@
         "returncode": 1,
         "test": "tests/verification/test_recovery_outcomes.py::test_restored_backup_preserves_every_table_and_resumes_task",
         "source_sha256": "b73364881c238225babe4628677a7140ac144a07851d5c94adcee6c73692f958",
-        "test_sha256": "94cacdc5762067db7a9b300d07796353b01940a2e6bd3f58563dd1362e1035a8"
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
       },
       {
         "mutation": "commit-instead-of-rollback",
@@ -244,7 +245,7 @@
         "returncode": 0,
         "test": "tests/verification/test_recovery_outcomes.py::test_failed_write_after_vector_insert_rolls_back_every_table",
         "source_sha256": "8aa343b3a57b277aba5c0e04224a7c9a346cbe403cfec9440ba44a1d49029f2e",
-        "test_sha256": "94cacdc5762067db7a9b300d07796353b01940a2e6bd3f58563dd1362e1035a8"
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
       },
       {
         "mutation": "commit-instead-of-rollback",
@@ -253,7 +254,7 @@
         "returncode": 1,
         "test": "tests/verification/test_recovery_outcomes.py::test_failed_write_after_vector_insert_rolls_back_every_table",
         "source_sha256": "5a750bfcf98432ba03bff87c82c0454d6eb5e5af89d66270dfdd6600cd5a755d",
-        "test_sha256": "94cacdc5762067db7a9b300d07796353b01940a2e6bd3f58563dd1362e1035a8"
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
       },
       {
         "mutation": "report-sdk-version",
@@ -339,6 +340,13 @@
       "failures": 5,
       "errors": 0,
       "skipped": 0
+    },
+    "rounding-before-corrected.xml": {
+      "sha256": "fb634099fcb9e718b742e1453407136e6b8034835202454a3e538f7f6a8b1c2d",
+      "tests": 2,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
     }
   },
   "tested_files": {
@@ -347,7 +355,7 @@
     "tests/verification/conftest.py": "31b499ca8cd24ed0ba77e3d057d9b4c5e5633945f7e7421d1bb4db04477aad33",
     "tests/verification/test_backup_policy_outcomes.py": "ea53f72fedb2f01059616a362226c04d64699927da07b830629609af39455e5c",
     "tests/verification/test_cli_outcomes.py": "c257f4b7b99f6ffd891f4c4b11ad61fd14b62c30323a2136e06c1db9e72abd51",
-    "tests/verification/test_context_failure_outcomes.py": "741e1d6eb3f412f966eae152347e62956cb4dc0e86bbbdb6666875b7affa526c",
+    "tests/verification/test_context_failure_outcomes.py": "c20156caf814ce4b5691ec53c69a01cc77c0c8aa1a2911cd0d056f9cccf0c2cc",
     "tests/verification/test_embedding_adapter_outcomes.py": "87e98d26aeb00391c44288252b1c2fa835d67479f7e8c1ed2d40919d3ed375be",
     "tests/verification/test_finalization_failure_outcomes.py": "9d3489259ac7bacc3842cb64f45b5125d2a8cb73e3d6ef99e9acc0e32eb1e9fe",
     "tests/verification/test_historical_regressions.py": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
@@ -356,13 +364,13 @@
     "tests/verification/test_mcp_failure_outcomes.py": "9c20682d35b02e6a3f90d651b8da73c8f36fa268558503063da0126795702d20",
     "tests/verification/test_portable_failure_outcomes.py": "4473309e6c478b51fd2998b2c96e0fd71c5e12012e312e1a4ac753de219f30ad",
     "tests/verification/test_projection_failure_outcomes.py": "d8c5c8bb3097a858ab2d294c52e65dfc874237845d01926518aa443194e838b7",
-    "tests/verification/test_recovery_outcomes.py": "94cacdc5762067db7a9b300d07796353b01940a2e6bd3f58563dd1362e1035a8",
+    "tests/verification/test_recovery_outcomes.py": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314",
     "tests/verification/test_reindex_failure_outcomes.py": "18f063de7d00999f6085e36aa45342a7b03c3a414e25bc6a6a47f6e371501e00",
     "tests/verification/test_scoped_store_outcomes.py": "2901170d429343b1f1383a3a03dc68b428d0b07b7f511482dd7dded71b42fb68",
-    "tests/verification/test_store_failure_outcomes.py": "ba454e07ebf22fd886df56fd6852da460a82700da0b8bbb672397181c4d7b813",
+    "tests/verification/test_store_failure_outcomes.py": "0cb2bf5ebed13a2aab5196338ddbd2e2bbe7c0cb4588271ce3c14ddf0136991b",
     "tests/verification/test_transcript_failure_outcomes.py": "7d316904d3445234bdafdf3f927c0e8b42b457342ec031743266ef97e2dca55c",
-    "tests/verification/test_verification_gate.py": "8db268a6ad297709007549feaafc2b7528ecb05dbdf4b440c6ead1b836309597",
-    "scripts/check_verification_preservation.py": "1b8ef9137b345059d3ff5a34abbad059ce92cf930f242d3f321ea562ae8b8306",
+    "tests/verification/test_verification_gate.py": "e64f18019108e1fc376edc0c4ff9b341d3653c9ec5a496d2519b5dfff713c6c7",
+    "scripts/check_verification_preservation.py": "4206d92462aa2f81b4281c0cd730e35775b66f0ccd43b63e238ef2e003674a49",
     "scripts/verify_history.py": "0d688e6fa5a09f7f41f019e66a7767612bd10f6397e486ea0373ebbd9a2b8342",
     "scripts/verify_mutations.py": "2c69ade3f0ff8525362e537b3dc49fcfafebe8337fe16055a5afd17239c4c44a",
     "scripts/verify_package.py": "a63236a25b17f47d154b774af8fd1d876484945e5db430e2d57637f9afae8835"
@@ -381,5 +389,52 @@
     "errors": 0,
     "skipped": 0
   },
-  "all_tests_across_selections": 1663
+  "all_tests_across_selections": 1669,
+  "delivery_pull_request": "https://github.com/pnmcguire480/cairntir/pull/108",
+  "initial_local_coverage": {
+    "covered_lines": 8012,
+    "num_statements": 8571,
+    "percent_covered": 92.15791834903544,
+    "percent_covered_display": "92",
+    "missing_lines": 559,
+    "excluded_lines": 48,
+    "percent_statements_covered": 93.47800723369502,
+    "percent_statements_covered_display": "93",
+    "num_branches": 2574,
+    "num_partial_branches": 285,
+    "covered_branches": 2259,
+    "missing_branches": 315,
+    "percent_branches_covered": 87.76223776223776,
+    "percent_branches_covered_display": "88"
+  },
+  "initial_local_ci_selection": {
+    "sha256": "120a832312707960e9251d4741e59894b90abe59959ef5c101efa9f5136e76fc",
+    "tests": 1655,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "threshold_precision": 6,
+  "round1_focus": {
+    "sha256": "6a52570e0c50232ddd5b084fab9780b5b47714b4d73217b8e7fa0f1feee21800",
+    "tests": 116,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "round1_recovery_and_gate": {
+    "sha256": "b34b94a0252f7f909c751aaaa68439269db73faf51b4ae35b2959b07cfba93ec",
+    "tests": 27,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "initial_ci_rejected": {
+    "run": "https://github.com/pnmcguire480/cairntir/actions/runs/34167822874",
+    "head": "58fd836",
+    "reasons": [
+      "Linux/macOS accepted 91.96% after rounding; real below-threshold subprocess reproducer failed before precision repair.",
+      "Windows 3.11/3.12 direct post-crash SQLite readers failed. Corrected fixture terminates its owned process tree, reopens through Cairntir, and compares all data and resumed task."
+    ]
+  }
 }

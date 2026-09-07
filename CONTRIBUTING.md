@@ -47,6 +47,7 @@ The coverage floor is 92% of the configured statement-and-branch surface;
 thin transport entrypoints retain their existing exclusions. The
 [verification plan](plans/verification-structure.md) records the behavioral
 evidence behind this gate. Do not add exclusions to improve the number.
+Six-place threshold precision prevents a result such as 91.96% from passing as 92%.
 Subprocess coverage includes SQLite helpers; installed CLI/MCP verification also
 checks the excluded transport entrypoints directly.
 

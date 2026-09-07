@@ -51,6 +51,7 @@ def check() -> list[str]:
             if name not in names or not path.is_file() or path.read_bytes() != archive.read(name):
                 failures.append(f"frozen artifact differs from accepted baseline: {name}")
         baseline = tomllib.loads(archive.read("pyproject.toml").decode())["tool"]["coverage"]
+        baseline["report"]["precision"] = 6
         current = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["tool"][
             "coverage"
         ]

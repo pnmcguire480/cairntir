@@ -182,8 +182,23 @@ def child(code: str, database: Path, control: Path):
         yield process
     finally:
         if process.poll() is None:
-            process.kill()
+            kill_child(process)
         process.communicate(timeout=15)
+
+
+def kill_child(process):
+    if os.name == "nt":
+        taskkill = shutil.which("taskkill")
+        assert taskkill is not None
+        subprocess.run(  # noqa: S603 - only the process tree owned by this fixture
+            [taskkill, "/PID", str(process.pid), "/T", "/F"],
+            capture_output=True,
+            check=True,
+            timeout=15,
+        )
+    else:
+        process.kill()
+    process.wait(timeout=5)
 
 
 def test_real_writer_contention_reports_failure_then_recovers(seeded, tmp_path: Path) -> None:
@@ -208,7 +223,7 @@ def test_real_writer_contention_reports_failure_then_recovers(seeded, tmp_path: 
 
 
 def test_process_death_rolls_back_uncommitted_vectors_and_drawers(seeded, tmp_path: Path) -> None:
-    database, _, _ = seeded
+    database, task, expected = seeded
     before = contents(database)
     code = (
         "import sys; from pathlib import Path; from cairntir.memory.store import DrawerStore; "
@@ -220,9 +235,11 @@ def test_process_death_rolls_back_uncommitted_vectors_and_drawers(seeded, tmp_pa
         "Path(sys.argv[2]).touch(); sys.stdin.readline()"
     )
     with child(code, database, tmp_path / "uncommitted") as process:
-        process.kill()
-        process.wait(timeout=5)
-    assert contents(database) == before, "RECOVERY: process death leaked uncommitted data"
+        kill_child(process)
+    with DrawerStore(database, HashEmbeddingProvider(dimension=32)) as store:
+        assert contents(database) == before, "RECOVERY: process death leaked uncommitted data"
+        assert TaskBook(store).resume("recovery", task_id=task) == expected
+        assert store.search(TEXT, wing="recovery", room="evidence", limit=1)[0][0].content == TEXT
 
 
 def test_unavailable_destination_preserves_backup_and_writes_then_recovers(seeded, tmp_path: Path):
@@ -276,8 +293,7 @@ backups._publish_snapshot(database,backups._load(database),backups.utc_now(),tim
     with child(code, database, control) as process:
         staged = Path(control.read_text(encoding="utf-8"))
         assert contents(staged, standalone=True) == before
-        process.kill()
-        process.wait(timeout=5)
+        kill_child(process)
     assert backups.status(database)["snapshots"] == [first]
     assert contents(Path(first["path"]), standalone=True) == before
     result = backups.run(database)

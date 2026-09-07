@@ -170,6 +170,7 @@ addopts = [
     "--cov-report=term-missing",
     "--cov-report=html",
     "--cov-fail-under=92",
+    "--cov-precision=6",
 ]
 markers = [
     "unit: unit tests",
@@ -195,6 +196,7 @@ omit = [
 ]
 
 [tool.coverage.report]
+precision = 6
 exclude_lines = [
     "pragma: no cover",
     "raise NotImplementedError",
