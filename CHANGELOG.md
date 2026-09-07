@@ -15,8 +15,6 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [1.11.0] — 2026-09-07
 
-Release candidate; publication is pending.
-
 ### Added
 
 - Durable task checkpoints through `cairntir_remember` and the `checkpoint`

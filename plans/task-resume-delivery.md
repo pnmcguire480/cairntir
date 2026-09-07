@@ -2,7 +2,9 @@
 
 The implementation satisfies the [frozen task contract](task-resume.md).
 [Issue #92](https://github.com/pnmcguire480/cairntir/issues/92) tracks landing.
-The feature remains unreleased; production installation stays on 1.10.0.
+The feature ships in 1.11.0. The [release record](../docs/release/v1.11.0.md)
+contains subsequent publication and installation evidence; this delivery record
+preserves the original implementation acceptance.
 
 ## Implemented behavior
 

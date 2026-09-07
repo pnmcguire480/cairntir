@@ -5,11 +5,9 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Development candidate: **1.11.0**, locally verified; publication approval pending.
-The [candidate record](docs/release/v1.11.0.md) tracks the combined version change.
-Published version: **1.10.0**. The
-[release record](docs/release/v1.10.0.md) contains publication and fresh-package
-verification. Pending changes belong under
+Published version: **1.11.0**. The
+[release record](docs/release/v1.11.0.md) tracks the combined version change,
+publication and installation evidence. Pending changes belong under
 [Unreleased](CHANGELOG.md#unreleased).
 
 The core has verbatim SQLite drawers, explicit provenance, task-aware budgeted
@@ -69,7 +67,7 @@ release-tag, and local integrity gates. Tests use isolated stores and fixtures;
 do not experiment on the user's memory database.
 
 The maintainer's production MCP launcher currently uses the published
-site-packages installation, not this checkout (verified 2026-09-06).
+site-packages installation, not this checkout (verified 2026-09-07).
 The repository's `.venv` is the development environment. Inspect actual
 launchers before assuming a running host uses source edits, and do not change
 the production installation as an incidental build step.
@@ -87,67 +85,38 @@ the production installation as an incidental build step.
 
 ## Last Session — 2026-09-07
 
-Requests #1352/#1353 consolidate the continuity work into one 1.11.0 candidate,
-tracked in [issue #94](https://github.com/pnmcguire480/cairntir/issues/94).
-The follow-up shortens compaction recovery policy from 775 to 574 words and adds
-typed UTF-8/SQLite-ID checkpoint validation. Independent acceptance: 124 PASS
-(original 70, policy 21, boundaries 33), frozen artifacts unchanged, zero repairs.
-Full regression: 1,110 PASS at 83.70% coverage; seven model evaluations PASS.
-All local gates, isolated installed-wheel CLI/MCP smoke and actual Claude health
-PASS. The candidate record contains evidence and harness limitations. Publication
-and production installation are pending, not implied by a version bump.
+Version **1.11.0 is published and installed** under explicit approval #1393.
+[PR #95](https://github.com/pnmcguire480/cairntir/pull/95) passed all 14 checks and
+merged at `d88beab`; immutable annotated tag `v1.11.0` names that exact source.
+[Release workflow](https://github.com/pnmcguire480/cairntir/actions/runs/34102294324)
+passed all five jobs, including 1,116 tests at 84.75% coverage. Independent
+publication verification matched workflow/GitHub/PyPI hashes and signed provenance.
+Fresh public installation passed CLI/MCP cross-host Unicode resume, typed input
+rejection, concurrent CLI parity, recipes and doctor. All 78 wheel-member bytes
+match the accepted candidate; only ZIP creator-platform metadata differs.
 
-[Interrupted task resumption](plans/task-resume-delivery.md) is implemented and
-independently accepted under request #1321 and
-[issue #92](https://github.com/pnmcguire480/cairntir/issues/92). Existing remember
-and handoff tools now support durable task checkpoints and resume by task ID or
-unambiguous wing; CLI parity, atomic revisions, retries, terminal states, scoped
-access, provenance and whole-response budgets are covered. The 21-tool surface,
-schema 7 and dependencies remain unchanged. This feature is unreleased.
+Production global Python311 package/import/CLI/MCP report 1.11.0. Independent
+verification matched all 73 installed files to the public wheel; required
+dependencies are unchanged. The first installer attempt hit a locked executable;
+only Cairntir server processes were stopped before the successful package-only
+retry. Fresh installed MCP exposes 21 object-root schemas with checkpoint/resume;
+CLI handoff while it holds the live store agrees at 8,152/8,192 characters.
+Actual production Claude health reports Connected without the former tool-fetch
+error. Codex remains open; existing host sessions need reconnecting to load the
+new package and schema. Fresh probes do not establish existing-session reload.
 
-Independent acceptance: 70 PASS; original 66 tests frozen before implementation,
-plus two transaction and two exact-budget probes. Supplemental harness corrections
-are recorded with original bytes retained. Full regression: 1,056 PASS at 83.62%
-coverage; seven model evaluations PASS. Lint, strict typing, docs, integrity of
-commitments/seams, advisories, release-tag checks and build pass. See the delivery
-record for exact evidence and the distinction between separate MCP host processes
-and unmeasured autonomous model behavior.
+Independent online backups before and after installation are byte-identical:
+all 22 tables, 1,393 drawers and vectors, and schema 7 are preserved. No migration
+or reindex occurred. Subsequent release memories are intentional new writes.
+[Release evidence](docs/release/v1.11.0.md) and the
+[publication receipt](plans/v1.11.0-publication.json) record verification and limits.
 
-Claude's tools-fetch failure is diagnosed and fixed in source: cairntir_hotfix
-lacked the required inputSchema object root. Actual Claude Code 2.1.197 reports
-Connected against isolated development configuration, and fresh stdio exposes
-all 21 tools. Production package/settings remain unchanged on 1.10.0. Generated
-policy detects older tool schemas and falls back to ordinary handoff/remember.
-
-### Prior release and production installation — 2026-09-06
-
-Continuity delivery is merged through [PR #89](https://github.com/pnmcguire480/cairntir/pull/89).
-Final reviewed head `ddffede` passed all nine native OS/Python jobs, Build Package,
-seven model evaluations and CodeQL. Merge `be9fdc4` has the same tree; immutable
-annotated tag `v1.10.0` points to it. All five release jobs passed; independent
-verification matched workflow/GitHub/PyPI artifacts and their signed provenance.
-A fresh public-PyPI installation passed CLI and actual stdio MCP smoke with
-21 tools. Continuity delivery is COMPLETE.
-
-Independent acceptance passed concurrency 210, portable 71 (including the
-100,003-record archive), procedures 161, bulk boundaries 8 and sharing 193.
-The CodeQL composition repair passed the unchanged 193 sharing cases plus 14
-separately labeled supporting probes. Frozen inputs and historical evidence are
-preserved. [Release acceptance](docs/release/v1.10.0.md) links the complete proof.
-
-Production package and import now report 1.10.0 under explicit request #1305.
-The schema 6→7 migration preserved all 1,306 drawers/vectors and all 19 original
-tables and schemas, with zero embedding calls. Its automatic backup matches the
-private pre-install backup. Fresh CLI and actual MCP launcher checks passed:
-version 1.10.0, 21 tools, task handoff parity at 8,184/8,192 characters with MCP
-holding the live database, doctor, help and recipes. Old Cairntir MCP processes
-were stopped; Codex and Cline remain open and need restart/reconnect to reload
-the server. Their current sessions are not verified on 1.10.0. Independent
-installation audit passed: all 72 installed package files match the public wheel,
-MCP 1.28.1 satisfies the runtime requirement, and all required dependencies and
-selected imports pass. Claude's health command still reports connected with
-tools-fetch failure; the fresh stdio connection exposes 21 tools and passes task
-handoff.
+The combined release includes [task resumption](plans/task-resume-delivery.md),
+the Claude schema fix, shorter compaction recovery policy and typed UTF-8/SQLite
+checkpoint boundaries. Independent acceptance passed 124 cases (70 original,
+21 policy, 33 boundaries), with zero repairs and unchanged frozen artifacts.
+The historical candidate receipt remains unchanged. No broader runtime work or
+2.0.0 version change is outstanding from this release.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer

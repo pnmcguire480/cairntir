@@ -1,6 +1,6 @@
 # How to Use Cairntir
 
-**Current published release: 1.10.0.**
+**Current published release: 1.11.0.**
 
 ## Install
 
@@ -36,7 +36,7 @@ Cursor's **global** User Rule still has to be pasted into
 ## Check it worked
 
 ```bash
-cairntir version    # 1.10.0
+cairntir version    # 1.11.0
 cairntir status     # where the store lives, drawer counts
 cairntir doctor     # host wiring without changing anything
 ```
@@ -87,7 +87,7 @@ candidate scan and discloses incomplete scans in the result.
 Try the [isolated continuity demo](context-demo.md) to inspect exact recalled
 requests, excluded stale evidence, and measured payload sizes across store sessions.
 
-## Recovering after compaction (1.11.0 candidate)
+## Recovering after compaction
 
 The shared host policy asks agents to save each multi-step request before work,
 then checkpoint after an implementation step, verification result, changed
@@ -108,9 +108,10 @@ This is an instruction to the host agent, not a compaction detector or an
 automatic transcript recorder. Recovery depends on acknowledged writes and the
 agent following the policy. With an older server that lacks checkpoint/resume
 arguments, agents save ordinary request and progress memories and disclose that
-structured task resumption requires an upgrade. Published 1.10.0 has that older
-surface; the checkpoint implementation and policy are in the unpublished 1.11.0
-candidate. See [task resumption](task-resumption.md) for the complete workflow.
+structured task resumption requires an upgrade. Version 1.10.0 has that older
+surface; checkpoint/resume support and the policy ship in 1.11.0. Restart or
+reconnect existing host sessions after upgrading so they load the new tool schema.
+See [task resumption](task-resumption.md) for the complete workflow.
 
 ## Bounded hotfixes
 
