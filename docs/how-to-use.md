@@ -1,6 +1,6 @@
 # How to Use Cairntir
 
-**Release candidate: 1.12.1.** [Publication status](release/v1.12.1.md).
+**Current release: 1.12.1.** [Publication and verification](release/v1.12.1.md).
 
 ## Install
 
