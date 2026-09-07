@@ -12,8 +12,8 @@ Cairntir stores decisions, facts, unfinished work, and outcomes as verbatim
 *drawers* in a SQLite database you own. A budgeted handoff restores complete
 drawers across sessions; semantic and file-anchored recall find deeper evidence.
 
-Development candidate **1.11.0**; published version **1.10.0**. See the
-[candidate evidence](docs/release/v1.11.0.md) and [changelog](CHANGELOG.md).
+Current release: **1.11.0**. See the
+[release evidence](docs/release/v1.11.0.md) and [changelog](CHANGELOG.md).
 Published downloads are on
 [PyPI](https://pypi.org/project/cairntir/) and
 [GitHub Releases](https://github.com/pnmcguire480/cairntir/releases).

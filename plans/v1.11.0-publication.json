@@ -1,0 +1,126 @@
+{
+  "status": "COMPLETE",
+  "version": "1.11.0",
+  "verified_date": "2026-09-07",
+  "source_commit": "d88beabdf5407b03c72cf60d9d59ca0908630999",
+  "tag": "v1.11.0",
+  "release_run_url": "https://github.com/pnmcguire480/cairntir/actions/runs/34102294324",
+  "release_attempt": 1,
+  "all_five_release_jobs": "PASS",
+  "release_tests": {
+    "passed": 1116,
+    "skipped_windows_only": 1,
+    "deselected_publication_tag": 1,
+    "coverage_percent": 84.75,
+    "seconds": 224.72,
+    "subsequent_publication_tag_gate": "PASS"
+  },
+  "distributions": [
+    {
+      "filename": "cairntir-1.11.0-py3-none-any.whl",
+      "sha256": "c0a3dd536bae60081ee7eff97590fbfd63bf76c31a9ccefa7a860c5a791ccaf7",
+      "workflow_github_pypi_agree": true,
+      "cryptographic_attestation": "PASS"
+    },
+    {
+      "filename": "cairntir-1.11.0.tar.gz",
+      "sha256": "1f25ab1153598694a8d6aaed497a4146e5f539728dc9844e3d7bec1d82af2408",
+      "workflow_github_pypi_agree": true,
+      "cryptographic_attestation": "PASS"
+    }
+  ],
+  "attestation_policy": {
+    "repository": "pnmcguire480/cairntir",
+    "signer_workflow": "pnmcguire480/cairntir/.github/workflows/release.yml",
+    "signer_digest": "d88beabdf5407b03c72cf60d9d59ca0908630999",
+    "source_digest": "d88beabdf5407b03c72cf60d9d59ca0908630999",
+    "source_ref": "refs/tags/v1.11.0",
+    "certificate_identity": "https://github.com/pnmcguire480/cairntir/.github/workflows/release.yml@refs/tags/v1.11.0",
+    "oidc_issuer": "https://token.actions.githubusercontent.com",
+    "deny_self_hosted_runners": true,
+    "predicate_type": "https://slsa.dev/provenance/v1"
+  },
+  "candidate_wheel_comparison": {
+    "all_78_member_bytes_identical": true,
+    "only_zip_metadata_difference": "create_system: Windows candidate 0, Linux release 3"
+  },
+  "fresh_public_install": {
+    "status": "PASS",
+    "version": "1.11.0",
+    "installed_package_files_equal_public_wheel": 73,
+    "wheel_sha256": "c0a3dd536bae60081ee7eff97590fbfd63bf76c31a9ccefa7a860c5a791ccaf7",
+    "fresh_public_pypi_install": true,
+    "installed_wheel_import": true,
+    "cli_checkpoint_revision": 2,
+    "tool_count": 21,
+    "all_tool_schema_roots_object": true,
+    "checkpoint_resume_schema_fields": true,
+    "stdio_version": "1.11.0",
+    "distinct_host_resume": true,
+    "cli_mcp_parity_with_server_open": true,
+    "typed_invalid_checkpoint": true,
+    "unicode_verbatim": true,
+    "redirected_windows_help": true,
+    "bundled_recipes": true,
+    "isolated_doctor": true,
+    "model_prompts": 0
+  },
+  "fresh_dependencies": "PASS",
+  "production_installation": {
+    "installed_version": "1.11.0",
+    "import_version": "1.11.0",
+    "matching_package_files": 73,
+    "public_wheel_sha256": "c0a3dd536bae60081ee7eff97590fbfd63bf76c31a9ccefa7a860c5a791ccaf7",
+    "all_runtime_requirements_satisfied": true,
+    "required_dependencies_unchanged": true,
+    "method": "Public PyPI package-only upgrade (--no-deps); no migration or reindex",
+    "initial_attempt": "Windows locked the active MCP executable; exact Cairntir server processes stopped and same upgrade retried successfully",
+    "existing_applications": "Left open; existing MCP sessions require reconnect",
+    "fresh_installed_launcher": {
+      "status": "PASS",
+      "server_version": "1.11.0",
+      "tool_count": 21,
+      "all_input_schemas_object_root": true,
+      "checkpoint_resume_parameters": true,
+      "cli_version_help_recipes": true,
+      "cli_while_fresh_mcp_holds_live_store": true,
+      "task_status": "selected",
+      "cli_mcp_parity": true,
+      "serialized_mcp_chars": 8152,
+      "budget_chars": 8192,
+      "doctor_gate": "ok",
+      "host": "fresh actual installed cairntir-mcp.exe --host codex stdio process",
+      "existing_host_sessions": "Require reconnect to load the upgraded package and tool schema; not counted as reloaded"
+    },
+    "actual_claude_health": "Connected; no tools-fetch error; no model prompt",
+    "store_preservation": {
+      "status": "PASS",
+      "independent_tester": "/root/resume_acceptance",
+      "verified_at": "2026-09-07T08:59:01.093174+00:00",
+      "before_snapshot_sha256": "4d7178e2c420a4111459fc014a0492330416538e74c322d9e20bd9aec3d78416",
+      "after_snapshot_sha256": "4d7178e2c420a4111459fc014a0492330416538e74c322d9e20bd9aec3d78416",
+      "before_schema": 7,
+      "after_schema": 7,
+      "original_tables": 22,
+      "drawers": 1393,
+      "vectors": 1393,
+      "all_original_rows_and_schemas_preserved": true,
+      "changed_tables": [],
+      "schema_objects_unchanged": true,
+      "append_allowance": "none; exact complete-table equality required",
+      "sqlite_integrity": "ok",
+      "embedding_calls": 0,
+      "audit_script_sha256": "cb834318500ee0d50b416981fc0b8e0bcdaa89c9b9e8bf56166959bc10571425"
+    }
+  },
+  "private_evidence_sha256": {
+    "public-verification/final.json": "9751dd42dc12f0f3a5a9b86e86ee663f39726df1b7c5025032830ee3960aec12",
+    "public-verification/candidate-comparison.json": "188c8c0217e3b02c33a93617e7c0429441829ed6e8a29b2dd555f9be1d775038",
+    "independent-installation-audit.json": "06c50c2c9771a05749c6a5a6a5049412c402a8fd0c066a1a3da7c5bf8e2b9710",
+    "installation-audit/preservation.json": "8716c42b38e3e6a98277efc3cca9c53e7fcbd54259283e8ded2c80fb8450ccb7",
+    "installed-smoke.json": "0cb6c6e01211b658734bb8576a1a536d0eeedbbdc472be2c168d40d698978ae4",
+    "production-claude-health.txt": "4e83793f1da278a40015afea981272d24842dd3f3b2d3ae77770f5169392fd5c",
+    "release-verify.txt": "3e17c7f05b989b7d79ed432fdccd0fc58fe95b32ae25bf3bf958ad103c690c66"
+  },
+  "historical_candidate_receipt": "plans/v1.11.0-candidate.json remains unchanged and describes the prepublication checkpoint"
+}

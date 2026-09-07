@@ -1,8 +1,7 @@
 # Resume interrupted work
 
 Task checkpoints let another host recover the exact request and the latest
-saved progress from the same Cairntir store. This capability is included in the
-1.11.0 candidate; it is not part of published 1.10.0.
+saved progress from the same Cairntir store. This capability ships in 1.11.0.
 
 Both hosts must use the same store and wing. A wing is your shared project
 identity; different host checkout paths do not automatically identify a project.
