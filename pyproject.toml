@@ -169,7 +169,7 @@ addopts = [
     "--cov=cairntir",
     "--cov-report=term-missing",
     "--cov-report=html",
-    "--cov-fail-under=80",
+    "--cov-fail-under=92",
 ]
 markers = [
     "unit: unit tests",
@@ -182,10 +182,11 @@ asyncio_mode = "auto"
 [tool.coverage.run]
 source = ["src/cairntir"]
 branch = true
+patch = ["subprocess"]
 omit = [
     # Thin entrypoints. mcp/server.py is the stdio adapter; tool
     # behaviour is tested via backend + test_mcp_server.py. Omitting
-    # it hides transport-layer coverage from the 80% gate on purpose
+    # it hides transport-layer coverage from the 92% gate on purpose
     # — do not read a green coverage number as "the stdio loop is
     # tested."
     "src/cairntir/__main__.py",
