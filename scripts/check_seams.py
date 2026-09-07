@@ -70,6 +70,17 @@ class Seam:
 
 SEAMS: tuple[Seam, ...] = (
     Seam(
+        name="owner CLI and MCP startup produce verified store backups",
+        sides=(
+            Side(Path("src/cairntir/memory/store.py"), "DrawerStore"),
+            Side(Path("src/cairntir/backups.py"), "run"),
+            Side(Path("src/cairntir/cli.py"), "_open_store"),
+            Side(Path("src/cairntir/mcp/server.py"), "_amain"),
+        ),
+        test_path=Path("tests/acceptance/test_automatic_backups.py"),
+        test_name="test_production_owner_startup_activates_backup_and_retains_transport_shape",
+    ),
+    Seam(
         name="acknowledged checkpoints survive a fresh MCP host process",
         sides=(
             Side(Path("src/cairntir/tasks.py"), "TaskBook"),

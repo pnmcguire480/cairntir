@@ -23,6 +23,7 @@ async def _amain() -> None:
     store = DrawerStore(
         db_path(),
         production_embedding_provider(),
+        automatic_backups=True,
         provenance=WriteProvenance.create(
             host="daemon",
             capture_path="spool",

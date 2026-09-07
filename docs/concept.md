@@ -55,6 +55,12 @@ backup API exposed by `cairntir.memory.store.backup_database`. Do not copy
 only an open database file: committed data may still be in its WAL. Migrations
 and reindexing use backup-first safeguards.
 
+The upcoming automatic backup policy adds a configured destination and a default
+12-hour interval. Writable hosts check on startup and before the next write;
+closed applications do not wake themselves. Verified snapshots contain the full
+store, including vectors and task history. Read-only and scoped sessions do not
+activate automatic backups. See [backup operations](how-to-use.md#backups).
+
 Portable JSONL is an interchange format, not a complete database backup.
 It omits local ids and access state. Version 1 cannot map linked history into
 another store, so imports with source-local supersession, evidence references,

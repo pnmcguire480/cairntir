@@ -20,6 +20,10 @@ class MemoryStoreError(CairntirError):
     """Raised when the memory layer fails to read or write a drawer."""
 
 
+class BackupError(CairntirError):
+    """Raised when backup configuration, snapshotting, or verification fails."""
+
+
 class ProvenanceError(MemoryStoreError):
     """Raised when stored write provenance is missing or malformed."""
 

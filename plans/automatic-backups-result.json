@@ -1,0 +1,32 @@
+{
+  "result": "PASS",
+  "independent_tester": "/root/foundation_tester",
+  "scope": "Frozen automatic-backup acceptance and mandatory store regressions",
+  "frozen_acceptance": {
+    "passed": 29,
+    "failed": 0
+  },
+  "mandatory_store_regressions": {
+    "passed": 39,
+    "failed": 0
+  },
+  "total_passed": 68,
+  "elapsed_seconds": 75.8,
+  "official_repair_rounds_used": 0,
+  "frozen_inputs_verified": 6,
+  "runtime_files_verified": 59,
+  "runtime_unchanged": true,
+  "frozen_inputs_unchanged": true,
+  "tested_head": "42d2bfb92c00f301dc3236d11564f83a3d2fffa0",
+  "completed_at_utc": "2026-09-07T17:44:11.085134+00:00",
+  "evidence": {
+    "plans/automatic-backups-acceptance-freeze.json": "1fe7606f6acdefb62e289eb66b18cd84a4740ca2c6bf37c01c0c9a1595d09f14",
+    "plans/automatic-backups-result-round0.json": "d4d883b9db47780887d2249789f9b8346fbb27625765f4aa6947849fbf73207d",
+    "plans/automatic-backups-result-round0.txt": "ffe3941f3e3a3ea9b2c7cf40112b541f508da90aec54eadd8c4838635f4b7e38"
+  },
+  "baseline": "29 expected per-test failures before implementation; preserved in frozen baseline",
+  "coverage": "Persisted opt-in cadence, startup/pre-outer-write hooks, complete standalone SQLite/WAL restore, no re-embedding, bounded concurrent/crash recovery, visible nonblocking failure, retention and unmanaged preservation, CLI/MCP owner and scoped/read-only boundaries.",
+  "separate_evidence": "Three independent postimplementation failure probes and broader repository gates are owned by the coordinator/peer tester and are not substituted for this frozen suite.",
+  "production_store_used": false,
+  "runtime_or_acceptance_edits_by_tester": false
+}

@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import sys
+from collections.abc import Callable
 from datetime import UTC, datetime
 from io import TextIOWrapper
 from pathlib import Path
@@ -13,11 +14,13 @@ from typing import Any, cast
 import typer
 
 from cairntir import __version__
+from cairntir import backups as store_backups
 from cairntir.config import cairntir_home, db_path, model_cache_dir
 from cairntir.cost import measure as measure_cost
 from cairntir.cost import render as render_cost
 from cairntir.cost import run_context_demo
 from cairntir.errors import (
+    BackupError,
     CairntirError,
     EmbeddingError,
     MCPError,
@@ -93,6 +96,51 @@ app = typer.Typer(
     add_completion=False,
 )
 
+backup_app = typer.Typer(
+    help="Configure and inspect verified SQLite backups.", no_args_is_help=True
+)
+app.add_typer(backup_app, name="backup")
+
+
+def _backup_output(action: Callable[[], dict[str, Any]]) -> None:
+    try:
+        result = action()
+    except BackupError as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(json.dumps(result, ensure_ascii=False))
+
+
+@backup_app.command("configure")
+def backup_configure(
+    destination: Path,
+    interval_hours: float = typer.Option(12, "--interval-hours"),
+) -> None:
+    """Enable backups to DESTINATION with a default 12-hour interval."""
+    _backup_output(
+        lambda: store_backups.configure(
+            db_path(create=False), destination, interval_hours=interval_hours
+        )
+    )
+
+
+@backup_app.command("run")
+def backup_run() -> None:
+    """Create a verified backup now, regardless of the configured interval."""
+    _backup_output(lambda: store_backups.run(db_path(create=False)))
+
+
+@backup_app.command("status")
+def backup_status() -> None:
+    """Inspect backup configuration and recovery points without creating files."""
+    _backup_output(lambda: store_backups.status(db_path(create=False)))
+
+
+@backup_app.command("disable")
+def backup_disable() -> None:
+    """Disable automatic backups while preserving existing recovery points."""
+    _backup_output(lambda: store_backups.disable(db_path(create=False)))
+
 
 def _backend(
     *,
@@ -123,6 +171,7 @@ def _open_store(
         path or (db_path(create=False) if read_only else db_path()),
         production_embedding_provider(),
         read_only=read_only,
+        automatic_backups=not read_only and _startup_grant is None and path is None,
         provenance=WriteProvenance.create(
             host="cli",
             capture_path=capture_path,
@@ -175,9 +224,9 @@ def _root(ctx: typer.Context) -> None:
             "export",
             "import",
         }:
-            raise AccessDenied("restricted session: administrative command denied")
+            raise AccessDenied("access denied: restricted session: administrative command denied")
         return
-    if ctx.invoked_subcommand in {"handoff", "checkpoint", "context-demo"}:
+    if ctx.invoked_subcommand in {"handoff", "checkpoint", "context-demo", "backup"}:
         return
     # Best-effort self-heal: TRUE-until-FALSE registration. Once
     # cairntir is installed, every CLI run guarantees the user-scope

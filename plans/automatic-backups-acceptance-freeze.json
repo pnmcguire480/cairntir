@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN",
+  "independent_tester": "/root/foundation_tester",
+  "issue": "https://github.com/pnmcguire480/cairntir/issues/101",
+  "frozen_at_utc": "2026-09-07T17:26:28.760513+00:00",
+  "base_head": "42d2bfb92c00f301dc3236d11564f83a3d2fffa0",
+  "artifact_readiness": "PASS",
+  "preimplementation_acceptance": "FAIL",
+  "cases": 29,
+  "baseline": {
+    "failed": 29,
+    "passed": 0,
+    "infrastructure_failures": 0,
+    "elapsed_seconds": 1.18
+  },
+  "artifacts": {
+    "tests/acceptance/test_automatic_backups.py": "8339755f367d8e9a91013651b28f69b53b6e95662da465b4cfffb6801b4a6da5",
+    "plans/automatic-backups-acceptance.md": "c9a7d087041c1efb083cfbec4512046702a08e3523c2589f5e5ecc0a950ee2c7",
+    "plans/automatic-backups-acceptance-baseline.json": "18447007f5433ecb6ca7b0bb76b4a0a87d800ab904e086519bac58ba607571e3",
+    "plans/automatic-backups-acceptance-baseline.txt": "e5c81f1597a19cee996ee6fb175a3382fba5b6c52c8364812ab91a6abf689862",
+    "tests/conftest.py": "a43e93cbc6abc0f182239545fb77ca4d6a61945d9ec3781d2338380edeffdbef",
+    "tests/unit/test_store.py": "eecf66a7db47a02dc54f24bc0633840f45a1289d7f48c69b075383e9be23f053"
+  },
+  "mandatory_regression_gate": [
+    "tests/unit/test_store.py"
+  ],
+  "initial_implementation_passes": 1,
+  "maximum_official_repair_rounds": 2,
+  "verification_reserve_minimum_percent": 25,
+  "review": "Coordinator approved API, contract and final 29-case draft before runtime implementation. Independent peer supplied risk review.",
+  "authority_boundary": "Tester owns immutable acceptance; coder cannot edit. Only clock and deterministic provider are substituted. No production stores/destinations or memory writes.",
+  "excluded_mutable_provenance": [
+    "plans/automatic-backups.md",
+    "CLAUDE.md",
+    "pyproject.toml",
+    "uv.lock"
+  ],
+  "amendment_policy": "Changing any bound artifact requires a new explicit independent amendment; never overwrite this generation. Manifest self-hash is published externally."
+}

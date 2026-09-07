@@ -13,6 +13,19 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Added
+
+- Opt-in automatic SQLite backups, configured with `cairntir backup configure`.
+  Writable hosts check the default 12-hour interval at startup and before the
+  next write. Verified snapshots retain a week of recent history and four older
+  weekly recovery points; failures remain visible without blocking memory writes.
+  CLI commands also run a backup, inspect status, or disable automatic backups.
+
+### Fixed
+
+- Opening a store already at the current schema no longer rewrites its schema
+  version header. Scoped startup and ordinary reopen preserve the database bytes.
+
 ## [1.11.0] — 2026-09-07
 
 ### Added

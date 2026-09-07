@@ -1,6 +1,7 @@
 # Plans
 
-- [Interrupted task resumption delivery](task-resume-delivery.md): implemented and independently accepted; durable checkpoints and cross-host resume remain unreleased.
+- [Automatic store backups](automatic-backups.md): in progress; verified snapshots with a default 12-hour interval and managed retention.
+- [Interrupted task resumption delivery](task-resume-delivery.md): independently accepted and published as 1.11.0.
 - [Continuity delivery](continuity-delivery.md): COMPLETE; independently accepted continuity milestones published as 1.10.0 with verified artifacts, attestations and fresh public-package smoke.
 - [2.0 continuity preparation](v2-continuity.md): historical foundation plan and frozen acceptance.
 - [Shipping hardening](shipping-hardening.md): completed audit and acceptance record.

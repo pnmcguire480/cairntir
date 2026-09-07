@@ -46,6 +46,52 @@ Open a task in your project and ask the agent to call
 merely describe Cairntir. Ask it to remember a harmless test fact, open a fresh
 task, and check that the first handoff returns that fact verbatim.
 
+## Backups
+
+These commands are under development and are not included in published 1.11.0.
+
+Choose a backup directory, preferably on another drive:
+
+```powershell
+cairntir backup configure "E:\Cairntir\backups" --interval-hours 12
+cairntir backup run
+cairntir backup status
+```
+
+Configuration is stored beside the database and shared by hosts using that
+database. Automatic backups are off until configured. Owner CLI, MCP, and capture
+daemon stores check at writable startup and before an outer write transaction;
+the snapshot contains committed state before that write. With Cairntir closed,
+the next writable startup catches up. No scheduler or background service is
+installed. Library callers opt in with `DrawerStore(..., automatic_backups=True)`.
+
+Each snapshot is a complete SQLite database, including vectors, provenance and
+task checkpoints. Cairntir verifies integrity and foreign keys before publishing
+the database and checksum receipt. It keeps every managed snapshot from the last
+seven days and the latest snapshot in each of four older ISO calendar weeks.
+Pruning follows a successful backup and does not manage existing manual backups.
+
+If the destination is unavailable, memory writes continue and a backup warning
+is emitted. `backup status` reports the last successful snapshot, next due time,
+active backup and last error. All backup commands return JSON; status does not
+create files, load a model or trigger a backup. `backup run` requests an immediate
+snapshot regardless of the interval. Concurrent automatic attempts share a lock;
+an interrupted process releases it for a later attempt.
+
+```bash
+cairntir backup disable
+```
+
+Disabling preserves existing snapshots. Read-only and scoped sessions never
+activate automatic backups. Existing mandatory migration and reindex backups
+remain in place independently of this policy.
+
+To recover, stop every client using the store, preserve the current database and
+its sidecars separately, and verify the selected snapshot against its checksum
+receipt. Restore the verified database to the path reported by `cairntir status`
+with no stale WAL or journal files beside it. Reopen Cairntir and run
+`cairntir doctor --gate`. A complete database snapshot needs no reindex.
+
 ## The four words
 
 1. **Wing** — a project.
