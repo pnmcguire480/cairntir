@@ -5,10 +5,10 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Published version: **1.11.0**; corrective release candidate: **1.12.1**. The
-[1.12.1 release record](docs/release/v1.12.1.md) tracks backup publication and
-installation. The [1.11.0 record](docs/release/v1.11.0.md) remains immutable
-publication evidence. Pending changes belong under
+Published and installed version: **1.12.1**. The
+[1.12.1 release record](docs/release/v1.12.1.md) records publication, installation
+preservation and automatic backup activation. Earlier release records remain
+historical publication evidence. Pending changes belong under
 [Unreleased](CHANGELOG.md#unreleased).
 
 The core has verbatim SQLite drawers, explicit provenance, task-aware budgeted
@@ -86,41 +86,40 @@ the production installation as an incidental build step.
 
 ## Last Session — 2026-09-07
 
-Published and installed **1.11.0** remains unchanged; immutable tag `v1.11.0`
-names `d88beab`. Publication, package identity and installation preservation are
-recorded in [the release record](docs/release/v1.11.0.md). PR #97 merged at
-`42d2bfb`. The serious production SQLite audit passed, including every one of
-1,401 audited embeddings and restored-store write/rollback fidelity. No repair
-or reindex was needed; verified manual recovery baselines were saved separately.
+Published and installed **1.12.1** is complete. PR #105 passed all 14 checks and
+merged at `5584ff7`; its tree equals reviewed head `8e966c2`. Annotated `v1.12.1`
+identifies that merge. All five release jobs passed, and independent verification
+matched workflow/GitHub/PyPI packages and signed provenance. The fresh public
+installation passed all CLI/MCP, backup and cross-host checkpoint/resume checks.
+See [the release record](docs/release/v1.12.1.md) and
+[sanitized publication receipt](plans/v1.12.1-publication.json).
 
-The [automatic backup plan](plans/automatic-backups.md), issue #101, merged through
-PR #102 and is included in the corrective 1.12.1 candidate. Opt-in per-database policy
-checks a default 12-hour interval at writable owner startup and before an outer
-write. Isolated processes verify complete snapshots and publish timestamped
-archives; managed retention keeps seven recent days and four older ISO weeks.
-Scoped/read-only sessions stay excluded. Ordinary writes survive backup failures
-with typed warnings. Reopening a current-schema store no longer rewrites its
-schema-version header.
+Automatic backups check the saved 12-hour interval on writable owner startup or
+before an outer write. Complete, verified snapshots retain vectors, provenance
+and task history; managed retention keeps seven recent days and four older ISO
+weeks. Manual copies remain unmanaged. Backup failures warn while writes continue.
+The authorized machine policy and actual installed startup hook were verified.
+A fresh installed-CLI snapshot passed full standalone restoration checks.
 
-[Independent acceptance](plans/automatic-backups-result.md) passed all 29 frozen
-cases and 39 mandatory store regressions on official round 0, with no repairs
-and unchanged frozen/runtime hashes. Independent supporting failure checks add
-three passing cases. Full local regression: **1,142 passed, 8 deselected, 82.42%
-coverage**; complete offline model evaluation: seven passed. Ruff, strict types,
-strict documentation, links, commitments, seams, silent-exception, release-tag
-and locked-dependency advisory checks passed. Existing manual snapshots remain
-outside automatic retention. The machine's 12-hour policy is saved for the
-user-approved separate drive and its first managed snapshot was verified.
-PR #102 merged at `e27fe04` with all 14 checks passing. The user explicitly
-approved 1.12.0 publication and installation on 2026-09-07; issue #103 and the
-[withheld candidate record](docs/release/v1.12.0.md) preserve the first attempt.
-Release verification failed the original crash-replacement test before any
-publication job ran. The tag stays at `73cc042`; 1.12.1 corrects the worker-ownership
-race under new independent frozen acceptance. All original frozen artifacts
-remain unchanged. Independent repair round 1 passed 72 cases; the corrected full
-suite passed 1,151 tests with 83.17% coverage. Candidate package, CLI/MCP and backup
-smoke checks passed. Production stays 1.11.0 until the corrected public package is
-verified and installed; no reindex, dependency or schema change is needed.
+The tagged 1.12.0 candidate exposed a surviving worker deleting a replacement's
+active staging directory. Its immutable tag and failed evidence remain intact;
+no 1.12.0 package was published. Version 1.12.1 holds per-attempt native claims
+through publication and cleanup. New independent frozen acceptance reproduced
+the race before repair; official round 1 passed 72 cases with all frozen hashes
+unchanged. Full local suite: 1,151 passed, 83.17% coverage. Tagged release suite:
+1,149 passed, one Windows-only skip, one publication-check deselection, 83.11%
+coverage; the post-publication tag check passed. All static and documentation
+gates passed. Original acceptance generations remain unchanged.
+
+The serious SQLite audit found no repair necessary. Independent production
+upgrade checks preserved every row/schema in all 22 tables, all 1,433 baseline
+drawers/vectors/portable records, model files, dependencies, five host entries and
+all previous backups. Schema stays 7 with 21 MCP tools. Fresh backup contents
+exactly matched that baseline and the held live store. After verification the
+memory-write hold was released; later checkpoints are intentional new memories.
+Production doctor and real Claude MCP health pass. Existing apps were left open
+and need an MCP reconnect to load the upgrade. The old connection closed during
+backend replacement; a fresh 1.12.1 connection saved the same task checkpoint.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer

@@ -32,7 +32,7 @@ Provide opt-in verified SQLite snapshots on writable startup and the next write
 after a default 12-hour interval. Retain recent and weekly recovery points,
 preserve manual baselines, and report failures while memory writes remain usable.
 See the [backup plan](https://github.com/pnmcguire480/cairntir/blob/main/plans/automatic-backups.md).
-The corrected feature is included in the [1.12.1 release candidate](release/v1.12.1.md).
+The corrected feature is published in [1.12.1](release/v1.12.1.md).
 
 ## Next: retrieval preflight evaluation
 

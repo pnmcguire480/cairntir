@@ -1,0 +1,79 @@
+{
+  "status": "COMPLETE",
+  "version": "1.12.1",
+  "verified_date": "2026-09-07",
+  "source_commit": "5584ff7be4494d72d0776b3c2948d9b227cdfe26",
+  "tag": "v1.12.1",
+  "release_run_url": "https://github.com/pnmcguire480/cairntir/actions/runs/34155498484",
+  "release_attempt": 1,
+  "all_five_release_jobs": "PASS",
+  "distributions": [
+    {
+      "filename": "cairntir-1.12.1-py3-none-any.whl",
+      "sha256": "6ac9d4bcec90144b986e5bd826d2f4a2bd6f1d6a215b8acacf2cc2e040072314",
+      "workflow_github_pypi_agree": true,
+      "cryptographic_attestation": "PASS"
+    },
+    {
+      "filename": "cairntir-1.12.1.tar.gz",
+      "sha256": "6cbbb37f8a090d0285d0846d9238c2154d9a8573ead058055a859596f1e80f9a",
+      "workflow_github_pypi_agree": true,
+      "cryptographic_attestation": "PASS"
+    }
+  ],
+  "attestation_policy": {
+    "repository": "pnmcguire480/cairntir",
+    "source_and_signer_digest": "5584ff7be4494d72d0776b3c2948d9b227cdfe26",
+    "certificate_identity": "https://github.com/pnmcguire480/cairntir/.github/workflows/release.yml@refs/tags/v1.12.1",
+    "hosted_runner_required": true
+  },
+  "candidate_wheel_comparison": {
+    "all_member_bytes_equal": true,
+    "candidate_sha256": "9b92b6a03353e66ca25526b665d6dfde9a020ddea39b2eed865f4860ea403307",
+    "public_sha256": "6ac9d4bcec90144b986e5bd826d2f4a2bd6f1d6a215b8acacf2cc2e040072314",
+    "zip_metadata": "Equal or only Windows-to-Linux create_system difference"
+  },
+  "fresh_public_install": {
+    "status": "PASS",
+    "version": "1.12.1",
+    "package_files": 74,
+    "tool_count": 21,
+    "dependency_check": "PASS",
+    "owner_cli_mcp_backup_smoke": "PASS",
+    "isolated_overdue_write_preserves_prior_committed_state": true,
+    "fresh_public_pypi_install": true,
+    "installed_wheel_import": true,
+    "all_tool_schema_roots_object": true,
+    "checkpoint_resume_schema_fields": true,
+    "distinct_host_resume": true,
+    "cli_mcp_parity_with_server_open": true,
+    "typed_invalid_checkpoint": true,
+    "unicode_verbatim": true,
+    "redirected_windows_help": true,
+    "bundled_recipes": true
+  },
+  "production_installation": {
+    "status": "PASS",
+    "version": "1.12.1",
+    "package_files": 74,
+    "complete_original_state_preserved": true,
+    "schema": 7,
+    "phase_chain_verified": true,
+    "activation": "PASS",
+    "fresh_snapshot_restored_and_matches_source": true,
+    "actual_installed_owner_hook_observed": true,
+    "host_health": "PASS",
+    "existing_sessions_reloaded": false
+  },
+  "private_evidence_sha256": {
+    "publication": "b5d17c72893314f18b4edd65b9d4112325d6b3f1ae86d1ad1835d5695b59110e",
+    "candidate_comparison": "a4da545f47211ebaae89f09444761ca95d37dc2d4c2e8238b9172e39a97ab8f1",
+    "fresh_install": "a9b766fa658fea9fcbd51cd647cbdd0b3f949bbe723d79be99a31187962e6e67",
+    "before": "6235c999a25c2216ae33c645cef115697ae6f47577f56b955061c9b4a266babd",
+    "after": "0898ac23dcb756718ab9238aee9e331d8db43eecc34b19b57f139dbbe9c97673",
+    "activation": "297b181d17ff19de0b176a9525338a24463f20ab8a9ed983cac85dde1b589456",
+    "activation_probe": "f0f92a4b0d18e854eab0b0cae0d9dc1475f173cb0584b8177d98f37d556dd54c",
+    "host_health": "8b21f37640d36cdf8a5e881cf3362c861034265f30accfacd3fc5693b496a047"
+  },
+  "historical_evidence": "Failed v1.12.0 release and both frozen acceptance generations remain unchanged."
+}

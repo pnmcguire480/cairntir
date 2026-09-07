@@ -1,6 +1,6 @@
 # Automatic store backups
 
-Status: publication verification exposed a worker-ownership race; corrective 1.12.1 acceptance and delivery in progress.
+Status: **COMPLETE — published and installed as 1.12.1; automatic backup activation independently verified.**
 
 ## Problem and goal
 
@@ -31,7 +31,7 @@ rebuilding embeddings or reconstructing task history.
 ## Non-goals and boundaries
 
 No Windows scheduler, Codex automation, transcript capture, cloud upload, new
-dependency, schema migration, automatic restore, or change to published 1.11.0.
+dependency, schema migration, automatic restore, or alteration of earlier releases.
 No production data repair or reindex: the completed independent audit found none
 necessary. Existing manual recovery baselines remain outside automatic retention.
 
@@ -73,11 +73,15 @@ boundary cases passed. Full local regression: 1,142 passed, eight deselected,
 Ruff, strict typing, strict documentation, links, commitments, seams, exception
 handling, immutable release tags and all 134 locked dependency advisories passed.
 The authorized machine policy is configured and its first managed snapshot is
-verified. The published and installed package remains 1.11.0; automatic policy
-activation is tracked in the corrective [1.12.1 release](../docs/release/v1.12.1.md).
+verified. The corrective [1.12.1 release](../docs/release/v1.12.1.md) is published
+and installed. Independent acceptance passed 72 cases after the worker repair;
+the full suite passed 1,151 tests. Production installation preserved all 22 tables,
+model files, dependencies, host configuration and existing backups. The actual
+installed owner hook checked the saved 12-hour policy, and a fresh installed-CLI
+snapshot independently matched the complete live store and pre-install baseline.
 The first tagged candidate failed crash-replacement verification before publication;
 its tag and all frozen evidence remain unchanged. New independent acceptance
-reproduces the worker-ownership race before the runtime repair.
+reproduced the worker-ownership race before the runtime repair.
 PR [#102](https://github.com/pnmcguire480/cairntir/pull/102) merged at `e27fe04`
 with all 14 checks passing. The user explicitly approved the 1.12.0 publication
 and installation gate on 2026-09-07.
