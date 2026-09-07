@@ -85,38 +85,33 @@ the production installation as an incidental build step.
 
 ## Last Session — 2026-09-07
 
-Version **1.11.0 is published and installed** under explicit approval #1393.
-[PR #95](https://github.com/pnmcguire480/cairntir/pull/95) passed all 14 checks and
-merged at `d88beab`; immutable annotated tag `v1.11.0` names that exact source.
-[Release workflow](https://github.com/pnmcguire480/cairntir/actions/runs/34102294324)
-passed all five jobs, including 1,116 tests at 84.75% coverage. Independent
-publication verification matched workflow/GitHub/PyPI hashes and signed provenance.
-Fresh public installation passed CLI/MCP cross-host Unicode resume, typed input
-rejection, concurrent CLI parity, recipes and doctor. All 78 wheel-member bytes
-match the accepted candidate; only ZIP creator-platform metadata differs.
+Published and installed **1.11.0** remains unchanged; immutable tag `v1.11.0`
+names `d88beab`. Publication, package identity and installation preservation are
+recorded in [the release record](docs/release/v1.11.0.md). PR #97 merged at
+`42d2bfb`. The serious production SQLite audit passed, including every one of
+1,401 audited embeddings and restored-store write/rollback fidelity. No repair
+or reindex was needed; verified manual recovery baselines were saved separately.
 
-Production global Python311 package/import/CLI/MCP report 1.11.0. Independent
-verification matched all 73 installed files to the public wheel; required
-dependencies are unchanged. The first installer attempt hit a locked executable;
-only Cairntir server processes were stopped before the successful package-only
-retry. Fresh installed MCP exposes 21 object-root schemas with checkpoint/resume;
-CLI handoff while it holds the live store agrees at 8,152/8,192 characters.
-Actual production Claude health reports Connected without the former tool-fetch
-error. Codex remains open; existing host sessions need reconnecting to load the
-new package and schema. Fresh probes do not establish existing-session reload.
+The [automatic backup plan](plans/automatic-backups.md), issue #101, is implemented
+on `codex/automatic-store-backups` under Unreleased. Opt-in per-database policy
+checks a default 12-hour interval at writable owner startup and before an outer
+write. Isolated processes verify complete snapshots and publish timestamped
+archives; managed retention keeps seven recent days and four older ISO weeks.
+Scoped/read-only sessions stay excluded. Ordinary writes survive backup failures
+with typed warnings. Reopening a current-schema store no longer rewrites its
+schema-version header.
 
-Independent online backups before and after installation are byte-identical:
-all 22 tables, 1,393 drawers and vectors, and schema 7 are preserved. No migration
-or reindex occurred. Subsequent release memories are intentional new writes.
-[Release evidence](docs/release/v1.11.0.md) and the
-[publication receipt](plans/v1.11.0-publication.json) record verification and limits.
-
-The combined release includes [task resumption](plans/task-resume-delivery.md),
-the Claude schema fix, shorter compaction recovery policy and typed UTF-8/SQLite
-checkpoint boundaries. Independent acceptance passed 124 cases (70 original,
-21 policy, 33 boundaries), with zero repairs and unchanged frozen artifacts.
-The historical candidate receipt remains unchanged. No broader runtime work or
-2.0.0 version change is outstanding from this release.
+[Independent acceptance](plans/automatic-backups-result.md) passed all 29 frozen
+cases and 39 mandatory store regressions on official round 0, with no repairs
+and unchanged frozen/runtime hashes. Independent supporting failure checks add
+three passing cases. Full local regression: **1,142 passed, 8 deselected, 82.42%
+coverage**; complete offline model evaluation: seven passed. Ruff, strict types,
+strict documentation, links, commitments, seams, silent-exception, release-tag
+and locked-dependency advisory checks passed. Existing manual snapshots remain
+outside automatic retention. The machine's 12-hour policy is saved for the
+user-approved separate drive and its first managed snapshot was verified.
+PR delivery and package installation are pending; production 1.11.0 does not yet
+run this new automatic policy.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer

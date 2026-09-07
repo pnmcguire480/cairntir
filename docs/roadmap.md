@@ -26,6 +26,14 @@ See the [active plan](https://github.com/pnmcguire480/cairntir/blob/main/plans/t
 and [task resumption guide](task-resumption.md). Actual autonomous host behavior
 and billed token savings require separate evaluations.
 
+## Current: automatic store backups
+
+Provide opt-in verified SQLite snapshots on writable startup and the next write
+after a default 12-hour interval. Retain recent and weekly recovery points,
+preserve manual baselines, and report failures while memory writes remain usable.
+See the [backup plan](https://github.com/pnmcguire480/cairntir/blob/main/plans/automatic-backups.md).
+This feature is under development and is not included in published 1.11.0.
+
 ## Next: retrieval preflight evaluation
 
 Pre-register a holdout before building an automatic retrieval path. A candidate

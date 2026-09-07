@@ -21,6 +21,7 @@ import struct
 import subprocess
 import sys
 import time
+import warnings
 from collections.abc import Callable, Iterator, Sequence
 from contextlib import ExitStack, closing, contextmanager
 from dataclasses import dataclass, replace
@@ -40,6 +41,7 @@ from cairntir.durability import (
 )
 from cairntir.errors import (
     AnchorError,
+    BackupError,
     ContentIntegrityError,
     EmbeddingError,
     EmbeddingSpaceError,
@@ -605,6 +607,7 @@ class DrawerStore:
         provenance: WriteProvenance | None = None,
         backup_migrations: bool = True,
         read_only: bool = False,
+        automatic_backups: bool = False,
     ) -> None:
         """Open (or create) the store at ``db_path`` using ``embedder``.
 
@@ -625,6 +628,7 @@ class DrawerStore:
         self._savepoint_counter = 0
         self._bulk_embedding: tuple[tuple[int, int, int, str], EmbeddingSpaceStatus] | None = None
         self._read_snapshot: TemporaryDirectory[str] | None = None
+        self._automatic_backups = automatic_backups and not read_only
         self._conn = self._connect_readonly(db_path) if read_only else self._connect(db_path)
         try:
             if read_only:
@@ -633,9 +637,20 @@ class DrawerStore:
             if backup_migrations:
                 self._backup_before_migration()
             self._init_schema()
+            self._backup_if_due()
         except (EmbeddingError, MemoryStoreError):
             self.close()
             raise
+
+    def _backup_if_due(self) -> None:
+        if not self._automatic_backups:
+            return
+        from cairntir.backups import BackupWarning, run
+
+        try:
+            run(self._path, force=False)
+        except BackupError as exc:
+            warnings.warn(f"automatic backup failed: {exc}", BackupWarning, stacklevel=2)
 
     def _connect_readonly(self, path: Path) -> sqlite3.Connection:
         conn: sqlite3.Connection | None = None
@@ -793,7 +808,8 @@ class DrawerStore:
                 self._initialize_portable_records()
                 self._initialize_procedures()
                 self._initialize_embedding_metadata_if_safe()
-                self._conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
+                if existing_version != SCHEMA_VERSION:
+                    self._conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"failed to initialize schema: {exc}") from exc
 
@@ -1076,6 +1092,7 @@ class DrawerStore:
         savepoint: str | None = None
         try:
             if self._transaction_depth == 0:
+                self._backup_if_due()
                 self._bulk_embedding = None
                 self._conn.execute("BEGIN IMMEDIATE")
             else:

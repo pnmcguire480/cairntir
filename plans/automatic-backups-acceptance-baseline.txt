@@ -1,0 +1,178 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFF                                            [100%]
+================================== FAILURES ===================================
+_____ test_disabled_default_and_missing_status_have_no_filesystem_effects _____
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+_ test_configuration_persists_default_interval_and_disable_preserves_backups __
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+________ test_invalid_interval_is_typed_and_preserves_configuration[0] ________
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+_______ test_invalid_interval_is_typed_and_preserves_configuration[-1] ________
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+_______ test_invalid_interval_is_typed_and_preserves_configuration[nan] _______
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+_______ test_invalid_interval_is_typed_and_preserves_configuration[inf] _______
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+______ test_invalid_interval_is_typed_and_preserves_configuration[True] _______
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+______________ test_source_database_cannot_be_backup_destination ______________
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+___ test_new_destination_gets_recovery_point_without_inheriting_old_cadence ___
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+__ test_opted_in_startup_copies_once_without_embedding_and_cadence_persists ___
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+______ test_due_outer_write_backs_up_committed_state_before_nested_work _______
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+_________ test_read_only_and_unopted_store_never_activate_due_backups _________
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+_ test_unavailable_destination_warns_and_does_not_block_ordinary_writes[startup] _
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+_ test_unavailable_destination_warns_and_does_not_block_ordinary_writes[write] _
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+______ test_explicit_failure_is_typed_without_false_success_or_retention ______
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+______ test_wal_snapshot_is_standalone_and_excludes_uncommitted_changes _______
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+______ test_orphan_committed_wal_survives_backup_without_source_sidecars ______
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+_______ test_write_checkpoint_races_produce_coherent_verified_snapshots _______
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+_________ test_concurrent_due_processes_publish_exactly_one_snapshot __________
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+________ test_contention_is_bounded_and_crashed_owner_can_be_replaced _________
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+___________ test_locked_source_timeout_is_typed_and_never_published ___________
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+___ test_retention_keeps_recent_and_four_weekly_points_and_unmanaged_files ____
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+____ test_retention_preserves_other_database_and_changed_managed_snapshot _____
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+____ test_cli_configuration_run_status_disable_are_real_and_status_is_pure ____
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+_ test_production_owner_startup_activates_backup_and_retains_transport_shape[cli] _
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+_ test_production_owner_startup_activates_backup_and_retains_transport_shape[mcp] _
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+____________ test_scoped_startup_cannot_trigger_owner_backups[cli] ____________
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+____________ test_scoped_startup_cannot_trigger_owner_backups[mcp] ____________
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+________ test_scoped_cli_cannot_configure_or_force_whole_store_backup _________
+No module named 'cairntir.backups'
+
+During handling of the above exception, another exception occurred:
+AUTOMATIC_BACKUPS_UNIMPLEMENTED: cairntir.backups
+=========================== short test summary info ===========================
+FAILED tests/acceptance/test_automatic_backups.py::test_disabled_default_and_missing_status_have_no_filesystem_effects
+FAILED tests/acceptance/test_automatic_backups.py::test_configuration_persists_default_interval_and_disable_preserves_backups
+FAILED tests/acceptance/test_automatic_backups.py::test_invalid_interval_is_typed_and_preserves_configuration[0]
+FAILED tests/acceptance/test_automatic_backups.py::test_invalid_interval_is_typed_and_preserves_configuration[-1]
+FAILED tests/acceptance/test_automatic_backups.py::test_invalid_interval_is_typed_and_preserves_configuration[nan]
+FAILED tests/acceptance/test_automatic_backups.py::test_invalid_interval_is_typed_and_preserves_configuration[inf]
+FAILED tests/acceptance/test_automatic_backups.py::test_invalid_interval_is_typed_and_preserves_configuration[True]
+FAILED tests/acceptance/test_automatic_backups.py::test_source_database_cannot_be_backup_destination
+FAILED tests/acceptance/test_automatic_backups.py::test_new_destination_gets_recovery_point_without_inheriting_old_cadence
+FAILED tests/acceptance/test_automatic_backups.py::test_opted_in_startup_copies_once_without_embedding_and_cadence_persists
+FAILED tests/acceptance/test_automatic_backups.py::test_due_outer_write_backs_up_committed_state_before_nested_work
+FAILED tests/acceptance/test_automatic_backups.py::test_read_only_and_unopted_store_never_activate_due_backups
+FAILED tests/acceptance/test_automatic_backups.py::test_unavailable_destination_warns_and_does_not_block_ordinary_writes[startup]
+FAILED tests/acceptance/test_automatic_backups.py::test_unavailable_destination_warns_and_does_not_block_ordinary_writes[write]
+FAILED tests/acceptance/test_automatic_backups.py::test_explicit_failure_is_typed_without_false_success_or_retention
+FAILED tests/acceptance/test_automatic_backups.py::test_wal_snapshot_is_standalone_and_excludes_uncommitted_changes
+FAILED tests/acceptance/test_automatic_backups.py::test_orphan_committed_wal_survives_backup_without_source_sidecars
+FAILED tests/acceptance/test_automatic_backups.py::test_write_checkpoint_races_produce_coherent_verified_snapshots
+FAILED tests/acceptance/test_automatic_backups.py::test_concurrent_due_processes_publish_exactly_one_snapshot
+FAILED tests/acceptance/test_automatic_backups.py::test_contention_is_bounded_and_crashed_owner_can_be_replaced
+FAILED tests/acceptance/test_automatic_backups.py::test_locked_source_timeout_is_typed_and_never_published
+FAILED tests/acceptance/test_automatic_backups.py::test_retention_keeps_recent_and_four_weekly_points_and_unmanaged_files
+FAILED tests/acceptance/test_automatic_backups.py::test_retention_preserves_other_database_and_changed_managed_snapshot
+FAILED tests/acceptance/test_automatic_backups.py::test_cli_configuration_run_status_disable_are_real_and_status_is_pure
+FAILED tests/acceptance/test_automatic_backups.py::test_production_owner_startup_activates_backup_and_retains_transport_shape[cli]
+FAILED tests/acceptance/test_automatic_backups.py::test_production_owner_startup_activates_backup_and_retains_transport_shape[mcp]
+FAILED tests/acceptance/test_automatic_backups.py::test_scoped_startup_cannot_trigger_owner_backups[cli]
+FAILED tests/acceptance/test_automatic_backups.py::test_scoped_startup_cannot_trigger_owner_backups[mcp]
+FAILED tests/acceptance/test_automatic_backups.py::test_scoped_cli_cannot_configure_or_force_whole_store_backup
+29 failed in 1.18s

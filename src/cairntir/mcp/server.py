@@ -1247,6 +1247,7 @@ async def _amain(*, host: str = "unknown", model: str = "unknown") -> None:
     store = DrawerStore(
         db_path(),
         production_embedding_provider(),
+        automatic_backups=token is None,
         provenance=WriteProvenance.create(
             host=host,
             capture_path="mcp",
