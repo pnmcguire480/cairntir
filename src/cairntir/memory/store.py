@@ -61,7 +61,21 @@ if TYPE_CHECKING:
 
 def _pack(vec: list[float]) -> bytes:
     """Pack a float vector into the little-endian float32 bytes sqlite-vec expects."""
-    return struct.pack(f"{len(vec)}f", *vec)
+    try:
+        packed = struct.pack(f"{len(vec)}f", *vec)
+    except (OverflowError, struct.error) as exc:
+        raise EmbeddingSpaceError("embedding must contain representable float32 values") from exc
+    stored = struct.unpack(f"{len(vec)}f", packed)
+    if not all(math.isfinite(value) for value in stored) or not any(stored):
+        raise EmbeddingSpaceError("embedding must have finite values and nonzero magnitude")
+    return packed
+
+
+def _embed_one(embedder: EmbeddingProvider, text: str) -> list[float]:
+    vectors = embedder.embed([text])
+    if len(vectors) != 1:
+        raise EmbeddingSpaceError(f"embedder returned {len(vectors)} vectors for one input")
+    return vectors[0]
 
 
 SCHEMA_VERSION = 7
@@ -1274,6 +1288,10 @@ class DrawerStore:
                 if current is not None and current.state is WorkflowState.COMMITTED:
                     return WorkflowExecution(receipt=current, replayed=True)
                 result = action()
+                if not isinstance(result, dict):
+                    raise WorkflowError(  # noqa: TRY301 - validation must roll back action writes
+                        f"workflow {key!r} returned a non-object result"
+                    )
                 try:
                     result_json = json.dumps(
                         result,
@@ -1301,6 +1319,8 @@ class DrawerStore:
                 raise WorkflowError(
                     f"workflow {key!r} failed and its failure state could not be recorded"
                 ) from mark_exc
+            if isinstance(exc, sqlite3.Error):
+                raise WorkflowError(f"workflow {key!r} failed: {exc}") from exc
             raise
 
         receipt = self.workflow_receipt(key)
@@ -1556,7 +1576,7 @@ class DrawerStore:
         """
         _guard_write_integrity(drawer)
         status = self._require_embedding_space()
-        vector = self._embedder.embed([drawer.content])[0]
+        vector = _embed_one(self._embedder, drawer.content)
         if len(vector) != status.stored_dimension:
             raise EmbeddingSpaceError(
                 f"embedding dimension mismatch: expected {status.stored_dimension}, "
@@ -1627,14 +1647,17 @@ class DrawerStore:
         curve reads from; drawers that are never retrieved grow stale and
         drift to a cold layer.
         """
+        drawer = self._read_drawer(drawer_id)
+        if drawer is not None:
+            self._touch(drawer_id)
+        return drawer
+
+    def _read_drawer(self, drawer_id: int) -> Drawer | None:
         try:
             row = self._conn.execute("SELECT * FROM drawers WHERE id = ?", (drawer_id,)).fetchone()
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"failed to fetch drawer {drawer_id}: {exc}") from exc
-        if row is None:
-            return None
-        self._touch(int(row["id"]))
-        return _row_to_drawer(row)
+        return _row_to_drawer(row) if row is not None else None
 
     def get_provenance(self, drawer_id: int) -> WriteProvenance | None:
         """Return the immutable write receipt for one drawer."""
@@ -1780,7 +1803,7 @@ class DrawerStore:
         the same controlled mutation :meth:`update_layer` already performs:
         retrieval routing changes, the verbatim floor does not.
         """
-        drawer = self.get(drawer_id)
+        drawer = self._read_drawer(drawer_id)
         if drawer is None:
             raise MemoryStoreError(f"no drawer with id {drawer_id} to add_anchors")
 
@@ -1841,7 +1864,7 @@ class DrawerStore:
         fingerprint as :meth:`add_anchors`. The verbatim content never moves,
         and nothing is written unless every entry validates first.
         """
-        drawer = self.get(drawer_id)
+        drawer = self._read_drawer(drawer_id)
         if drawer is None:
             raise MemoryStoreError(f"no drawer with id {drawer_id} to repair_anchors")
 
@@ -1906,10 +1929,13 @@ class DrawerStore:
         return [drawer_id for drawer_id, _ in self._legacy_migration_receipts()]
 
     def _legacy_migration_receipts(self) -> list[tuple[int, WriteProvenance]]:
-        rows = self._conn.execute(
-            "SELECT id, provenance FROM drawers WHERE trust = ?",
-            (TrustLevel.UNTRUSTED.value,),
-        ).fetchall()
+        try:
+            rows = self._conn.execute(
+                "SELECT id, provenance FROM drawers WHERE trust = ?",
+                (TrustLevel.UNTRUSTED.value,),
+            ).fetchall()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"failed to read legacy migration receipts: {exc}") from exc
         targets: list[tuple[int, WriteProvenance]] = []
         for row in rows:
             try:
@@ -2180,7 +2206,7 @@ class DrawerStore:
         ``rerank_by_belief=False`` to get pure vector order.
         """
         status = self._require_embedding_space()
-        vector = self._embedder.embed([query])[0]
+        vector = _embed_one(self._embedder, query)
         if len(vector) != status.stored_dimension:
             raise EmbeddingSpaceError(
                 f"embedding dimension mismatch: expected {status.stored_dimension}, "
