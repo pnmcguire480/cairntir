@@ -1,0 +1,89 @@
+{
+  "result": "PASS",
+  "gate": "independent_candidate_source_and_packaging",
+  "tester": "/root/foundation_tester",
+  "started_at_utc": "2026-09-07T18:16:26.268380+00:00",
+  "finished_at_utc": "2026-09-07T18:16:29.140379+00:00",
+  "tested_head": "e27fe04a21eeb4db32fadb6804ee3afb7c617a58",
+  "gates": [
+    {
+      "mode": "source",
+      "command": [
+        "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+        "tests/release/verify_v1_12_0.py",
+        "source"
+      ],
+      "returncode": 0,
+      "report": {
+        "result": "PASS",
+        "gate": "source",
+        "version": "1.12.0",
+        "source_files_unchanged_except_version": 58,
+        "historical_frozen_hashes_checked": 7,
+        "package_files": 74,
+        "artifact_hashes": {},
+        "failures": [],
+        "publication": "PENDING_SEPARATE_VERIFICATION",
+        "production_installation_and_activation": "PENDING_SEPARATE_VERIFICATION"
+      },
+      "raw_output": "plans/v1.12.0-release-result-source.txt",
+      "raw_sha256": "3583c086d4a2ac6cc42218a9dda9f627f2eddcabf8091ff7f8f26aa404e37cd2"
+    },
+    {
+      "mode": "package",
+      "command": [
+        "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+        "tests/release/verify_v1_12_0.py",
+        "package",
+        "--wheel",
+        ".cairntir\\v1.12.0-release\\dist\\cairntir-1.12.0-py3-none-any.whl",
+        "--sdist",
+        ".cairntir\\v1.12.0-release\\dist\\cairntir-1.12.0.tar.gz"
+      ],
+      "returncode": 0,
+      "report": {
+        "result": "PASS",
+        "gate": "package",
+        "version": "1.12.0",
+        "source_files_unchanged_except_version": 58,
+        "historical_frozen_hashes_checked": 7,
+        "package_files": 74,
+        "artifact_hashes": {
+          "wheel": "206694feeb89ae8a6f9b37db659fd5f7ac045825b1794c5d9bc8d5acf87daabd",
+          "sdist": "e40d0ff2509ff3a1dfa0f0ddc69b0fbb74f00bc0e8f3e98f3e5d96a521f3b7b5"
+        },
+        "failures": [],
+        "publication": "PENDING_SEPARATE_VERIFICATION",
+        "production_installation_and_activation": "PENDING_SEPARATE_VERIFICATION"
+      },
+      "raw_output": "plans/v1.12.0-release-result-package.txt",
+      "raw_sha256": "c49b6b53eb6a91e27f8e07d2adc243cec242d8ce2958e9a8bb9483cbf05fbc7a"
+    }
+  ],
+  "freeze_manifest_sha256": "daea67a8bd39783ce0375d7741ee7dcf1e6306aac4e078c8b67576505cc1e9ed",
+  "frozen_artifacts_before": {
+    "tests/release/verify_v1_12_0.py": "6d3d10761aa2d857969aec30aed023d640cc37c4cd026873d2e3ff1e0794b299",
+    "plans/v1.12.0-release-acceptance.md": "b30ff03a89b3a1ebc4541b5d598779838c21b4cb8835fd46991c43e6c1c5a816",
+    "plans/v1.12.0-release-acceptance-inputs.json": "ff43f99ad59216f53347e0cc6dd39ccaa1b7bba0cdb3fdc4a196e4076570eceb",
+    "plans/v1.12.0-release-acceptance-baseline.json": "0f51a814e515d387bd77834b45d45afe08bc6495aad4b0972d70d98c6fb85550",
+    "plans/v1.12.0-release-acceptance-baseline.txt": "1fbe6b26d3163e615db31d6041f86b35982a8629b8cdd09d92f01265bf355b91"
+  },
+  "frozen_artifacts_after": {
+    "tests/release/verify_v1_12_0.py": "6d3d10761aa2d857969aec30aed023d640cc37c4cd026873d2e3ff1e0794b299",
+    "plans/v1.12.0-release-acceptance.md": "b30ff03a89b3a1ebc4541b5d598779838c21b4cb8835fd46991c43e6c1c5a816",
+    "plans/v1.12.0-release-acceptance-inputs.json": "ff43f99ad59216f53347e0cc6dd39ccaa1b7bba0cdb3fdc4a196e4076570eceb",
+    "plans/v1.12.0-release-acceptance-baseline.json": "0f51a814e515d387bd77834b45d45afe08bc6495aad4b0972d70d98c6fb85550",
+    "plans/v1.12.0-release-acceptance-baseline.txt": "1fbe6b26d3163e615db31d6041f86b35982a8629b8cdd09d92f01265bf355b91"
+  },
+  "frozen_artifacts_unchanged": true,
+  "artifact_hashes": {
+    "wheel": "206694feeb89ae8a6f9b37db659fd5f7ac045825b1794c5d9bc8d5acf87daabd",
+    "sdist": "e40d0ff2509ff3a1dfa0f0ddc69b0fbb74f00bc0e8f3e98f3e5d96a521f3b7b5"
+  },
+  "official_repairs": 0,
+  "broader_tests": "Coordinator runs unchanged full suite; not duplicated by this packaging gate.",
+  "publication": "PENDING",
+  "fresh_public_installation": "PENDING",
+  "production_preservation_and_activation": "PENDING",
+  "sdist_note": "This snapshot precedes the new candidate result documents; a rebuilt final source archive requires a fresh package-gate check."
+}

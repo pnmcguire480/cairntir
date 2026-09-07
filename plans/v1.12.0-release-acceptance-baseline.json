@@ -1,0 +1,41 @@
+{
+  "kind": "independent_prerelease_baseline",
+  "captured_at_utc": "2026-09-07T18:13:42.966385+00:00",
+  "base_head": "e27fe04a21eeb4db32fadb6804ee3afb7c617a58",
+  "command": [
+    "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe",
+    "tests/release/verify_v1_12_0.py",
+    "source"
+  ],
+  "returncode": 1,
+  "artifact_readiness": "PASS",
+  "source_gate": "FAIL",
+  "expected_metadata_failures": 6,
+  "infrastructure_failures": 0,
+  "report": {
+    "result": "FAIL",
+    "gate": "source",
+    "version": "1.12.0",
+    "source_files_unchanged_except_version": 58,
+    "historical_frozen_hashes_checked": 7,
+    "package_files": 74,
+    "artifact_hashes": {},
+    "failures": [
+      "version-only module delta",
+      "pyproject version is not 1.12.0",
+      "uv.lock version is not 1.12.0",
+      "plugin version is not 1.12.0",
+      "dated 1.12.0 changelog missing",
+      "Unreleased section must be empty"
+    ],
+    "publication": "PENDING_SEPARATE_VERIFICATION",
+    "production_installation_and_activation": "PENDING_SEPARATE_VERIFICATION"
+  },
+  "raw_output": "plans/v1.12.0-release-acceptance-baseline.txt",
+  "raw_output_sha256": "1fbe6b26d3163e615db31d6041f86b35982a8629b8cdd09d92f01265bf355b91",
+  "ruff_and_format": "PASS",
+  "publication": "PENDING",
+  "fresh_install": "PENDING",
+  "production_preservation": "PENDING",
+  "activation": "PENDING"
+}

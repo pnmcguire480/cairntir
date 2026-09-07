@@ -1,6 +1,6 @@
 # Automatic store backups
 
-Status: local acceptance COMPLETE; PR delivery and installation pending.
+Status: implementation and protected PR delivery COMPLETE; approved 1.12.0 publication and installation in progress.
 
 ## Problem and goal
 
@@ -74,7 +74,10 @@ Ruff, strict typing, strict documentation, links, commitments, seams, exception
 handling, immutable release tags and all 134 locked dependency advisories passed.
 The authorized machine policy is configured and its first managed snapshot is
 verified. The published and installed package remains 1.11.0; automatic policy
-activation awaits delivery through the release and installation gate.
+activation is tracked in the approved [1.12.0 release](../docs/release/v1.12.0.md).
+PR [#102](https://github.com/pnmcguire480/cairntir/pull/102) merged at `e27fe04`
+with all 14 checks passing. The user explicitly approved the 1.12.0 publication
+and installation gate on 2026-09-07.
 
 ```cairntir-commitments
 file   src/cairntir/backups.py

@@ -1,0 +1,15 @@
+{
+  "result": "PASS",
+  "gate": "package",
+  "version": "1.12.0",
+  "source_files_unchanged_except_version": 58,
+  "historical_frozen_hashes_checked": 7,
+  "package_files": 74,
+  "artifact_hashes": {
+    "wheel": "206694feeb89ae8a6f9b37db659fd5f7ac045825b1794c5d9bc8d5acf87daabd",
+    "sdist": "e40d0ff2509ff3a1dfa0f0ddc69b0fbb74f00bc0e8f3e98f3e5d96a521f3b7b5"
+  },
+  "failures": [],
+  "publication": "PENDING_SEPARATE_VERIFICATION",
+  "production_installation_and_activation": "PENDING_SEPARATE_VERIFICATION"
+}

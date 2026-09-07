@@ -1,6 +1,6 @@
 # How to Use Cairntir
 
-**Current published release: 1.11.0.**
+**Release candidate: 1.12.0.** [Publication status](release/v1.12.0.md).
 
 ## Install
 
@@ -36,7 +36,7 @@ Cursor's **global** User Rule still has to be pasted into
 ## Check it worked
 
 ```bash
-cairntir version    # 1.11.0
+cairntir version    # 1.12.0
 cairntir status     # where the store lives, drawer counts
 cairntir doctor     # host wiring without changing anything
 ```
@@ -48,7 +48,7 @@ task, and check that the first handoff returns that fact verbatim.
 
 ## Backups
 
-These commands are under development and are not included in published 1.11.0.
+These commands require Cairntir 1.12.0 or later.
 
 Choose a backup directory, preferably on another drive:
 

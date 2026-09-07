@@ -1,6 +1,6 @@
 # Plans
 
-- [Automatic store backups](automatic-backups.md): in progress; verified snapshots with a default 12-hour interval and managed retention.
+- [Automatic store backups](automatic-backups.md): implementation merged; 1.12.0 publication and activation in progress.
 - [Interrupted task resumption delivery](task-resume-delivery.md): independently accepted and published as 1.11.0.
 - [Continuity delivery](continuity-delivery.md): COMPLETE; independently accepted continuity milestones published as 1.10.0 with verified artifacts, attestations and fresh public-package smoke.
 - [2.0 continuity preparation](v2-continuity.md): historical foundation plan and frozen acceptance.

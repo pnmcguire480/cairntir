@@ -1,0 +1,12 @@
+{
+  "result": "PASS",
+  "gate": "source",
+  "version": "1.12.0",
+  "source_files_unchanged_except_version": 58,
+  "historical_frozen_hashes_checked": 7,
+  "package_files": 74,
+  "artifact_hashes": {},
+  "failures": [],
+  "publication": "PENDING_SEPARATE_VERIFICATION",
+  "production_installation_and_activation": "PENDING_SEPARATE_VERIFICATION"
+}
