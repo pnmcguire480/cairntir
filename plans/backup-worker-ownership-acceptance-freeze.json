@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN",
+  "independent_tester": "/root/foundation_tester",
+  "frozen_at_utc": "2026-09-07T18:53:48.479498+00:00",
+  "base_head": "73cc04249010411fa3d2cb198d6c20d6654c68d0",
+  "artifact_readiness": "PASS",
+  "implementation_acceptance": "FAIL",
+  "baseline_passed": 0,
+  "baseline_failed": 1,
+  "baseline_infrastructure_failures": 0,
+  "artifacts": {
+    "tests/acceptance/test_backup_worker_ownership.py": "ed6c6a5f7d8ffaec522ec1737e5d92436f52408a8c2e2d73219be1e275158ac2",
+    "plans/backup-worker-ownership-acceptance.md": "a0274a117587681d5db9c18d6dd00edefb65cee09758f740ad121eeeba74eae9",
+    "plans/backup-worker-ownership-acceptance-baseline.txt": "3467200c54435c83dbd43bcff618b0ef7a7ee89681903a286441026ea40a6a32",
+    "plans/backup-worker-ownership-acceptance-baseline.json": "fbd03a894840ba7a5a00f2bf677c0bb2c176afad65b39fdfdbd6525ada3b161e",
+    "tests/acceptance/test_automatic_backups.py": "8339755f367d8e9a91013651b28f69b53b6e95662da465b4cfffb6801b4a6da5",
+    "tests/conftest.py": "a43e93cbc6abc0f182239545fb77ca4d6a61945d9ec3781d2338380edeffdbef"
+  },
+  "maximum_repair_rounds": 2,
+  "verification_reserve_minimum_percent": 25,
+  "historical_release_failure_run": 34152318223,
+  "amendment_policy": "Frozen supplement. Never alter original automatic-backup/release contracts. Manifest self-hash is reported externally."
+}

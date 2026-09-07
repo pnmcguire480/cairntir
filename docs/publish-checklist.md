@@ -57,8 +57,9 @@ Release operations:
 ## Past release records
 
 Evidence and known limits for each shipped release live under `docs/release/`.
-The [1.12.0 candidate record](release/v1.12.0.md) tracks the current approved
-release. The latest published record is [1.11.0](release/v1.11.0.md); the prior
+The [1.12.1 candidate record](release/v1.12.1.md) tracks the current approved
+release. The [withheld 1.12.0 record](release/v1.12.0.md) preserves its failed
+verification and unchanged tag. The latest published record is [1.11.0](release/v1.11.0.md); the prior
 release is [1.10.0](release/v1.10.0.md).
 
 ## Local verification

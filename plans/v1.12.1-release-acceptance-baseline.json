@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "independent_tester": "/root/foundation_tester",
+  "captured_at_utc": "2026-09-07T18:56:32.997526+00:00",
+  "base_head": "73cc04249010411fa3d2cb198d6c20d6654c68d0",
+  "invocation": ".\\.venv\\Scripts\\python.exe tests/release/verify_v1_12_1.py source",
+  "exit_code": 1,
+  "result": "FAIL_EXPECTED_PREMETADATA_AND_PREACCEPTANCE",
+  "expected_failures": 6,
+  "infrastructure_failures": 0,
+  "report": {
+    "result": "FAIL",
+    "gate": "source",
+    "version": "1.12.1",
+    "source_files_unchanged_except_version_and_backup_repair": 57,
+    "historical_frozen_hashes_checked": 19,
+    "package_files": 74,
+    "artifact_hashes": {},
+    "backups_source_sha256": "e5d2412f64559d7295e37013084761ee39b6a6beae6a2df36e24abd9b52fc273",
+    "independent_backup_acceptance": null,
+    "failures": [
+      "independent 72-case backup repair acceptance is required",
+      "version-only module delta",
+      "pyproject version is not 1.12.1",
+      "uv.lock version is not 1.12.1",
+      "plugin version is not 1.12.1",
+      "dated 1.12.1 changelog missing"
+    ],
+    "publication": "PENDING_SEPARATE_VERIFICATION",
+    "production_installation_and_activation": "PENDING_SEPARATE_VERIFICATION"
+  },
+  "raw_output": "plans/v1.12.1-release-acceptance-baseline.txt",
+  "raw_output_sha256": "9d747d984f25e097e02c002c35950797209944c46cd8da2862a11ea8b3cf702e",
+  "ruff_check": "PASS",
+  "ruff_format": "PASS"
+}

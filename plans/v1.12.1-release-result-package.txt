@@ -1,0 +1,17 @@
+{
+  "result": "PASS",
+  "gate": "package",
+  "version": "1.12.1",
+  "source_files_unchanged_except_version_and_backup_repair": 57,
+  "historical_frozen_hashes_checked": 19,
+  "package_files": 74,
+  "artifact_hashes": {
+    "wheel": "9b92b6a03353e66ca25526b665d6dfde9a020ddea39b2eed865f4860ea403307",
+    "sdist": "285898241c524dc6540da4c0896f0f57d1bb85a1a6c2ea025d0b49abcf107e8b"
+  },
+  "backups_source_sha256": "e5d2412f64559d7295e37013084761ee39b6a6beae6a2df36e24abd9b52fc273",
+  "independent_backup_acceptance": "plans\\backup-worker-ownership-result-round1.json",
+  "failures": [],
+  "publication": "PENDING_SEPARATE_VERIFICATION",
+  "production_installation_and_activation": "PENDING_SEPARATE_VERIFICATION"
+}

@@ -5,8 +5,8 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Published version: **1.11.0**; approved release candidate: **1.12.0**. The
-[1.12.0 release record](docs/release/v1.12.0.md) tracks backup publication and
+Published version: **1.11.0**; corrective release candidate: **1.12.1**. The
+[1.12.1 release record](docs/release/v1.12.1.md) tracks backup publication and
 installation. The [1.11.0 record](docs/release/v1.11.0.md) remains immutable
 publication evidence. Pending changes belong under
 [Unreleased](CHANGELOG.md#unreleased).
@@ -94,7 +94,7 @@ recorded in [the release record](docs/release/v1.11.0.md). PR #97 merged at
 or reindex was needed; verified manual recovery baselines were saved separately.
 
 The [automatic backup plan](plans/automatic-backups.md), issue #101, merged through
-PR #102 and is included in the approved 1.12.0 candidate. Opt-in per-database policy
+PR #102 and is included in the corrective 1.12.1 candidate. Opt-in per-database policy
 checks a default 12-hour interval at writable owner startup and before an outer
 write. Isolated processes verify complete snapshots and publish timestamped
 archives; managed retention keeps seven recent days and four older ISO weeks.
@@ -113,9 +113,14 @@ outside automatic retention. The machine's 12-hour policy is saved for the
 user-approved separate drive and its first managed snapshot was verified.
 PR #102 merged at `e27fe04` with all 14 checks passing. The user explicitly
 approved 1.12.0 publication and installation on 2026-09-07; issue #103 and the
-[release record](docs/release/v1.12.0.md) track the remaining gates. Production
-1.11.0 does not yet run the new automatic policy. Accepted runtime and frozen
-artifacts remain unchanged apart from the package version.
+[withheld candidate record](docs/release/v1.12.0.md) preserve the first attempt.
+Release verification failed the original crash-replacement test before any
+publication job ran. The tag stays at `73cc042`; 1.12.1 corrects the worker-ownership
+race under new independent frozen acceptance. All original frozen artifacts
+remain unchanged. Independent repair round 1 passed 72 cases; the corrected full
+suite passed 1,151 tests with 83.17% coverage. Candidate package, CLI/MCP and backup
+smoke checks passed. Production stays 1.11.0 until the corrected public package is
+verified and installed; no reindex, dependency or schema change is needed.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer

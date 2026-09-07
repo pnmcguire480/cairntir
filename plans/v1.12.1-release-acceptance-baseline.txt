@@ -1,0 +1,21 @@
+{
+  "result": "FAIL",
+  "gate": "source",
+  "version": "1.12.1",
+  "source_files_unchanged_except_version_and_backup_repair": 57,
+  "historical_frozen_hashes_checked": 19,
+  "package_files": 74,
+  "artifact_hashes": {},
+  "backups_source_sha256": "e5d2412f64559d7295e37013084761ee39b6a6beae6a2df36e24abd9b52fc273",
+  "independent_backup_acceptance": null,
+  "failures": [
+    "independent 72-case backup repair acceptance is required",
+    "version-only module delta",
+    "pyproject version is not 1.12.1",
+    "uv.lock version is not 1.12.1",
+    "plugin version is not 1.12.1",
+    "dated 1.12.1 changelog missing"
+  ],
+  "publication": "PENDING_SEPARATE_VERIFICATION",
+  "production_installation_and_activation": "PENDING_SEPARATE_VERIFICATION"
+}
