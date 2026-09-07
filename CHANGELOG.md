@@ -13,7 +13,7 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
-## [1.12.0] — 2026-09-07
+## [1.12.1] — 2026-09-07
 
 ### Added
 
@@ -25,8 +25,19 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ### Fixed
 
+- Backup workers keep an operating-system claim on their staging directory.
+  A helper left behind by a killed coordinator cannot delete another active
+  worker's snapshot during cleanup.
 - Opening a store already at the current schema no longer rewrites its schema
   version header. Scoped startup and ordinary reopen preserve the database bytes.
+
+### Withheld 1.12.0 candidate
+
+The immutable `v1.12.0` tag remains at `73cc042`. Its
+[release verification](https://github.com/pnmcguire480/cairntir/actions/runs/34152318223)
+exposed the worker-ownership race before any build or publication job ran.
+No 1.12.0 package was published; 1.12.1 carries the corrected capability.
+The [failed candidate record](docs/release/v1.12.0.md) preserves its evidence.
 
 ## [1.11.0] — 2026-09-07
 
@@ -1720,8 +1731,8 @@ six-tool MCP surface that Claude Code can talk to directly.
 - `ruff check`, `ruff format`, `mypy --strict` clean
 - Every exception typed; no silent `except: pass`
 
-[Unreleased]: https://github.com/pnmcguire480/cairntir/compare/v1.12.0...HEAD
-[1.12.0]: https://github.com/pnmcguire480/cairntir/compare/v1.11.0...v1.12.0
+[Unreleased]: https://github.com/pnmcguire480/cairntir/compare/v1.12.1...HEAD
+[1.12.1]: https://github.com/pnmcguire480/cairntir/compare/v1.11.0...v1.12.1
 [1.7.0]: https://github.com/pnmcguire480/cairntir/compare/v1.6.2...v1.7.0
 [1.6.2]: https://github.com/pnmcguire480/cairntir/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/pnmcguire480/cairntir/compare/v1.6.0...v1.6.1

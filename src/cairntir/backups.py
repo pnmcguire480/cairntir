@@ -147,9 +147,14 @@ def _save(database: Path, state: dict[str, Any]) -> None:
 
 @contextmanager
 def _lock(database: Path, *, create: bool) -> Iterator[bool]:
-    _, path = _paths(database)
+    with _file_lock(_paths(database)[1], create=create) as acquired:
+        yield acquired
+
+
+@contextmanager
+def _file_lock(path: Path, *, create: bool, exclusive_create: bool = False) -> Iterator[bool]:
     try:
-        handle = path.open("a+b" if create else "rb")
+        handle = path.open("x+b" if exclusive_create else "a+b" if create else "rb")
     except FileNotFoundError:
         if not create:
             yield False
@@ -304,7 +309,29 @@ def _prepare_snapshot(source: Path, destination: Path, deadline: float) -> None:
             raise BackupError("backup SQLite foreign-key check failed")
 
 
+def _claim_path(directory: Path) -> Path:
+    return directory.with_name(directory.name + ".lock")
+
+
 def _clean_partial(directory: Path, state: dict[str, Any]) -> None:
+    if directory.is_symlink() or not _PARTIAL.fullmatch(directory.name):
+        return
+    claim = _claim_path(directory)
+    if claim.is_symlink():
+        return
+    try:
+        # Only the creator makes this unique claim. Cleaners never recreate an unlinked lock.
+        with _file_lock(claim, create=False) as acquired:
+            if not acquired:
+                return
+            _remove_partial(directory, state)
+        if not directory.exists():
+            claim.unlink(missing_ok=True)
+    except (BackupError, OSError) as exc:
+        warnings.warn(f"backup staging cleanup deferred: {exc}", BackupWarning, stacklevel=2)
+
+
+def _remove_partial(directory: Path, state: dict[str, Any]) -> None:
     if directory.is_symlink() or not _PARTIAL.fullmatch(directory.name):
         return
     allowed = {
@@ -331,7 +358,6 @@ def _clean_partial(directory: Path, state: dict[str, Any]) -> None:
             or value.get("database") != state["database"]
         ):
             return
-        # A killed owner's helper may still hold these private files on Windows.
         for path in sorted(paths, key=lambda item: item == marker):
             path.unlink()
         directory.rmdir()
@@ -346,6 +372,8 @@ def _publish_snapshot(
 ) -> dict[str, Any]:
     namespace = _namespace(state)
     partial: Path | None = None
+    claim: Path | None = None
+    claimed = False
     try:
         if namespace.is_symlink():
             raise BackupError("backup namespace must not be a symbolic link")
@@ -354,39 +382,54 @@ def _publish_snapshot(
             _check_deadline(deadline)
             _clean_partial(orphan, state)
         partial = namespace / (".partial-" + uuid4().hex)
-        partial.mkdir()
-        marker = partial / "pending.json"
-        marker.write_text(
-            json.dumps({"format": _PENDING, "owner": state["owner"], "database": str(database)}),
-            encoding="utf-8",
-        )
-        snapshot = partial / "snapshot.db"
-        _prepare_snapshot(database, snapshot, deadline)
-        published = namespace / (now.strftime("%Y%m%dT%H%M%S%fZ") + "-" + uuid4().hex)
-        item = {
-            "path": str(published / snapshot.name),
-            "created_at": now.isoformat(),
-            "sha256": _hash(snapshot, deadline),
-            "size_bytes": snapshot.stat().st_size,
-        }
-        receipt_path = partial / "receipt.json"
-        with receipt_path.open("x", encoding="utf-8", newline="\n") as handle:
-            json.dump(_receipt(state, item), handle, separators=(",", ":"))
-            handle.write("\n")
-            handle.flush()
-            os.fsync(handle.fileno())
-        with snapshot.open("r+b") as handle:
-            os.fsync(handle.fileno())
-        _check_deadline(deadline)
-        marker.unlink()
-        os.rename(partial, published)
+        claim = _claim_path(partial)
+        # The sibling claim survives directory rename on Windows and coordinator death.
+        with _file_lock(claim, create=True, exclusive_create=True) as acquired:
+            if not acquired:
+                raise BackupError("backup staging claim is already owned")
+            claimed = True
+            partial.mkdir()
+            try:
+                marker = partial / "pending.json"
+                marker.write_text(
+                    json.dumps(
+                        {"format": _PENDING, "owner": state["owner"], "database": str(database)}
+                    ),
+                    encoding="utf-8",
+                )
+                snapshot = partial / "snapshot.db"
+                _prepare_snapshot(database, snapshot, deadline)
+                published = namespace / (now.strftime("%Y%m%dT%H%M%S%fZ") + "-" + uuid4().hex)
+                item = {
+                    "path": str(published / snapshot.name),
+                    "created_at": now.isoformat(),
+                    "sha256": _hash(snapshot, deadline),
+                    "size_bytes": snapshot.stat().st_size,
+                }
+                receipt_path = partial / "receipt.json"
+                with receipt_path.open("x", encoding="utf-8", newline="\n") as handle:
+                    json.dump(_receipt(state, item), handle, separators=(",", ":"))
+                    handle.write("\n")
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                with snapshot.open("r+b") as handle:
+                    os.fsync(handle.fileno())
+                _check_deadline(deadline)
+                marker.unlink()
+                os.rename(partial, published)
+            finally:
+                if partial.exists():
+                    _remove_partial(partial, state)
     except OSError as exc:
         raise BackupError(f"backup failed: {exc}") from exc
     else:
         return item
     finally:
-        if partial is not None and partial.exists():
-            _clean_partial(partial, state)
+        if claimed and claim is not None and partial is not None and not partial.exists():
+            try:
+                claim.unlink(missing_ok=True)
+            except OSError as exc:
+                warnings.warn(f"backup claim cleanup deferred: {exc}", BackupWarning, stacklevel=2)
 
 
 def _verified(item: dict[str, Any], state: dict[str, Any], deadline: float) -> bool:

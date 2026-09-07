@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN",
+  "version": "1.12.1",
+  "independent_tester": "/root/foundation_tester",
+  "frozen_at_utc": "2026-09-07T18:57:09.244207+00:00",
+  "artifact_readiness": "PASS",
+  "source_baseline": "FAIL_EXPECTED_PREMETADATA_AND_PREACCEPTANCE",
+  "baseline_expected_failures": 6,
+  "baseline_infrastructure_failures": 0,
+  "source_unchanged_files": 57,
+  "historical_frozen_hashes": 19,
+  "permitted_behavioral_source": "src/cairntir/backups.py",
+  "required_independent_behavioral_passed": 72,
+  "expected_package_files": 74,
+  "expected_mcp_tools": 21,
+  "artifacts": {
+    "tests/release/verify_v1_12_1.py": "6c6f2d19fe2a9d8dcbfaa48ab57975b3c00ffb9f668770d95c7bb4281ee8f667",
+    "plans/v1.12.1-release-acceptance.md": "c0aebd73993f461ac3be78c33336fa2a4278dab3e84dd46ec6de91ca9baaa461",
+    "plans/v1.12.1-release-acceptance-inputs.json": "db45f265d8ae3c8e78c043ea00b41980955f4cb6a7030fcfb83b9b1509c70426",
+    "plans/v1.12.1-release-acceptance-baseline.json": "37e029bdf6379774162057f9afa1bd816993834f5e42ef2e46601db741b73f95",
+    "plans/v1.12.1-release-acceptance-baseline.txt": "9d747d984f25e097e02c002c35950797209944c46cd8da2862a11ea8b3cf702e"
+  },
+  "maximum_repair_rounds": 2,
+  "verification_reserve_minimum_percent": 25,
+  "publication": "PENDING",
+  "fresh_installation": "PENDING",
+  "production_preservation_and_activation": "PENDING",
+  "amendment_policy": "New generation supersedes1.12.0 source expectations only for version/accepted backup ownership repair. All prior frozen artifacts remain immutable. Manifest self-hash is reported externally."
+}

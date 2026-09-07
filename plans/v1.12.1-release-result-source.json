@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "independent_tester": "/root/foundation_tester",
+  "verified_at_utc": "2026-09-07T19:01:42.108890+00:00",
+  "invocation": ".\\.venv\\Scripts\\python.exe tests/release/verify_v1_12_1.py source --backup-acceptance plans/backup-worker-ownership-result-round1.json",
+  "exit_code": 0,
+  "report": {
+    "result": "PASS",
+    "gate": "source",
+    "version": "1.12.1",
+    "source_files_unchanged_except_version_and_backup_repair": 57,
+    "historical_frozen_hashes_checked": 19,
+    "package_files": 74,
+    "artifact_hashes": {},
+    "backups_source_sha256": "e5d2412f64559d7295e37013084761ee39b6a6beae6a2df36e24abd9b52fc273",
+    "independent_backup_acceptance": "plans\\backup-worker-ownership-result-round1.json",
+    "failures": [],
+    "publication": "PENDING_SEPARATE_VERIFICATION",
+    "production_installation_and_activation": "PENDING_SEPARATE_VERIFICATION"
+  },
+  "raw_output": "plans/v1.12.1-release-result-source.txt",
+  "raw_output_sha256": "41b961ff61508040c77ace9d9cadf08519bbac9c0a2eaa01c2467d64b3ecbb78"
+}

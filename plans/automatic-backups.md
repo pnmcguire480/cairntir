@@ -1,6 +1,6 @@
 # Automatic store backups
 
-Status: implementation and protected PR delivery COMPLETE; approved 1.12.0 publication and installation in progress.
+Status: publication verification exposed a worker-ownership race; corrective 1.12.1 acceptance and delivery in progress.
 
 ## Problem and goal
 
@@ -74,7 +74,10 @@ Ruff, strict typing, strict documentation, links, commitments, seams, exception
 handling, immutable release tags and all 134 locked dependency advisories passed.
 The authorized machine policy is configured and its first managed snapshot is
 verified. The published and installed package remains 1.11.0; automatic policy
-activation is tracked in the approved [1.12.0 release](../docs/release/v1.12.0.md).
+activation is tracked in the corrective [1.12.1 release](../docs/release/v1.12.1.md).
+The first tagged candidate failed crash-replacement verification before publication;
+its tag and all frozen evidence remain unchanged. New independent acceptance
+reproduces the worker-ownership race before the runtime repair.
 PR [#102](https://github.com/pnmcguire480/cairntir/pull/102) merged at `e27fe04`
 with all 14 checks passing. The user explicitly approved the 1.12.0 publication
 and installation gate on 2026-09-07.
@@ -87,4 +90,5 @@ param  src/cairntir/memory/store.py __init__:automatic_backups
 test   tests/acceptance/test_automatic_backups.py test_due_outer_write_backs_up_committed_state_before_nested_work
 test   tests/acceptance/test_automatic_backups.py test_contention_is_bounded_and_crashed_owner_can_be_replaced
 test   tests/acceptance/test_automatic_backups.py test_retention_keeps_recent_and_four_weekly_points_and_unmanaged_files
+test   tests/acceptance/test_backup_worker_ownership.py test_orphan_worker_never_removes_a_live_replacement_attempt
 ```

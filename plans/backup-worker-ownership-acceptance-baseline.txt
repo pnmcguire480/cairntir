@@ -1,0 +1,12 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_orphan_worker_never_removes_a_live_replacement_attempt _________
+tests\acceptance\test_backup_worker_ownership.py:129: in test_orphan_worker_never_removes_a_live_replacement_attempt
+    assert staged.is_dir(), "orphan worker deleted another live attempt's staging directory"
+E   AssertionError: orphan worker deleted another live attempt's staging directory
+E   assert False
+E    +  where False = is_dir()
+E    +    where is_dir = WindowsPath('C:/Dev/Cairntir/.cairntir/backup-worker-ownership-baseline/test_orphan_worker_never_remov0/.cairntir/backups/cairntir-82cccdddb5ae4935a7855aeace0d4dc8/.partial-15cf33b763e64411813ebbc9bfa187e6').is_dir
+=========================== short test summary info ===========================
+FAILED tests/acceptance/test_backup_worker_ownership.py::test_orphan_worker_never_removes_a_live_replacement_attempt
+1 failed in 2.00s
