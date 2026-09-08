@@ -5,11 +5,11 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Release candidate: **1.12.2**; published and installed version: **1.12.1**.
-The [1.12.2 release record](docs/release/v1.12.2.md) tracks the authorized publication. The
-[1.12.1 release record](docs/release/v1.12.1.md) records publication, installation
-preservation and automatic backup activation. Earlier release records remain
-historical publication evidence. Pending changes belong under
+Published version: **1.12.2**; production installation: **1.12.1**. The
+[1.12.2 release record](docs/release/v1.12.2.md) records verified PyPI publication
+and fresh isolated CLI/MCP installation checks. The
+[1.12.1 release record](docs/release/v1.12.1.md) records the production installation
+and automatic backup activation. Pending changes belong under
 [Unreleased](CHANGELOG.md#unreleased).
 
 The core has verbatim SQLite drawers, explicit provenance, task-aware budgeted
@@ -87,25 +87,29 @@ the production installation as an incidental build step.
 
 ## Last Session — 2026-09-08
 
-[PR #108](https://github.com/pnmcguire480/cairntir/pull/108) is merged as
-`f4dd4f587f0437dd27d6d669906454b787aa426c`; issue #107 is closed. All 1,672
-local tests passed, nine deliberate mutations were caught, and final platform CI
-passed the strict 92% combined coverage gate. The
-[verification plan](plans/verification-structure.md) and
-[receipt](plans/verification-evidence.json) retain the full evidence and limits.
-No independent review is claimed for the solo-authored verification additions.
+Cairntir **1.12.2** is published on PyPI and GitHub. Release PR #109 passed full
+platform/model/behavioral/package CI and CodeQL, then merged as
+`b3798b95a058f440448e3ae08d85a8be4123bb9b`. The immutable tag and all five trusted
+release jobs passed. Public wheel/sdist hashes match workflow and GitHub assets;
+signed provenance binds the exact source, tag, workflow and hosted run.
 
-The user requested “1.12.2  make it” in response to the PyPI publication status.
-This authorizes the 1.12.2 release. The release candidate changes version metadata
-and documentation only; runtime fixes already passed PR #108. Existing frozen
-acceptance artifacts, dependencies, schema and MCP tools remain unchanged.
-The [release record](docs/release/v1.12.2.md) tracks candidate and public checks.
-Production installation remains 1.12.1; no application restart is included.
+A fresh public-PyPI installation passed version, redirected help, recipes,
+dependency and 74-file identity checks. Actual CLI/MCP interruption/resumption,
+all-table restoration and semantic retrieval passed. See the
+[release record](docs/release/v1.12.2.md) and
+[publication receipt](plans/v1.12.2-publication.json) for evidence and limits.
 
-Resume memory task `446b75d1-8d61-48c1-8ff4-a61aba674f7c`, wing `cairntir`,
-room `requests`, for current release status. The completed verification task
-`c73d30d4-f6e3-4436-8e48-163f97e89741` must not be reopened. Private receipts
-are retained under `.cairntir/v1.12.2-release/`.
+This release publishes PR #108's verified fixes. Its five historical regressions,
+nine caught mutations, 1,672 passing local tests and 92% combined coverage gate
+remain documented in the [verification plan](plans/verification-structure.md).
+Dependencies and all frozen acceptance artifacts are unchanged. Verification
+additions are solo-authored; no independent review is claimed.
+
+Production installation remains **1.12.1**, with its existing 12-hour backup
+policy. No production package upgrade, app restart, migration or reindex ran.
+Release memory task `446b75d1-8d61-48c1-8ff4-a61aba674f7c`, wing `cairntir`,
+room `requests`, records final closure. The earlier verification task is completed.
+Private receipts are retained under `.cairntir/v1.12.2-release/`.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer

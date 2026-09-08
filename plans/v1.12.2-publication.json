@@ -1,0 +1,97 @@
+{
+  "status": "COMPLETE",
+  "version": "1.12.2",
+  "release_pr": "https://github.com/pnmcguire480/cairntir/pull/109",
+  "reviewed_head": "9ad5422cfca4cf13b3d4e550bfe76c739e720f54",
+  "merge_commit": "b3798b95a058f440448e3ae08d85a8be4123bb9b",
+  "source_tree": "17b91185ed78192e9ae759edd5d851f353549745",
+  "tag": "v1.12.2",
+  "tag_object": "0a25475405c6089816204c1d75e0d64c17a2b559",
+  "release_run_url": "https://github.com/pnmcguire480/cairntir/actions/runs/34191328281",
+  "release_attempt": 1,
+  "ci_run": "34190081499",
+  "ci_proved": true,
+  "tagged_tests": {
+    "status": "PASS",
+    "run": 34191328281,
+    "job_id": 101949830182,
+    "coverage": 92.118006,
+    "test_summary": [
+      "1670 passed, 1 skipped, 1 deselected in 459.50s (0:07:39)"
+    ],
+    "log_sha256": "325c2567006b4c64a29d656abbee2adc624783cfc3686420a7bc81552aa3e95f"
+  },
+  "matrix_coverage": {
+    "Test (windows-latest / Python 3.11)": 92.252511,
+    "Test (macos-latest / Python 3.13)": 92.055237,
+    "Test (ubuntu-latest / Python 3.13)": 92.055237,
+    "Test (macos-latest / Python 3.12)": 92.055237,
+    "Test (ubuntu-latest / Python 3.11)": 92.055237,
+    "Test (windows-latest / Python 3.12)": 92.252511,
+    "Test (ubuntu-latest / Python 3.12)": 92.055237,
+    "Test (windows-latest / Python 3.13)": 92.252511,
+    "Test (macos-latest / Python 3.11)": 92.055237
+  },
+  "behavioral_proofs": {
+    "Regression and mutation evidence (windows-latest)": 28,
+    "Regression and mutation evidence (ubuntu-latest)": 28
+  },
+  "distributions": [
+    {
+      "filename": "cairntir-1.12.2-py3-none-any.whl",
+      "sha256": "6b79adc1b92db524ad49765cdb1275ef9530b25c37bde6f67e161ba923f35d39",
+      "bytes": 293599,
+      "workflow_github_pypi_bytes_agree": true,
+      "verified_attestations": 1,
+      "attestation_subject_sha256": "6b79adc1b92db524ad49765cdb1275ef9530b25c37bde6f67e161ba923f35d39"
+    },
+    {
+      "filename": "cairntir-1.12.2.tar.gz",
+      "sha256": "cab80aa9b0de69a7076c6c95b70a8951ede5c2c44cce5e78b7e0c89db6b02496",
+      "bytes": 1047171,
+      "workflow_github_pypi_bytes_agree": true,
+      "verified_attestations": 1,
+      "attestation_subject_sha256": "cab80aa9b0de69a7076c6c95b70a8951ede5c2c44cce5e78b7e0c89db6b02496"
+    }
+  ],
+  "attestation_policy": {
+    "repository": "pnmcguire480/cairntir",
+    "signer_workflow": "pnmcguire480/cairntir/.github/workflows/release.yml",
+    "signer_digest": "b3798b95a058f440448e3ae08d85a8be4123bb9b",
+    "source_digest": "b3798b95a058f440448e3ae08d85a8be4123bb9b",
+    "source_ref": "refs/tags/v1.12.2",
+    "certificate_identity": "https://github.com/pnmcguire480/cairntir/.github/workflows/release.yml@refs/tags/v1.12.2",
+    "oidc_issuer": "https://token.actions.githubusercontent.com",
+    "deny_self_hosted_runners": true,
+    "predicate_type": "https://slsa.dev/provenance/v1"
+  },
+  "installed_public_package": {
+    "version": "1.12.2",
+    "package_files": 74,
+    "mcp_tools": 21,
+    "wheel_sha256": "6b79adc1b92db524ad49765cdb1275ef9530b25c37bde6f67e161ba923f35d39",
+    "version_help_recipes": "PASS",
+    "dependency_check": "PASS",
+    "cli_and_mcp": "PASS",
+    "abrupt_host_resumption": "PASS",
+    "checkpoint_revision": 2,
+    "all_table_restoration": "PASS",
+    "restored_semantic_recall": "PASS"
+  },
+  "runtime_delta_from_pr108": "Version constant only; all 63 source/resource files checked.",
+  "dependencies": "unchanged",
+  "tests_scripts_workflows": "unchanged",
+  "frozen_manifests": 24,
+  "frozen_artifacts": 115,
+  "production_installation_changed": false,
+  "production_version": "1.12.1",
+  "applications_restarted": false,
+  "independent_review": false,
+  "limitations": [
+    "Coverage gate is 92% combined, not 92% branches separately.",
+    "Mutations are targeted, not exhaustive.",
+    "Disposable filesystem/process failures do not model a machine power cut.",
+    "Two prior CI interleavings remain unconfirmed; the deterministic defects and fixes have actual regression proof.",
+    "Fresh isolated CLI/MCP tests do not establish reload of existing user sessions."
+  ]
+}
