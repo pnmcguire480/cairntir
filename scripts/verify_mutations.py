@@ -17,6 +17,30 @@ RECOVERY = "tests/verification/test_recovery_outcomes.py"
 RESTORE = RECOVERY + "::test_restored_backup_preserves_every_table_and_resumes_task"
 MUTATIONS = (
     {
+        "name": "discard-backup-during-status-observation",
+        "file": "src/cairntir/backups.py",
+        "before": (
+            "def _lock(database: Path, *, create: bool) -> Iterator[bool]:\n"
+            "    deadline = time.monotonic() + 0.25\n"
+            "    while True:\n"
+            "        with _file_lock(_paths(database)[1], create=create) as acquired:\n"
+            "            if acquired or not create or time.monotonic() >= deadline:\n"
+            "                yield acquired\n"
+            "                return\n"
+            "        time.sleep(0.01)\n"
+        ),
+        "after": (
+            "def _lock(database: Path, *, create: bool) -> Iterator[bool]:\n"
+            "    with _file_lock(_paths(database)[1], create=create) as acquired:\n"
+            "        yield acquired\n"
+        ),
+        "test": (
+            "tests/verification/test_backup_observer_outcomes.py::"
+            "test_status_observation_does_not_discard_a_due_backup"
+        ),
+        "witness": "RECOVERY: status observer discarded due backup",
+    },
+    {
         "name": "reject-committed-snapshot",
         "file": "src/cairntir/memory/store.py",
         "before": "if _status != sqlite3.SQLITE_DONE and time.monotonic() >= deadline:",

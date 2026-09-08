@@ -1,7 +1,7 @@
-# Cairntir — project brief
+# Cairntir â€” project brief
 
 Host-neutral, local-first memory and reasoning through MCP. Owner:
-Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
+Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11â€“3.13.
 
 ## Current state
 
@@ -84,21 +84,21 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session — 2026-09-08
+## Last Session â€” 2026-09-08
 
 Verification follow-up for issue #107 is implemented in [PR #108](https://github.com/pnmcguire480/cairntir/pull/108).
 The PR records CI and merge status; this brief records the verified behavior.
 The [verification plan](plans/verification-structure.md) and
 [receipt](plans/verification-evidence.json) record five actual historical
-red/green comparisons, eight caught mutations with passing controls, restored
+red/green comparisons, nine caught mutations with passing controls, restored
 memories/vectors/provenance/task history, real SQLite and backup failures, and
 built/installed wheel CLI/MCP interruption and resumption.
 
-The clean local CI selection passed 1,663 tests at 92.25% combined coverage
-(93.54% statements, 87.96% branches). The combined gate is now 92% with six-place threshold precision and unchanged
+The clean local CI selection passed 1,664 tests at 92.25% combined coverage
+(93.54% statements, 87.97% branches). The combined gate is now 92% with six-place threshold precision and unchanged
 coverage exclusions. All seven model evaluation tests passed against a disposable
 corpus; the remaining slow acceptance check passed. Together the selections
-cover all 1,671 tests without skips. Preservation checks passed 24 manifests and 115 frozen artifacts.
+cover all 1,672 tests without skips. Preservation checks passed 24 manifests and 115 frozen artifacts.
 Static, types, documentation, seam/commitment, release-tag and dependency checks
 passed. New tests are solo-authored under the explicit no-subagent constraint;
 no independent review is claimed.
@@ -115,6 +115,12 @@ reproducer failed before repair, and the eighth mutation reconstructs that exact
 broken source. Python 3.12 passed all eight frozen concurrency/boundary cases.
 A prior CI timeout did not log its callback status; its precise cause remains
 unconfirmed. The PR records final CI status.
+
+A focused continuation fixes status observation interfering with due-backup
+startup. Coordinator acquisition briefly retries a status reader's lock;
+long-held contention remains bounded. A real-process before/after regression
+and ninth mutation prove the behavior. Both original repair rounds remain
+recorded; this newly exposed failure received one additional focused round.
 
 Reproducers found and minimally repaired workflow result validation after commit,
 raw SQLite receipt errors, invalid float32 embeddings, access-history changes on
@@ -134,7 +140,7 @@ supports checkpoint saves again. Raw verification evidence is retained in
 the private workspace verification directory.
 
 <!-- cairntir:begin -->
-# Cairntir — memory-first reasoning layer
+# Cairntir â€” memory-first reasoning layer
 
 You have access to persistent memory through the `cairntir_*` MCP tools.
 At conversation start, after context compaction, and whenever continuity is lost:

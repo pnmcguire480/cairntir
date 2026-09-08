@@ -62,7 +62,7 @@ verification; at most two final repair rounds.
 
 ## Candidate evidence
 
-The five historical comparisons and eight deliberate mutations passed with
+The five historical comparisons and nine deliberate mutations passed with
 clean controls. The result judge also has 15 tests proving that skips, missing
 reports, setup errors and unrelated failures cannot count as success.
 The installed wheel passed version/tool checks, abrupt MCP interruption,
@@ -95,13 +95,13 @@ advisory checks pass (134 locked registry packages; no advisory findings).
 All seven model evaluation tests pass against a provisioned disposable corpus.
 The live production corpus is outside this work's authority.
 
-The fresh CI selection passed **1,663 tests** with eight slow tests deselected.
-Coverage is **92.25% combined**: 8,017/8,571 statements (93.54%) and 2,264/2,574
-branches (87.96%). The enforced combined floor is now **92%** in pytest and CI;
+The fresh CI selection passed **1,664 tests** with eight slow tests deselected.
+Coverage is **92.25% combined**: 8,022/8,576 statements (93.54%) and 2,266/2,576
+branches (87.97%). The enforced combined floor is now **92%** in pytest and CI;
 `coverage report --fail-under=92` passes. Threshold precision is six places. No exclusions or frozen artifacts changed.
 These are clean-run numbers; earlier appended development figures are not used
 as final evidence. The separate provisioned model evaluation passed all seven tests, and the remaining
-slow acceptance check passed. Together the selections cover all 1,671 tests with
+slow acceptance check passed. Together the selections cover all 1,672 tests with
 no skips or omissions.
 
 Finalization uses the remaining verification reserve, with at most two repair
@@ -128,7 +128,21 @@ snapshot test. Sixteen local diagnostic runs completed 64 snapshots without
 reproducing that timeout. Its callback status was not logged, so the new boundary
 reproducer is not claimed as proof of that earlier failure's precise cause.
 
-Limitations: targeted mutations are eight deliberate faults, not an exhaustive
+After the two original rounds, final CI exposed a separate unmet outcome: a
+Linux 3.13 backup claim was never observed before the frozen six-second deadline.
+One focused continuation within the authorized defect work reproduces a real
+status reader temporarily winning the coordinator lock, causing the due backup
+to return busy and exit. Acquisition now retries for up to 250 ms; status reads
+remain nonblocking and long-held contention retains its existing bounds.
+The new regression fails on the actual old source, restores every table after
+the fix, and catches a ninth mutation that reconstructs that old source. Five
+focused regression/contention checks and a subprocess-coverage control pass.
+The CI lock interleaving itself was not logged, so attribution is limited to
+the separately proved observer race. Frozen tests and deadlines remain unchanged.
+This continuation has one repair round, used, and a 25% verification reserve;
+the original two-round count was not reset. No further repair cycle is included.
+
+Limitations: targeted mutations are nine deliberate faults, not an exhaustive
 mutation score. Destination loss is a disappearing disposable mount directory,
 not a physical E: unplug; interruption kills owned test processes, not machine
 power. Tests prove the exercised recovery paths and surviving data.
