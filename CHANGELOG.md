@@ -51,7 +51,7 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   contain invalid UTF-8. Malformed non-object headers return an unavailable
   receipt instead of crashing recovery.
 
-## [1.12.1] â€” 2026-09-07
+## [1.12.1] — 2026-09-07
 
 ### Added
 
@@ -77,7 +77,7 @@ exposed the worker-ownership race before any build or publication job ran.
 No 1.12.0 package was published; 1.12.1 carries the corrected capability.
 The [failed candidate record](docs/release/v1.12.0.md) preserves its evidence.
 
-## [1.11.0] â€” 2026-09-07
+## [1.11.0] — 2026-09-07
 
 ### Added
 
@@ -101,7 +101,7 @@ The [failed candidate record](docs/release/v1.12.0.md) preserves its evidence.
 - Reject invalid Unicode and evidence IDs outside SQLite's integer range with
   typed checkpoint errors before writing any task state.
 
-## [1.10.0] â€” 2026-09-06
+## [1.10.0] — 2026-09-06
 
 ### Added
 
@@ -159,7 +159,7 @@ The [failed candidate record](docs/release/v1.12.0.md) preserves its evidence.
 - Source distributions include an explicit build/maintenance inventory instead
   of shipping host configuration and the historical lineage archive.
 
-## [1.9.0] â€” 2026-09-03
+## [1.9.0] — 2026-09-03
 
 ### Added
 
@@ -199,7 +199,7 @@ The [failed candidate record](docs/release/v1.12.0.md) preserves its evidence.
   response exposed its files, so the first immediate verification saw a stale
   empty result.
 
-## [1.8.0] â€” 2026-08-30
+## [1.8.0] — 2026-08-30
 
 ### Added
 
@@ -237,7 +237,7 @@ The [failed candidate record](docs/release/v1.12.0.md) preserves its evidence.
   tag exists; after tagging, the gate verifies that version on PyPI like every
   other release.
 
-## [1.7.1] â€” 2026-08-25
+## [1.7.1] — 2026-08-25
 
 ### Fixed
 
@@ -253,7 +253,7 @@ The [failed candidate record](docs/release/v1.12.0.md) preserves its evidence.
   `on_demand`. The policy now starts with `cairntir_handoff`, which
   already returns those drawers from leftover budget. Every marked
   policy copy in the repo is checked against `MEMORY_POLICY`.
-- **The docs-site How to Use page described a different product** â€”
+- **The docs-site How to Use page described a different product** —
   `pipx install -e c:/Dev/Cairntir`, expect `cairntir 0.1.0`, twelve
   tools. It now matches the supported 1.7 series. Docs home, MkDocs nav, SECURITY.md,
   and the README addendum no longer advertise 1.0 / 1.2.0-rc / 1.4.0
@@ -283,7 +283,7 @@ The [failed candidate record](docs/release/v1.12.0.md) preserves its evidence.
   SQL `EXISTS` instead of materialising a row (`list_by(limit=1)`).
   Jarvis's P3 on the 1.7.0 review: existence-only call sites should
   not load objects. `handoff`'s recency `_SCAN_LIMIT` is still a
-  window, not "all" â€” left alone on purpose.
+  window, not "all" — left alone on purpose.
 - Root `HARNESS_AUDIT.md` is a pointer to the BrainStormer lineage
   copy, not a second drifted audit. `plans/README.md` names live
   vs dated plans without moving files (moving would break
@@ -293,10 +293,10 @@ The [failed candidate record](docs/release/v1.12.0.md) preserves its evidence.
   that recipes are CLI-only. Coverage omit on `mcp/server.py` now
   says what it hides.
 
-## [1.7.0] â€” 2026-08-13
+## [1.7.0] — 2026-08-13
 
 Eight findings from an external upgrade review against a live 3,586-drawer
-store â€” 8.7x the corpus this project develops against. Seven were real. The
+store — 8.7x the corpus this project develops against. Seven were real. The
 1.5.0 embedder diagnosis replicated and worsened at that scale: 78.2% of
 drawers exceeded the old 128-token window and 80.5% of stored text was never
 vectorised.
@@ -313,11 +313,11 @@ changelog to know.
   of the MCP server's environment, and fastembed's `define_cache_dir` falls
   back to `tempfile.gettempdir()/fastembed_cache` when `FASTEMBED_CACHE_PATH`
   is unset. So reindex downloaded the model to a temp directory, rebuilt
-  every vector, and stamped the store to the jina 512-dimension space â€” after
+  every vector, and stamped the store to the jina 512-dimension space — after
   which the server resolved a *different* cache, found no model, and
   `HF_HUB_OFFLINE=1` forbade fetching it. `_require_embedding_space` gates
   both `add()` and `search()`, so reads and writes failed closed, **and the
-  error told the user to run `cairntir reindex` â€” the command that had just
+  error told the user to run `cairntir reindex` — the command that had just
   done this.**
 
   The cache is now anchored to `cairntir_home()`, the same root that already
@@ -333,25 +333,25 @@ changelog to know.
   in WAL mode appends to `<db>-wal` and leaves the main file untouched until
   checkpoint. Measured on the reviewer's store, the main file's mtime was 34
   hours older than the `-wal` beside it, with 2.1 MB accumulated. Now uses
-  `PRAGMA data_version` read from a connection held open across the window â€”
+  `PRAGMA data_version` read from a connection held open across the window —
   the documented, WAL-aware detector for "another connection committed."
 
 - **Stale `-wal`/`-shm` files survived the atomic swap.** A write-ahead log
   carries no identity binding to its database, so frames belonging to the
-  *old* file could be recovered onto the rebuilt one â€” replaying old page
+  *old* file could be recovered onto the rebuilt one — replaying old page
   images over a store whose vec table may not share their vector dimension.
   Removing them is now part of the swap.
 
 - **`reindex` had no per-drawer window check.** `cost.py` has reported the
   over-window ratio since 1.3.0, but nothing on the write path compared
   content length to the window, so a rebuild would silently re-truncate any
-  drawer wider than it â€” reintroducing the exact partial-vector defect 1.5.0
+  drawer wider than it — reintroducing the exact partial-vector defect 1.5.0
   existed to remove, and reporting success. It now refuses, naming the worst
   offender. Both sites read one constant, `PRODUCTION_CHAR_WINDOW`.
 
-- **`_unknown_wing_notice` built a wingâ†’count dict by materialising
-  `list_by(limit=10_000)`** â€” a `GROUP BY` written as a Python loop, on an
-  error path, inside a stdio call â€” then summed that *capped* result to
+- **`_unknown_wing_notice` built a wing→count dict by materialising
+  `list_by(limit=10_000)`** — a `GROUP BY` written as a Python loop, on an
+  error path, inside a stdio call — then summed that *capped* result to
   report a total. Past ten thousand drawers it under-reported with complete
   confidence, which is the same "confidently wrong about what is here"
   failure the notice exists to prevent. Now `DrawerStore.wing_counts()`.
@@ -363,7 +363,7 @@ changelog to know.
   large enough to feel safe:
 
   - `cairntir status` counted the newest ten thousand drawers and printed the
-    result as the store's total â€” wrong on precisely the stores big enough to
+    result as the store's total — wrong on precisely the stores big enough to
     warrant running it. Now a `GROUP BY`.
   - `cairntir cost` read drawer sizes off a capped scan and reported
     percentages over that truncated sample as corpus-wide. New
@@ -388,7 +388,7 @@ changelog to know.
 
 - **`tests/eval/test_embedder_window.py` no longer asserts against a frozen
   literal.** `test_the_window_covers_the_whole_live_corpus` compared
-  `PRODUCTION_TOKEN_WINDOW` to `LONGEST_LIVE_DRAWER_TOKENS * 2` â€” two module
+  `PRODUCTION_TOKEN_WINDOW` to `LONGEST_LIVE_DRAWER_TOKENS * 2` — two module
   constants, `8192 > 4754`. It opened no store, loaded no model, and could
   not fail for any reason other than someone editing a literal, despite
   carrying `eval` and `slow` markers for work it never did. Its ground truth
@@ -402,8 +402,8 @@ changelog to know.
 - **`FastEmbedProvider`'s docstring described the wrong model.** It still
   advertised itself as a drop-in replacement "using the same
   `all-MiniLM-L6-v2` model under the hood" with "the same output dimension"
-  â€” both untrue since 2026-08-10, when the model became jina and the
-  dimension went 384 â†’ 512. `cairntir setup` likewise still promised "the
+  — both untrue since 2026-08-10, when the model became jina and the
+  dimension went 384 → 512. `cairntir setup` likewise still promised "the
   ONNX MiniLM model (~25 MB)" cached under `~/.cache/fastembed`.
 
 - **The module docstring carried the same stale model claim as the class.**
@@ -414,12 +414,12 @@ changelog to know.
 
 - **Model provenance is now written down.** `PRODUCTION_MODEL` reads
   `jinaai/jina-embeddings-v2-small-en`, but fastembed's registry resolves it
-  to `ModelSource(hf="xenova/jina-embeddings-v2-small-en")` â€” a third-party
+  to `ModelSource(hf="xenova/jina-embeddings-v2-small-en")` — a third-party
   ONNX re-conversion. `ModelSource` carries no revision field, so a download
   takes that repository's `HEAD` and integrity checking is size-only: two
   machines provisioned a month apart can hold different weights under the
   same name. Pinning needs a fastembed API that does not exist yet, so the
-  exposure is recorded rather than implied â€” the same "read the tokenizer,
+  exposure is recorded rather than implied — the same "read the tokenizer,
   never the description" rule applied to where the bytes come from.
 
 ```cairntir-commitments
@@ -444,14 +444,14 @@ test   tests/unit/test_update.py test_a_published_release_is_newer_than_its_own_
 test   tests/integration/test_mcp_backend.py test_unknown_wing_total_is_not_capped_by_a_scan_limit
 ```
 
-## [1.6.2] â€” 2026-08-11
+## [1.6.2] — 2026-08-11
 
 ### Fixed
 
 - **`cairntir_session_start` reported an unknown wing as an empty store.**
   IDENTITY is cross-wing by design, so asking for a wing that does not exist
   returned a stack of *other* projects' identity drawers with Essential,
-  On-demand and Deep all at zero â€” and nothing anywhere saying the wing was
+  On-demand and Deep all at zero — and nothing anywhere saying the wing was
   never real. A Cursor session asked for wing `'workspace'`, a name that has
   never existed, and told the user *"store is empty (no
   identity/essential/on-demand/deep drawers)."* **The store held 424 drawers
@@ -460,18 +460,18 @@ test   tests/integration/test_mcp_backend.py test_unknown_wing_total_is_not_capp
   Falsely reporting emptiness is the worst failure this product has: it is
   indistinguishable from data loss to whoever reads it, and it teaches them
   not to trust the tool that is supposed to be their backbone. `handoff` has
-  warned on an unknown wing since 1.3.0; `session_start` never did â€” the same
+  warned on an unknown wing since 1.3.0; `session_start` never did — the same
   asymmetry between the two entry points that hid the `on_demand` blind spot
   in 1.5.0.
 
   `session_start` now leads with `WING '<name>' DOES NOT EXIST`, states
   plainly that the store is not empty, gives the drawer and wing totals, and
-  **names the wings that actually exist** â€” because "no such wing" alone still
+  **names the wings that actually exist** — because "no such wing" alone still
   leaves the caller guessing, and a guessing caller invents a new wing and
   splits a project's memory in two. When the store is genuinely empty it still
   says so, and still says not to substitute model memory.
 
-## [1.6.1] â€” 2026-08-11
+## [1.6.1] — 2026-08-11
 
 Closes the 2026-08-10 arc. Both items were the last things reported open, and
 nothing is open behind them.
@@ -479,7 +479,7 @@ nothing is open behind them.
 ### Fixed
 
 - **The recall receipt's `truncated` flag is now `snippet_shortened`.** It only
-  ever described the preview line being cut for display â€” the drawer is stored
+  ever described the preview line being cut for display — the drawer is stored
   whole and the `sha256` beside it is over the complete content. But the old
   name was actively dangerous in the one place it mattered: proving the
   128-token embedder fix meant retrieving a drawer by text from its tail, and
@@ -492,24 +492,24 @@ nothing is open behind them.
 - **This repository now wires Qwen Code at project scope**, via `QWEN.md` and
   `.qwen/settings.json`, written by Cairntir's own `configure_host` rather than
   by hand. Qwen support shipped in 1.4.0 and `cairntir doctor` had reported
-  `project qwen MCP=missing policy=missing` ever since â€” the project did not
+  `project qwen MCP=missing policy=missing` ever since — the project did not
   dogfood its own fourth host. `QWEN.md` is a thin pointer to `CLAUDE.md`, the
   same shape as `AGENTS.md`, so it cannot drift into a stale second brief.
 
-## [1.6.0] â€” 2026-08-10
+## [1.6.0] — 2026-08-10
 
 Closes the last of the "assurance mechanism that lies" defects found this day.
 `cairntir_settle` was scoring correct predictions as misses.
 
 **A MINOR, not the 1.5.1 that was asked for.** `cairntir_settle` gains a `held`
 parameter, and by `docs/release-cadence.md`'s tiebreak a change an agent must
-read the changelog to use is a MINOR. Drawer #342 â€” written 2026-08-06, before
-the fix existed â€” reached the same conclusion independently: *"This is new MCP
+read the changelog to use is a MINOR. Drawer #342 — written 2026-08-06, before
+the fix existed — reached the same conclusion independently: *"This is new MCP
 surface, so it is a MINOR."*
 
 ### Added
 
-- **`cairntir_settle(held=...)` â€” the verdict, stated rather than inferred.**
+- **`cairntir_settle(held=...)` — the verdict, stated rather than inferred.**
   `held` answers "did the prediction come true?"; `delta` answers "what
   surprised me?". They are different questions.
 
@@ -521,7 +521,7 @@ surface, so it is a MINOR."*
   `cairntir_calibration` counts. So an honest note about a *surprising route to
   a correct outcome* silently scored as a failure. **The incentive ran exactly
   backwards**: an agent wanting good calibration numbers was pushed to omit the
-  surprise signal `delta` exists to capture â€” the thing the v0.4 design calls
+  surprise signal `delta` exists to capture — the thing the v0.4 design calls
   "the gradient when there are no weights." It did this to real settlements;
   see drawers #341 and #414.
 
@@ -537,12 +537,12 @@ surface, so it is a MINOR."*
   Verified to fail when the fix is removed: under the old logic three
   settlements score 0 confirmed and 3 failed.
 
-## [1.5.0] â€” 2026-08-10
+## [1.5.0] — 2026-08-10
 
 The session that started with *"i think cairntir is beyond broke."* It was,
 in two independent ways, and neither was visible to any gate the project had.
-Both are the same shape â€” **an assurance mechanism reporting success without
-doing its job** â€” which is now five of the last six defects here.
+Both are the same shape — **an assurance mechanism reporting success without
+doing its job** — which is now five of the last six defects here.
 
 **A MINOR, not a patch**, by this project's own tiebreak: a user has to read
 this entry to know they need `cairntir reindex`. A patch number would tell
@@ -556,7 +556,7 @@ rather than returning wrong results.
 
 - **The production embedder is now `jinaai/jina-embeddings-v2-small-en`
   (8,192-token window, 512 dimensions), replacing `all-MiniLM-L6-v2`.**
-  MiniLM's configured truncation is **128 tokens â€” about 500 characters** â€”
+  MiniLM's configured truncation is **128 tokens — about 500 characters** —
   read directly off the live model as
   `truncation: {'max_length': 128, ...}` and confirmed twice by binary search.
   On a 407-drawer corpus that left **73.4% of all stored text invisible to
@@ -567,7 +567,7 @@ rather than returning wrong results.
   between distance 1.03 and 1.15.
 
   The longest drawer in the live store is 2,377 tokens, so the new window
-  covers the entire corpus in a single vector â€” **no chunking, no multi-vector
+  covers the entire corpus in a single vector — **no chunking, no multi-vector
   schema, one row per drawer preserved.** Existing stores need one
   `cairntir reindex`, which backs up first and is refused automatically if the
   dimension does not match.
@@ -586,7 +586,7 @@ rather than returning wrong results.
   tokenizer.
 
 - **The LongMemEval R@5 gate never tested the shipping embedder.** It pinned
-  `SentenceTransformerProvider("all-MiniLM-L6-v2")` â€” a different model *and* a
+  `SentenceTransformerProvider("all-MiniLM-L6-v2")` — a different model *and* a
   different runtime from production's ONNX `FastEmbedProvider`. That is why the
   truncation defect passed the quality gate at full strength. A second gate now
   runs the same bar against `production_embedding_provider()`.
@@ -595,19 +595,19 @@ rather than returning wrong results.
   The tool declares `"default": "on_demand"` in its MCP schema; the composer
   gathered only `IDENTITY` and `ESSENTIAL`. A user who followed the documented
   policy and took the defaults stored memory perfectly and got an empty brief
-  back next session â€” the cross-chat amnesia Cairntir exists to kill,
+  back next session — the cross-chat amnesia Cairntir exists to kill,
   reproduced by its own defaults. Found by rehearsing a stranger's first two
   days on a clean `pip install cairntir` from PyPI: three decisions written on
   day 1, and on day 2 `handoff` answered *"none are identity, essential, an
   open question, or anchored to the files given. Nothing here is broken."*
 
   `on_demand` drawers now fill a **`Recent activity`** section with a zero
-  reserve â€” skipped entirely in the first budgeting pass, fillable only from
+  reserve — skipped entirely in the first budgeting pass, fillable only from
   budget no higher-priority section wanted, so it can never outbid identity or
   essential material. `DEEP` stays excluded: *"skipped unless explicitly
   requested"* is a real decision, whereas `on_demand`'s exclusion was an
   accident of running no query. The default was deliberately **not** flipped to
-  `essential` â€” that starves the budget every drawer competes for.
+  `essential` — that starves the budget every drawer competes for.
 
 - **The empty-brief message claimed health while returning nothing.** It said
   "Nothing here is broken" at the exact moment the caller got nothing back.
@@ -622,13 +622,13 @@ rather than returning wrong results.
 ### Added
 
 - **Seam guard: the default write layer is a layer `handoff` loads.** The
-  previous behaviour was not merely untested â€” it was *asserted* as correct by
+  previous behaviour was not merely untested — it was *asserted* as correct by
   a unit test reasoning from the layer taxonomy, which is why it survived from
   v1.3.0. The new test reads the declared default off the live tool schema
   rather than hardcoding it, so changing either side alone fails the build. It
   was verified to fail when the fix is removed.
 
-## [1.4.1] â€” 2026-08-06
+## [1.4.1] — 2026-08-06
 
 A hardening patch. Both fixes are the same defect in different clothes: a guard
 that reports success without doing its job. One of them was guarding the oldest
@@ -640,13 +640,13 @@ releases.
 - **The silent-exception gate was close to a no-op.**
   `scripts/check_no_silent_except.py` is the check written against
   BrainStormer's 224 `except: pass` blocks. Three of its four regexes required
-  `pass` on the *same line* as `except` â€” a one-liner `ruff format` never emits
-  â€” so they could not fire on this repository's own formatted source, and the
+  `pass` on the *same line* as `except` — a one-liner `ruff format` never emits
+  — so they could not fire on this repository's own formatted source, and the
   fourth only caught a bare `except:`, which ruff's E722 already rejects. The
   gate was blind to the form the pattern actually takes: a **typed** handler
   swallowing on the next line. Three live violations sat in `src/` while it
-  exited 0. It is now an AST check with no type list to maintain â€” a handler is
-  silent when its body does nothing at all, whatever it catches â€” and a file it
+  exited 0. It is now an AST check with no type list to maintain — a handler is
+  silent when its body does nothing at all, whatever it catches — and a file it
   cannot read or parse is a violation rather than a skip. It was the only gate
   script in the repository with no test, which is precisely why nothing noticed;
   `tests/unit/test_silent_except.py` closes that.
@@ -660,28 +660,28 @@ releases.
 - **`cairntir_recall(full_content=N)` could blow the context budget it claimed
   to respect.** The size test ran per drawer against a shared 12,000-character
   constant with no accumulator, so ten 11,900-character drawers each "fit" and
-  `full_content=10` delivered roughly 119,000 characters â€” about 30,000 tokens.
+  `full_content=10` delivered roughly 119,000 characters — about 30,000 tokens.
   The budget is now cumulative across everything delivered whole, the same
   contract `cairntir_handoff` has kept since 1.3.0: once it is spent the
   remaining hits fall back to named snippets, whole drawers or none. Budget
   exhaustion is reported distinctly from a genuinely oversize drawer, and the
   call states what it spent. The tool schema is unchanged.
 
-## [1.4.0] â€” 2026-08-05
+## [1.4.0] — 2026-08-05
 
 The honesty release. Cairntir's oldest defect is infrastructure built correctly
 and never wired: commitments that quietly vanish, checks that run where their
 subject does not exist, loops that open but nobody closes. This release wires
 the enforcement layer. Settled predictions now actually close in the handoff
-and count in calibration. The store-integrity gate runs where the data lives â€”
-pre-commit, beside the bank â€” instead of on a CI runner that has no store. The
+and count in calibration. The store-integrity gate runs where the data lives —
+pre-commit, beside the bank — instead of on a CI runner that has no store. The
 release gate verifies PyPI presence, not just the tag. The write path asks for
-a prediction when you assert a claim. And a fourth host â€” Qwen Code â€” reads and
+a prediction when you assert a claim. And a fourth host — Qwen Code — reads and
 writes the same store with full provenance.
 
 ### Added
 
-- `cairntir doctor --gate` â€” the store-integrity and vault-drift gates, run
+- `cairntir doctor --gate` — the store-integrity and vault-drift gates, run
   where the data actually lives. The five health rules moved into
   `src/cairntir/health.py`, one shared implementation behind both
   `scripts/check_store_health.py` and the gate, so the two cannot drift apart.
@@ -689,10 +689,10 @@ writes the same store with full provenance.
   damage or drift. Wired into `.pre-commit-config.yaml`, because a check that
   runs where its subject does not exist is worse than no check.
 - `scripts/check_release_tags.py` now verifies PyPI presence, not just the tag.
-  A tag is a claim, not a fact â€” `v1.1.1` was tagged, released on GitHub, and
+  A tag is a claim, not a fact — `v1.1.1` was tagged, released on GitHub, and
   never reached PyPI, unnoticed. Fails closed when pypi.org cannot be reached;
   `0.1.0` and `1.1.1` are recorded as historical fact, not swept away.
-- `cairntir_recall(..., full_content=N)` â€” deliver the top N hits with their
+- `cairntir_recall(..., full_content=N)` — deliver the top N hits with their
   COMPLETE content instead of snippets, so one good drawer answers the
   question without a `cairntir_get` round trip. Hits too large for whole
   delivery are named, never truncated. Default 0 keeps the old stub-only
@@ -700,7 +700,7 @@ writes the same store with full provenance.
 - `cairntir_remember` now nudges when a drawer carries a `claim` but no
   `predicted_outcome`. A claim nothing can prove wrong is not a prediction,
   and `delta` was still 0/292 eight days after `cairntir_settle` landed
-  because nothing ever asked. Advisory only â€” the write succeeds either way.
+  because nothing ever asked. Advisory only — the write succeeds either way.
   This is the anchor lesson applied to the epistemic core: publish a contract
   is not the same as asking for compliance.
 - **Qwen Code is the fourth supported host.** `cairntir init --host qwen` and
@@ -716,10 +716,10 @@ writes the same store with full provenance.
   never saw it. Every declared seam now keeps a paired both-sides test,
   registered in `scripts/check_seams.py`.
 
-## [1.3.0] â€” 2026-08-02
+## [1.3.0] — 2026-08-02
 
 The context-budget release. Cairntir's oldest inherited idea is **controlled
-context** â€” BabyTIEROS separated material into always-load / load-when-relevant
+context** — BabyTIEROS separated material into always-load / load-when-relevant
 / never-load before any vector store existed. The 2026-07-27 evolution audit
 found that the policy survived into Cairntir and the *budget* did not, and wrote
 the fix into the v1.2 core list. v1.2 shipped without it. This release lands it,
@@ -728,10 +728,10 @@ going unnoticed for five days.
 
 ### Added
 
-- `cairntir_handoff(wing)` and `cairntir handoff <wing>` â€” one call returning one
+- `cairntir_handoff(wing)` and `cairntir handoff <wing>` — one call returning one
   composed brief, under a hard character budget, to replace keeping a
   `HANDOFF.md` file by hand. Composes the operating protocol, the most recent
-  session deltas, open questions, and â€” when you pass `files` â€” the drawers
+  session deltas, open questions, and — when you pass `files` — the drawers
   structurally anchored to the code you are about to touch.
 
   **Drawers come back whole or not at all.** Truncation is the anti-pattern this
@@ -739,9 +739,9 @@ going unnoticed for five days.
   Anything that does not fit the budget is listed with its id, room and size, so
   the caller spends one targeted `cairntir_get` instead of a blind `recall`.
 
-  Measured against `session_start` on a copy of the live store: **7,737 â†’ 4,261
-  estimated tokens for the `cairntir` wing (-44%)** and **8,201 â†’ 3,880 for
-  `detroit-clone` (-52%)**. The saving is the less interesting half â€”
+  Measured against `session_start` on a copy of the live store: **7,737 → 4,261
+  estimated tokens for the `cairntir` wing (-44%)** and **8,201 → 3,880 for
+  `detroit-clone` (-52%)**. The saving is the less interesting half —
   `session_start` spent its tokens on 51 truncated stubs that could not answer
   anything, and `handoff` spends fewer on 9 whole drawers that can.
 
@@ -750,9 +750,9 @@ going unnoticed for five days.
   drawer content; the evidence envelope adds provenance on top, which is stated
   in the response rather than quietly excluded from the number.
 
-  Identity is scoped to the wing, unlike `session_start` â€” a `cairntir` session
+  Identity is scoped to the wing, unlike `session_start` — a `cairntir` session
   was paying for identity drawers belonging to `larder` and `quietpdf`.
-- `cairntir cost <wing>` and `cairntir.cost` â€” report what Cairntir's own read
+- `cairntir cost <wing>` and `cairntir.cost` — report what Cairntir's own read
   path costs the context window it exists to protect. Measures the tool catalog
   (paid in every session in every host, called or not), `session_start`,
   `handoff`, and the drawer-size distribution against the embedder's ~2,048
@@ -765,7 +765,7 @@ going unnoticed for five days.
   nothing reported it.
 
   Deliberately narrow: it measures Cairntir's payload and must not grow into a
-  general token dashboard â€” Tokalator already does live budget monitoring and
+  general token dashboard — Tokalator already does live budget monitoring and
   Headroom already does reversible compression, both better. It is a CLI command
   rather than an MCP tool because a twentieth tool definition would enlarge the
   very catalog the report holds accountable.
@@ -780,17 +780,17 @@ going unnoticed for five days.
   tokens at 10% of normal input cost, but any change to a block invalidates that
   block and everything after it. Both surfaces were measured as deterministic on
   2026-08-02 and nothing guaranteed they would stay that way; the realistic
-  regressions â€” a wall-clock timestamp, an unsorted `set`, insertion-ordered
-  keys â€” would fail no other test in the suite. Also pins the boundary that
+  regressions — a wall-clock timestamp, an unsorted `set`, insertion-ordered
+  keys — would fail no other test in the suite. Also pins the boundary that
   determinism holds *within* a store and deliberately **not** across two, since
   each drawer carries a unique per-session write receipt.
-- `scripts/check_landed_commitments.py` and `docs/landed-commitments.md` â€” fail
+- `scripts/check_landed_commitments.py` and `docs/landed-commitments.md` — fail
   the build when a plan document promises something the code does not have. A
   plan may carry a fenced `cairntir-commitments` block asserting that a file,
   symbol, function parameter, or test exists; CI verifies every one.
 
   This closes the oldest defect in the lineage and the only one present in all
-  four generations â€” *infrastructure without the enforcement layer*, named in
+  four generations — *infrastructure without the enforcement layer*, named in
   BrainStormer's 2026-04-03 harness audit. It recurred at the level of the
   recovery plan itself: the 2026-07-27 evolution audit diagnosed the lost
   context budget, wrote "restore explicit context budgets" into the v1.2 core
@@ -804,52 +804,52 @@ going unnoticed for five days.
   added. A malformed block fails the run rather than being skipped, because a
   silently skipped assertion is how `## [1.2.0.0]` would have defeated
   `check_release_tags.py`.
-- `scripts/check_release_tags.py` â€” fails when a released `## [x.y.z]` changelog
+- `scripts/check_release_tags.py` — fails when a released `## [x.y.z]` changelog
   header has no matching `vx.y.z` git tag. The version in `pyproject.toml` is
   exempt while a release is in flight, and the two historically untagged
   versions (1.0.1, 1.1.3) are recorded explicitly rather than hidden. Wired into
   the CI lint job and the release verification gate, both of which now check out
   with `fetch-depth: 0` so tags are visible.
-- `docs/release-cadence.md` â€” the release cadence and versioning policy. Defines
+- `docs/release-cadence.md` — the release cadence and versioning policy. Defines
   commit vs. merge vs. tag, when a release is warranted, the rule that anything
   breaking install or first run ships immediately as a patch, and how the
   version number is chosen.
-- `docs/lineage/mattpocock-skills.md` â€” attribution for
+- `docs/lineage/mattpocock-skills.md` — attribution for
   [mattpocock/skills](https://github.com/mattpocock/skills) by
   [@mattpocock](https://github.com/mattpocock), whose `CONTEXT.md` demonstrated
   that a shared project vocabulary is worth treating as a first-class artifact.
   Written before any glossary-drawer code, per the project's attribution
   contract. Says plainly that his skills are the better tool for most people and
   that Cairntir is not building an equivalent.
-- `docs/lineage/code-review-graph.md` â€” attribution for
+- `docs/lineage/code-review-graph.md` — attribution for
   [code-review-graph](https://github.com/tirth8205/code-review-graph) by Tirth
   Kanani ([@tirth8205](https://github.com/tirth8205)), for the idea that recall
   should be triggerable by what you are touching rather than only by what you
   thought to ask. Written before any `recall_for_change` code, per the
-  attribution contract. Records what Cairntir is *not* taking â€” tree-sitter and
-  its grammars, and 27 of its 30 MCP tools â€” and says plainly that his tool is
+  attribution contract. Records what Cairntir is *not* taking — tree-sitter and
+  its grammars, and 27 of its 30 MCP tools — and says plainly that his tool is
   the better fit for any question about the code itself.
 
-- `cairntir_recall_for_change(files)` and `cairntir.memory.anchors` â€” structural
+- `cairntir_recall_for_change(files)` and `cairntir.memory.anchors` — structural
   recall. Given the files a change touches, surface the drawers anchored to
   them: the question the caller did not think to ask. Anchors are optional
   `metadata.anchors` entries of `{path, symbol, symbol_source_hash}`, so there
-  is **no schema change, no migration, no parser, and no new dependency** â€” the
+  is **no schema change, no migration, no parser, and no new dependency** — the
   store already carries arbitrary JSON. Paths match across separator styles and
   absolute-vs-relative, at segment boundaries so `cli.py` cannot match
   `fastcli.py`. Drawers with no anchors never match, which is the opt-in
   mechanism: anchorability splits per-room (gate A1), and rooms that shouldn't
   anchor simply don't. Malformed anchors are reported on the result and in the
   MCP reply rather than aborting the recall or being silently skipped.
-  **Deliberately does not flag staleness** â€” `symbol_source_hash` is stored and
+  **Deliberately does not flag staleness** — `symbol_source_hash` is stored and
   never compared, held until rename survival is tested (gate A2).
 - `DrawerStore.add_anchors` plus `cairntir anchor` and `cairntir
-  recall-for-change` CLI commands â€” the retroactive path. New drawers can carry
+  recall-for-change` CLI commands — the retroactive path. New drawers can carry
   anchors at write time via `cairntir_remember`, but a corpus written before
   anchors existed could not participate at all. `add_anchors` is append-only
   within metadata: existing anchors are kept, duplicates collapse, unrelated
   metadata is preserved, and the drawer's verbatim content, layer, and belief
-  mass are never touched â€” the same controlled mutation `update_layer` already
+  mass are never touched — the same controlled mutation `update_layer` already
   performs. A batch containing a malformed entry is rejected before any write,
   so a partial anchor set is impossible. Backfill is a one-time job and agents
   can already anchor at write time, so this is CLI-only and the MCP surface
@@ -864,7 +864,7 @@ going unnoticed for five days.
 - Stated the versioning policy honestly. `2.0.0` is reserved for a
   revolutionary change in what Cairntir is; a deprecated public surface may be
   removed in a MINOR release after the existing two-minor warning window. This
-  is a documented deviation from strict SemVer, not a new rule â€” the
+  is a documented deviation from strict SemVer, not a new rule — the
   deprecation policy already permitted minor-release removal.
 - `docs/publish-checklist.md` now reads as a reusable per-release checklist
   rather than a frozen v1.2.0 worksheet. The v1.2.0 evidence record stays in
@@ -880,15 +880,15 @@ going unnoticed for five days.
   because the drawers it targeted had no anchors at all. New
   `DrawerStore.repair_anchors(drawer_id)` and `cairntir anchor <id> --repair`
   coerce the legacy form in place. Coercion is limited to the one case that is
-  not a guess â€” a bare string could only ever have meant a path; an object with
+  not a guess — a bare string could only ever have meant a path; an object with
   no recoverable `path` is refused loudly rather than invented. Idempotent,
   metadata-only, duplicate-collapsing, and nothing is written unless every
   entry validates first.
 - **`metadata.anchors` was accepted at write and rejected at read, silently
   disabling structural recall.** `cairntir_remember` declared `metadata` as a
   bare `{"type": "object"}` with no description, so a writing agent never saw
-  the anchor contract and guessed a list of path strings â€”
-  `["a.rs", "b.toml"]` â€” where `parse_anchors` requires a list of objects. The
+  the anchor contract and guessed a list of path strings —
+  `["a.rs", "b.toml"]` — where `parse_anchors` requires a list of objects. The
   store accepted it, and the failure surfaced weeks later as a "malformed
   metadata.anchors" warning in `cairntir_recall_for_change`, in a different
   session, about drawers nobody could reconstruct. Found in live use: every
@@ -896,9 +896,9 @@ going unnoticed for five days.
   by the feature the anchors were written for. Two changes close it:
   `cairntir_remember` now publishes the full anchor schema in its tool
   description, and it validates anchors on write, raising `MCPError` with the
-  correct shape instead of storing a bad row. The reader stays strict â€” rows
+  correct shape instead of storing a bad row. The reader stays strict — rows
   written before this guard remain visibly malformed rather than being
-  silently reinterpreted â€” so existing bad drawers still need a
+  silently reinterpreted — so existing bad drawers still need a
   `cairntir anchor` backfill. See `plans/field-report-2026-08-02.md`.
 - Marked 1.0.1 and 1.1.3 in this changelog as never released. Both were
   committed and changelogged but never tagged, so neither reached PyPI.
@@ -920,9 +920,9 @@ going unnoticed for five days.
   his tool look worse. The surviving point is a disagreement about which baseline
   is representative, not an accusation of bad faith.
 
-## [1.2.0] â€” 2026-07-28
+## [1.2.0] — 2026-07-28
 
-### Added â€” Foundation hardening, multi-host continuity, and visible learning
+### Added — Foundation hardening, multi-host continuity, and visible learning
 
 - Added a single production embedding-provider factory and persisted
   embedding-space identity. Semantic reads and writes now fail closed when the
@@ -963,7 +963,7 @@ going unnoticed for five days.
 - Added one-way `cairntir obsidian-project` projection for Anthropicer/Obsidian.
   Generated learning and CodeGlass notes preserve human annotations, exclude
   secret memories, and leave SQLite authoritative.
-- Expanded the MCP surface to 17 tools and added automated Codex â†” Cursor â†”
+- Expanded the MCP surface to 17 tools and added automated Codex ↔ Cursor ↔
   Claude continuity coverage over one canonical store with immutable
   host/model/session provenance.
 - Hardened release automation with immutable GitHub Action SHAs,
@@ -974,7 +974,7 @@ going unnoticed for five days.
   legacy sentence-transformers provider moved to an optional extra; FastEmbed
   remains the production default.
 
-### Fixed â€” Release-candidate closure
+### Fixed — Release-candidate closure
 
 - Fixed Windows CLI help/status output crashing with `UnicodeEncodeError` when
   redirected through a cp1252 process. The console-script boundary now emits
@@ -984,12 +984,12 @@ going unnoticed for five days.
 - Prevented a manually dispatched release workflow from publishing to PyPI or
   creating a GitHub Release; only a `v*.*.*` tag can cross that gate.
 
-### Added â€” Cairntir Blender add-on (horizon thesis demonstrator)
+### Added — Cairntir Blender add-on (horizon thesis demonstrator)
 
 The first non-code Cairntir client. A Blender add-on that captures
 decisions and 3D-print iteration outcomes into Cairntir's memory
 layer, demonstrating that **Cairntir doesn't care what is being
-remembered** â€” the same machinery that records code decisions in
+remembered** — the same machinery that records code decisions in
 the cairntir wing records 3D-print iteration outcomes in a
 blender wing. Same shape, same retrieval, same prediction-bound
 semantics.
@@ -1003,7 +1003,7 @@ parameters were, what the next iteration should try.
 #### Architecture: spool drop, not import
 
 The add-on never imports the `cairntir` Python package. Instead it
-writes drawer-shaped JSON envelopes to `$CAIRNTIR_HOME/spool/` â€”
+writes drawer-shaped JSON envelopes to `$CAIRNTIR_HOME/spool/` —
 the same format `cairntir.daemon.spool.parse_capture` already
 understands. Cairntir's daemon picks them up on its next poll
 cycle. **Stdlib-only** by design (`json`, `pathlib`, `os`, `time`,
@@ -1015,18 +1015,18 @@ sees a half-written file.
 #### What's in the add-on
 
 `addons/cairntir_blender/`:
-- `spool_writer.py` â€” pure stdlib writer with `write_capture`
+- `spool_writer.py` — pure stdlib writer with `write_capture`
   (free-form drawer) and `write_print_outcome` (structured 3D-print
   iteration with parameters + verdict). Auto-lowercases wing/room
   to satisfy Cairntir's identifier convention so users can naturally
   type "PLA" in the dialog.
-- `__init__.py` â€” Blender add-on entry. `bl_info` block, four
+- `__init__.py` — Blender add-on entry. `bl_info` block, four
   classes (`CAIRNTIR_PG_settings`, `CAIRNTIR_OT_capture_decision`,
   `CAIRNTIR_OT_capture_print_outcome`, `CAIRNTIR_PT_panel`), and
   the standard `register` / `unregister` pair. Lazy-imports `bpy`
   so the spool_writer module remains importable from pytest
   without Blender installed.
-- `README.md` â€” install (zip the directory + Blender preferences),
+- `README.md` — install (zip the directory + Blender preferences),
   configure (per-scene wing / material / cairntir_home), and use
   (panel in the 3D Viewport's N-panel).
 
@@ -1035,10 +1035,10 @@ sees a half-written file.
 The Blender panel exposes two operators in the 3D Viewport's
 **Cairntir** N-panel tab:
 
-- **Capture Decision** â€” free-form drawer with content the user
+- **Capture Decision** — free-form drawer with content the user
   types. Use for design choices, mid-iteration notes, anything
   that isn't strictly a print outcome.
-- **Capture Print Outcome** â€” structured drawer with nozzle temp,
+- **Capture Print Outcome** — structured drawer with nozzle temp,
   bed temp, infill %, layer height, outcome text, success/fail
   verdict, and free-form notes. The drawer's content is
   human-readable markdown; metadata carries the structured fields
@@ -1046,14 +1046,14 @@ The Blender panel exposes two operators in the 3D Viewport's
   `success`) so future Decision Replay or consolidation can
   recover the prediction-bound semantics.
 
-#### Tests â€” 14 new
+#### Tests — 14 new
 
 `tests/unit/test_blender_addon.py` loads `spool_writer.py` directly
 via `importlib.util` (sidestepping the bpy import in `__init__.py`).
 Covers happy paths, validation rejection (empty wing/room,
 whitespace content, unknown layer), the print-outcome helper, the
-lowercase normalization, atomic-write behavior, and â€” the
-load-bearing test â€” **round-trip with the actual Cairntir daemon**:
+lowercase normalization, atomic-write behavior, and — the
+load-bearing test — **round-trip with the actual Cairntir daemon**:
 a file written by the Blender writer parses cleanly through
 `cairntir.daemon.spool.parse_capture` and produces a Drawer with
 the right wing / room / layer / metadata. If that test ever
@@ -1065,7 +1065,7 @@ Blender's `bpy` API uses `UPPER_PG_thing` class naming and class
 attribute idioms (e.g. `bl_options = {"REGISTER"}`) that conflict
 with PEP-8 / pep8-naming. `pyproject.toml` adds a per-file ignore
 for `addons/cairntir_blender/**` covering N801, N815, RUF012, D102
-â€” the add-on is opt-in code that runs inside Blender, not in
+— the add-on is opt-in code that runs inside Blender, not in
 Cairntir's main distribution.
 
 ### Status
@@ -1074,10 +1074,10 @@ Cairntir's main distribution.
 clean, silent-except scanner clean. Zero new runtime dependencies
 in Cairntir's main distribution; the add-on is self-contained.
 
-### Added â€” Agent Memory (per-skill self-memory wings)
+### Added — Agent Memory (per-skill self-memory wings)
 
 Cairntir's three skills (crucible, quality, reason) now keep their
-own *self-memory* in reserved wings under the `agent:` prefix â€”
+own *self-memory* in reserved wings under the `agent:` prefix —
 `agent:crucible`, `agent:quality`, `agent:reason`. Every invocation
 through the recipe runner leaves a self-memory drawer in the
 appropriate agent wing recording the case, with a pointer back to
@@ -1090,7 +1090,7 @@ appear as a "Prior cases" section inside the next Crucible marker
 drawer's content. Quality remembers patterns that earned ship-it
 verdicts. Reason remembers rabbit holes it has already gone down.
 The skills get *better at their own work* without any new
-primitives â€” pure convention-as-code on top of the v1.0 memory
+primitives — pure convention-as-code on top of the v1.0 memory
 surface.
 
 #### Schema relaxation: `:` allowed in wing identifiers
@@ -1098,31 +1098,31 @@ surface.
 `_IDENT_RE` in `cairntir.memory.taxonomy` now accepts `:` inside
 identifiers (the first and last characters must still be
 alphanumeric). This unlocks `agent:crucible` etc. without a database
-migration â€” `wing` is a normal `TEXT` column; only the validator
+migration — `wing` is a normal `TEXT` column; only the validator
 needed loosening. Existing wing names continue to validate
 unchanged.
 
-#### `cairntir.skills.memory` â€” new module
+#### `cairntir.skills.memory` — new module
 
 Five public helpers:
-- `agent_wing_for(skill_name)` â€” returns `"agent:<name>"` for the
+- `agent_wing_for(skill_name)` — returns `"agent:<name>"` for the
   three reserved skills; raises for any other name.
-- `is_agent_skill(skill_name)` â€” predicate used by the recipe runner
+- `is_agent_skill(skill_name)` — predicate used by the recipe runner
   to decide whether to write a self-memory drawer.
 - `record_skill_invocation(memory, *, skill_name, originating_wing,
-  originating_room, skill_marker_id, summary, metadata)` â€” writes
+  originating_room, skill_marker_id, summary, metadata)` — writes
   the self-memory drawer with the right metadata shape so future
   recall is structured.
 - `recall_skill_history(memory, *, skill_name, originating_wing,
-  limit=3)` â€” pulls recent prior cases. Returns `[]` for non-agent
+  limit=3)` — pulls recent prior cases. Returns `[]` for non-agent
   skills so callers can invoke unconditionally.
-- `format_history_for_prompt(history)` â€” renders prior cases as
+- `format_history_for_prompt(history)` — renders prior cases as
   markdown for inclusion in a skill's marker drawer.
 
-#### `MemoryGateway.list_by` â€” new protocol method
+#### `MemoryGateway.list_by` — new protocol method
 
 The `MemoryGateway` Protocol gains a third method:
-`list_by(*, wing, room, limit)` â€” non-semantic listing,
+`list_by(*, wing, room, limit)` — non-semantic listing,
 most-recent-first. Required for Agent Memory's recall path (skill
 history is recency-ordered, not relevance-ordered). Implemented on
 `StoreBackedMemory` by delegating to `Store.list_by`. The fake
@@ -1144,9 +1144,9 @@ satisfy the protocol.
    marker.
 
 A guard skips the agent-memory write when the recipe's `output_wing`
-is itself an agent wing â€” the agent prefix is not a fractal.
+is itself an agent wing — the agent prefix is not a fractal.
 
-### Tests â€” 14 new
+### Tests — 14 new
 
 - `test_agent_memory.py` (13 tests): pure helper smoke tests,
   taxonomy regex relaxation, record/recall round-trip, originating
@@ -1162,14 +1162,14 @@ is itself an agent wing â€” the agent prefix is not a fractal.
 283 tests passing, 84% coverage, ruff + mypy --strict clean,
 silent-except scanner clean. No new runtime dependencies.
 
-### Added â€” Local-AI proposer (Ollama)
+### Added — Local-AI proposer (Ollama)
 
 The Reason loop's `HypothesisProposer` port has shipped only a manual
 adapter (`ManualProposer`, where you type the claim + predicted
 yourself) since v0.6. This release adds the first inference-backed
 implementation: `OllamaProposer`, which calls a locally-running
 [Ollama](https://ollama.com) daemon to draft both fields. Cairntir
-still does not call cloud LLMs â€” Ollama is local-first by design,
+still does not call cloud LLMs — Ollama is local-first by design,
 the daemon runs on the user's machine, and the adapter is stdlib-only
 (`urllib.request` + `json`).
 
@@ -1180,7 +1180,7 @@ Defaults to `manual` (existing behavior). With `--proposer ollama`:
 
 - A single round-trip to `http://localhost:11434/api/generate` (configurable
   via `--ollama-endpoint`) drafts the `claim` + `predicted_outcome`.
-- The draft is **surfaced in the terminal** before the loop commits â€”
+- The draft is **surfaced in the terminal** before the loop commits —
   every load-bearing piece of generated text gets confirmed by the
   user. Cairntir is a memory layer, not a black box.
 - Empty input at the prompt accepts the draft; typed input overrides
@@ -1193,7 +1193,7 @@ cairntir reason "did the proposer wiring land?" --wing cairntir \
 ```
 
 For `cairntir replay`, `--proposer ollama` reframes the original
-chain leaf's claim + predicted given the new evidence â€” the
+chain leaf's claim + predicted given the new evidence — the
 "original framing was off, the replay is also a re-statement" case
 the recipe README anticipated. Without the flag, replay still
 auto-fills from the chain leaf verbatim (the right default for
@@ -1207,7 +1207,7 @@ New public class on the `cairntir.production` surface. Implements
 120s). Typed exceptions: `OllamaError` (base), `OllamaUnavailableError`
 (daemon unreachable), `OllamaModelMissingError` (model not pulled),
 `OllamaInvalidResponseError` (malformed body). Every error carries a
-recovery hint in its message â€” never a silent fallback.
+recovery hint in its message — never a silent fallback.
 
 #### What this unlocks
 
@@ -1215,14 +1215,14 @@ The Reason loop now has a path to autonomous invocation that doesn't
 involve cloud APIs or billed tokens. Recipes like Signal Reader and
 Decision Replay can be invoked with the model drafting the
 prediction-bound fields, surfaced for human review. The "memory that
-thinks back" loop closes â€” locally.
+thinks back" loop closes — locally.
 
 The Whisper.cpp + Gemma pattern Patrick already proved in Transcript
 Capture is the same shape: local model server, Python client over
 HTTP, no telemetry. Reusing it here means no new architectural
 surprises.
 
-### Tests â€” 18 new
+### Tests — 18 new
 
 - `test_ollama_proposer.py` (14 tests): protocol conformance, happy
   path, custom endpoint, all error paths (unreachable, timeout, model
@@ -1236,31 +1236,31 @@ surprises.
 ### Status
 
 268 tests passing, 84% coverage, ruff + mypy --strict clean,
-silent-except scanner clean. Zero new runtime dependencies â€” Ollama
+silent-except scanner clean. Zero new runtime dependencies — Ollama
 is an external daemon, not a Python package Cairntir installs.
 
-### Added â€” Decision Replay recipe (synergy stack completion)
+### Added — Decision Replay recipe (synergy stack completion)
 
-The v1.1 synergy stack â€” production reason loop, cross-wing recall,
-recipe runtime â€” landed 2026-04-18 but only one recipe (Signal
-Reader) ever exercised them together. The cold-start fire (1.1.0 â†’
+The v1.1 synergy stack — production reason loop, cross-wing recall,
+recipe runtime — landed 2026-04-18 but only one recipe (Signal
+Reader) ever exercised them together. The cold-start fire (1.1.0 →
 1.1.3) ate four days of attention, then the stack sat. Decision
 Replay is the second recipe and the first one that uses *all three*
 synergy components at once: it loads a past decision drawer through
 `cairntir.memory.temporal.walk_supersedes`, runs the production
 reason loop with the chain leaf's claim + predicted_outcome
 auto-filled, and writes the new prediction-bound drawer with
-`supersedes_id` pointing at the leaf â€” so the chain extends instead
+`supersedes_id` pointing at the leaf — so the chain extends instead
 of restarting.
 
-#### `cairntir replay <id>` â€” new CLI command
+#### `cairntir replay <id>` — new CLI command
 
 The seamless invocation. Walks the supersedes chain from
 `<id>`, pre-fills the proposer's claim + predicted_outcome from the
 leaf, prompts for the observed outcome and a verdict, runs the
 Decision Replay recipe with `supersedes_id` set to the leaf id,
 prints the new prediction drawer id and the chain extension. Zero
-network calls â€” Cairntir still never runs LLMs itself.
+network calls — Cairntir still never runs LLMs itself.
 
 ```
 cairntir replay 95 --evidence "fastembed default has held for four days,
@@ -1272,14 +1272,14 @@ when the caller wants to override the auto-filled claim.
 
 #### `docs/recipes/decision-replay/`
 
-Bundled recipe â€” `recipe.toml` with three inputs
+Bundled recipe — `recipe.toml` with three inputs
 (`decision_drawer_id`, `current_evidence`, `horizon_months`) and the
 two-skill chain `["reason", "crucible"]`. Discoverable via
 `cairntir recipe-list` alongside Signal Reader. README documents the
 full protocol, anti-patterns, and how Decision Replay closes the
 loop on Signal Reader's outputs.
 
-#### `ReasonLoop.step(supersedes_id=â€¦)` â€” non-breaking extension
+#### `ReasonLoop.step(supersedes_id=…)` — non-breaking extension
 
 The reason loop now accepts an optional `supersedes_id` keyword. When
 supplied, the prediction drawer that step writes carries that
@@ -1288,8 +1288,8 @@ starting a fresh one. The default (`None`) preserves v0.6 semantics:
 the prediction is rootless, the observation supersedes the
 prediction. Existing callers are unaffected.
 
-`RecipeRunner.run(contract, inputs, supersedes_id=â€¦)` is the matching
-extension at the recipe layer â€” the runner threads the pointer into
+`RecipeRunner.run(contract, inputs, supersedes_id=…)` is the matching
+extension at the recipe layer — the runner threads the pointer into
 the reason step when the recipe chains the reason skill.
 
 ### Tests
@@ -1315,10 +1315,10 @@ the reason step when the recipe chains the reason skill.
 250 tests passing, 83% coverage, ruff + mypy --strict clean,
 silent-except scanner clean.
 
-## [1.1.3] â€” 2026-05-03
+## [1.1.3] — 2026-05-03
 
 > **Never released.** This version was committed and changelogged but never
-> tagged, so the release workflow â€” which fires only on a pushed `v*.*.*` tag â€”
+> tagged, so the release workflow — which fires only on a pushed `v*.*.*` tag —
 > never ran. It never reached PyPI. The cold-start fix described below finally
 > shipped inside **1.2.0** on 2026-08-01, three months later; until then every
 > `pip install cairntir` resolved to 1.1.2 and hung on first run. Guarded
@@ -1326,14 +1326,14 @@ silent-except scanner clean.
 
 **The cold-start fix that should have happened four commits ago.**
 
-Five prior commits chased variants of the same symptom â€” the MCP
+Five prior commits chased variants of the same symptom — the MCP
 server hangs for 1-12 minutes on the first `cairntir_remember`
-or `cairntir_recall` after a fresh boot â€” by patching around the
+or `cairntir_recall` after a fresh boot — by patching around the
 slow path: lazy load, background warmup, stdout silencing,
 default-disable warmup, removing query from session_start.
 Every one was a workaround. None killed the root cause.
 
-### Fixed â€” root cause: torch is slow to import
+### Fixed — root cause: torch is slow to import
 
 `import sentence_transformers` triggers `import torch`, which
 initializes CUDA detection, threading, and a wall of C++
@@ -1344,7 +1344,7 @@ Hugging Face Hub I/O is slow. Subsequent calls in the same
 process were fast, but every fresh MCP server pid paid the full
 cold start with zero feedback to the user.
 
-### Added â€” `FastEmbedProvider`
+### Added — `FastEmbedProvider`
 
 New production embedder backed by `fastembed` (ONNX Runtime).
 Drop-in replacement for `SentenceTransformerProvider`: same
@@ -1355,7 +1355,7 @@ end-to-end at **1.4 seconds** with the model cached on disk
 remain searchable across the swap; both backends embed into the
 same model's space.
 
-### Changed â€” production default flipped
+### Changed — production default flipped
 
 `src/cairntir/mcp/server.py` and `src/cairntir/daemon/__main__.py`
 now construct `FastEmbedProvider()` instead of
@@ -1363,12 +1363,12 @@ now construct `FastEmbedProvider()` instead of
 the public surface (`cairntir.impl.SentenceTransformerProvider`)
 for opt-in fallback and the eval suite.
 
-### Added â€” `cairntir setup` step 7: pre-warm the embedder
+### Added — `cairntir setup` step 7: pre-warm the embedder
 
 Setup now downloads and caches the ONNX model
 (~25 MB to `~/.cache/fastembed/`) during the wizard, so the first
 user-facing `cairntir_remember` after install is never the slow
-one. Failure to warm is logged but non-fatal â€” the model
+one. Failure to warm is logged but non-fatal — the model
 auto-downloads on demand if setup couldn't fetch it.
 
 ### Dependencies
@@ -1379,26 +1379,26 @@ auto-downloads on demand if setup couldn't fetch it.
   and the eval suite. Future major version may move it to an
   optional extras group.
 
-## [1.1.2] â€” 2026-05-03
+## [1.1.2] — 2026-05-03
 
 **Architectural follow-up to 1.1.1.** 1.1.1 silenced the stdout
 corruption that was wedging `cairntir_session_start`; 1.1.2 makes
 sure the call can never trigger the slow path in the first place.
 
-### Fixed â€” `cairntir_session_start` is now pure SQL
+### Fixed — `cairntir_session_start` is now pure SQL
 
 Removed the `query` parameter from the `cairntir_session_start` MCP
 tool spec. The retriever's optional `query` argument was the only
 path through `session_start` that triggered the embedder, and on
 cold MCP servers the sentence-transformers cold load took up to
-~2.5 minutes â€” long enough that Claude Code's MCP-call timeout
+~2.5 minutes — long enough that Claude Code's MCP-call timeout
 fired well before the response arrived, even when the server
 ultimately produced a valid 3,625-char answer (observed
 2026-05-03).
 
 With `query` removed from the tool spec, Claude Code stops passing
 it. `session_start` becomes two `list_by` SQL queries plus a string
-format â€” sub-second on every cold MCP server boot, no embedder
+format — sub-second on every cold MCP server boot, no embedder
 cold-load on the critical path. Semantic search has its own home:
 `cairntir_recall`.
 
@@ -1407,7 +1407,7 @@ still accepts `query` for direct library callers; only the
 MCP-advertised tool surface drops it.
 
 Diagnostic plumbing added during the chase stays in place:
-- `cairntir_home() / mcp.log` â€” per-process timestamped log of
+- `cairntir_home() / mcp.log` — per-process timestamped log of
   server startup, every tool dispatch, every embedder load step
 - `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1` are set as
   defaults at MCP startup so the embedder never tries to phone
@@ -1417,18 +1417,18 @@ Diagnostic plumbing added during the chase stays in place:
 
 - New regression test pins the `cairntir_session_start` tool spec
   to never advertise a `query` parameter
-- 240 â†’ 241 tests passing, ruff/format/mypy --strict/silent-except
+- 240 → 241 tests passing, ruff/format/mypy --strict/silent-except
   all clean
-- Bumped 1.1.1 â†’ 1.1.2 in pyproject.toml, __init__.py, plugin.json
+- Bumped 1.1.1 → 1.1.2 in pyproject.toml, __init__.py, plugin.json
 
-## [1.1.1] â€” 2026-04-25
+## [1.1.1] — 2026-04-25
 
 **Critical hotfix.** `cairntir_session_start` was wedging Claude Code
 sessions for 20+ minutes (sometimes indefinitely) on real user
 machines. Two independent bugs were stacked on top of each other; both
 are fixed in this release.
 
-### Fixed â€” MCP stdio stream corruption
+### Fixed — MCP stdio stream corruption
 
 `sentence-transformers`, `transformers`, and `torch` write progress
 bars (`Loading weights: ...`) and architecture-mismatch tables
@@ -1449,12 +1449,12 @@ work in a `_silence_io()` context manager that:
 - Restores both via `try/finally` so a load failure can't silence
   the rest of the process.
 
-### Fixed â€” Warmup race
+### Fixed — Warmup race
 
 The `warm_embedder_in_background` daemon thread (added in 91a8350)
 loaded the sentence-transformers model in parallel with the asyncio
 stdio loop. When a `cairntir_session_start` call arrived with a
-query, the main thread also tried to load the model â€” both went
+query, the main thread also tried to load the model — both went
 through `SentenceTransformer.__init__` simultaneously, and on real
 user boxes this combination of (race + stdout corruption) is what
 produced the 20-minute hangs.
@@ -1467,7 +1467,7 @@ in place to serialize the warmup and synchronous paths.
 
 ### Process
 
-- `_WARMUP_DISABLE_ENV_VAR` â†’ `_WARMUP_ENABLE_ENV_VAR`. Same
+- `_WARMUP_DISABLE_ENV_VAR` → `_WARMUP_ENABLE_ENV_VAR`. Same
   vocabulary (`1`/`true`/`yes`/`on`), inverted semantics.
 - `tests/unit/test_mcp_warmup.py` rewritten for the opt-in shape.
 - 240 tests passing, ruff/mypy/silent-except all clean.
@@ -1481,11 +1481,11 @@ sessions had spawned and wedged their MCP servers. The user's
 at the top of the active tool stack, blocked indefinitely. Reproducing
 the cold load against the real `SentenceTransformerProvider` showed
 `Loading weights: 100%|##########|` and a `BertModel LOAD REPORT`
-table on stdout â€” the smoking gun.
+table on stdout — the smoking gun.
 
-## [1.1.0] â€” 2026-04-18
+## [1.1.0] — 2026-04-18
 
-v1.1 Synergy Stack â€” the three-upgrade bundle. Pulls forward v1.2
+v1.1 Synergy Stack — the three-upgrade bundle. Pulls forward v1.2
 (Production Reason Loop), v1.3-partial (Cross-Wing Recall + Temporal),
 and v1.5 (Recipe Runtime) from the Road to 2.0, and ships them
 together because the value compounds when they land in the same
@@ -1494,7 +1494,7 @@ from the unreleased hotfix branch; 1.1.0 is the first PyPI release
 that carries both halves of the install hardening *and* the synergy
 stack.
 
-### Added â€” Cross-Wing Recall + Temporal Walk
+### Added — Cross-Wing Recall + Temporal Walk
 
 - **`cairntir_cross_recall` MCP tool.** Where `cairntir_recall` scopes
   to one wing, `cairntir_cross_recall` searches every wing the user
@@ -1504,24 +1504,24 @@ stack.
   terminal.
 - **`cairntir.memory.temporal` module.** Two pure query functions
   over the existing supersedes chain: `walk_supersedes(store, id)`
-  returns the full chain rootâ†’leaf, and `as_of(store, id, when)`
+  returns the full chain root→leaf, and `as_of(store, id, when)`
   returns the chain member that was the live leaf at `when`. No
-  schema change â€” every relation was already present in v0.2.
+  schema change — every relation was already present in v0.2.
 
-### Added â€” Production Reason Loop (stdlib-only, zero network)
+### Added — Production Reason Loop (stdlib-only, zero network)
 
 Cairntir does not call LLMs. The Reason loop is a *discipline* for
 committing falsifiable predictions; the hypothesis comes from the
-caller â€” a human at a terminal, or the Claude Code session already
+caller — a human at a terminal, or the Claude Code session already
 driving the CLI. Cairntir stays the memory layer, not a second
 inference provider that would double-bill the user.
 
 - **`cairntir.production` package.** Four stdlib-only adapters:
-  - `StoreBackedMemory(store)` â€” `MemoryGateway` over any `Store`.
-  - `StoreBackedBeliefs(store)` â€” `BeliefStore` over any `Store`.
-  - `NullRunner` â€” `ExperimentRunner` that records a caller-supplied
+  - `StoreBackedMemory(store)` — `MemoryGateway` over any `Store`.
+  - `StoreBackedBeliefs(store)` — `BeliefStore` over any `Store`.
+  - `NullRunner` — `ExperimentRunner` that records a caller-supplied
     verdict.
-  - `ManualProposer` â€” `HypothesisProposer` that returns a
+  - `ManualProposer` — `HypothesisProposer` that returns a
     caller-supplied hypothesis. Accepts either a prebuilt
     `Hypothesis` or raw `claim` + `predicted_outcome` strings.
 - **`cairntir reason "<question>" --wing X` CLI.** Runs one full
@@ -1532,15 +1532,15 @@ inference provider that would double-bill the user.
   network calls, zero paid tokens.
 - **Future: local-AI proposer.** A Gemma 4 (via llama.cpp or
   similar) proposer can drop in by implementing
-  `HypothesisProposer` â€” no API costs, still local-first. Planned
+  `HypothesisProposer` — no API costs, still local-first. Planned
   as a separate phase once the synergy stack has been exercised in
   the field.
 
-### Added â€” Recipe Runtime
+### Added — Recipe Runtime
 
 - **`cairntir.recipes` package.** Declarative protocols that chain
   the three core skills into repeatable disciplines. The three
-  skills stay locked â€” recipes are the escape valve.
+  skills stay locked — recipes are the escape valve.
   - `RecipeContract` dataclass loaded from `recipe.toml`: `name`,
     `description`, `version`, `output_wing`, ordered `skills` list
     (`crucible` / `quality` / `reason`), typed `input` table.
@@ -1553,7 +1553,7 @@ inference provider that would double-bill the user.
     contract end-to-end. Writes a seed drawer capturing the
     invocation + inputs, then one drawer per skill step. When the
     chain includes `reason`, runs a full `ReasonLoop.step` with
-    the caller-supplied `ManualProposer` â€” the prediction-bound
+    the caller-supplied `ManualProposer` — the prediction-bound
     drawer pair is the recipe's load-bearing output.
 - **`docs/recipes/signal-reader/recipe.toml`.** Ships the Signal
   Reader protocol as an executable recipe. Input slots: `summary`
@@ -1562,7 +1562,7 @@ inference provider that would double-bill the user.
   execute recipes from the terminal. Recipes that chain `reason`
   collect claim / predicted / observed / verdict via `--claim` /
   `--predicted` / `--observed` / `--success`/`--fail` flags or
-  interactive prompts â€” never via a network call.
+  interactive prompts — never via a network call.
 
 ### Changed
 
@@ -1570,13 +1570,13 @@ inference provider that would double-bill the user.
   `1.1.0`. `.claude-plugin/plugin.json` matches.
 - `src/cairntir/mcp/server.py` and `src/cairntir/cli.py` gain the
   new tools and commands above. The stable v1.0 public API
-  (`cairntir.__init__` re-exports) is unchanged â€” every new surface
+  (`cairntir.__init__` re-exports) is unchanged — every new surface
   is under `cairntir.impl` / `cairntir.production` / `cairntir.recipes`
   or the CLI/MCP adapters.
 
 ### Fixed (carried over from the unreleased hotfix branch)
 
-- **Cold-start MCP handshake timeout** â€” `DrawerStore.__init__` no
+- **Cold-start MCP handshake timeout** — `DrawerStore.__init__` no
   longer eagerly touches `embedder.dimension`; the model loads only
   when the `vec_drawers` virtual table must be created (first-time
   DBs). Brought startup from ~28 s to ~1 s on cold cache, so Claude
@@ -1591,7 +1591,7 @@ inference provider that would double-bill the user.
   <field>: <message>` so an invalid wing/room/content argument
   doesn't crash the tool response.
 
-## [1.0.1] â€” 2026-04-17
+## [1.0.1] — 2026-04-17
 
 > **Never released.** Committed and changelogged but never tagged, so it never
 > reached PyPI. The work below is present in every later version. Guarded
@@ -1602,10 +1602,10 @@ to `sys.executable`, which silently broke whenever a venv moved, was
 recreated, or got upgraded. This release switches the registration to
 a stable console-script shim, adds silent self-heal on every CLI run,
 and surfaces a one-line update banner when a newer Cairntir is on
-PyPI. Once installed, Cairntir stays on until the user uninstalls â€” no
+PyPI. Once installed, Cairntir stays on until the user uninstalls — no
 re-running setup, no "tools not loaded" surprises.
 
-### Added â€” Stable install seam
+### Added — Stable install seam
 - **`cairntir-mcp` console script.** New entry point declared in
   `[project.scripts]`. Pip's launcher hard-pins the right interpreter
   on install, so the registered MCP command is one stable name that
@@ -1622,14 +1622,14 @@ re-running setup, no "tools not loaded" surprises.
   `https://pypi.org/pypi/cairntir/json` once per 24 hours in a daemon
   thread (2s timeout, fail-silent on network errors). When a newer
   release exists, the next CLI command and the next MCP tool response
-  prepend a one-line banner: `[cairntir update available: X â†’ Y â€”
+  prepend a one-line banner: `[cairntir update available: X → Y —
   run \`pip install -U cairntir\`]`. Banner appears at most once per
   process. Opt-out via `CAIRNTIR_DISABLE_UPDATE_CHECK`.
 - 22 new tests covering the self-heal helper and the update notifier.
 
 ### Changed
 - `cairntir.cli._mcp_spec` now returns `{"command": "cairntir-mcp",
-  "args": []}` â€” no more `sys.executable` pinning. Both `cairntir
+  "args": []}` — no more `sys.executable` pinning. Both `cairntir
   init` (project scope) and `cairntir init --user` (user scope) use
   the new shim.
 - `.claude-plugin/plugin.json` updated to register the same shim.
@@ -1641,13 +1641,13 @@ re-running setup, no "tools not loaded" surprises.
 
 ### Fixed
 - `cairntir_audit` and `cairntir_crucible` MCP tool descriptions no
-  longer claim "(Phase-2 stub)" â€” both tools fully shipped in 1.0.0
+  longer claim "(Phase-2 stub)" — both tools fully shipped in 1.0.0
   and the label was a documentation bug.
 - Tests: `tests/conftest.py` autouse fixture sets both opt-out env
   vars during test runs so the self-heal and PyPI check never touch
   the developer's real home directory or the network.
 
-### Added â€” Pre-1.0.1 (the prior "Unreleased" block, now historical)
+### Added — Pre-1.0.1 (the prior "Unreleased" block, now historical)
 - **PyPI release (2026-04-15):** `pip install cairntir` now works
   worldwide at https://pypi.org/project/cairntir/1.0.0/. First public
   install path; the git-clone + editable-install route is now the
@@ -1660,18 +1660,18 @@ re-running setup, no "tools not loaded" surprises.
   gotchas we hit (PowerShell hiding token prompts, never paste a
   token in a shared context).
 
-## [1.0.0] â€” 2026-04-08
+## [1.0.0] — 2026-04-08
 
 Library extraction. Cairntir graduates from "a tool" to "the thing other
 tools store their memory in". The v1.0 contract is a curated protocol
 surface re-exported from the package root; concrete implementations
 move to `cairntir.impl.*` and reserve the right to change between
-minor releases. Six versioned phases (v0.2 â†’ v0.6) landed in the
-pre-v1.0 arc â€” prediction-bound drawers, consolidation / forgetting /
+minor releases. Six versioned phases (v0.2 → v0.6) landed in the
+pre-v1.0 arc — prediction-bound drawers, consolidation / forgetting /
 contradiction, surprise + belief-as-distribution, portable signed
-format, and the clean-ports Reason loop â€” and v1.0 locks the seam.
+format, and the clean-ports Reason loop — and v1.0 locks the seam.
 
-### Added â€” Public protocol surface (`cairntir.__init__`)
+### Added — Public protocol surface (`cairntir.__init__`)
 - `Store` protocol: `add`, `get`, `list_by`, `search`, `update_layer`,
   `reinforce`, `weaken`, `stale_ids`, `close`
 - `EmbeddingProvider` protocol (re-export from the memory package)
@@ -1682,27 +1682,27 @@ format, and the clean-ports Reason loop â€” and v1.0 locks the seam.
 - Typed exceptions: the full set from `cairntir.errors`, plus the new
   `CairntirDeprecationWarning`
 
-### Added â€” `cairntir.impl` namespace
+### Added — `cairntir.impl` namespace
 - `DrawerStore`, `HashEmbeddingProvider`, `SentenceTransformerProvider`,
   `Retriever`, `RetrievalResult`, `ReasonLoop`, `SCHEMA_VERSION`
-- All concrete â€” reserved right to change. The public contract is the
+- All concrete — reserved right to change. The public contract is the
   protocol surface above.
 
-### Added â€” v1.0 contract test infrastructure
-- `tests/contract/test_store_contract.py` â€” every `Store` impl must
+### Added — v1.0 contract test infrastructure
+- `tests/contract/test_store_contract.py` — every `Store` impl must
   pass this suite; runs against `DrawerStore` via a parametrized
   factory fixture
-- `tests/property/test_taxonomy_properties.py` â€” Hypothesis-driven
+- `tests/property/test_taxonomy_properties.py` — Hypothesis-driven
   property tests for taxonomy invariants (valid identifiers round
   trip, whitespace content rejected, belief mass preserved, layer
   preserved)
-- `tests/unit/test_public_api.py` â€” snapshot of `dir(cairntir)` that
+- `tests/unit/test_public_api.py` — snapshot of `dir(cairntir)` that
   fails on drift; separate assertions for `__all__` and `__version__`
-- v1 â†’ v2 â†’ v3 schema migration fixtures exercised against
+- v1 → v2 → v3 schema migration fixtures exercised against
   `DrawerStore` (hand-built pre-v4 databases reopen and upgrade
   losslessly)
 
-### Added â€” Deprecation policy
+### Added — Deprecation policy
 - `CairntirDeprecationWarning` subclass of `DeprecationWarning`. Public
   surfaces must emit this warning for at least two minor releases
   before removal. No silent removals.
@@ -1712,15 +1712,15 @@ format, and the clean-ports Reason loop â€” and v1.0 locks the seam.
   concrete classes from `cairntir.memory.*` or `cairntir.reason.loop`
   still works for now, but the stable seam is the protocol re-exports.
 - `hypothesis` added to dev dependencies.
-- Version bumped `0.1.0 â†’ 1.0.0`.
+- Version bumped `0.1.0 → 1.0.0`.
 
-## [0.1.0] â€” 2026-04-08
+## [0.1.0] — 2026-04-08
 
 The memory-first reasoning layer ships. Five phases from bootstrap to the
 one-loop daemon, tying together verbatim memory, three skills, and a
 six-tool MCP surface that Claude Code can talk to directly.
 
-### Added â€” Phase 0 Â· Bootstrap
+### Added — Phase 0 · Bootstrap
 - Professional scaffolding: `pyproject.toml`, `ruff`, `mypy --strict`,
   `pytest`, `pre-commit`
 - GitHub Actions CI: lint + test matrix
@@ -1728,41 +1728,41 @@ six-tool MCP surface that Claude Code can talk to directly.
   BrainStormer preserved read-only
 - Ban on silent `except: pass` enforced by CI
 
-### Added â€” Phase 1 Â· Memory Spike
-- `cairntir.memory.taxonomy` â€” frozen pydantic `Drawer` + `Layer` enum
+### Added — Phase 1 · Memory Spike
+- `cairntir.memory.taxonomy` — frozen pydantic `Drawer` + `Layer` enum
   with strict identifier validation
-- `cairntir.memory.embeddings` â€” `EmbeddingProvider` protocol,
+- `cairntir.memory.embeddings` — `EmbeddingProvider` protocol,
   deterministic `HashEmbeddingProvider` for tests, lazy-loading
   `SentenceTransformerProvider` for production
-- `cairntir.memory.store` â€” sqlite-vec backed `DrawerStore` with a
+- `cairntir.memory.store` — sqlite-vec backed `DrawerStore` with a
   `vec0` virtual table and typed error surface
-- `cairntir.memory.retrieval` â€” 4-layer `Retriever`
+- `cairntir.memory.retrieval` — 4-layer `Retriever`
   (identity / essential / on_demand / deep)
 - LongMemEval R@5 eval skeleton
 
-### Added â€” Phase 2 Â· MCP Server
-- `cairntir.config` â€” `CAIRNTIR_HOME` + platformdirs-based path resolution
-- `cairntir.mcp.backend.CairntirBackend` â€” transport-free implementation
+### Added — Phase 2 · MCP Server
+- `cairntir.config` — `CAIRNTIR_HOME` + platformdirs-based path resolution
+- `cairntir.mcp.backend.CairntirBackend` — transport-free implementation
   of `remember`, `recall`, `session_start`, `timeline`, `audit`, `crucible`
-- `cairntir.mcp.server` â€” stdio adapter, runnable as
+- `cairntir.mcp.server` — stdio adapter, runnable as
   `python -m cairntir.mcp.server`
 
-### Added â€” Phase 3 Â· Skills
-- `src/cairntir/skills/crucible.md` â€” 4-phase epistemic forge distilled
+### Added — Phase 3 · Skills
+- `src/cairntir/skills/crucible.md` — 4-phase epistemic forge distilled
   from BrainStormer lineage
-- `src/cairntir/skills/quality.md` â€” two-stage ship gate with
+- `src/cairntir/skills/quality.md` — two-stage ship gate with
   Evidence-Before-Claims and the Cairntir-native T6 Memory Discipline tier
-- `src/cairntir/skills/reason.md` â€” new memory-backed thinking loop
-- `cairntir.skills.load_skill` â€” bundled markdown via
+- `src/cairntir/skills/reason.md` — new memory-backed thinking loop
+- `cairntir.skills.load_skill` — bundled markdown via
   `importlib.resources`, wired into the Crucible and Quality tools
 
-### Added â€” Phase 4 Â· Daemon
-- `cairntir.daemon.spool` â€” atomic `write_capture`, arrival-ordered
+### Added — Phase 4 · Daemon
+- `cairntir.daemon.spool` — atomic `write_capture`, arrival-ordered
   `pending_files`, strict `parse_capture`, quarantine-on-failure
-- `cairntir.daemon.capture.CaptureDaemon` â€” `tick()` for one-shot
+- `cairntir.daemon.capture.CaptureDaemon` — `tick()` for one-shot
   processing, `run()` for the asyncio poll loop, graceful `request_stop`
-- `python -m cairntir.daemon` â€” production entry point
-- Retires the init/wrapup ceremony: spool â†’ daemon â†’ store â†’ session_start
+- `python -m cairntir.daemon` — production entry point
+- Retires the init/wrapup ceremony: spool → daemon → store → session_start
 
 ### Quality
 - 54 tests, 85% coverage

@@ -1,7 +1,7 @@
-# Cairntir â€” project brief
+# Cairntir — project brief
 
 Host-neutral, local-first memory and reasoning through MCP. Owner:
-Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11â€“3.13.
+Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
@@ -84,7 +84,7 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session â€” 2026-09-08
+## Last Session — 2026-09-08
 
 Verification follow-up for issue #107 is implemented in [PR #108](https://github.com/pnmcguire480/cairntir/pull/108).
 The PR records CI and merge status; this brief records the verified behavior.
@@ -140,7 +140,7 @@ supports checkpoint saves again. Raw verification evidence is retained in
 the private workspace verification directory.
 
 <!-- cairntir:begin -->
-# Cairntir â€” memory-first reasoning layer
+# Cairntir — memory-first reasoning layer
 
 You have access to persistent memory through the `cairntir_*` MCP tools.
 At conversation start, after context compaction, and whenever continuity is lost:
