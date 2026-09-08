@@ -1,0 +1,614 @@
+{
+  "status": "local verification passed",
+  "base_commit": "dc2607f2146b931e4fa9243fc847583d6bf99ebb",
+  "issue": 107,
+  "authorship": "solo; no independent review claimed",
+  "finalization": {
+    "verification_reserve_percent": 25,
+    "maximum_repair_rounds": 2,
+    "repair_rounds_used": 2,
+    "focused_continuation": {
+      "maximum_repair_rounds": 1,
+      "repair_rounds_used": 1,
+      "verification_reserve_percent": 25,
+      "reason": "A separate backup coordinator race was exposed by final CI. Continue the existing authorized defect work in one focused round; retain the original two rounds as used."
+    }
+  },
+  "coverage": {
+    "covered_lines": 8022,
+    "num_statements": 8576,
+    "percent_covered": 92.25251076040172,
+    "percent_covered_display": "92.252511",
+    "missing_lines": 554,
+    "excluded_lines": 48,
+    "percent_statements_covered": 93.5401119402985,
+    "percent_statements_covered_display": "93.540112",
+    "num_branches": 2576,
+    "num_partial_branches": 280,
+    "covered_branches": 2266,
+    "missing_branches": 310,
+    "percent_branches_covered": 87.96583850931677,
+    "percent_branches_covered_display": "87.965839"
+  },
+  "coverage_gate": 92,
+  "coverage_surface": "Existing coverage exclusions and omissions preserved; subprocess measurement enabled. Actual statement and branch counts are reported in coverage.",
+  "fresh_ci_selection": {
+    "sha256": "eb096e382f7035161dde3de185a31bc884a882fc7d3de94fcb4d519ea542280e",
+    "tests": 1664,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "model_evaluation": {
+    "sha256": "f2fb4fe4187153565abf1a0c36a12521d0c55c1bd91950a57d2ab98dbde9cfe2",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "selection": "All seven cases except test_whole_export_includes_more_than_old_one_hundred_thousand_cap"
+  },
+  "historical": {
+    "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "results": [
+      {
+        "case": "mcp-version",
+        "phase": "broken",
+        "commit": "bead1179ea04e32b9bfb2db1dc43a68f36b45d6c",
+        "test": "tests/verification/test_historical_regressions.py::test_handshake_identifies_cairntir",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 1,
+        "behavior_proved": true,
+        "expected_failure": "REGRESSION: handshake reports SDK version"
+      },
+      {
+        "case": "mcp-version",
+        "phase": "fixed",
+        "commit": "60ccbbf07fddf645e667f736b408f6e0186b1639",
+        "test": "tests/verification/test_historical_regressions.py::test_handshake_identifies_cairntir",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 0,
+        "behavior_proved": true,
+        "expected_failure": null
+      },
+      {
+        "case": "export-atomicity",
+        "phase": "broken",
+        "commit": "ff25ea321f8c40bd3e849460d71b470965af988a",
+        "test": "tests/verification/test_historical_regressions.py::test_interrupted_export_preserves_previous_file",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 1,
+        "behavior_proved": true,
+        "expected_failure": "REGRESSION: interrupted export destroyed prior file"
+      },
+      {
+        "case": "export-atomicity",
+        "phase": "fixed",
+        "commit": "a67c00097255b16f3a230c63cc0486d47e82ee7e",
+        "test": "tests/verification/test_historical_regressions.py::test_interrupted_export_preserves_previous_file",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 0,
+        "behavior_proved": true,
+        "expected_failure": null
+      },
+      {
+        "case": "checkpoint-text",
+        "phase": "broken",
+        "commit": "4214a0042f970514e0dbaeaf510e84bf281ce78a",
+        "test": "tests/verification/test_historical_regressions.py::test_invalid_checkpoint_preserves_resumable_task",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 1,
+        "behavior_proved": true,
+        "expected_failure": "REGRESSION: checkpoint leaked an untyped error"
+      },
+      {
+        "case": "checkpoint-text",
+        "phase": "fixed",
+        "commit": "d88beabdf5407b03c72cf60d9d59ca0908630999",
+        "test": "tests/verification/test_historical_regressions.py::test_invalid_checkpoint_preserves_resumable_task",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 0,
+        "behavior_proved": true,
+        "expected_failure": null
+      },
+      {
+        "case": "store-reopen",
+        "phase": "broken",
+        "commit": "42d2bfb92c00f301dc3236d11564f83a3d2fffa0",
+        "test": "tests/verification/test_historical_regressions.py::test_reopening_current_store_preserves_database_bytes",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 1,
+        "behavior_proved": true,
+        "expected_failure": "REGRESSION: unchanged store reopen rewrote database"
+      },
+      {
+        "case": "store-reopen",
+        "phase": "fixed",
+        "commit": "e27fe04a21eeb4db32fadb6804ee3afb7c617a58",
+        "test": "tests/verification/test_historical_regressions.py::test_reopening_current_store_preserves_database_bytes",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 0,
+        "behavior_proved": true,
+        "expected_failure": null
+      },
+      {
+        "case": "backup-ownership",
+        "phase": "broken",
+        "commit": "73cc04249010411fa3d2cb198d6c20d6654c68d0",
+        "test": "tests/acceptance/test_backup_worker_ownership.py::test_orphan_worker_never_removes_a_live_replacement_attempt",
+        "test_sha256": "ed6c6a5f7d8ffaec522ec1737e5d92436f52408a8c2e2d73219be1e275158ac2",
+        "returncode": 1,
+        "behavior_proved": true,
+        "expected_failure": "orphan worker deleted another live attempt's staging directory"
+      },
+      {
+        "case": "backup-ownership",
+        "phase": "fixed",
+        "commit": "5584ff7be4494d72d0776b3c2948d9b227cdfe26",
+        "test": "tests/acceptance/test_backup_worker_ownership.py::test_orphan_worker_never_removes_a_live_replacement_attempt",
+        "test_sha256": "ed6c6a5f7d8ffaec522ec1737e5d92436f52408a8c2e2d73219be1e275158ac2",
+        "returncode": 0,
+        "behavior_proved": true,
+        "expected_failure": null
+      }
+    ]
+  },
+  "mutations": {
+    "results": [
+      {
+        "mutation": "discard-backup-during-status-observation",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_backup_observer_outcomes.py::test_status_observation_does_not_discard_a_due_backup",
+        "source_sha256": "9b47f614f4fdca380033e98f46ef2f23198acd1582c5d797c310d507e62bd62c",
+        "test_sha256": "43a3dd4a4bf9470bc91d94c94d92eb5877636ba6397ae52282d47b3148f3c8a5"
+      },
+      {
+        "mutation": "discard-backup-during-status-observation",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_backup_observer_outcomes.py::test_status_observation_does_not_discard_a_due_backup",
+        "source_sha256": "e5d2412f64559d7295e37013084761ee39b6a6beae6a2df36e24abd9b52fc273",
+        "test_sha256": "43a3dd4a4bf9470bc91d94c94d92eb5877636ba6397ae52282d47b3148f3c8a5"
+      },
+      {
+        "mutation": "reject-committed-snapshot",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_snapshot_deadline_outcomes.py::test_snapshot_deadline_respects_sqlite_completion_and_rollback[committed]",
+        "source_sha256": "a21cd519ef12df8c7a5439d40014dc841800335c17b574aa9bb638254bc36a4b",
+        "test_sha256": "6c70bb76ce0f29bbd4f0e9d44deba62a47a2739c7a9ebc9b45f7dcc3056ca8e4"
+      },
+      {
+        "mutation": "reject-committed-snapshot",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_snapshot_deadline_outcomes.py::test_snapshot_deadline_respects_sqlite_completion_and_rollback[committed]",
+        "source_sha256": "8aa343b3a57b277aba5c0e04224a7c9a346cbe403cfec9440ba44a1d49029f2e",
+        "test_sha256": "6c70bb76ce0f29bbd4f0e9d44deba62a47a2739c7a9ebc9b45f7dcc3056ca8e4"
+      },
+      {
+        "mutation": "trim-original-transcript",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_transcript_failure_outcomes.py::test_recovered_request_retains_exact_whitespace_and_unicode[codex-event]",
+        "source_sha256": "57d3d2e7c4628c1a1f4a716ab9eecc7e3d6757900f140d668cbbd6230853273a",
+        "test_sha256": "7d316904d3445234bdafdf3f927c0e8b42b457342ec031743266ef97e2dca55c"
+      },
+      {
+        "mutation": "trim-original-transcript",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_transcript_failure_outcomes.py::test_recovered_request_retains_exact_whitespace_and_unicode[codex-event]",
+        "source_sha256": "3c18ec6914783d1eaaebaaeb609576cef884485f0e51e599605e190648570ce6",
+        "test_sha256": "7d316904d3445234bdafdf3f927c0e8b42b457342ec031743266ef97e2dca55c"
+      },
+      {
+        "mutation": "commit-invalid-workflow-result",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_store_failure_outcomes.py::test_nonobject_workflow_result_rolls_back_before_reporting_failure[done]",
+        "source_sha256": "a21cd519ef12df8c7a5439d40014dc841800335c17b574aa9bb638254bc36a4b",
+        "test_sha256": "0cb2bf5ebed13a2aab5196338ddbd2e2bbe7c0cb4588271ce3c14ddf0136991b"
+      },
+      {
+        "mutation": "commit-invalid-workflow-result",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_store_failure_outcomes.py::test_nonobject_workflow_result_rolls_back_before_reporting_failure[done]",
+        "source_sha256": "d04f99a32722b1ecbd5e1a7bcbb70fd62054cfa5f45808cdf99c9217750477f0",
+        "test_sha256": "0cb2bf5ebed13a2aab5196338ddbd2e2bbe7c0cb4588271ce3c14ddf0136991b"
+      },
+      {
+        "mutation": "discard-valid-transcript",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_transcript_failure_outcomes.py::test_codex_valid_request_survives_invalid_utf8_later_in_the_file",
+        "source_sha256": "57d3d2e7c4628c1a1f4a716ab9eecc7e3d6757900f140d668cbbd6230853273a",
+        "test_sha256": "7d316904d3445234bdafdf3f927c0e8b42b457342ec031743266ef97e2dca55c"
+      },
+      {
+        "mutation": "discard-valid-transcript",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_transcript_failure_outcomes.py::test_codex_valid_request_survives_invalid_utf8_later_in_the_file",
+        "source_sha256": "420c20db37e41961b5d4fef69ff86e19576930f3f23d5b84b10843dcb0dc5106",
+        "test_sha256": "7d316904d3445234bdafdf3f927c0e8b42b457342ec031743266ef97e2dca55c"
+      },
+      {
+        "mutation": "omit-memory",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_recovery_outcomes.py::test_restored_backup_preserves_every_table_and_resumes_task",
+        "source_sha256": "9b47f614f4fdca380033e98f46ef2f23198acd1582c5d797c310d507e62bd62c",
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
+      },
+      {
+        "mutation": "omit-memory",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_recovery_outcomes.py::test_restored_backup_preserves_every_table_and_resumes_task",
+        "source_sha256": "5bb4cb86ff6f63ad9e65c0e84199491c958f55bafa56771a0b980b6bd52224bc",
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
+      },
+      {
+        "mutation": "omit-vector",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_recovery_outcomes.py::test_restored_backup_preserves_every_table_and_resumes_task",
+        "source_sha256": "9b47f614f4fdca380033e98f46ef2f23198acd1582c5d797c310d507e62bd62c",
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
+      },
+      {
+        "mutation": "omit-vector",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_recovery_outcomes.py::test_restored_backup_preserves_every_table_and_resumes_task",
+        "source_sha256": "37fbff6e34ee9397cb839fb5fb8052193a2d859df9ad8bd8e93fbe56d2d16d77",
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
+      },
+      {
+        "mutation": "commit-instead-of-rollback",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_recovery_outcomes.py::test_failed_write_after_vector_insert_rolls_back_every_table",
+        "source_sha256": "a21cd519ef12df8c7a5439d40014dc841800335c17b574aa9bb638254bc36a4b",
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
+      },
+      {
+        "mutation": "commit-instead-of-rollback",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_recovery_outcomes.py::test_failed_write_after_vector_insert_rolls_back_every_table",
+        "source_sha256": "651609aad2203ca57651e9088b13a631a42ba56fa03a9a10235589d6521154fa",
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
+      },
+      {
+        "mutation": "report-sdk-version",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_historical_regressions.py::test_handshake_identifies_cairntir",
+        "source_sha256": "49d191e368625174d004dec7497365cb11bde85e147e7fd67e199090ff58b985",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d"
+      },
+      {
+        "mutation": "report-sdk-version",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_historical_regressions.py::test_handshake_identifies_cairntir",
+        "source_sha256": "31230bc91350313ac1ebe1906701f0a5560f070d5212db5bd09136a5aa2229e9",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d"
+      }
+    ]
+  },
+  "installed_wheel": {
+    "version": "1.12.1",
+    "package_files": 74,
+    "mcp_tools": 21,
+    "cli_and_mcp": "PASS",
+    "abrupt_host_resumption": "PASS",
+    "checkpoint_revision": 2,
+    "all_table_restoration": "PASS",
+    "restored_semantic_recall": "PASS",
+    "wheel_sha256": "325e4791cf237136ee4ecb4e59c2bb997947ce5cbe4793f04deff7774b895220",
+    "requirements_sha256": "0a95268161a8c9d5abb39e05e31958933349d1851d8a043bef11f6b054178f2e",
+    "raw_receipt_sha256": "a1cfaebfd0ca6030e33c236ae32822fba1d9ce4254bdf2418d2c28590d19531a"
+  },
+  "preservation": {
+    "manifests": 24,
+    "protected_artifacts": 115,
+    "passed": true
+  },
+  "gates": [
+    "ruff",
+    "ruff-format",
+    "mypy-strict",
+    "no-silent-except",
+    "landed-commitments",
+    "seams",
+    "docs-links",
+    "mkdocs-strict",
+    "release-tags",
+    "dependency-advisories: 134 packages, 0 findings"
+  ],
+  "behavioral_before_evidence": {
+    "current-defects-before.xml": {
+      "sha256": "660555215d2fc6786a908ea4a18c47f1b3eb5288c36519cdcd76c056f2001f26",
+      "tests": 47,
+      "failures": 13,
+      "errors": 0,
+      "skipped": 0
+    },
+    "float32-before.xml": {
+      "sha256": "6b255c85edd0db2c408c174daa8caeebafabb21b453d945892672b644b86e60c",
+      "tests": 53,
+      "failures": 6,
+      "errors": 0,
+      "skipped": 0
+    },
+    "workflow-before.xml": {
+      "sha256": "492c3f9e115b2d4b77524ab861de47683564a73d2b8c9c21d13d3d80d026326e",
+      "tests": 8,
+      "failures": 6,
+      "errors": 0,
+      "skipped": 0
+    },
+    "transcript-before.xml": {
+      "sha256": "56f28135e06229e9e335e55c2e5477d158be23e3f991ce35130984c30607e9d1",
+      "tests": 26,
+      "failures": 6,
+      "errors": 0,
+      "skipped": 0
+    },
+    "whitespace-before-corrected.xml": {
+      "sha256": "754eb78881fe298af3de494cc8a7536e1f56ca2ce0f1765b0dba01b16093667c",
+      "tests": 5,
+      "failures": 5,
+      "errors": 0,
+      "skipped": 0
+    },
+    "rounding-before-corrected.xml": {
+      "sha256": "fb634099fcb9e718b742e1453407136e6b8034835202454a3e538f7f6a8b1c2d",
+      "tests": 2,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "snapshot-deadline-before.xml": {
+      "sha256": "5881dc79888bb107436aa279c38083b09250523603f4c58162af8ab762dff17c",
+      "tests": 2,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "observer-before.xml": {
+      "sha256": "e95bcacf8f0a11e653ed0d9b5faa76ed5eaa1e3bfacad227cdcad81688c9e6fc",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "tested_files": {
+    "src/cairntir/memory/store.py": "a21cd519ef12df8c7a5439d40014dc841800335c17b574aa9bb638254bc36a4b",
+    "src/cairntir/transcript.py": "57d3d2e7c4628c1a1f4a716ab9eecc7e3d6757900f140d668cbbd6230853273a",
+    "tests/verification/conftest.py": "31b499ca8cd24ed0ba77e3d057d9b4c5e5633945f7e7421d1bb4db04477aad33",
+    "tests/verification/test_backup_policy_outcomes.py": "ea53f72fedb2f01059616a362226c04d64699927da07b830629609af39455e5c",
+    "tests/verification/test_cli_outcomes.py": "c257f4b7b99f6ffd891f4c4b11ad61fd14b62c30323a2136e06c1db9e72abd51",
+    "tests/verification/test_context_failure_outcomes.py": "c20156caf814ce4b5691ec53c69a01cc77c0c8aa1a2911cd0d056f9cccf0c2cc",
+    "tests/verification/test_embedding_adapter_outcomes.py": "87e98d26aeb00391c44288252b1c2fa835d67479f7e8c1ed2d40919d3ed375be",
+    "tests/verification/test_finalization_failure_outcomes.py": "9d3489259ac7bacc3842cb64f45b5125d2a8cb73e3d6ef99e9acc0e32eb1e9fe",
+    "tests/verification/test_historical_regressions.py": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+    "tests/verification/test_hotfix_outcomes.py": "8df78e1789d3bcee01df5806aefe2fd253ad83bc0694bea6df129d25462ffca2",
+    "tests/verification/test_learning_outcomes.py": "2ca0f020e92cbaa345a426a873848cbae4c26aa39b2931f0e254e837c03e6c8d",
+    "tests/verification/test_mcp_failure_outcomes.py": "9c20682d35b02e6a3f90d651b8da73c8f36fa268558503063da0126795702d20",
+    "tests/verification/test_portable_failure_outcomes.py": "4473309e6c478b51fd2998b2c96e0fd71c5e12012e312e1a4ac753de219f30ad",
+    "tests/verification/test_projection_failure_outcomes.py": "d8c5c8bb3097a858ab2d294c52e65dfc874237845d01926518aa443194e838b7",
+    "tests/verification/test_recovery_outcomes.py": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314",
+    "tests/verification/test_reindex_failure_outcomes.py": "18f063de7d00999f6085e36aa45342a7b03c3a414e25bc6a6a47f6e371501e00",
+    "tests/verification/test_scoped_store_outcomes.py": "2901170d429343b1f1383a3a03dc68b428d0b07b7f511482dd7dded71b42fb68",
+    "tests/verification/test_store_failure_outcomes.py": "0cb2bf5ebed13a2aab5196338ddbd2e2bbe7c0cb4588271ce3c14ddf0136991b",
+    "tests/verification/test_transcript_failure_outcomes.py": "7d316904d3445234bdafdf3f927c0e8b42b457342ec031743266ef97e2dca55c",
+    "tests/verification/test_verification_gate.py": "e64f18019108e1fc376edc0c4ff9b341d3653c9ec5a496d2519b5dfff713c6c7",
+    "scripts/check_verification_preservation.py": "4206d92462aa2f81b4281c0cd730e35775b66f0ccd43b63e238ef2e003674a49",
+    "scripts/verify_history.py": "0d688e6fa5a09f7f41f019e66a7767612bd10f6397e486ea0373ebbd9a2b8342",
+    "scripts/verify_mutations.py": "d299ec1255d0154f16e2a3840f9f1a347fd3db807870b52a9c71f7521c2f0b7b",
+    "scripts/verify_package.py": "a63236a25b17f47d154b774af8fd1d876484945e5db430e2d57637f9afae8835",
+    "tests/verification/test_snapshot_deadline_outcomes.py": "6c70bb76ce0f29bbd4f0e9d44deba62a47a2739c7a9ebc9b45f7dcc3056ca8e4",
+    "src/cairntir/backups.py": "9b47f614f4fdca380033e98f46ef2f23198acd1582c5d797c310d507e62bd62c",
+    "tests/verification/test_backup_observer_outcomes.py": "43a3dd4a4bf9470bc91d94c94d92eb5877636ba6397ae52282d47b3148f3c8a5"
+  },
+  "limitations": [
+    "Nine targeted mutations, not an exhaustive mutation score.",
+    "Unavailable destination simulated in a disposable directory; no physical drive unplug or machine power loss.",
+    "Installed MCP host identities were codex and claude-code; no graphical host application was restarted.",
+    "Model corpus was synthetic; production store and applications were untouched.",
+    "Persistent-memory startup was blocked by automatic approval review; only revision 1 / drawer 1443 is acknowledged.",
+    "The earlier Windows 3.12 CI snapshot timeout did not record its callback status. The completion/deadline race is proved separately; attribution of that earlier timeout is unconfirmed.",
+    "The Linux 3.13 backup claim failure did not record its lock interleaving. The status-observer interference is proved by a separate synchronized real-process regression."
+  ],
+  "slow_acceptance": {
+    "sha256": "f2fb4fe4187153565abf1a0c36a12521d0c55c1bd91950a57d2ab98dbde9cfe2",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "selection": "test_whole_export_includes_more_than_old_one_hundred_thousand_cap"
+  },
+  "all_tests_across_selections": 1672,
+  "delivery_pull_request": "https://github.com/pnmcguire480/cairntir/pull/108",
+  "initial_local_coverage": {
+    "covered_lines": 8012,
+    "num_statements": 8571,
+    "percent_covered": 92.15791834903544,
+    "percent_covered_display": "92",
+    "missing_lines": 559,
+    "excluded_lines": 48,
+    "percent_statements_covered": 93.47800723369502,
+    "percent_statements_covered_display": "93",
+    "num_branches": 2574,
+    "num_partial_branches": 285,
+    "covered_branches": 2259,
+    "missing_branches": 315,
+    "percent_branches_covered": 87.76223776223776,
+    "percent_branches_covered_display": "88"
+  },
+  "initial_local_ci_selection": {
+    "sha256": "120a832312707960e9251d4741e59894b90abe59959ef5c101efa9f5136e76fc",
+    "tests": 1655,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "threshold_precision": 6,
+  "round1_focus": {
+    "sha256": "6a52570e0c50232ddd5b084fab9780b5b47714b4d73217b8e7fa0f1feee21800",
+    "tests": 116,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "round1_recovery_and_gate": {
+    "sha256": "b34b94a0252f7f909c751aaaa68439269db73faf51b4ae35b2959b07cfba93ec",
+    "tests": 27,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "initial_ci_rejected": {
+    "run": "https://github.com/pnmcguire480/cairntir/actions/runs/34167822874",
+    "head": "58fd836",
+    "reasons": [
+      "Linux/macOS accepted 91.96% after rounding; real below-threshold subprocess reproducer failed before precision repair.",
+      "Windows 3.11/3.12 direct post-crash SQLite readers failed. Corrected fixture terminates its owned process tree, reopens through Cairntir, and compares all data and resumed task."
+    ]
+  },
+  "round1_coverage": {
+    "covered_lines": 8016,
+    "num_statements": 8571,
+    "percent_covered": 92.22969941677883,
+    "percent_covered_display": "92.229699",
+    "missing_lines": 555,
+    "excluded_lines": 48,
+    "percent_statements_covered": 93.52467623381169,
+    "percent_statements_covered_display": "93.524676",
+    "num_branches": 2574,
+    "num_partial_branches": 281,
+    "covered_branches": 2263,
+    "missing_branches": 311,
+    "percent_branches_covered": 87.91763791763792,
+    "percent_branches_covered_display": "87.917638"
+  },
+  "round1_local_selection": {
+    "sha256": "36da509ea8542371e4f271b654de265b3bf21e06921425b33082171c191e35b1",
+    "tests": 1661,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "scope": "Fresh application coverage; the Windows crash fixture was subsequently strengthened and separately verified."
+  },
+  "model_and_slow_acceptance": {
+    "sha256": "f2fb4fe4187153565abf1a0c36a12521d0c55c1bd91950a57d2ab98dbde9cfe2",
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "snapshot_completion_proof": {
+    "before_source_sha256": "8aa343b3a57b277aba5c0e04224a7c9a346cbe403cfec9440ba44a1d49029f2e",
+    "before_test_sha256": "4123a8d89219d94ce10e55d841c8c634440192e1feffbc41fdc97f800bbea7d0",
+    "after_focus": {
+      "sha256": "7259634d7c03268a7d0d83081d99a9022d40dc46e43234fbbaae91e41f7d4a14",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "python312_frozen_and_boundary": {
+      "sha256": "fa18cba2dbda51465a399d8fd6f80d2bdede05b3fd23d92d092237effea5273e",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "scope": "Real SQLite commits/rollbacks; controlled clock advancement simulates delayed callback scheduling. The original Windows CI timeout callback status was not logged, so its precise cause remains unconfirmed."
+  },
+  "round1_ci_rejected": {
+    "run": "https://github.com/pnmcguire480/cairntir/actions/runs/34169512059",
+    "head": "5f74b6caa58a76d4a74bddd6cd2a36028b1c0c70",
+    "result": "Eight matrix jobs passed; Windows 3.12 failed the unchanged frozen concurrent-writer snapshot acceptance with a backup timeout. Package and model jobs were skipped.",
+    "failure_log_sha256": "73cb1af39c537cdd63a08709651635689bf4f18657cded79bc51178e5f6eeea4",
+    "diagnostic_runs": {
+      "python312_uncovered_passes": 11,
+      "python312_covered_passes": 5,
+      "snapshots_completed": 64
+    },
+    "original_timeout_cause": "unconfirmed; a deterministic completion/callback deadline race was separately reproduced and fixed"
+  },
+  "round2_coverage": {
+    "covered_lines": 8017,
+    "num_statements": 8571,
+    "percent_covered": 92.24764468371467,
+    "percent_covered_display": "92.247645",
+    "missing_lines": 554,
+    "excluded_lines": 48,
+    "percent_statements_covered": 93.53634348384085,
+    "percent_statements_covered_display": "93.536343",
+    "num_branches": 2574,
+    "num_partial_branches": 280,
+    "covered_branches": 2264,
+    "missing_branches": 310,
+    "percent_branches_covered": 87.95648795648796,
+    "percent_branches_covered_display": "87.956488"
+  },
+  "round2_local_selection": {
+    "sha256": "0d30abadb06d3a87fe2d4e084f73cf232242d0572b931c363f1514ae82a93fd1",
+    "tests": 1663,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "status_observer_proof": {
+    "before_source_sha256": "e5d2412f64559d7295e37013084761ee39b6a6beae6a2df36e24abd9b52fc273",
+    "test_sha256": "43a3dd4a4bf9470bc91d94c94d92eb5877636ba6397ae52282d47b3148f3c8a5",
+    "after": {
+      "sha256": "378824e624143c8320978c64bfa037136f0a4958a0620d5d25b9c5a188c4ab99",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "subprocess_coverage_control": {
+      "sha256": "33cd192d5d59ccf87d6396267eb36e2248b2a965ad11614c5d894cf70b11909b",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "scope": "Actual separate-process status observation and OS coordinator lock; the observer is released after the backup encounters real contention. Corrected backup restores every table; unchanged acceptance checks keep long-held contention bounded."
+  },
+  "round2_ci_rejected": {
+    "run": "https://github.com/pnmcguire480/cairntir/actions/runs/34185594136",
+    "head": "8067cf3429008b5cc844ba1d331a186f234f265d",
+    "result": "Eight matrix jobs passed. Linux 3.13 failed the unchanged frozen backup claim visibility deadline; build and model jobs were skipped. Both behavioral jobs passed all26proofs.",
+    "failure_log_sha256": "2d0db9ecdf76cf3f7943dac3ad4742da350ced32a8167a50a7f2e353dee79e62",
+    "cause_scope": "The status-observer race is separately proved; that CI failure did not record the precise lock interleaving."
+  }
+}

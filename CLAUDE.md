@@ -84,42 +84,60 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session — 2026-09-07
+## Last Session — 2026-09-08
 
-Published and installed **1.12.1** is complete. PR #105 passed all 14 checks and
-merged at `5584ff7`; its tree equals reviewed head `8e966c2`. Annotated `v1.12.1`
-identifies that merge. All five release jobs passed, and independent verification
-matched workflow/GitHub/PyPI packages and signed provenance. The fresh public
-installation passed all CLI/MCP, backup and cross-host checkpoint/resume checks.
-See [the release record](docs/release/v1.12.1.md) and
-[sanitized publication receipt](plans/v1.12.1-publication.json).
+Verification follow-up for issue #107 is implemented in [PR #108](https://github.com/pnmcguire480/cairntir/pull/108).
+The PR records CI and merge status; this brief records the verified behavior.
+The [verification plan](plans/verification-structure.md) and
+[receipt](plans/verification-evidence.json) record five actual historical
+red/green comparisons, nine caught mutations with passing controls, restored
+memories/vectors/provenance/task history, real SQLite and backup failures, and
+built/installed wheel CLI/MCP interruption and resumption.
 
-Automatic backups check the saved 12-hour interval on writable owner startup or
-before an outer write. Complete, verified snapshots retain vectors, provenance
-and task history; managed retention keeps seven recent days and four older ISO
-weeks. Manual copies remain unmanaged. Backup failures warn while writes continue.
-The authorized machine policy and actual installed startup hook were verified.
-A fresh installed-CLI snapshot passed full standalone restoration checks.
+The clean local CI selection passed 1,664 tests at 92.25% combined coverage
+(93.54% statements, 87.97% branches). The combined gate is now 92% with six-place threshold precision and unchanged
+coverage exclusions. All seven model evaluation tests passed against a disposable
+corpus; the remaining slow acceptance check passed. Together the selections
+cover all 1,672 tests without skips. Preservation checks passed 24 manifests and 115 frozen artifacts.
+Static, types, documentation, seam/commitment, release-tag and dependency checks
+passed. New tests are solo-authored under the explicit no-subagent constraint;
+no independent review is claimed.
 
-The tagged 1.12.0 candidate exposed a surviving worker deleting a replacement's
-active staging directory. Its immutable tag and failed evidence remain intact;
-no 1.12.0 package was published. Version 1.12.1 holds per-attempt native claims
-through publication and cleanup. New independent frozen acceptance reproduced
-the race before repair; official round 1 passed 72 cases with all frozen hashes
-unchanged. Full local suite: 1,151 passed, 83.17% coverage. Tagged release suite:
-1,149 passed, one Windows-only skip, one publication-check deselection, 83.11%
-coverage; the post-publication tag check passed. All static and documentation
-gates passed. Original acceptance generations remain unchanged.
+Finalization repair 1 corrected a false-green coverage threshold (91.96% rounded
+to 92%) and the Windows interruption fixture. The latter now kills its owned
+process tree, reopens through Cairntir and compares every table plus the resumed
+task; all 27 focused recovery/gate checks passed after that refinement. First
+CI results were rejected; the PR records subsequent strict verification.
 
-The serious SQLite audit found no repair necessary. Independent production
-upgrade checks preserved every row/schema in all 22 tables, all 1,433 baseline
-drawers/vectors/portable records, model files, dependencies, five host entries and
-all previous backups. Schema stays 7 with 21 MCP tools. Fresh backup contents
-exactly matched that baseline and the held live store. After verification the
-memory-write hold was released; later checkpoints are intentional new memories.
-Production doctor and real Claude MCP health pass. Existing apps were left open
-and need an MCP reconnect to load the upgrade. The old connection closed during
-backend replacement; a fresh 1.12.1 connection saved the same task checkpoint.
+Finalization repair 2 makes an already committed SQLite snapshot survive a delayed
+completion callback; unfinished copies still time out and roll back. The new
+reproducer failed before repair, and the eighth mutation reconstructs that exact
+broken source. Python 3.12 passed all eight frozen concurrency/boundary cases.
+A prior CI timeout did not log its callback status; its precise cause remains
+unconfirmed. The PR records final CI status.
+
+A focused continuation fixes status observation interfering with due-backup
+startup. Coordinator acquisition briefly retries a status reader's lock;
+long-held contention remains bounded. A real-process before/after regression
+and ninth mutation prove the behavior. Both original repair rounds remain
+recorded; this newly exposed failure received one additional focused round.
+
+Reproducers found and minimally repaired workflow result validation after commit,
+raw SQLite receipt errors, invalid float32 embeddings, access-history changes on
+rejected anchor operations, and transcript header/whitespace loss. Before/after
+behavioral evidence is retained in the private workspace verification directory.
+Existing Qwen hook-context exclusion remains intact.
+
+Published/installed **1.12.1** and its activated 12-hour backup policy remain the
+production baseline. This follow-up authorizes no publication, production
+installation or app restart. All fault injection, interruption and package tests
+used disposable stores. The preceding release is complete; see
+[its release record](docs/release/v1.12.1.md).
+
+Resume memory task `c73d30d4-f6e3-4436-8e48-163f97e89741`, wing `cairntir`,
+room `requests`, for current delivery status. The existing MCP connection
+supports checkpoint saves again. Raw verification evidence is retained in
+the private workspace verification directory.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer

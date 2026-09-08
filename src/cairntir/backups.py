@@ -147,8 +147,13 @@ def _save(database: Path, state: dict[str, Any]) -> None:
 
 @contextmanager
 def _lock(database: Path, *, create: bool) -> Iterator[bool]:
-    with _file_lock(_paths(database)[1], create=create) as acquired:
-        yield acquired
+    deadline = time.monotonic() + 0.25
+    while True:
+        with _file_lock(_paths(database)[1], create=create) as acquired:
+            if acquired or not create or time.monotonic() >= deadline:
+                yield acquired
+                return
+        time.sleep(0.01)
 
 
 @contextmanager

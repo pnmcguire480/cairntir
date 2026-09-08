@@ -391,14 +391,18 @@ def _sanitise_project_path(path: Path) -> str:
 
 def _codex_project(path: Path, project_root: Path) -> bool:
     try:
-        with path.open("r", encoding="utf-8") as handle:
+        with path.open("rb") as handle:
             line = handle.readline(262_145)
         if len(line) > 262_144:
             return False
         row = json.loads(line)
     except (OSError, UnicodeDecodeError, json.JSONDecodeError):
         return False
-    if row.get("type") != "session_meta" or not isinstance(row.get("payload"), dict):
+    if (
+        not isinstance(row, dict)
+        or row.get("type") != "session_meta"
+        or not isinstance(row.get("payload"), dict)
+    ):
         return False
     payload = row["payload"]
     source = payload.get("source")
@@ -467,8 +471,8 @@ def _extract_qwen(source: Path, events: Sequence[dict[str, Any]]) -> list[Recove
                 if isinstance(part, dict) and isinstance(part.get("text"), str)
             ),
             "",
-        ).strip()
-        if not content:
+        )
+        if not content.strip():
             continue
         request = _request("qwen", source, row, content)
         complete = any(_qwen_completed(item) for item in _until_next_user(events, index + 1))
@@ -521,18 +525,18 @@ def _extract_claude(
 
 def _claude_text(content: object) -> str:
     if isinstance(content, str):
-        return content.strip()
+        return content if content.strip() else ""
     if not isinstance(content, list):
         return ""
     texts = [
-        item["text"].strip()
+        item["text"]
         for item in content
         if isinstance(item, dict)
         and item.get("type") == "text"
         and isinstance(item.get("text"), str)
-        and item["text"].strip()
     ]
-    return "\n".join(texts)
+    joined = "\n".join(texts)
+    return joined if joined.strip() else ""
 
 
 def _claude_completed(row: dict[str, Any]) -> bool:
@@ -570,9 +574,9 @@ def _extract_codex(source: Path, events: Sequence[dict[str, Any]]) -> list[Recov
             and payload.get("type") == "user_message"
             and isinstance(payload.get("message"), str)
         ):
-            content = payload["message"].strip()
+            content = payload["message"]
             if (
-                not content
+                not content.strip()
                 or content.lstrip().startswith(_CODEX_CONTEXT_PREFIXES)
                 or content in response_contents
             ):
@@ -611,15 +615,15 @@ def _codex_response_content(payload: dict[str, Any]) -> str:
     ):
         return ""
     texts = [
-        item["text"].strip()
+        item["text"]
         for item in content
         if isinstance(item, dict)
         and item.get("type") == "input_text"
         and isinstance(item.get("text"), str)
-        and item["text"].strip()
         and not item["text"].lstrip().startswith(_CODEX_CONTEXT_PREFIXES)
     ]
-    return "\n".join(texts)
+    joined = "\n".join(texts)
+    return joined if joined.strip() else ""
 
 
 def _until_next_user(events: Sequence[dict[str, Any]], start: int) -> Iterable[dict[str, Any]]:

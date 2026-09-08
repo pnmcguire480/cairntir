@@ -43,6 +43,8 @@ jobs:
         run: uv run python scripts/check_landed_commitments.py
       - name: Seam check
         run: uv run python scripts/check_seams.py
+      - name: Frozen acceptance and coverage scope
+        run: uv run python scripts/check_verification_preservation.py
       - name: Documentation link check
         run: uv run python scripts/check_docs_links.py
       - name: Locked dependency advisories
@@ -79,6 +81,8 @@ jobs:
         python: ["3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       - name: Install uv
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
@@ -88,7 +92,7 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked --all-extras
       - name: Run tests
-        run: uv run pytest -m "not slow" --cov-fail-under=80
+        run: uv run pytest -m "not slow" --cov-fail-under=92
 
   eval:
     name: LongMemEval R@5 Gate
@@ -115,20 +119,69 @@ jobs:
           HF_HUB_OFFLINE: "1"
           TRANSFORMERS_OFFLINE: "1"
         run: uv run pytest -m eval --no-cov -q
+      - name: Run slow acceptance checks with provisioned models
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: uv run pytest -m "slow and not eval" --no-cov -q
 
   build:
     name: Build Package
     needs: test
     runs-on: ubuntu-latest
+    env:
+      CAIRNTIR_HOME: ${{ github.workspace }}/.cairntir/package-home
+      FASTEMBED_CACHE_PATH: ${{ github.workspace }}/.cairntir/package-models
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install uv
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
       - name: Build
         run: uv build
+      - name: Cache production embedding model for installed verification
+        run: uv run python -c "from cairntir.memory.embeddings import production_embedding_provider; production_embedding_provider().embed(['package verification'])"
+      - name: Verify installed wheel through CLI and MCP
+        shell: bash
+        run: uv run python scripts/verify_package.py --wheel dist/*.whl --output .cairntir/package-proof
       - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: dist
           path: dist/
+          retention-days: 7
+      - name: Retain installed package verification
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: installed-package-evidence
+          path: .cairntir/package-proof/
+          retention-days: 7
+
+  behavior:
+    name: Regression and mutation evidence (${{ matrix.os }})
+    needs: lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync --locked --all-extras
+      - name: Actual historical regressions and fixed controls
+        run: uv run python scripts/verify_history.py --output .cairntir/verification/history
+      - name: Deliberate incorrect behavior and clean controls
+        run: uv run python scripts/verify_mutations.py --output .cairntir/verification/mutations
+      - name: Retain behavioral evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: behavior-${{ matrix.os }}
+          path: .cairntir/verification/
           retention-days: 7

@@ -13,6 +13,44 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Added
+
+- Behavioral verification gates replay five actual historical defects, require
+  failing assertions against deliberate mutations, and exercise a freshly
+  installed wheel through CLI and MCP processes. Recovery tests compare restored
+  memories, physical vectors, provenance and task history, including interrupted
+  backups, SQLite contention, failed writes and rollback. Existing frozen
+  acceptance artifacts and the coverage surface are checked for preservation.
+
+### Changed
+
+- Raise the combined statement-and-branch coverage gate from 80% to 92% after
+  meaningful outcome and failure-path tests achieved it. Measure subprocesses
+  without adding coverage exclusions.
+
+### Fixed
+
+- Retry brief backup coordinator contention caused by status polling; keep
+  prolonged contention bounded.
+
+- Accept an already committed SQLite snapshot when its completion callback is
+  delayed beyond the copy deadline; retain timeout rollback for unfinished copies.
+
+- Coverage gating rejects below-threshold results instead of accepting 91.96%
+  after rounding it to 92%; a real subprocess regression checks both sides.
+- Transcript recovery preserves original whitespace and Unicode across supported
+  hosts, including text blocks, while retaining Qwen's hook-context exclusion.
+- Workflow results are validated before commit. Invalid result types roll back
+  their writes and leave a retryable failure receipt. SQLite errors while
+  committing a workflow receipt surface as typed workflow errors.
+- Reject invalid embedding batches and vectors with nonfinite or zero float32
+  values before storing them or returning misleading semantic matches.
+- Rejected anchor updates and no-op repairs preserve access history. SQLite
+  failures while reading legacy migration receipts surface as typed store errors.
+- Codex transcript recovery keeps valid unfinished requests when later lines
+  contain invalid UTF-8. Malformed non-object headers return an unavailable
+  receipt instead of crashing recovery.
+
 ## [1.12.1] — 2026-09-07
 
 ### Added

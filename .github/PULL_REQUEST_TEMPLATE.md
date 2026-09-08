@@ -21,7 +21,7 @@ Closes #
 - [ ] `ruff check src tests` passes with zero warnings
 - [ ] `ruff format --check src tests` passes
 - [ ] `mypy --strict src` passes with zero errors
-- [ ] `pytest` passes with ≥80% coverage
+- [ ] `pytest` passes with ≥92% combined statement-and-branch coverage
 - [ ] No silent `except: pass` blocks introduced (CI enforces this)
 - [ ] No hardcoded paths (use `platformdirs` / config)
 - [ ] Documentation updated if public API changed
