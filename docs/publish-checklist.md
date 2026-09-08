@@ -57,8 +57,8 @@ Release operations:
 ## Past release records
 
 Evidence and known limits for each shipped release live under `docs/release/`.
-The [1.12.1 record](release/v1.12.1.md) covers the latest published and installed
-release. The [withheld 1.12.0 record](release/v1.12.0.md) preserves its failed
+The [1.12.2 record](release/v1.12.2.md) covers the latest published release.
+The [1.12.1 record](release/v1.12.1.md) covers the current production installation. The [withheld 1.12.0 record](release/v1.12.0.md) preserves its failed
 verification and unchanged tag. Earlier published records include
 [1.11.0](release/v1.11.0.md) and [1.10.0](release/v1.10.0.md).
 
