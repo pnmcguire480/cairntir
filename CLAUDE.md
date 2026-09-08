@@ -5,7 +5,8 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Published and installed version: **1.12.1**. The
+Release candidate: **1.12.2**; published and installed version: **1.12.1**.
+The [1.12.2 release record](docs/release/v1.12.2.md) tracks the authorized publication. The
 [1.12.1 release record](docs/release/v1.12.1.md) records publication, installation
 preservation and automatic backup activation. Earlier release records remain
 historical publication evidence. Pending changes belong under
@@ -86,58 +87,25 @@ the production installation as an incidental build step.
 
 ## Last Session — 2026-09-08
 
-Verification follow-up for issue #107 is implemented in [PR #108](https://github.com/pnmcguire480/cairntir/pull/108).
-The PR records CI and merge status; this brief records the verified behavior.
-The [verification plan](plans/verification-structure.md) and
-[receipt](plans/verification-evidence.json) record five actual historical
-red/green comparisons, nine caught mutations with passing controls, restored
-memories/vectors/provenance/task history, real SQLite and backup failures, and
-built/installed wheel CLI/MCP interruption and resumption.
+[PR #108](https://github.com/pnmcguire480/cairntir/pull/108) is merged as
+`f4dd4f587f0437dd27d6d669906454b787aa426c`; issue #107 is closed. All 1,672
+local tests passed, nine deliberate mutations were caught, and final platform CI
+passed the strict 92% combined coverage gate. The
+[verification plan](plans/verification-structure.md) and
+[receipt](plans/verification-evidence.json) retain the full evidence and limits.
+No independent review is claimed for the solo-authored verification additions.
 
-The clean local CI selection passed 1,664 tests at 92.25% combined coverage
-(93.54% statements, 87.97% branches). The combined gate is now 92% with six-place threshold precision and unchanged
-coverage exclusions. All seven model evaluation tests passed against a disposable
-corpus; the remaining slow acceptance check passed. Together the selections
-cover all 1,672 tests without skips. Preservation checks passed 24 manifests and 115 frozen artifacts.
-Static, types, documentation, seam/commitment, release-tag and dependency checks
-passed. New tests are solo-authored under the explicit no-subagent constraint;
-no independent review is claimed.
+The user requested “1.12.2  make it” in response to the PyPI publication status.
+This authorizes the 1.12.2 release. The release candidate changes version metadata
+and documentation only; runtime fixes already passed PR #108. Existing frozen
+acceptance artifacts, dependencies, schema and MCP tools remain unchanged.
+The [release record](docs/release/v1.12.2.md) tracks candidate and public checks.
+Production installation remains 1.12.1; no application restart is included.
 
-Finalization repair 1 corrected a false-green coverage threshold (91.96% rounded
-to 92%) and the Windows interruption fixture. The latter now kills its owned
-process tree, reopens through Cairntir and compares every table plus the resumed
-task; all 27 focused recovery/gate checks passed after that refinement. First
-CI results were rejected; the PR records subsequent strict verification.
-
-Finalization repair 2 makes an already committed SQLite snapshot survive a delayed
-completion callback; unfinished copies still time out and roll back. The new
-reproducer failed before repair, and the eighth mutation reconstructs that exact
-broken source. Python 3.12 passed all eight frozen concurrency/boundary cases.
-A prior CI timeout did not log its callback status; its precise cause remains
-unconfirmed. The PR records final CI status.
-
-A focused continuation fixes status observation interfering with due-backup
-startup. Coordinator acquisition briefly retries a status reader's lock;
-long-held contention remains bounded. A real-process before/after regression
-and ninth mutation prove the behavior. Both original repair rounds remain
-recorded; this newly exposed failure received one additional focused round.
-
-Reproducers found and minimally repaired workflow result validation after commit,
-raw SQLite receipt errors, invalid float32 embeddings, access-history changes on
-rejected anchor operations, and transcript header/whitespace loss. Before/after
-behavioral evidence is retained in the private workspace verification directory.
-Existing Qwen hook-context exclusion remains intact.
-
-Published/installed **1.12.1** and its activated 12-hour backup policy remain the
-production baseline. This follow-up authorizes no publication, production
-installation or app restart. All fault injection, interruption and package tests
-used disposable stores. The preceding release is complete; see
-[its release record](docs/release/v1.12.1.md).
-
-Resume memory task `c73d30d4-f6e3-4436-8e48-163f97e89741`, wing `cairntir`,
-room `requests`, for current delivery status. The existing MCP connection
-supports checkpoint saves again. Raw verification evidence is retained in
-the private workspace verification directory.
+Resume memory task `446b75d1-8d61-48c1-8ff4-a61aba674f7c`, wing `cairntir`,
+room `requests`, for current release status. The completed verification task
+`c73d30d4-f6e3-4436-8e48-163f97e89741` must not be reopened. Private receipts
+are retained under `.cairntir/v1.12.2-release/`.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer
