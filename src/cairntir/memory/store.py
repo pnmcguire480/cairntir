@@ -2381,7 +2381,7 @@ def _snapshot_shared_lock(fd: int, start: int, length: int) -> Iterator[None]:
 
 def _backup_live_database(source: Path, destination: Path, deadline: float) -> None:
     def progress(_status: int, _remaining: int, _total: int) -> None:
-        if time.monotonic() >= deadline:
+        if _status != sqlite3.SQLITE_DONE and time.monotonic() >= deadline:
             raise MemoryStoreError("task snapshot backup timed out")
 
     with closing(sqlite3.connect(f"{source.as_uri()}?mode=ro", uri=True, timeout=0.25)) as origin:

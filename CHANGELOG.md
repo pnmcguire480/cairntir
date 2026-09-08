@@ -30,6 +30,9 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ### Fixed
 
+- Accept an already committed SQLite snapshot when its completion callback is
+  delayed beyond the copy deadline; retain timeout rollback for unfinished copies.
+
 - Coverage gating rejects below-threshold results instead of accepting 91.96%
   after rounding it to 92%; a real subprocess regression checks both sides.
 - Transcript recovery preserves original whitespace and Unicode across supported

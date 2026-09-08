@@ -84,21 +84,21 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session — 2026-09-07
+## Last Session — 2026-09-08
 
 Verification follow-up for issue #107 is implemented in [PR #108](https://github.com/pnmcguire480/cairntir/pull/108).
 The PR records CI and merge status; this brief records the verified behavior.
 The [verification plan](plans/verification-structure.md) and
 [receipt](plans/verification-evidence.json) record five actual historical
-red/green comparisons, seven caught mutations with passing controls, restored
+red/green comparisons, eight caught mutations with passing controls, restored
 memories/vectors/provenance/task history, real SQLite and backup failures, and
 built/installed wheel CLI/MCP interruption and resumption.
 
-The clean local CI selection passed 1,661 tests at 92.23% combined coverage
-(93.52% statements, 87.92% branches). The combined gate is now 92% with six-place threshold precision and unchanged
+The clean local CI selection passed 1,663 tests at 92.25% combined coverage
+(93.54% statements, 87.96% branches). The combined gate is now 92% with six-place threshold precision and unchanged
 coverage exclusions. All seven model evaluation tests passed against a disposable
 corpus; the remaining slow acceptance check passed. Together the selections
-cover all 1,669 tests without skips. Preservation checks passed 24 manifests and 115 frozen artifacts.
+cover all 1,671 tests without skips. Preservation checks passed 24 manifests and 115 frozen artifacts.
 Static, types, documentation, seam/commitment, release-tag and dependency checks
 passed. New tests are solo-authored under the explicit no-subagent constraint;
 no independent review is claimed.
@@ -108,6 +108,13 @@ to 92%) and the Windows interruption fixture. The latter now kills its owned
 process tree, reopens through Cairntir and compares every table plus the resumed
 task; all 27 focused recovery/gate checks passed after that refinement. First
 CI results were rejected; the PR records subsequent strict verification.
+
+Finalization repair 2 makes an already committed SQLite snapshot survive a delayed
+completion callback; unfinished copies still time out and roll back. The new
+reproducer failed before repair, and the eighth mutation reconstructs that exact
+broken source. Python 3.12 passed all eight frozen concurrency/boundary cases.
+A prior CI timeout did not log its callback status; its precise cause remains
+unconfirmed. The PR records final CI status.
 
 Reproducers found and minimally repaired workflow result validation after commit,
 raw SQLite receipt errors, invalid float32 embeddings, access-history changes on
@@ -121,10 +128,10 @@ installation or app restart. All fault injection, interruption and package tests
 used disposable stores. The preceding release is complete; see
 [its release record](docs/release/v1.12.1.md).
 
-Memory task `c73d30d4-f6e3-4436-8e48-163f97e89741` remains acknowledged at revision 1,
-drawer #1443. Automatic approval review rejected a fresh MCP startup because it
-may write the production store. Later progress is saved in the workspace; no
-later memory revision is claimed.
+Resume memory task `c73d30d4-f6e3-4436-8e48-163f97e89741`, wing `cairntir`,
+room `requests`, for current delivery status. The existing MCP connection
+supports checkpoint saves again. Raw verification evidence is retained in
+the private workspace verification directory.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer

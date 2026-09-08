@@ -62,7 +62,7 @@ verification; at most two final repair rounds.
 
 ## Candidate evidence
 
-The five historical comparisons and seven deliberate mutations passed with
+The five historical comparisons and eight deliberate mutations passed with
 clean controls. The result judge also has 15 tests proving that skips, missing
 reports, setup errors and unrelated failures cannot count as success.
 The installed wheel passed version/tool checks, abrupt MCP interruption,
@@ -95,17 +95,17 @@ advisory checks pass (134 locked registry packages; no advisory findings).
 All seven model evaluation tests pass against a provisioned disposable corpus.
 The live production corpus is outside this work's authority.
 
-The fresh CI selection passed **1,661 tests** with eight slow tests deselected.
-Coverage is **92.23% combined**: 8,016/8,571 statements (93.52%) and 2,263/2,574
-branches (87.92%). The enforced combined floor is now **92%** in pytest and CI;
+The fresh CI selection passed **1,663 tests** with eight slow tests deselected.
+Coverage is **92.25% combined**: 8,017/8,571 statements (93.54%) and 2,264/2,574
+branches (87.96%). The enforced combined floor is now **92%** in pytest and CI;
 `coverage report --fail-under=92` passes. Threshold precision is six places. No exclusions or frozen artifacts changed.
 These are clean-run numbers; earlier appended development figures are not used
 as final evidence. The separate provisioned model evaluation passed all seven tests, and the remaining
-slow acceptance check passed. Together the selections cover all 1,669 tests with
+slow acceptance check passed. Together the selections cover all 1,671 tests with
 no skips or omissions.
 
 Finalization uses the remaining verification reserve, with at most two repair
-rounds; one has been used. Initial CI was rejected even where its icons were green:
+rounds; both have been used. Initial CI was rejected even where its icons were green:
 Linux/macOS reported 91.96% after threshold rounding. An actual child pytest
 reproducer now rejects 91.96% and accepts exactly 92%. The Windows crash fixture
 also now terminates its owned process tree and opens through Cairntir before
@@ -116,7 +116,19 @@ new tests, scripts and behavioral results. The delivery PR records cross-platfor
 CI and merge status. Publication and
 production installation remain outside this follow-up.
 
-Limitations: targeted mutations are seven deliberate faults, not an exhaustive
+The second repair fixes a separately reproduced completion/deadline race: SQLite
+had committed a complete snapshot before a delayed Python callback rejected it.
+The actual before source fails the committed-copy assertion; the unfinished-copy
+control proves timeout rollback and successful retry. The eighth mutation restores
+that exact broken source. All eight Python 3.12 concurrency/boundary cases pass
+with subprocess coverage. The parent helper timeout remains unchanged.
+
+The preceding Windows 3.12 CI run failed one unchanged frozen concurrent-writer
+snapshot test. Sixteen local diagnostic runs completed 64 snapshots without
+reproducing that timeout. Its callback status was not logged, so the new boundary
+reproducer is not claimed as proof of that earlier failure's precise cause.
+
+Limitations: targeted mutations are eight deliberate faults, not an exhaustive
 mutation score. Destination loss is a disappearing disposable mount directory,
 not a physical E: unplug; interruption kills owned test processes, not machine
 power. Tests prove the exercised recovery paths and surviving data.
@@ -130,8 +142,7 @@ directly in this task. Do not restart the historical audit or spend implementati
 time on automation management.
 
 Persistent task: `01a07423-448f-7e11-bb22-7b36d4dabbb2`.
-Memory task `c73d30d4-f6e3-4436-8e48-163f97e89741`, wing `cairntir`, room
-`requests`, was acknowledged at revision 1 (drawer #1443). A fresh MCP startup
-was blocked by automatic approval review because it may write the production
-database. Progress is preserved in this workspace; no later memory revision is
-claimed. Pause the heartbeat only when the implementation is complete.
+Resume memory task `c73d30d4-f6e3-4436-8e48-163f97e89741`, wing `cairntir`,
+room `requests`, for the current checkpoint. The existing MCP connection
+supports saves again. The interrupted full run was discarded and rerun from
+fresh coverage data; only completed results appear in this evidence.

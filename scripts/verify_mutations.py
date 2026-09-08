@@ -17,6 +17,15 @@ RECOVERY = "tests/verification/test_recovery_outcomes.py"
 RESTORE = RECOVERY + "::test_restored_backup_preserves_every_table_and_resumes_task"
 MUTATIONS = (
     {
+        "name": "reject-committed-snapshot",
+        "file": "src/cairntir/memory/store.py",
+        "before": "if _status != sqlite3.SQLITE_DONE and time.monotonic() >= deadline:",
+        "after": "if time.monotonic() >= deadline:",
+        "test": "tests/verification/test_snapshot_deadline_outcomes.py::"
+        "test_snapshot_deadline_respects_sqlite_completion_and_rollback[committed]",
+        "witness": "RECOVERY: committed snapshot rejected after callback delay",
+    },
+    {
         "name": "trim-original-transcript",
         "file": "src/cairntir/transcript.py",
         "before": 'content = payload["message"]',
