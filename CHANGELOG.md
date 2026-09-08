@@ -13,6 +13,8 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.12.2] — 2026-09-08
+
 ### Added
 
 - Behavioral verification gates replay five actual historical defects, require
@@ -1769,7 +1771,8 @@ six-tool MCP surface that Claude Code can talk to directly.
 - `ruff check`, `ruff format`, `mypy --strict` clean
 - Every exception typed; no silent `except: pass`
 
-[Unreleased]: https://github.com/pnmcguire480/cairntir/compare/v1.12.1...HEAD
+[Unreleased]: https://github.com/pnmcguire480/cairntir/compare/v1.12.2...HEAD
+[1.12.2]: https://github.com/pnmcguire480/cairntir/compare/v1.12.1...v1.12.2
 [1.12.1]: https://github.com/pnmcguire480/cairntir/compare/v1.11.0...v1.12.1
 [1.7.0]: https://github.com/pnmcguire480/cairntir/compare/v1.6.2...v1.7.0
 [1.6.2]: https://github.com/pnmcguire480/cairntir/compare/v1.6.1...v1.6.2
