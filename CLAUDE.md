@@ -1,7 +1,7 @@
-# Cairntir — project brief
+# Cairntir â€” project brief
 
 Host-neutral, local-first memory and reasoning through MCP. Owner:
-Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
+Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11â€“3.13.
 
 ## Current state
 
@@ -85,7 +85,7 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session — 2026-09-10
+## Last Session â€” 2026-09-10
 
 Council red-team work is in progress on `codex/mcp-response-contracts`. Three
 fresh-context investigators reproduced integration defects and independently
@@ -101,12 +101,15 @@ query echoes; the 1.12.2 release record now withdraws that evidence claim.
 
 The candidate wheel passed fresh installed CLI/MCP interruption, exact resumption,
 all-table restoration, production-model retrieval, failed-write rollback/retry,
-and update-notice JSON checks. All 1,743 cases passed across local selections;
+and update-notice JSON checks. All 1,745 cases passed across local selections;
 four initial sandbox permission failures passed on targeted rerun. Combined
-coverage is 92.045257%. Fourteen mutation pairs, five historical pairs, seven
-model cases and one slow case passed. Hosted checks remain pending.
+coverage is 92.262837%. Fourteen mutation pairs, five historical pairs, seven
+model cases and one slow case passed. Native results are tracked on PR #111.
 CI now includes macOS behavioral and three-platform installed-package verification.
-No actual macOS result or diagnosis of Lou's unidentified incident is claimed yet.
+The first native behavioral jobs passed on all three platforms; macOS/Linux
+source cases passed but coverage failed. Two additional public MCP outcome tests
+pass locally; native reruns and installed-package jobs remain to be verified.
+Lou's unidentified incident has not been diagnosed.
 
 Published version stays **1.12.2**; production installation stays **1.12.1**.
 No package publication, production upgrade or application restart is authorized
@@ -114,7 +117,7 @@ by this audit. Memory task `8cba2f40-9519-4477-9f21-bd8d5eb63a58`, wing `cairnti
 room `requests`, tracks this work; completed release tasks must not be reopened.
 
 <!-- cairntir:begin -->
-# Cairntir — memory-first reasoning layer
+# Cairntir â€” memory-first reasoning layer
 
 You have access to persistent memory through the `cairntir_*` MCP tools.
 At conversation start, after context compaction, and whenever continuity is lost:

@@ -1,7 +1,7 @@
 {
   "date": "2026-09-10",
   "base": "c92f7e86757edbd98e4b71532d26d5aea45f8858",
-  "state": "local verification passed; hosted CI pending",
+  "state": "local verification passed; native verification tracked on PR 111",
   "public_release": "1.12.2",
   "production_installation": "1.12.1",
   "publication_or_upgrade_performed": false,
@@ -72,24 +72,32 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0
+    },
+    {
+      "file": "final-public-views.xml",
+      "sha256": "14ebd024b5400c586df8363d58659372e0b460d70ab2ff2e5c51328f956c2586",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
     }
   ],
   "initial_candidate_failures": "One network check and three test-owned process termination checks were blocked by sandbox permissions; all four passed with required permissions. No test assertion was weakened.",
   "coverage": {
-    "covered_lines": 8232,
+    "covered_lines": 8242,
     "num_statements": 8820,
-    "percent_covered": 92.04525674499565,
-    "percent_covered_display": "92.045257",
-    "missing_lines": 588,
+    "percent_covered": 92.26283724978242,
+    "percent_covered_display": "92.262837",
+    "missing_lines": 578,
     "excluded_lines": 54,
-    "percent_statements_covered": 93.33333333333333,
-    "percent_statements_covered_display": "93.333333",
+    "percent_statements_covered": 93.44671201814059,
+    "percent_statements_covered_display": "93.446712",
     "num_branches": 2670,
-    "num_partial_branches": 298,
-    "covered_branches": 2344,
-    "missing_branches": 326,
-    "percent_branches_covered": 87.79026217228464,
-    "percent_branches_covered_display": "87.790262"
+    "num_partial_branches": 283,
+    "covered_branches": 2359,
+    "missing_branches": 311,
+    "percent_branches_covered": 88.35205992509363,
+    "percent_branches_covered_display": "88.352060"
   },
   "mutations": {
     "results": [
@@ -472,5 +480,22 @@
     "Local Ollama Qwen2.5-Coder7B supplied no additional executable defect evidence.",
     "No attribution to Lou/Jarvis without their actual reproducer.",
     "Existing CLI-owned/custom Codex registrations may require manual command/args update preserving access settings."
-  ]
+  ],
+  "native_first_attempt": {
+    "run": "https://github.com/pnmcguire480/cairntir/actions/runs/34441111413",
+    "regression_and_mutation": "passed on macOS, Linux and Windows",
+    "macos_python312": {
+      "passed": 1734,
+      "skipped": 1,
+      "coverage": 91.827676,
+      "failure": "coverage only"
+    },
+    "linux_python312": {
+      "passed": 1734,
+      "skipped": 1,
+      "coverage": 91.879896,
+      "failure": "coverage only"
+    },
+    "followup": "Two independently authored production-stdio tests preserve scoped startup authorization and a completed learning episode across public evidence views. No runtime or coverage configuration changes."
+  }
 }
