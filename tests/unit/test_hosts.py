@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -29,8 +30,8 @@ def test_merge_mcp_spec_preserves_other_servers() -> None:
     assert changed is True
     assert merged["mcpServers"]["other"]["command"] == "other-server"
     assert merged["mcpServers"]["cairntir"] == {
-        "command": "cairntir-mcp",
-        "args": [],
+        "command": sys.executable,
+        "args": ["-m", "cairntir.mcp.server"],
     }
     _, changed_again = merge_mcp_spec(merged)
     assert changed_again is False
@@ -38,12 +39,12 @@ def test_merge_mcp_spec_preserves_other_servers() -> None:
 
 def test_host_specs_share_server_but_identify_the_capture_host() -> None:
     assert mcp_spec("claude") == {
-        "command": "cairntir-mcp",
-        "args": ["--host", "claude"],
+        "command": sys.executable,
+        "args": ["-m", "cairntir.mcp.server", "--host", "claude"],
     }
-    assert mcp_spec("codex")["args"] == ["--host", "codex"]
-    assert mcp_spec("cursor")["args"] == ["--host", "cursor"]
-    assert mcp_spec("qwen")["args"] == ["--host", "qwen"]
+    assert mcp_spec("codex")["args"] == ["-m", "cairntir.mcp.server", "--host", "codex"]
+    assert mcp_spec("cursor")["args"] == ["-m", "cairntir.mcp.server", "--host", "cursor"]
+    assert mcp_spec("qwen")["args"] == ["-m", "cairntir.mcp.server", "--host", "qwen"]
 
 
 def test_load_json_object_rejects_invalid_and_non_object_json(tmp_path: Path) -> None:
@@ -88,8 +89,13 @@ def test_configure_cursor_project_creates_mcp_and_always_rule(tmp_path: Path) ->
     assert result.policy == "created"
     assert result.registration_path == tmp_path / ".cursor" / "mcp.json"
     config = json.loads(result.registration_path.read_text(encoding="utf-8"))
-    assert config["mcpServers"]["cairntir"]["command"] == "cairntir-mcp"
-    assert config["mcpServers"]["cairntir"]["args"] == ["--host", "cursor"]
+    assert config["mcpServers"]["cairntir"]["command"] == sys.executable
+    assert config["mcpServers"]["cairntir"]["args"] == [
+        "-m",
+        "cairntir.mcp.server",
+        "--host",
+        "cursor",
+    ]
     assert result.policy_path is not None
     policy = result.policy_path.read_text(encoding="utf-8")
     assert "alwaysApply: true" in policy
@@ -137,7 +143,7 @@ def test_configure_codex_project_appends_owned_toml_block(tmp_path: Path) -> Non
     contents = config.read_text(encoding="utf-8")
     assert 'model = "gpt-test"' in contents
     assert "[mcp_servers.cairntir]" in contents
-    assert 'args = ["--host", "codex"]' in contents
+    assert 'args = ["-m", "cairntir.mcp.server", "--host", "codex"]' in contents
     assert (tmp_path / "AGENTS.md").exists()
 
     status = inspect_host("codex", scope="project", root=tmp_path, home=tmp_path)
@@ -181,8 +187,13 @@ def test_configure_claude_project_preserves_existing_mcp_and_policy(
     assert result.registration == "updated"
     config = json.loads(mcp.read_text(encoding="utf-8"))
     assert config["mcpServers"]["existing"]["command"] == "keep-me"
-    assert config["mcpServers"]["cairntir"]["command"] == "cairntir-mcp"
-    assert config["mcpServers"]["cairntir"]["args"] == ["--host", "claude"]
+    assert config["mcpServers"]["cairntir"]["command"] == sys.executable
+    assert config["mcpServers"]["cairntir"]["args"] == [
+        "-m",
+        "cairntir.mcp.server",
+        "--host",
+        "claude",
+    ]
     assert "# Existing" in claude_md.read_text(encoding="utf-8")
 
 
@@ -214,8 +225,8 @@ def test_configure_qwen_project_creates_settings_and_qwen_md(tmp_path: Path) -> 
     assert config["model"] == {"name": "kept"}
     assert config["mcpServers"]["other"] == {"command": "x"}
     assert config["mcpServers"]["cairntir"] == {
-        "command": "cairntir-mcp",
-        "args": ["--host", "qwen"],
+        "command": sys.executable,
+        "args": ["-m", "cairntir.mcp.server", "--host", "qwen"],
     }
     assert result.policy == "created"
     assert result.policy_path == tmp_path / "QWEN.md"
@@ -289,8 +300,8 @@ def test_configure_gemini_user_writes_settings_and_gemini_md(tmp_path: Path) -> 
     assert config["model"] == {"name": "kept"}, "unrelated user settings must survive"
     assert config["mcpServers"]["other"] == {"command": "x"}
     assert config["mcpServers"]["cairntir"] == {
-        "command": "cairntir-mcp",
-        "args": ["--host", "gemini"],
+        "command": sys.executable,
+        "args": ["-m", "cairntir.mcp.server", "--host", "gemini"],
     }
     assert result.policy_path == gemini_dir / "GEMINI.md"
     assert result.policy == "created"
@@ -315,7 +326,7 @@ def test_configure_opencode_project_uses_mcp_key_and_command_array(tmp_path: Pat
     assert "mcpServers" not in config
     assert config["mcp"]["cairntir"] == {
         "type": "local",
-        "command": ["cairntir-mcp", "--host", "opencode"],
+        "command": [sys.executable, "-m", "cairntir.mcp.server", "--host", "opencode"],
         "enabled": True,
     }
     assert result.policy_path == tmp_path / "AGENTS.md"
@@ -333,8 +344,8 @@ def test_configure_copilot_user_matches_the_shape_its_own_cli_writes(tmp_path: P
     assert result.registration_path == home / ".copilot" / "mcp-config.json"
     config = json.loads(result.registration_path.read_text(encoding="utf-8"))
     assert config["mcpServers"]["cairntir"] == {
-        "command": "cairntir-mcp",
-        "args": ["--host", "copilot"],
+        "command": sys.executable,
+        "args": ["-m", "cairntir.mcp.server", "--host", "copilot"],
         "type": "local",
         "tools": ["*"],
     }
@@ -377,8 +388,8 @@ def test_configure_cline_user_targets_its_settings_file(tmp_path: Path) -> None:
     assert result.registration_path == expected
     config = json.loads(expected.read_text(encoding="utf-8"))
     assert config["mcpServers"]["cairntir"] == {
-        "command": "cairntir-mcp",
-        "args": ["--host", "cline"],
+        "command": sys.executable,
+        "args": ["-m", "cairntir.mcp.server", "--host", "cline"],
     }
     assert result.policy_path is None
 
@@ -402,8 +413,8 @@ def test_status_tolerates_host_added_fields_around_our_entry(tmp_path: Path) -> 
     config.parent.mkdir(parents=True)
     config.write_text(
         "[mcp_servers.cairntir]\n"
-        'command = "cairntir-mcp"\n'
-        'args = ["--host", "codex"]\n\n'
+        f"command = {json.dumps(sys.executable)}\n"
+        'args = ["-m", "cairntir.mcp.server", "--host", "codex"]\n\n'
         "[mcp_servers.cairntir.tools.cairntir_remember]\n"
         'approval_mode = "approve"\n',
         encoding="utf-8",
@@ -418,8 +429,8 @@ def test_status_tolerates_host_added_fields_around_our_entry(tmp_path: Path) -> 
             {
                 "mcpServers": {
                     "cairntir": {
-                        "command": "cairntir-mcp",
-                        "args": ["--host", "gemini"],
+                        "command": sys.executable,
+                        "args": ["-m", "cairntir.mcp.server", "--host", "gemini"],
                         "trust": True,
                     }
                 }
@@ -450,8 +461,8 @@ def test_codex_user_scope_never_shells_out_when_already_correct(tmp_path: Path) 
     config.parent.mkdir(parents=True)
     config.write_text(
         "[mcp_servers.cairntir]\n"
-        'command = "cairntir-mcp"\n'
-        'args = ["--host", "codex"]\n\n'
+        f"command = {json.dumps(sys.executable)}\n"
+        'args = ["-m", "cairntir.mcp.server", "--host", "codex"]\n\n'
         "[mcp_servers.cairntir.tools.cairntir_remember]\n"
         'approval_mode = "approve"\n',
         encoding="utf-8",

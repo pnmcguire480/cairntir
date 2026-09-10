@@ -1087,7 +1087,7 @@ def _dispatch(backend: CairntirBackend, name: str, args: dict[str, Any]) -> str:
 def build_server(backend: CairntirBackend) -> Server[Any, Any]:
     """Build a :class:`Server` wired to ``backend``.
 
-    The first tool call per process appends a one-line update banner if
+    The first eligible tool call appends a separate update content block if
     a newer Cairntir is on PyPI. The banner is opt-out via the
     ``CAIRNTIR_DISABLE_UPDATE_CHECK`` environment variable. Subsequent
     calls in the same session do not repeat the banner — repetition is
@@ -1127,10 +1127,9 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
             if not task_mode:
                 _trace(f"_call CairntirError name={name!r} msg={exc}")
             text = f"[cairntir error] {exc}"
-            if checkpoint_mode or resume_mode:
-                return types.CallToolResult(
-                    content=[types.TextContent(type="text", text=text)], isError=True
-                )
+            return types.CallToolResult(
+                content=[types.TextContent(type="text", text=text)], isError=True
+            )
         except ValidationError as exc:
             # Pydantic ValidationError is raised by Drawer construction when
             # the caller's arguments fail wing/room/content validation. It
@@ -1140,20 +1139,20 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
             # message — the caller (an LLM) can read the field path and
             # retry with a corrected argument.
             text = f"[cairntir error] invalid argument: {_format_validation_error(exc)}"
-            if checkpoint_mode or resume_mode:
-                return types.CallToolResult(
-                    content=[types.TextContent(type="text", text=text)], isError=True
-                )
+            return types.CallToolResult(
+                content=[types.TextContent(type="text", text=text)], isError=True
+            )
 
+        content = [types.TextContent(type="text", text=text)]
         if not task_mode and not update_banner_shown:
             banner = pending_update_banner()
             if banner is not None:
-                text = f"{banner}\n\n{text}"
+                content.append(types.TextContent(type="text", text=banner))
             update_banner_shown = True
 
         if not task_mode:
             _trace(f"_call returning name={name!r} final_len={len(text)}")
-        return [types.TextContent(type="text", text=text)]
+        return content
 
     return server
 

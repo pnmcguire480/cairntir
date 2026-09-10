@@ -1714,37 +1714,6 @@ def migrate_cmd(
     typer.echo(f"migrated to:      {after}")
 
 
-def _mcp_spec() -> dict[str, Any]:
-    """Return the canonical Cairntir MCP stanza using the stable shim.
-
-    The ``cairntir-mcp`` console script is installed on PATH by pip
-    (see ``[project.scripts]`` in ``pyproject.toml``). Pip writes a
-    launcher that hard-pins the interpreter that installed Cairntir,
-    so registering the *script* — not ``sys.executable`` — gives us
-    one stable pointer that survives venv changes, shell restarts,
-    cwd shifts, and Python upgrades. ``pip uninstall cairntir``
-    removes the launcher; that vanish is the user-visible signal
-    that Cairntir is gone, which is exactly the FALSE we want.
-    """
-    return {
-        "command": "cairntir-mcp",
-        "args": [],
-    }
-
-
-def _merge_mcp_spec(config: dict[str, Any]) -> tuple[dict[str, Any], bool]:
-    """Merge the Cairntir MCP stanza into ``config``. Return (config, changed)."""
-    servers = config.setdefault("mcpServers", {})
-    if not isinstance(servers, dict):
-        raise typer.BadParameter("mcpServers in target config is not a JSON object")
-    spec = _mcp_spec()
-    existing = servers.get("cairntir")
-    if existing == spec:
-        return config, False
-    servers["cairntir"] = spec
-    return config, True
-
-
 def _write_json(path: Path, data: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
@@ -2005,7 +1974,7 @@ def setup_cmd(
     # ---- Step 3: cairntir_home --------------------------------------------
     _emoji_step(3, total, "Choosing where Cairntir's memory lives")
     if home is not None:
-        os.environ["CAIRNTIR_HOME"] = str(home)
+        os.environ["CAIRNTIR_HOME"] = str(home.expanduser().resolve())
     resolved_home = cairntir_home()
     _emoji_ok(f"memory directory: {resolved_home}")
     if home is not None:
@@ -2031,9 +2000,9 @@ def setup_cmd(
         if not confirm:
             _emoji_warn("skipped host registration — run `cairntir init --host all --user` later.")
         else:
-            _setup_wire_user_hosts(force=True)
+            _setup_wire_user_hosts(force=False)
     else:
-        _setup_wire_user_hosts(force=True)
+        _setup_wire_user_hosts(force=False)
 
     # ---- Step 5: Cursor User Rule (manual paste) --------------------------
     _emoji_step(5, total, "Cursor User Rule")

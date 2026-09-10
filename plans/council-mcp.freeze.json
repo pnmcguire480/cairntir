@@ -1,0 +1,21 @@
+{
+  "schema": "cairntir.acceptance-freeze.v1",
+  "author": "/root/mcp_investigator",
+  "recorded_at": "2026-09-10T04:54:14.9598251+00:00",
+  "cases": 5,
+  "scope": [
+    "Invalid UTF8 notifier cache does not prevent stdio initialization",
+    "Malformed cached version does not corrupt actual read receipts",
+    "A committed write retains its successful receipt despite corrupt notifier state",
+    "Healthy update notice preserves JSON and appears once after rejected work",
+    "Timeline limit applies to entity matches"
+  ],
+  "limits": [
+    "Windows execution does not prove macOS host behavior",
+    "Committed-write case uses HashEmbeddingProvider factory replacement to isolate response and database integration; read/startup and timeline cases use actual production launcher"
+  ],
+  "files": {
+    "tests/acceptance/test_mcp_notifications_council.py": "f5b25a81ae42de4c485656af1b5cbf024d5d4d71e46f7f4827523eb9d89d31ef",
+    "tests/acceptance/test_timeline_council.py": "0494de362ee27d938628ae3675e4b0a9b9373bd9c64c609075782de233754396"
+  }
+}

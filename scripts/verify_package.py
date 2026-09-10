@@ -16,10 +16,12 @@ import sys
 import tempfile
 import zipfile
 from contextlib import closing
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUEST = "  Resume my exact request: café 日本語 🌲\nKeep its evidence and history.\t"
+RECALL_QUERY = "Resume the saved request and preserve its supporting evidence and history."
 
 
 def execute(args: list[str], cwd: Path, env: dict[str, str], timeout: int = 180) -> str:
@@ -61,10 +63,13 @@ def environment(home: Path) -> dict[str, str]:
 class Peer:
     """A real stdio JSON-RPC client with bounded reads and explicit process interruption."""
 
-    def __init__(self, executable: Path, home: Path, host: str) -> None:
+    def __init__(self, executable: Path, home: Path, host: str, *, updates: bool = False) -> None:
         """Bind an installed executable to its disposable store."""
         self.executable, self.home, self.host = executable, home, host
         self.next_id = 0
+        self.env = environment(home)
+        if updates:
+            self.env["CAIRNTIR_DISABLE_UPDATE_CHECK"] = "0"
 
     async def __aenter__(self):
         """Start only the installed MCP console script."""
@@ -75,7 +80,7 @@ class Peer:
             "--host",
             self.host,
             cwd=self.home,
-            env=environment(self.home),
+            env=self.env,
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
             stderr=self.log,
@@ -153,6 +158,18 @@ class Peer:
         return json.loads((await self.tool(name, **arguments))["content"][0]["text"])
 
 
+def require_recalled_drawer(result: dict, drawer_id: int, content: str) -> None:
+    """Require the retrieved evidence itself to contain the exact expected drawer."""
+    text = result["content"][0]["text"]
+    _, opening, body = text.partition("<cairntir-memory-evidence>\n")
+    payload, closing, _ = body.partition("\n</cairntir-memory-evidence>")
+    assert opening and closing, "PACKAGE_RECALL: response contains no complete evidence block"
+    records = [json.loads(line) for line in payload.splitlines() if line.strip()]
+    assert any(
+        record["drawer_id"] == drawer_id and record["content"] == content for record in records
+    ), "PACKAGE_RECALL: retrieved evidence is missing the exact expected drawer"
+
+
 def database_contents(database: Path) -> str:
     """Read physical SQLite tables independently of Cairntir's restore logic."""
     import sqlite_vec
@@ -173,6 +190,38 @@ def database_contents(database: Path) -> str:
                 query = f'SELECT * FROM "{quoted}"'  # noqa: S608 - quoted SQLite table identifiers
                 tables[name] = sorted(connection.execute(query).fetchall(), key=repr)
         return repr((schema, tables, connection.execute("PRAGMA user_version").fetchone()))
+
+
+async def rejected_write_and_retry(peer: Peer) -> None:
+    """Require a failed late SQLite write to report failure, roll back and permit retry."""
+    database = peer.home / "cairntir.db"
+    with closing(sqlite3.connect(database)) as connection:
+        connection.execute(
+            "CREATE TRIGGER reject_probe BEFORE INSERT ON portable_records "
+            "BEGIN SELECT RAISE(ABORT, 'package probe rejected late write'); END"
+        )
+        connection.commit()
+    before = database_contents(database)
+    arguments = {
+        "wing": "package",
+        "room": "retry",
+        "content": "Exact memory after a failed write.",
+    }
+    rejected = await peer.request(
+        "tools/call", {"name": "cairntir_remember", "arguments": arguments}
+    )
+    assert "package probe rejected late write" in rejected["content"][0]["text"], rejected
+    assert database_contents(database) == before, "MCP_WRITE: failed write left partial data"
+    with closing(sqlite3.connect(database)) as connection:
+        connection.execute("DROP TRIGGER reject_probe")
+        connection.commit()
+    await peer.tool("cairntir_remember", **arguments)
+    with closing(sqlite3.connect(database)) as connection:
+        rows = connection.execute("SELECT id,content FROM drawers WHERE room='retry'").fetchall()
+    assert len(rows) == 1 and rows[0][1] == arguments["content"], rows
+    recovered = await peer.json("cairntir_get", drawer_id=rows[0][0])
+    assert recovered["content"] == arguments["content"]
+    assert rejected.get("isError") is True, "MCP_WRITE: failed write reported success"
 
 
 async def probe(wheel: Path, output: Path) -> dict:
@@ -227,6 +276,7 @@ async def probe(wheel: Path, output: Path) -> dict:
         await first.interrupt()
     async with Peer(mcp, home, "claude-code") as second:
         await second.initialize(cairntir.__version__)
+        await rejected_write_and_retry(second)
         resumed = await second.json(
             "cairntir_handoff", wing="package", resume=True, task_id=created["task_id"]
         )
@@ -282,9 +332,18 @@ async def probe(wheel: Path, output: Path) -> dict:
         )
         assert database_contents(restored_home / "cairntir.db") == before
         recalled = await restored.tool(
-            "cairntir_recall", query=REQUEST, wing="package", full_content=5
+            "cairntir_recall", query=RECALL_QUERY, wing="package", full_content=5
         )
-        assert "café 日本語 🌲" in json.dumps(recalled, ensure_ascii=False)
+        require_recalled_drawer(recalled, created["original_drawer_id"], REQUEST)
+    (restored_home / ".update_check").write_text(
+        json.dumps({"checked_at": datetime.now(UTC).isoformat(), "latest": "999.0.0"}),
+        encoding="utf-8",
+    )
+    async with Peer(mcp, restored_home, "codex", updates=True) as notified:
+        await notified.initialize(cairntir.__version__)
+        result = await notified.tool("cairntir_get", drawer_id=created["original_drawer_id"])
+        assert json.loads(result["content"][0]["text"])["content"] == REQUEST
+        assert any("999.0.0" in block["text"] for block in result["content"][1:])
     return {
         "version": cairntir.__version__,
         "package_files": len(members),
@@ -295,6 +354,8 @@ async def probe(wheel: Path, output: Path) -> dict:
         "checkpoint_revision": 2,
         "all_table_restoration": "PASS",
         "restored_semantic_recall": "PASS",
+        "failed_write_rollback_and_retry": "PASS",
+        "update_notice_preserves_json": "PASS",
     }
 
 

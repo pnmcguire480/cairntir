@@ -1,0 +1,539 @@
+{
+  "date": "2026-09-10",
+  "base": "c92f7e86757edbd98e4b71532d26d5aea45f8858",
+  "state": "local verification passed; native verification tracked on PR 111",
+  "public_release": "1.12.2",
+  "production_installation": "1.12.1",
+  "publication_or_upgrade_performed": false,
+  "frozen_acceptance": {
+    "MCP": {
+      "before_failed": 4,
+      "before_passed": 1,
+      "after_passed": 5
+    },
+    "store_identity": {
+      "before_failed": 22,
+      "before_passed": 1,
+      "after_passed": 23
+    },
+    "registration": {
+      "before_failed": 4,
+      "before_passed": 2,
+      "after_passed": 6
+    },
+    "repair_round": 2,
+    "hashes_unchanged": true,
+    "codex_unicode": {
+      "before_failed": 1,
+      "before_passed": 2,
+      "after_passed": 3
+    }
+  },
+  "baseline": {
+    "file": "baseline-isolated.xml",
+    "sha256": "31c0ec2a0d8e9a2e0dc7d7fa2e67c6af1329e76c3d3a327fd8b9b22f0cb73895",
+    "cases": 1664,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "candidate": [
+    {
+      "file": "final-unit.xml",
+      "sha256": "266106e6b1df7aa9036f6b1f3caebb6bbaf5bd9f82dbb96113f4ce01abeacf22",
+      "cases": 1729,
+      "failures": 4,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "permission-reruns.xml",
+      "sha256": "dd9a996e9a5e8656486f5a2304dd1da1d41339265c078e286d660cd5f3f442ae",
+      "cases": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "final-boundary.xml",
+      "sha256": "078b1d4aae0b8406487be417a554f481306244c7e94b0912ce587cd140926ca1",
+      "cases": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "eval.xml",
+      "sha256": "e0b288f87e31cdf3ccc2ce02a8d7e6c3c45836d33c6a0e4c91f5ee5d58e579f5",
+      "cases": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "slow.xml",
+      "sha256": "1ff010e2f651453b1efbda49aa2499476c8bd03ee912e1886630ca4d463ea72c",
+      "cases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "final-public-views.xml",
+      "sha256": "14ebd024b5400c586df8363d58659372e0b460d70ab2ff2e5c51328f956c2586",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "final-unicode.xml",
+      "sha256": "8e5ea28a488b377d20ab25ddea52d898dd140cf7a0da5b43b1c594fbc809d17d",
+      "cases": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "note": "All 15 assertions passed. Coverage append was invalidated by changed source line positions; do not use this invocation as aggregate coverage evidence. A fresh full suite and hosted gates replace it."
+    }
+  ],
+  "initial_candidate_failures": "One network check and three test-owned process termination checks were blocked by sandbox permissions; all four passed with required permissions. No test assertion was weakened.",
+  "coverage": {
+    "covered_lines": 8242,
+    "num_statements": 8820,
+    "percent_covered": 92.26283724978242,
+    "percent_covered_display": "92.262837",
+    "missing_lines": 578,
+    "excluded_lines": 54,
+    "percent_statements_covered": 93.44671201814059,
+    "percent_statements_covered_display": "93.446712",
+    "num_branches": 2670,
+    "num_partial_branches": 283,
+    "covered_branches": 2359,
+    "missing_branches": 311,
+    "percent_branches_covered": 88.35205992509363,
+    "percent_branches_covered_display": "88.352060"
+  },
+  "mutations": {
+    "results": [
+      {
+        "mutation": "discard-registered-access-settings",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/acceptance/test_store_identity_council.py::test_nonforce_init_cannot_widen_a_restarted_scoped_connection",
+        "source_sha256": "326657900306127fca2e5afafc7ab5b156321c5adb727f3581a0feeb21442025",
+        "test_sha256": "e1ef70999fd86a0ff28704ef0498d20d3a154963dd5bbe749313e6d17b8f1041"
+      },
+      {
+        "mutation": "discard-registered-access-settings",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/acceptance/test_store_identity_council.py::test_nonforce_init_cannot_widen_a_restarted_scoped_connection",
+        "source_sha256": "96967bacdc7965b4efecb3db06f082f696d582b96ef8403260785efa7c7ef48c",
+        "test_sha256": "e1ef70999fd86a0ff28704ef0498d20d3a154963dd5bbe749313e6d17b8f1041"
+      },
+      {
+        "mutation": "require-installer-shell-path",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/acceptance/test_registration_council.py::test_generated_registration_launches_without_install_shell_path[cursor-user]",
+        "source_sha256": "326657900306127fca2e5afafc7ab5b156321c5adb727f3581a0feeb21442025",
+        "test_sha256": "97bb717680516f03923dbb86059f540aa46f29625551e7005ad753fe13c12df4"
+      },
+      {
+        "mutation": "require-installer-shell-path",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/acceptance/test_registration_council.py::test_generated_registration_launches_without_install_shell_path[cursor-user]",
+        "source_sha256": "11d4acb534cfd7cb4091f9426c70a654ba71a2e63b35a16103e54697fa7462a8",
+        "test_sha256": "97bb717680516f03923dbb86059f540aa46f29625551e7005ad753fe13c12df4"
+      },
+      {
+        "mutation": "omit-automatic-host-identity",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/acceptance/test_registration_council.py::test_automatic_registration_recovers_as_its_actual_host",
+        "source_sha256": "b3fa65c677d9854feb149cb09c758bbe48c10b9728516169f3e57754b9677396",
+        "test_sha256": "97bb717680516f03923dbb86059f540aa46f29625551e7005ad753fe13c12df4"
+      },
+      {
+        "mutation": "omit-automatic-host-identity",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/acceptance/test_registration_council.py::test_automatic_registration_recovers_as_its_actual_host",
+        "source_sha256": "4ae879e9748ab4b355045d004a4c03211a835429fc25ad00169b43139e0936f0",
+        "test_sha256": "97bb717680516f03923dbb86059f540aa46f29625551e7005ad753fe13c12df4"
+      },
+      {
+        "mutation": "mark-rejected-tool-successful",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/integration/test_mcp_error_contract.py::test_rejected_tool_is_an_error_and_session_remains_usable[cairntir_get-arguments0-no drawer]",
+        "source_sha256": "7a07a910465700d8ca5a63ec5d735c1d4c4b6ad194289f761187af830ed65460",
+        "test_sha256": "a5c317758d3771b9a058af55972d6eceeddab943fa1a54459210bb218ecf19e9"
+      },
+      {
+        "mutation": "mark-rejected-tool-successful",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/integration/test_mcp_error_contract.py::test_rejected_tool_is_an_error_and_session_remains_usable[cairntir_get-arguments0-no drawer]",
+        "source_sha256": "8aeca54da7737030f94a89add3784990481c288e2d9b91b19f8f5d73960e5af4",
+        "test_sha256": "a5c317758d3771b9a058af55972d6eceeddab943fa1a54459210bb218ecf19e9"
+      },
+      {
+        "mutation": "prepend-notice-to-json",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/integration/test_mcp_error_contract.py::test_update_notice_preserves_machine_readable_result[cairntir_get]",
+        "source_sha256": "7a07a910465700d8ca5a63ec5d735c1d4c4b6ad194289f761187af830ed65460",
+        "test_sha256": "a5c317758d3771b9a058af55972d6eceeddab943fa1a54459210bb218ecf19e9"
+      },
+      {
+        "mutation": "prepend-notice-to-json",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/integration/test_mcp_error_contract.py::test_update_notice_preserves_machine_readable_result[cairntir_get]",
+        "source_sha256": "23218f4731b48c5e493f0e5fa77bdade1233e8dc0b4fff96052bf92fd36b401f",
+        "test_sha256": "a5c317758d3771b9a058af55972d6eceeddab943fa1a54459210bb218ecf19e9"
+      },
+      {
+        "mutation": "discard-backup-during-status-observation",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_backup_observer_outcomes.py::test_status_observation_does_not_discard_a_due_backup",
+        "source_sha256": "9b47f614f4fdca380033e98f46ef2f23198acd1582c5d797c310d507e62bd62c",
+        "test_sha256": "43a3dd4a4bf9470bc91d94c94d92eb5877636ba6397ae52282d47b3148f3c8a5"
+      },
+      {
+        "mutation": "discard-backup-during-status-observation",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_backup_observer_outcomes.py::test_status_observation_does_not_discard_a_due_backup",
+        "source_sha256": "e5d2412f64559d7295e37013084761ee39b6a6beae6a2df36e24abd9b52fc273",
+        "test_sha256": "43a3dd4a4bf9470bc91d94c94d92eb5877636ba6397ae52282d47b3148f3c8a5"
+      },
+      {
+        "mutation": "reject-committed-snapshot",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_snapshot_deadline_outcomes.py::test_snapshot_deadline_respects_sqlite_completion_and_rollback[committed]",
+        "source_sha256": "a21cd519ef12df8c7a5439d40014dc841800335c17b574aa9bb638254bc36a4b",
+        "test_sha256": "6c70bb76ce0f29bbd4f0e9d44deba62a47a2739c7a9ebc9b45f7dcc3056ca8e4"
+      },
+      {
+        "mutation": "reject-committed-snapshot",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_snapshot_deadline_outcomes.py::test_snapshot_deadline_respects_sqlite_completion_and_rollback[committed]",
+        "source_sha256": "8aa343b3a57b277aba5c0e04224a7c9a346cbe403cfec9440ba44a1d49029f2e",
+        "test_sha256": "6c70bb76ce0f29bbd4f0e9d44deba62a47a2739c7a9ebc9b45f7dcc3056ca8e4"
+      },
+      {
+        "mutation": "trim-original-transcript",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_transcript_failure_outcomes.py::test_recovered_request_retains_exact_whitespace_and_unicode[codex-event]",
+        "source_sha256": "57d3d2e7c4628c1a1f4a716ab9eecc7e3d6757900f140d668cbbd6230853273a",
+        "test_sha256": "7d316904d3445234bdafdf3f927c0e8b42b457342ec031743266ef97e2dca55c"
+      },
+      {
+        "mutation": "trim-original-transcript",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_transcript_failure_outcomes.py::test_recovered_request_retains_exact_whitespace_and_unicode[codex-event]",
+        "source_sha256": "3c18ec6914783d1eaaebaaeb609576cef884485f0e51e599605e190648570ce6",
+        "test_sha256": "7d316904d3445234bdafdf3f927c0e8b42b457342ec031743266ef97e2dca55c"
+      },
+      {
+        "mutation": "commit-invalid-workflow-result",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_store_failure_outcomes.py::test_nonobject_workflow_result_rolls_back_before_reporting_failure[done]",
+        "source_sha256": "a21cd519ef12df8c7a5439d40014dc841800335c17b574aa9bb638254bc36a4b",
+        "test_sha256": "0cb2bf5ebed13a2aab5196338ddbd2e2bbe7c0cb4588271ce3c14ddf0136991b"
+      },
+      {
+        "mutation": "commit-invalid-workflow-result",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_store_failure_outcomes.py::test_nonobject_workflow_result_rolls_back_before_reporting_failure[done]",
+        "source_sha256": "d04f99a32722b1ecbd5e1a7bcbb70fd62054cfa5f45808cdf99c9217750477f0",
+        "test_sha256": "0cb2bf5ebed13a2aab5196338ddbd2e2bbe7c0cb4588271ce3c14ddf0136991b"
+      },
+      {
+        "mutation": "discard-valid-transcript",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_transcript_failure_outcomes.py::test_codex_valid_request_survives_invalid_utf8_later_in_the_file",
+        "source_sha256": "57d3d2e7c4628c1a1f4a716ab9eecc7e3d6757900f140d668cbbd6230853273a",
+        "test_sha256": "7d316904d3445234bdafdf3f927c0e8b42b457342ec031743266ef97e2dca55c"
+      },
+      {
+        "mutation": "discard-valid-transcript",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_transcript_failure_outcomes.py::test_codex_valid_request_survives_invalid_utf8_later_in_the_file",
+        "source_sha256": "420c20db37e41961b5d4fef69ff86e19576930f3f23d5b84b10843dcb0dc5106",
+        "test_sha256": "7d316904d3445234bdafdf3f927c0e8b42b457342ec031743266ef97e2dca55c"
+      },
+      {
+        "mutation": "omit-memory",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_recovery_outcomes.py::test_restored_backup_preserves_every_table_and_resumes_task",
+        "source_sha256": "9b47f614f4fdca380033e98f46ef2f23198acd1582c5d797c310d507e62bd62c",
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
+      },
+      {
+        "mutation": "omit-memory",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_recovery_outcomes.py::test_restored_backup_preserves_every_table_and_resumes_task",
+        "source_sha256": "5bb4cb86ff6f63ad9e65c0e84199491c958f55bafa56771a0b980b6bd52224bc",
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
+      },
+      {
+        "mutation": "omit-vector",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_recovery_outcomes.py::test_restored_backup_preserves_every_table_and_resumes_task",
+        "source_sha256": "9b47f614f4fdca380033e98f46ef2f23198acd1582c5d797c310d507e62bd62c",
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
+      },
+      {
+        "mutation": "omit-vector",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_recovery_outcomes.py::test_restored_backup_preserves_every_table_and_resumes_task",
+        "source_sha256": "37fbff6e34ee9397cb839fb5fb8052193a2d859df9ad8bd8e93fbe56d2d16d77",
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
+      },
+      {
+        "mutation": "commit-instead-of-rollback",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_recovery_outcomes.py::test_failed_write_after_vector_insert_rolls_back_every_table",
+        "source_sha256": "a21cd519ef12df8c7a5439d40014dc841800335c17b574aa9bb638254bc36a4b",
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
+      },
+      {
+        "mutation": "commit-instead-of-rollback",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_recovery_outcomes.py::test_failed_write_after_vector_insert_rolls_back_every_table",
+        "source_sha256": "651609aad2203ca57651e9088b13a631a42ba56fa03a9a10235589d6521154fa",
+        "test_sha256": "e1bc67a7154a324d80d7904e9d099d592fea62921d168442331c58a7e8c1b314"
+      },
+      {
+        "mutation": "report-sdk-version",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/verification/test_historical_regressions.py::test_handshake_identifies_cairntir",
+        "source_sha256": "7a07a910465700d8ca5a63ec5d735c1d4c4b6ad194289f761187af830ed65460",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d"
+      },
+      {
+        "mutation": "report-sdk-version",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/verification/test_historical_regressions.py::test_handshake_identifies_cairntir",
+        "source_sha256": "fc099941d60d8765af59a8d7af64e6d0c0e70be02a9d5a11980286ce2d1893c8",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d"
+      },
+      {
+        "mutation": "write-invalid-unicode-toml",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/acceptance/test_codex_unicode_council.py::test_codex_project_configuration_preserves_unicode_interpreter[\\U0001f9ed-project]",
+        "source_sha256": "594e61aa5c6816b1d9750eb6e3a1033978e79f055468dc53fe05a417aaafb490",
+        "test_sha256": "8fb7a17204f877c3b0158dfb81a580d93c417207abc5b2e02535931cbccb1746"
+      },
+      {
+        "mutation": "write-invalid-unicode-toml",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/acceptance/test_codex_unicode_council.py::test_codex_project_configuration_preserves_unicode_interpreter[\\U0001f9ed-project]",
+        "source_sha256": "ee336ddbb33dda2f8714f7372c6ca5a8ce31189c99ed1cfca179739b4bdc6d54",
+        "test_sha256": "8fb7a17204f877c3b0158dfb81a580d93c417207abc5b2e02535931cbccb1746"
+      }
+    ]
+  },
+  "history": {
+    "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "results": [
+      {
+        "case": "mcp-version",
+        "phase": "broken",
+        "commit": "bead1179ea04e32b9bfb2db1dc43a68f36b45d6c",
+        "test": "tests/verification/test_historical_regressions.py::test_handshake_identifies_cairntir",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 1,
+        "behavior_proved": true,
+        "expected_failure": "REGRESSION: handshake reports SDK version"
+      },
+      {
+        "case": "mcp-version",
+        "phase": "fixed",
+        "commit": "60ccbbf07fddf645e667f736b408f6e0186b1639",
+        "test": "tests/verification/test_historical_regressions.py::test_handshake_identifies_cairntir",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 0,
+        "behavior_proved": true,
+        "expected_failure": null
+      },
+      {
+        "case": "export-atomicity",
+        "phase": "broken",
+        "commit": "ff25ea321f8c40bd3e849460d71b470965af988a",
+        "test": "tests/verification/test_historical_regressions.py::test_interrupted_export_preserves_previous_file",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 1,
+        "behavior_proved": true,
+        "expected_failure": "REGRESSION: interrupted export destroyed prior file"
+      },
+      {
+        "case": "export-atomicity",
+        "phase": "fixed",
+        "commit": "a67c00097255b16f3a230c63cc0486d47e82ee7e",
+        "test": "tests/verification/test_historical_regressions.py::test_interrupted_export_preserves_previous_file",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 0,
+        "behavior_proved": true,
+        "expected_failure": null
+      },
+      {
+        "case": "checkpoint-text",
+        "phase": "broken",
+        "commit": "4214a0042f970514e0dbaeaf510e84bf281ce78a",
+        "test": "tests/verification/test_historical_regressions.py::test_invalid_checkpoint_preserves_resumable_task",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 1,
+        "behavior_proved": true,
+        "expected_failure": "REGRESSION: checkpoint leaked an untyped error"
+      },
+      {
+        "case": "checkpoint-text",
+        "phase": "fixed",
+        "commit": "d88beabdf5407b03c72cf60d9d59ca0908630999",
+        "test": "tests/verification/test_historical_regressions.py::test_invalid_checkpoint_preserves_resumable_task",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 0,
+        "behavior_proved": true,
+        "expected_failure": null
+      },
+      {
+        "case": "store-reopen",
+        "phase": "broken",
+        "commit": "42d2bfb92c00f301dc3236d11564f83a3d2fffa0",
+        "test": "tests/verification/test_historical_regressions.py::test_reopening_current_store_preserves_database_bytes",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 1,
+        "behavior_proved": true,
+        "expected_failure": "REGRESSION: unchanged store reopen rewrote database"
+      },
+      {
+        "case": "store-reopen",
+        "phase": "fixed",
+        "commit": "e27fe04a21eeb4db32fadb6804ee3afb7c617a58",
+        "test": "tests/verification/test_historical_regressions.py::test_reopening_current_store_preserves_database_bytes",
+        "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d",
+        "returncode": 0,
+        "behavior_proved": true,
+        "expected_failure": null
+      },
+      {
+        "case": "backup-ownership",
+        "phase": "broken",
+        "commit": "73cc04249010411fa3d2cb198d6c20d6654c68d0",
+        "test": "tests/acceptance/test_backup_worker_ownership.py::test_orphan_worker_never_removes_a_live_replacement_attempt",
+        "test_sha256": "ed6c6a5f7d8ffaec522ec1737e5d92436f52408a8c2e2d73219be1e275158ac2",
+        "returncode": 1,
+        "behavior_proved": true,
+        "expected_failure": "orphan worker deleted another live attempt's staging directory"
+      },
+      {
+        "case": "backup-ownership",
+        "phase": "fixed",
+        "commit": "5584ff7be4494d72d0776b3c2948d9b227cdfe26",
+        "test": "tests/acceptance/test_backup_worker_ownership.py::test_orphan_worker_never_removes_a_live_replacement_attempt",
+        "test_sha256": "ed6c6a5f7d8ffaec522ec1737e5d92436f52408a8c2e2d73219be1e275158ac2",
+        "returncode": 0,
+        "behavior_proved": true,
+        "expected_failure": null
+      }
+    ]
+  },
+  "package": {
+    "version": "1.12.2",
+    "package_files": 74,
+    "mcp_tools": 21,
+    "cli_and_mcp": "PASS",
+    "abrupt_host_resumption": "PASS",
+    "checkpoint_revision": 2,
+    "all_table_restoration": "PASS",
+    "restored_semantic_recall": "PASS",
+    "failed_write_rollback_and_retry": "PASS",
+    "update_notice_preserves_json": "PASS",
+    "wheel_sha256": "4c3acf21236390b385414d60f8dd62ea71b6c5560371d8ea996c3442525683a2",
+    "requirements_sha256": "ec967cf25f9ff2731a2a9d2b8da8e975a910fa6e9eded394bb9e09982f34040c"
+  },
+  "limitations": [
+    "Local Windows/Python3.11 evidence; hosted platforms pending.",
+    "Separate investigators within one agent system, not independent vendors or human reviewers.",
+    "Local Ollama Qwen2.5-Coder7B supplied no additional executable defect evidence.",
+    "No attribution to Lou/Jarvis without their actual reproducer.",
+    "Existing CLI-owned/custom Codex registrations may require manual command/args update preserving access settings."
+  ],
+  "native_first_attempt": {
+    "run": "https://github.com/pnmcguire480/cairntir/actions/runs/34441111413",
+    "regression_and_mutation": "passed on macOS, Linux and Windows",
+    "macos_python312": {
+      "passed": 1734,
+      "skipped": 1,
+      "coverage": 91.827676,
+      "failure": "coverage only"
+    },
+    "linux_python312": {
+      "passed": 1734,
+      "skipped": 1,
+      "coverage": 91.879896,
+      "failure": "coverage only"
+    },
+    "followup": "Two independently authored production-stdio tests preserve scoped startup authorization and a completed learning episode across public evidence views. No runtime or coverage configuration changes."
+  },
+  "coverage_source_revision": "5208cf047b6bc4e2624df0c832dada7e7e29d03f; before final Unicode serializer repair; fresh native source gates required",
+  "native_second_attempt": {
+    "run": "https://github.com/pnmcguire480/cairntir/actions/runs/34442545718",
+    "linux_python312_coverage": 92.097476,
+    "failure": "Two repository-policy checks caught encoding damage introduced in the CLAUDE.md documentation update. Encoding repaired; all 46 targeted policy/host checks pass. Fresh CI must verify the final tree."
+  }
+}

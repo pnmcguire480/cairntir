@@ -64,13 +64,16 @@ def _parse_version_tuple(version: str) -> tuple[int, ...]:
     for raw in version.split("."):
         digits = ""
         for ch in raw:
-            if ch.isdigit():
+            if "0" <= ch <= "9":
                 digits += ch
             else:
                 break
         if not digits:
             break
-        parts.append(int(digits))
+        try:
+            parts.append(int(digits))
+        except ValueError:
+            return ()
     return tuple(parts)
 
 
@@ -109,7 +112,7 @@ def _load_cache() -> dict[str, str]:
         return {}
     try:
         loaded = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, UnicodeError, json.JSONDecodeError):
         return {}
     if not isinstance(loaded, dict):
         return {}
@@ -162,7 +165,7 @@ def _fetch_latest_from_pypi() -> str | None:
             request, timeout=_NETWORK_TIMEOUT_SECONDS
         ) as response:
             payload = json.loads(response.read())
-    except (OSError, urllib.error.URLError, json.JSONDecodeError, TimeoutError):
+    except (OSError, UnicodeError, urllib.error.URLError, json.JSONDecodeError, TimeoutError):
         return None
     info = payload.get("info") if isinstance(payload, dict) else None
     if not isinstance(info, dict):

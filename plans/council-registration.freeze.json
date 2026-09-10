@@ -1,0 +1,45 @@
+{
+  "status": "FROZEN",
+  "tester_id": "/root/verification_investigator",
+  "coordinator_id": "/root",
+  "frozen_at_utc": "2026-09-10T04:54:59Z",
+  "authorization": "Coordinator assigned independent frozen acceptance for generated-config launch with stripped PATH and automatic-registration host recovery before implementation repair.",
+  "artifact_readiness": "PASS",
+  "implementation_acceptance": "FAIL",
+  "cases": 6,
+  "baseline": "4 failed, 2 passed in 4.43s on Windows/Python 3.11; Ruff passes.",
+  "contract": [
+    "Generated JSON command/args, TOML command/args and OpenCode command-array registrations must resolve without the installer shell PATH and fetch the exact seeded drawer through an actual MCP child process.",
+    "Automatic Claude registration must produce a launcher that recovers a known unfinished Claude transcript through the public MCP handoff tool.",
+    "Explicit absolute-launcher and explicit-Claude-host controls must pass against the same isolated fixtures before interpreting any failing target as product evidence."
+  ],
+  "meaningful_failure_witnesses": [
+    "COUNCIL_LAUNCHER: generated cursor command cannot resolve without installer PATH",
+    "COUNCIL_LAUNCHER: generated codex command cannot resolve without installer PATH",
+    "COUNCIL_LAUNCHER: generated opencode command cannot resolve without installer PATH",
+    "COUNCIL_HOST_CONTEXT: auto-registered launcher cannot recover host evidence"
+  ],
+  "artifacts": [
+    {
+      "path": "tests/acceptance/test_registration_council.py",
+      "sha256": "97bb717680516f03923dbb86059f540aa46f29625551e7005ad753fe13c12df4"
+    }
+  ],
+  "baseline_evidence": {
+    "path": ".cairntir/integration-audit-20260910/council-verification/acceptance-baseline.xml",
+    "sha256": "01d2d72475da87e01d3d95c0ef20c8895d91d245f932f175a21f6864d298f00f",
+    "visibility": "Private local evidence; product assertions and failure witnesses are retained above."
+  },
+  "runtime_record_only": {
+    "head": "c92f7e86757edbd98e4b71532d26d5aea45f8858",
+    "src/cairntir/hosts.py": "c7e99be66247fa7fc7a1b6b10deaab4dc7fc5b77d27206c319bdbf1e6d585f78",
+    "src/cairntir/register.py": "ced734ed53a59b9b6353f0c29924ccfc5adb033ab60a0a6d036155d937220594",
+    "src/cairntir/mcp/server.py": "7a07a910465700d8ca5a63ec5d735c1d4c4b6ad194289f761187af830ed65460"
+  },
+  "isolation": "Temporary store/profile/project, nonempty HashEmbeddingProvider seed, offline MCP, fake Claude CLI recording its actual subprocess argv, no production model load or host app restart.",
+  "limitations": "Windows baseline establishes launcher portability and propagated host context. Actual macOS desktop app configuration consumption, application PATH and runtime remain unverified.",
+  "existing_frozen_conflicts": "No launcher or automatic-registration assertion conflict found across 100 artifact paths named by existing freeze manifests. Unfrozen test_register.py and test_cli.py require bare or host-less launchers and need correction alongside implementation.",
+  "maximum_repair_rounds": 2,
+  "line_endings": "LF",
+  "self_hash": "Recorded externally by coordinator."
+}

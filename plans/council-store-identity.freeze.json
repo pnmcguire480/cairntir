@@ -1,0 +1,54 @@
+{
+  "schema": "cairntir.independent-acceptance-freeze.v1",
+  "status": "FROZEN",
+  "frozen_at": "2026-09-10T04:56:28.781752+00:00",
+  "author": "/root/continuity_investigator",
+  "implementation_owner": "/root",
+  "source_head": "c92f7e86757edbd98e4b71532d26d5aea45f8858",
+  "contract": [
+    "Non-force init preserves existing CAIRNTIR_HOME and CAIRNTIR_GRANT_FILE on every JSON host scope, and unrelated configuration.",
+    "Restarting after init does not widen an existing read grant to owner access.",
+    "CAIRNTIR_HOME ordinary relative environment overrides raise ConfigError before any directory or database creation, including read-only resolution.",
+    "A tilde-prefixed CAIRNTIR_HOME expands to the platform home; literal tilde directories are not created.",
+    "An absolute CAIRNTIR_HOME retains verbatim acknowledged checkpoint identity across a fresh process launched from another working directory.",
+    "Explicit CLI setup --home relative paths are made absolute before host registration."
+  ],
+  "frozen_inputs": {
+    "tests/acceptance/test_store_identity_council.py": "e1ef70999fd86a0ff28704ef0498d20d3a154963dd5bbe749313e6d17b8f1041"
+  },
+  "baseline": {
+    "pytest_command": "C:\\Dev\\Cairntir\\.venv\\Scripts\\python.exe -m pytest tests/acceptance/test_store_identity_council.py --no-cov -q --tb=short",
+    "exit_code": 1,
+    "failed": 22,
+    "passed": 1,
+    "duration_seconds": 6.27,
+    "evidence": {
+      ".cairntir/integration-audit-20260910/council-continuity/acceptance-red-final.log": "36d1c1a6210eb480a4e2a132db5c24555af8986c48776091271c78e7bb6b8e28",
+      ".cairntir/integration-audit-20260910/council-continuity/acceptance-red-exit.json": "50d7caf03dd967e4363a5bc7babbf450452b31dd1ec7fb605b2abc6465759571"
+    },
+    "source_sha256": {
+      "src/cairntir/config.py": "77b7206ea45ce3dcecfb4213bc23855a897739657b5c184a89eb26bee6a9299d",
+      "src/cairntir/hosts.py": "c7e99be66247fa7fc7a1b6b10deaab4dc7fc5b77d27206c319bdbf1e6d585f78",
+      "src/cairntir/cli.py": "947ccbd5b0e20a925cbbfde1edfe5c209ce8e1c11df2063d99ba54a42de43598",
+      "src/cairntir/access.py": "54bef88f16131f3ca58363a1554ec9cabc2fcb3f0e29ec23c88034ceacadd3b7",
+      "src/cairntir/tasks.py": "420b4b0fbb99625d3cecf4fe6c381d23a71ff6b60c1dfb31daed42c7197fcad8",
+      "src/cairntir/memory/store.py": "a21cd519ef12df8c7a5439d40014dc841800335c17b574aa9bb638254bc36a4b"
+    }
+  },
+  "initial_adversarial_evidence": {
+    ".cairntir/integration-audit-20260910/council-continuity/probe.py": "a42ed4ea1de212e4ab45ef94249dd2ef29d3e6fb6cf174700aac749f1c99f7ec",
+    ".cairntir/integration-audit-20260910/council-continuity/report.json": "89e9a7a0f710033d8d6d08c6b559b342239b5503d9ff702eee91d0711a420c5b",
+    ".cairntir/integration-audit-20260910/council-continuity/env_loss.py": "bdb97672903a96e68eba8ed75bd65682788faa12bcdf1994ad2948eaf55276e1",
+    ".cairntir/integration-audit-20260910/council-continuity/env-loss-report.json": "d3fe5cc0d32bd0f2278329b5b553def515c30be9041b43a70fcbb43a0d5f8c4d"
+  },
+  "verification_reserve": {
+    "maximum_repair_rounds": 2,
+    "test_edits_after_freeze": "forbidden; supporting probes must be separately labeled"
+  },
+  "limitations": [
+    "Executed on Windows; portable assertions are intended for CI on macOS and Linux, but no live macOS result is claimed.",
+    "Frozen subprocesses substitute HashEmbeddingProvider only; scoped access uses the real startup token, store, scope facade and backend, not live commercial host automation.",
+    "The explicit CLI setup path test intercepts host registration to prevent user configuration writes, model downloads and expensive inference; it proves normalization at that boundary only.",
+    "The earlier disposable report records real stdio MCP processes for acknowledgement, interruption, replay, CAS, ambiguity, terminal state and grant-loss consequences."
+  ]
+}

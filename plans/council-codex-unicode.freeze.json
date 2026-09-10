@@ -1,0 +1,41 @@
+{
+  "schema": "cairntir.independent-acceptance-freeze.v1",
+  "status": "FROZEN",
+  "frozen_at": "2026-09-10T05:53:50.514439+00:00",
+  "author": "/root/continuity_investigator",
+  "implementation_owner": "/root",
+  "source_head": "5208cf047b6bc4e2624df0c832dada7e7e29d03f",
+  "contract": "Actual configure_host project persistence must emit valid TOML and preserve the installing interpreter path and explicit Codex host arguments, including non-BMP Unicode path characters. An acknowledged created registration may not persist malformed TOML.",
+  "artifacts": [
+    {
+      "path": "tests/acceptance/test_codex_unicode_council.py",
+      "sha256": "8fb7a17204f877c3b0158dfb81a580d93c417207abc5b2e02535931cbccb1746"
+    }
+  ],
+  "baseline": {
+    "command": "python -m pytest tests/acceptance/test_codex_unicode_council.py --no-cov -q --tb=short",
+    "exit_code": 1,
+    "failed": 1,
+    "passed": 2,
+    "duration_seconds": 0.55,
+    "failure_witness": "COUNCIL_TOML",
+    "cause": "tomllib.TOMLDecodeError: Escaped character is not a Unicode scalar value",
+    "positive_controls": [
+      "ASCII interpreter directory",
+      "BMP accented interpreter directory"
+    ],
+    "source_sha256": {
+      "src/cairntir/hosts.py": "326657900306127fca2e5afafc7ab5b156321c5adb727f3581a0feeb21442025"
+    },
+    "local_evidence": {
+      ".cairntir/integration-audit-20260910/council-continuity/unicode-freeze-red.log": "6c69c1f25dbe3f461ea00f748d617240c4dcf13b598abb221bc6c750a3544c70",
+      ".cairntir/integration-audit-20260910/council-continuity/unicode-freeze-red-exit.json": "50d7caf03dd967e4363a5bc7babbf450452b31dd1ec7fb605b2abc6465759571"
+    }
+  },
+  "limits": [
+    "Executed on Windows with real temporary configuration files and the real configure_host serializer.",
+    "sys.executable is substituted in memory to model installing paths; no host process or model is launched.",
+    "The TOML parser failure is platform-neutral; native macOS launcher execution is not claimed."
+  ],
+  "policy": "Frozen test bytes must not be edited by the implementation owner. Runtime repair and supporting mutation verification are separate."
+}

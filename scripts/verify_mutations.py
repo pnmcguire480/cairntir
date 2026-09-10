@@ -17,6 +17,63 @@ RECOVERY = "tests/verification/test_recovery_outcomes.py"
 RESTORE = RECOVERY + "::test_restored_backup_preserves_every_table_and_resumes_task"
 MUTATIONS = (
     {
+        "name": "write-invalid-unicode-toml",
+        "file": "src/cairntir/hosts.py",
+        "before": "json.dumps(value, ensure_ascii=False)",
+        "after": "json.dumps(value)",
+        "test": "tests/acceptance/test_codex_unicode_council.py::"
+        "test_codex_project_configuration_preserves_unicode_interpreter[\\U0001f9ed-project]",
+        "witness": "COUNCIL_TOML",
+    },
+    {
+        "name": "discard-registered-access-settings",
+        "file": "src/cairntir/hosts.py",
+        "before": "merged = {**spec, **existing}",
+        "after": "merged = dict(spec)",
+        "test": "tests/acceptance/test_store_identity_council.py::"
+        "test_nonforce_init_cannot_widen_a_restarted_scoped_connection",
+        "witness": "PRIVATE COUNCIL CANARY",
+    },
+    {
+        "name": "require-installer-shell-path",
+        "file": "src/cairntir/hosts.py",
+        "before": 'args = [sys.executable, "-m", "cairntir.mcp.server"]',
+        "after": 'args = ["cairntir-mcp"]',
+        "test": "tests/acceptance/test_registration_council.py::"
+        "test_generated_registration_launches_without_install_shell_path[cursor-user]",
+        "witness": "COUNCIL_LAUNCHER",
+    },
+    {
+        "name": "omit-automatic-host-identity",
+        "file": "src/cairntir/register.py",
+        "before": '*mcp_argv("claude"),',
+        "after": "*mcp_argv(),",
+        "test": "tests/acceptance/test_registration_council.py::"
+        "test_automatic_registration_recovers_as_its_actual_host",
+        "witness": "COUNCIL_HOST_CONTEXT",
+    },
+    {
+        "name": "mark-rejected-tool-successful",
+        "file": "src/cairntir/mcp/server.py",
+        "before": 'content=[types.TextContent(type="text", text=text)], isError=True\n'
+        "            )\n        except ValidationError",
+        "after": 'content=[types.TextContent(type="text", text=text)], isError=False\n'
+        "            )\n        except ValidationError",
+        "test": "tests/integration/test_mcp_error_contract.py::"
+        "test_rejected_tool_is_an_error_and_session_remains_usable"
+        "[cairntir_get-arguments0-no drawer]",
+        "witness": "Rejected cairntir_get was reported as successful",
+    },
+    {
+        "name": "prepend-notice-to-json",
+        "file": "src/cairntir/mcp/server.py",
+        "before": 'content.append(types.TextContent(type="text", text=banner))',
+        "after": 'content[0] = types.TextContent(type="text", text=f"{banner}\\n\\n{text}")',
+        "test": "tests/integration/test_mcp_error_contract.py::"
+        "test_update_notice_preserves_machine_readable_result[cairntir_get]",
+        "witness": "MCP_JSON: update notice corrupted cairntir_get",
+    },
+    {
         "name": "discard-backup-during-status-observation",
         "file": "src/cairntir/backups.py",
         "before": (
@@ -149,6 +206,20 @@ def run(output: Path) -> bool:
                     ignore=shutil.ignore_patterns("__pycache__"),
                 )
                 shutil.copyfile(ROOT / "tests/conftest.py", checkout / "tests/conftest.py")
+                (checkout / "tests/acceptance").mkdir()
+                for name in (
+                    "test_store_identity_council.py",
+                    "test_registration_council.py",
+                    "test_codex_unicode_council.py",
+                ):
+                    shutil.copyfile(
+                        ROOT / "tests/acceptance" / name, checkout / "tests/acceptance" / name
+                    )
+                (checkout / "tests/integration").mkdir()
+                shutil.copyfile(
+                    ROOT / "tests/integration/test_mcp_error_contract.py",
+                    checkout / "tests/integration/test_mcp_error_contract.py",
+                )
                 shutil.copyfile(ROOT / "pyproject.toml", checkout / "pyproject.toml")
                 target = checkout / mutation["file"]
                 original = target.read_text(encoding="utf-8")

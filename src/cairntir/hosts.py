@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
+import sys
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
@@ -191,8 +192,14 @@ class HostStatus:
 
 def mcp_spec(host: HostName | None = None) -> dict[str, object]:
     """Return the portable stdio MCP specification used by JSON hosts."""
-    args = ["--host", host] if host is not None else []
-    return {"command": MCP_SERVER_COMMAND, "args": args}
+    argv = mcp_argv(host)
+    return {"command": argv[0], "args": argv[1:]}
+
+
+def mcp_argv(host: HostName | None = None) -> list[str]:
+    """Pin the installing interpreter without resolving virtualenv symlinks."""
+    args = [sys.executable, "-m", "cairntir.mcp.server"]
+    return args + (["--host", host] if host is not None else [])
 
 
 def mcp_container_key(host: HostName | None = None) -> str:
@@ -211,7 +218,7 @@ def mcp_entry(host: HostName | None = None) -> dict[str, object]:
         # OpenCode folds argv into one command array and gates on `enabled`.
         return {
             "type": "local",
-            "command": [MCP_SERVER_COMMAND, "--host", host],
+            "command": mcp_argv(host),
             "enabled": True,
         }
     if host == "copilot":
@@ -221,10 +228,10 @@ def mcp_entry(host: HostName | None = None) -> dict[str, object]:
 
 
 def _codex_mcp_block() -> str:
-    return """[mcp_servers.cairntir]
-command = "cairntir-mcp"
-args = ["--host", "codex"]
-"""
+    return "[mcp_servers.cairntir]\n" + "".join(
+        f"{key} = {json.dumps(value, ensure_ascii=False)}\n"
+        for key, value in mcp_spec("codex").items()
+    )
 
 
 def load_json_object(path: Path) -> dict[str, Any]:
@@ -251,9 +258,16 @@ def merge_mcp_spec(
     if not isinstance(servers, dict):
         raise HostConfigurationError(f"{key} in target config is not a JSON object")
     spec = mcp_entry(host)
-    if servers.get(MCP_SERVER_NAME) == spec:
+    existing = servers.get(MCP_SERVER_NAME, {})
+    if not isinstance(existing, dict):
+        raise HostConfigurationError("existing Cairntir MCP entry is not a JSON object")
+    merged = {**spec, **existing}
+    for key in ("command", "args"):
+        if key in spec:
+            merged[key] = spec[key]
+    if existing == merged:
         return config, False
-    servers[MCP_SERVER_NAME] = spec
+    servers[MCP_SERVER_NAME] = merged
     return config, True
 
 
@@ -391,10 +405,8 @@ def _run_cli(executable_name: str, *args: str) -> tuple[int, str, str]:
 
 
 def _register_cli_host(host: Literal["claude", "codex"], *, force: bool) -> str:
-    remove_args: tuple[str, ...]
     add_args: tuple[str, ...]
     if host == "claude":
-        remove_args = ("mcp", "remove", "-s", "user", MCP_SERVER_NAME)
         add_args = (
             "mcp",
             "add",
@@ -402,30 +414,28 @@ def _register_cli_host(host: Literal["claude", "codex"], *, force: bool) -> str:
             "user",
             MCP_SERVER_NAME,
             "--",
-            MCP_SERVER_COMMAND,
-            "--host",
-            host,
+            *mcp_argv(host),
         )
     else:
-        remove_args = ("mcp", "remove", MCP_SERVER_NAME)
         add_args = (
             "mcp",
             "add",
             MCP_SERVER_NAME,
             "--",
-            MCP_SERVER_COMMAND,
-            "--host",
-            host,
+            *mcp_argv(host),
         )
 
-    if force:
-        _run_cli(host, *remove_args)
     code, stdout, stderr = _run_cli(host, *add_args)
     if code == 0:
         return stdout or "registered"
     combined = stderr or stdout
     if "already exists" in combined.lower() and not force:
         return "already registered"
+    if "already exists" in combined.lower():
+        raise HostConfigurationError(
+            f"{host} already has a Cairntir registration; update its command and args "
+            "in the host configuration, preserving its environment and access settings"
+        )
     raise HostConfigurationError(f"`{host} {' '.join(add_args)}` exited {code}: {combined}")
 
 
@@ -448,7 +458,7 @@ def _codex_project_config(path: Path, *, force: bool) -> str:
     servers = parsed.get("mcp_servers", {})
     cairntir = servers.get(MCP_SERVER_NAME) if isinstance(servers, dict) else None
     expected = mcp_spec("codex")
-    if cairntir == expected:
+    if _entry_matches(cairntir, expected):
         return "unchanged"
     if cairntir is not None and _CODEX_MCP_BEGIN not in existing:
         action = "replace" if force else "change"
@@ -462,6 +472,11 @@ def _codex_project_config(path: Path, *, force: bool) -> str:
     end = existing.find(_CODEX_MCP_END)
     if (begin == -1) != (end == -1) or (begin != -1 and end < begin):
         raise HostConfigurationError(f"{path} contains an incomplete Cairntir MCP block")
+    if isinstance(cairntir, dict) and set(cairntir) - {"command", "args"}:
+        raise HostConfigurationError(
+            f"{path} has custom Cairntir environment or access settings; update only "
+            "command and args manually, preserving those settings"
+        )
     if begin == -1:
         separator = "" if existing.endswith("\n\n") else "\n" if existing.endswith("\n") else "\n\n"
         path.write_text(existing + separator + marked, encoding="utf-8")
@@ -489,12 +504,26 @@ def configure_host(
         if scope == "user":
             registration_path = home / ".codex" / "config.toml"
             already, _ = _codex_status(registration_path)
-            if already and not force:
+            if already:
                 # `codex mcp add` rewrites the whole stanza, silently dropping
                 # anything the user added under it -- per-tool approval_mode
                 # gates, for one. Never invoke it when the entry is correct.
                 registration = "unchanged"
             else:
+                if registration_path.exists():
+                    try:
+                        parsed = tomllib.loads(registration_path.read_text(encoding="utf-8"))
+                    except (OSError, UnicodeError, tomllib.TOMLDecodeError) as exc:
+                        raise HostConfigurationError(
+                            f"{registration_path} is not valid readable TOML: {exc}"
+                        ) from exc
+                    servers = parsed.get("mcp_servers", {})
+                    if not isinstance(servers, dict) or MCP_SERVER_NAME in servers:
+                        raise HostConfigurationError(
+                            f"{registration_path} already has Cairntir settings; update only "
+                            "command and args manually, preserving its environment "
+                            "and access settings"
+                        )
                 registration = _register_cli_host("codex", force=force)
         else:
             registration_path = root / ".codex" / "config.toml"

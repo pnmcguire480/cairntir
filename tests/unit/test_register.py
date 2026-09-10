@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -72,7 +73,6 @@ def test_registered_when_add_succeeds(_tmp_home: Path, monkeypatch: pytest.Monke
 
     assert register.ensure_registered() == "registered"
     add_call = calls[1]
-    # Must register the stable shim, not python -m
     assert add_call[1:] == [
         "mcp",
         "add",
@@ -80,7 +80,11 @@ def test_registered_when_add_succeeds(_tmp_home: Path, monkeypatch: pytest.Monke
         "user",
         "cairntir",
         "--",
-        "cairntir-mcp",
+        sys.executable,
+        "-m",
+        "cairntir.mcp.server",
+        "--host",
+        "claude",
     ]
 
 

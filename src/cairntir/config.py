@@ -11,6 +11,8 @@ from pathlib import Path
 
 from platformdirs import user_data_dir
 
+from cairntir.errors import ConfigError
+
 _APP_NAME = "cairntir"
 _DB_FILENAME = "cairntir.db"
 _MODEL_DIRNAME = "models"
@@ -19,7 +21,11 @@ _MODEL_DIRNAME = "models"
 def cairntir_home(*, create: bool = True) -> Path:
     """Resolve the Cairntir home directory, optionally creating it."""
     env = os.environ.get("CAIRNTIR_HOME")
-    home = Path(env) if env else Path(user_data_dir(_APP_NAME, appauthor=False))
+    home = Path(env).expanduser() if env else Path(user_data_dir(_APP_NAME, appauthor=False))
+    if not home.is_absolute():
+        raise ConfigError(
+            "CAIRNTIR_HOME must be an absolute path so every host uses the same store"
+        )
     if create:
         home.mkdir(parents=True, exist_ok=True)
     return home
