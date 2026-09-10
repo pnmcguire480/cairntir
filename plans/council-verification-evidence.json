@@ -21,8 +21,13 @@
       "before_passed": 2,
       "after_passed": 6
     },
-    "repair_round": 1,
-    "hashes_unchanged": true
+    "repair_round": 2,
+    "hashes_unchanged": true,
+    "codex_unicode": {
+      "before_failed": 1,
+      "before_passed": 2,
+      "after_passed": 3
+    }
   },
   "baseline": {
     "file": "baseline-isolated.xml",
@@ -80,6 +85,15 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0
+    },
+    {
+      "file": "final-unicode.xml",
+      "sha256": "8e5ea28a488b377d20ab25ddea52d898dd140cf7a0da5b43b1c594fbc809d17d",
+      "cases": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "note": "All 15 assertions passed. Coverage append was invalidated by changed source line positions; do not use this invocation as aggregate coverage evidence. A fresh full suite and hosted gates replace it."
     }
   ],
   "initial_candidate_failures": "One network check and three test-owned process termination checks were blocked by sandbox permissions; all four passed with required permissions. No test assertion was weakened.",
@@ -352,6 +366,24 @@
         "test": "tests/verification/test_historical_regressions.py::test_handshake_identifies_cairntir",
         "source_sha256": "fc099941d60d8765af59a8d7af64e6d0c0e70be02a9d5a11980286ce2d1893c8",
         "test_sha256": "62299cc2e6b8e4c0526ea87535b90d5044397ce62bac1e2f8be8dd64fbfca44d"
+      },
+      {
+        "mutation": "write-invalid-unicode-toml",
+        "phase": "control",
+        "proved": true,
+        "returncode": 0,
+        "test": "tests/acceptance/test_codex_unicode_council.py::test_codex_project_configuration_preserves_unicode_interpreter[\\U0001f9ed-project]",
+        "source_sha256": "594e61aa5c6816b1d9750eb6e3a1033978e79f055468dc53fe05a417aaafb490",
+        "test_sha256": "8fb7a17204f877c3b0158dfb81a580d93c417207abc5b2e02535931cbccb1746"
+      },
+      {
+        "mutation": "write-invalid-unicode-toml",
+        "phase": "mutant",
+        "proved": true,
+        "returncode": 1,
+        "test": "tests/acceptance/test_codex_unicode_council.py::test_codex_project_configuration_preserves_unicode_interpreter[\\U0001f9ed-project]",
+        "source_sha256": "ee336ddbb33dda2f8714f7372c6ca5a8ce31189c99ed1cfca179739b4bdc6d54",
+        "test_sha256": "8fb7a17204f877c3b0158dfb81a580d93c417207abc5b2e02535931cbccb1746"
       }
     ]
   },
@@ -497,5 +529,11 @@
       "failure": "coverage only"
     },
     "followup": "Two independently authored production-stdio tests preserve scoped startup authorization and a completed learning episode across public evidence views. No runtime or coverage configuration changes."
+  },
+  "coverage_source_revision": "5208cf047b6bc4e2624df0c832dada7e7e29d03f; before final Unicode serializer repair; fresh native source gates required",
+  "native_second_attempt": {
+    "run": "https://github.com/pnmcguire480/cairntir/actions/runs/34442545718",
+    "linux_python312_coverage": 92.097476,
+    "failure": "Two repository-policy checks caught encoding damage introduced in the CLAUDE.md documentation update. Encoding repaired; all 46 targeted policy/host checks pass. Fresh CI must verify the final tree."
   }
 }

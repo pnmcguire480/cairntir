@@ -1,7 +1,7 @@
-# Cairntir â€” project brief
+# Cairntir — project brief
 
 Host-neutral, local-first memory and reasoning through MCP. Owner:
-Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11â€“3.13.
+Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
@@ -85,11 +85,11 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session â€” 2026-09-10
+## Last Session — 2026-09-10
 
 Council red-team work is in progress on `codex/mcp-response-contracts`. Three
 fresh-context investigators reproduced integration defects and independently
-verified all 34 frozen acceptance cases after repair round one. Their manifests
+verified all 34 original frozen acceptance cases after repair round one. Their manifests
 and tests are immutable. The [audit](docs/verification/council-20260910.md) records
 findings and boundaries; raw evidence is under `.cairntir/integration-audit-20260910/`.
 
@@ -103,12 +103,17 @@ The candidate wheel passed fresh installed CLI/MCP interruption, exact resumptio
 all-table restoration, production-model retrieval, failed-write rollback/retry,
 and update-notice JSON checks. All 1,745 cases passed across local selections;
 four initial sandbox permission failures passed on targeted rerun. Combined
-coverage is 92.262837%. Fourteen mutation pairs, five historical pairs, seven
+coverage before the final serializer repair was 92.262837%. Fourteen mutation pairs, five historical pairs, seven
 model cases and one slow case passed. Native results are tracked on PR #111.
 CI now includes macOS behavioral and three-platform installed-package verification.
 The first native behavioral jobs passed on all three platforms; macOS/Linux
 source cases passed but coverage failed. Two additional public MCP outcome tests
 pass locally; native reruns and installed-package jobs remain to be verified.
+A fourth frozen manifest adds three Unicode Codex TOML cases; one failed before
+the second-round serializer repair, and all three now pass. Its deliberate
+regression is caught with a passing control. The next Linux run cleared 92% but
+caught documentation encoding drift, since repaired with 46 policy checks passing.
+Fresh full-suite and installed-package gates must verify the final tree.
 Lou's unidentified incident has not been diagnosed.
 
 Published version stays **1.12.2**; production installation stays **1.12.1**.
@@ -117,7 +122,7 @@ by this audit. Memory task `8cba2f40-9519-4477-9f21-bd8d5eb63a58`, wing `cairnti
 room `requests`, tracks this work; completed release tasks must not be reopened.
 
 <!-- cairntir:begin -->
-# Cairntir â€” memory-first reasoning layer
+# Cairntir — memory-first reasoning layer
 
 You have access to persistent memory through the `cairntir_*` MCP tools.
 At conversation start, after context compaction, and whenever continuity is lost:

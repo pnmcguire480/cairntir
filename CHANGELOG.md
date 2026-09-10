@@ -20,6 +20,7 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   existing Claude registrations; setup no longer requests forced replacement.
 - Register the installing Python interpreter by absolute path, with the correct
   host adapter, so generated MCP launchers work without the installer's shell PATH.
+  Preserve non-BMP Unicode characters in generated Codex TOML paths.
 - Expand `~/` in `CAIRNTIR_HOME` and reject relative environment overrides before
   creating a store. Explicit `setup --home` paths are resolved before use.
 - Report rejected MCP tools with `isError: true`; keep update notices in separate

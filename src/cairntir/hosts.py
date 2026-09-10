@@ -229,7 +229,8 @@ def mcp_entry(host: HostName | None = None) -> dict[str, object]:
 
 def _codex_mcp_block() -> str:
     return "[mcp_servers.cairntir]\n" + "".join(
-        f"{key} = {json.dumps(value)}\n" for key, value in mcp_spec("codex").items()
+        f"{key} = {json.dumps(value, ensure_ascii=False)}\n"
+        for key, value in mcp_spec("codex").items()
     )
 
 

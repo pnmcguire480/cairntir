@@ -17,6 +17,15 @@ RECOVERY = "tests/verification/test_recovery_outcomes.py"
 RESTORE = RECOVERY + "::test_restored_backup_preserves_every_table_and_resumes_task"
 MUTATIONS = (
     {
+        "name": "write-invalid-unicode-toml",
+        "file": "src/cairntir/hosts.py",
+        "before": "json.dumps(value, ensure_ascii=False)",
+        "after": "json.dumps(value)",
+        "test": "tests/acceptance/test_codex_unicode_council.py::"
+        "test_codex_project_configuration_preserves_unicode_interpreter[\\U0001f9ed-project]",
+        "witness": "COUNCIL_TOML",
+    },
+    {
         "name": "discard-registered-access-settings",
         "file": "src/cairntir/hosts.py",
         "before": "merged = {**spec, **existing}",
@@ -198,7 +207,11 @@ def run(output: Path) -> bool:
                 )
                 shutil.copyfile(ROOT / "tests/conftest.py", checkout / "tests/conftest.py")
                 (checkout / "tests/acceptance").mkdir()
-                for name in ("test_store_identity_council.py", "test_registration_council.py"):
+                for name in (
+                    "test_store_identity_council.py",
+                    "test_registration_council.py",
+                    "test_codex_unicode_council.py",
+                ):
                     shutil.copyfile(
                         ROOT / "tests/acceptance" / name, checkout / "tests/acceptance" / name
                     )

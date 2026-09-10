@@ -13,6 +13,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "dc2607f2146b931e4fa9243fc847583d6bf99ebb"
 COUNCIL_MANIFESTS = {
+    "plans/council-codex-unicode.freeze.json": (
+        "0f7633bca3f8ac118bb88d0a7b327150f284c35519b5cbdf6073e1a77d0049c0"
+    ),
     "plans/council-mcp.freeze.json": (
         "d6df7785d58facfa4b3ad444f437cab42811c7d86cfb0240917c3eb383bb84d1"
     ),

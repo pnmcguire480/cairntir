@@ -12,6 +12,7 @@ REPO = Path(__file__).resolve().parents[2]
 CHECKER = runpy.run_path(str(REPO / "scripts/check_verification_preservation.py"))
 MANIFESTS = CHECKER["COUNCIL_MANIFESTS"]
 ARTIFACTS = (
+    "tests/acceptance/test_codex_unicode_council.py",
     "tests/acceptance/test_mcp_notifications_council.py",
     "tests/acceptance/test_timeline_council.py",
     "tests/acceptance/test_registration_council.py",
@@ -63,12 +64,14 @@ def test_rejects_changed_or_deleted_manifest(frozen_copy: Path, manifest: str) -
 
 
 def test_resealing_modified_acceptance_cannot_bypass_manifest_pin(frozen_copy: Path) -> None:
-    artifact = frozen_copy / ARTIFACTS[0]
+    artifact = frozen_copy / "tests/acceptance/test_mcp_notifications_council.py"
     artifact.write_text("def test_always_passes(): pass\n", encoding="utf-8")
     name = "plans/council-mcp.freeze.json"
     manifest_path = frozen_copy / name
     manifest = json.loads(manifest_path.read_bytes())
-    manifest["files"][ARTIFACTS[0]] = hashlib.sha256(artifact.read_bytes()).hexdigest()
+    manifest["files"]["tests/acceptance/test_mcp_notifications_council.py"] = hashlib.sha256(
+        artifact.read_bytes()
+    ).hexdigest()
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
     assert CHECKER["check_council"](frozen_copy) == [
         f"frozen council manifest differs from accepted hash: {name}"
