@@ -981,14 +981,16 @@ class CairntirBackend:
         """Chronological view of drawers in ``wing`` mentioning ``entity``."""
         if not entity.strip():
             raise MCPError("timeline requires a non-empty entity")
-        drawers = self._store.list_by(wing=wing, limit=limit)
+        if limit < 1:
+            raise MCPError("timeline limit must be at least 1")
+        drawers = self._store.list_by(wing=wing, limit=None)
         needle = entity.lower()
         matched = [
             d
             for d in drawers
             if needle in d.content.lower()
             or needle in json.dumps(d.metadata, sort_keys=True).lower()
-        ]
+        ][:limit]
         matched.sort(key=lambda d: d.created_at)
         if not matched:
             return f"No timeline entries for {entity!r} in wing {wing!r}."

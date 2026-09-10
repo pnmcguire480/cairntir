@@ -1,5 +1,12 @@
 # Verification that detects incorrect behavior
 
+2026-09-10 correction: the installed semantic-recall check described below
+matched echoed query text and did not prove a retrieved hit. The council audit
+in `docs/verification/council-20260910.md` supersedes that evidence claim and
+records independently frozen integration regressions. The maintainer explicitly
+authorized the later council; the solo constraint below describes this plan's
+original delivery, not the subsequent audit.
+
 Status: **IMPLEMENTED; locally verified**. Delivery: [PR #108](https://github.com/pnmcguire480/cairntir/pull/108).
 Tracking: [issue #107](https://github.com/pnmcguire480/cairntir/issues/107).
 Base: `dc2607f2146b931e4fa9243fc847583d6bf99ebb`. Implementation is authorized;

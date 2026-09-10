@@ -11,6 +11,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  UV_PYTHON: "3.12"
+
 jobs:
   lint:
     name: Lint & Type Check
@@ -74,6 +77,8 @@ jobs:
     name: Test (${{ matrix.os }} / Python ${{ matrix.python }})
     needs: lint
     runs-on: ${{ matrix.os }}
+    env:
+      UV_PYTHON: ${{ matrix.python }}
     strategy:
       fail-fast: false
       matrix:
@@ -126,16 +131,23 @@ jobs:
         run: uv run pytest -m "slow and not eval" --no-cov -q
 
   build:
-    name: Build Package
+    name: Build and verify installed package (${{ matrix.os }})
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
     env:
+      UV_PYTHON: "3.12"
       CAIRNTIR_HOME: ${{ github.workspace }}/.cairntir/package-home
       FASTEMBED_CACHE_PATH: ${{ github.workspace }}/.cairntir/package-models
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install uv
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      - name: Set up Python
+        run: uv python install 3.12
       - name: Build
         run: uv build
       - name: Cache production embedding model for installed verification
@@ -146,25 +158,38 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: dist
+          name: dist-${{ matrix.os }}
           path: dist/
           retention-days: 7
       - name: Retain installed package verification
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: installed-package-evidence
+          name: installed-package-evidence-${{ matrix.os }}
           path: .cairntir/package-proof/
           retention-days: 7
+
+  package-gate:
+    name: Build Package
+    if: always()
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every installed-package platform
+        env:
+          BUILD_RESULT: ${{ needs.build.result }}
+        run: test "$BUILD_RESULT" = success
 
   behavior:
     name: Regression and mutation evidence (${{ matrix.os }})
     needs: lint
     runs-on: ${{ matrix.os }}
+    env:
+      UV_PYTHON: "3.12"
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

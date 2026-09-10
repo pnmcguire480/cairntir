@@ -13,6 +13,29 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Fixed
+
+- Preserve existing host environment, grant and tool restrictions during JSON
+  registration refresh. Refuse destructive replacement of custom Codex or
+  existing Claude registrations; setup no longer requests forced replacement.
+- Register the installing Python interpreter by absolute path, with the correct
+  host adapter, so generated MCP launchers work without the installer's shell PATH.
+- Expand `~/` in `CAIRNTIR_HOME` and reject relative environment overrides before
+  creating a store. Explicit `setup --home` paths are resolved before use.
+- Report rejected MCP tools with `isError: true`; keep update notices in separate
+  content blocks so they cannot corrupt JSON responses. Malformed update caches
+  cannot prevent startup or turn a committed write into a reported failure.
+- Apply timeline limits after matching the requested entity.
+
+### Changed
+
+- Freeze independent council acceptance tests and enforce their hashes in CI.
+  Require real retrieved drawer identity and exact content in installed-package
+  restoration checks; a query echoed by a zero-hit response cannot satisfy them.
+- Exercise deliberate host-registration and response-contract mistakes alongside
+  existing mutations. Run behavioral and installed-wheel verification on macOS,
+  Linux and Windows.
+
 ## [1.12.2] — 2026-09-08
 
 ### Added

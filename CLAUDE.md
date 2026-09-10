@@ -85,31 +85,33 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session — 2026-09-08
+## Last Session — 2026-09-10
 
-Cairntir **1.12.2** is published on PyPI and GitHub. Release PR #109 passed full
-platform/model/behavioral/package CI and CodeQL, then merged as
-`b3798b95a058f440448e3ae08d85a8be4123bb9b`. The immutable tag and all five trusted
-release jobs passed. Public wheel/sdist hashes match workflow and GitHub assets;
-signed provenance binds the exact source, tag, workflow and hosted run.
+Council red-team work is in progress on `codex/mcp-response-contracts`. Three
+fresh-context investigators reproduced integration defects and independently
+verified all 34 frozen acceptance cases after repair round one. Their manifests
+and tests are immutable. The [audit](docs/verification/council-20260910.md) records
+findings and boundaries; raw evidence is under `.cairntir/integration-audit-20260910/`.
 
-A fresh public-PyPI installation passed version, redirected help, recipes,
-dependency and 74-file identity checks. Actual CLI/MCP interruption/resumption,
-all-table restoration and semantic retrieval passed. See the
-[release record](docs/release/v1.12.2.md) and
-[publication receipt](plans/v1.12.2-publication.json) for evidence and limits.
+Repairs preserve registered grants/options, pin launchers to the installing
+interpreter with host identity, reject relative store overrides, correct MCP
+error/JSON contracts, tolerate corrupt update caches and filter timeline matches
+before limiting. The installed recall assertion previously accepted zero-hit
+query echoes; the 1.12.2 release record now withdraws that evidence claim.
 
-This release publishes PR #108's verified fixes. Its five historical regressions,
-nine caught mutations, 1,672 passing local tests and 92% combined coverage gate
-remain documented in the [verification plan](plans/verification-structure.md).
-Dependencies and all frozen acceptance artifacts are unchanged. Verification
-additions are solo-authored; no independent review is claimed.
+The candidate wheel passed fresh installed CLI/MCP interruption, exact resumption,
+all-table restoration, production-model retrieval, failed-write rollback/retry,
+and update-notice JSON checks. All 1,743 cases passed across local selections;
+four initial sandbox permission failures passed on targeted rerun. Combined
+coverage is 92.045257%. Fourteen mutation pairs, five historical pairs, seven
+model cases and one slow case passed. Hosted checks remain pending.
+CI now includes macOS behavioral and three-platform installed-package verification.
+No actual macOS result or diagnosis of Lou's unidentified incident is claimed yet.
 
-Production installation remains **1.12.1**, with its existing 12-hour backup
-policy. No production package upgrade, app restart, migration or reindex ran.
-Release memory task `446b75d1-8d61-48c1-8ff4-a61aba674f7c`, wing `cairntir`,
-room `requests`, records final closure. The earlier verification task is completed.
-Private receipts are retained under `.cairntir/v1.12.2-release/`.
+Published version stays **1.12.2**; production installation stays **1.12.1**.
+No package publication, production upgrade or application restart is authorized
+by this audit. Memory task `8cba2f40-9519-4477-9f21-bd8d5eb63a58`, wing `cairntir`,
+room `requests`, tracks this work; completed release tasks must not be reopened.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer

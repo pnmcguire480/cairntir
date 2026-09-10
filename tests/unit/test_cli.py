@@ -459,11 +459,13 @@ def test_init_writes_project_mcp_json(tmp_path: Path, monkeypatch: object) -> No
     assert target.exists()
 
     data = json.loads(target.read_text(encoding="utf-8"))
-    # Registers the stable ``cairntir-mcp`` console script — pip's
-    # launcher hard-pins the right interpreter, so we don't have to
-    # bake an absolute path that breaks on venv changes.
-    assert data["mcpServers"]["cairntir"]["command"] == "cairntir-mcp"
-    assert data["mcpServers"]["cairntir"]["args"] == ["--host", "claude"]
+    assert data["mcpServers"]["cairntir"]["command"] == sys.executable
+    assert data["mcpServers"]["cairntir"]["args"] == [
+        "-m",
+        "cairntir.mcp.server",
+        "--host",
+        "claude",
+    ]
     assert "registered cairntir" in result.stdout
 
 
@@ -578,7 +580,9 @@ def test_init_user_shells_out_to_claude_cli(monkeypatch: object, tmp_path: Path)
         "user",
         "cairntir",
         "--",
-        "cairntir-mcp",
+        sys.executable,
+        "-m",
+        "cairntir.mcp.server",
         "--host",
         "claude",
     ]
@@ -611,7 +615,9 @@ def test_init_user_is_idempotent_on_already_exists(monkeypatch: object, tmp_path
     assert "--user --force" in result.stdout
 
 
-def test_init_user_force_runs_remove_then_add(monkeypatch: object, tmp_path: Path) -> None:
+def test_init_user_force_does_not_delete_existing_access_settings(
+    monkeypatch: object, tmp_path: Path
+) -> None:
     import shutil
     import subprocess
     from typing import Any
@@ -637,10 +643,8 @@ def test_init_user_force_runs_remove_then_add(monkeypatch: object, tmp_path: Pat
 
     result = runner.invoke(app, ["init", "--user", "--force"])
     assert result.exit_code == 0
-    # First call is remove, second is add.
-    assert len(calls) == 2
-    assert calls[0][1:5] == ["mcp", "remove", "-s", "user"]
-    assert calls[1][1:5] == ["mcp", "add", "-s", "user"]
+    assert len(calls) == 1
+    assert calls[0][1:5] == ["mcp", "add", "-s", "user"]
 
 
 def test_upsert_greeting_creates_file_when_missing(tmp_path: Path) -> None:

@@ -25,9 +25,9 @@ from pathlib import Path
 from typing import Final
 
 from cairntir.config import cairntir_home
+from cairntir.hosts import mcp_argv
 
 _CHECKPOINT_FILENAME: Final[str] = ".registered"
-_MCP_SERVER_COMMAND: Final[str] = "cairntir-mcp"
 _MCP_SERVER_NAME: Final[str] = "cairntir"
 _DISABLE_ENV_VAR: Final[str] = "CAIRNTIR_DISABLE_AUTOREGISTER"
 """Set to a truthy value to skip the silent re-registration entirely.
@@ -119,7 +119,7 @@ def _listing_contains_cairntir(listing: str) -> bool:
 
 
 def _add_user_mcp(claude: str) -> bool:
-    """Run ``claude mcp add -s user cairntir -- cairntir-mcp``. Return success."""
+    """Register the current interpreter with Claude's transcript adapter."""
     try:
         result = subprocess.run(  # noqa: S603 — argv fully constructed
             [
@@ -130,7 +130,7 @@ def _add_user_mcp(claude: str) -> bool:
                 "user",
                 _MCP_SERVER_NAME,
                 "--",
-                _MCP_SERVER_COMMAND,
+                *mcp_argv("claude"),
             ],
             capture_output=True,
             text=True,

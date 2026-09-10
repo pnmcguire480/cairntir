@@ -15,7 +15,7 @@ repos:
       - id: check-case-conflict
       - id: mixed-line-ending
         args: ["--fix=lf"]
-        exclude: ^plans/(v2-foundation-.*\.(json|txt)|sharing-(result-round0.*|codeql-repair-result.*)\.(txt|xml)|continuity-regression.*\.txt|.*\.xml)$
+        exclude: ^plans/(council-.*\.freeze\.json|v2-foundation-.*\.(json|txt)|sharing-(result-round0.*|codeql-repair-result.*)\.(txt|xml)|continuity-regression.*\.txt|.*\.xml)$
       - id: detect-private-key
 
   - repo: https://github.com/compilerla/conventional-pre-commit
