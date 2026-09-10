@@ -38,7 +38,7 @@ uv run python scripts/verify_history.py --output .cairntir/verification/history
 uv run python scripts/verify_mutations.py --output .cairntir/verification/mutations
 uv run mkdocs build --strict
 uv build
-uv run python scripts/verify_package.py --wheel dist/cairntir-1.12.2-py3-none-any.whl --output .cairntir/verification/package
+uv run python scripts/verify_package.py --wheel dist/cairntir-1.12.3-py3-none-any.whl --output .cairntir/verification/package
 ```
 
 The release-tag and dependency-advisory gates need network access to PyPI. Model-backed evaluation

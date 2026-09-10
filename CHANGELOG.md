@@ -13,6 +13,8 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.12.3] — 2026-09-10
+
 ### Fixed
 
 - Preserve existing host environment, grant and tool restrictions during JSON
