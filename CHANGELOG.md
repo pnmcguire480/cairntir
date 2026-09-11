@@ -13,6 +13,16 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Changed
+
+- Use Dependabot's uv updater so dependency proposals maintain `uv.lock`.
+- Keep automatic MCP updates within the supported major version; SDK 2 removes
+  the server registration API used by Cairntir.
+- Update the pinned Pages deployment and GitHub Release actions to 5.0.1 and
+  3.0.3, respectively.
+
+## [1.12.3] — 2026-09-10
+
 ### Fixed
 
 - Preserve existing host environment, grant and tool restrictions during JSON

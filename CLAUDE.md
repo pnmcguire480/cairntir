@@ -5,11 +5,11 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Published version: **1.12.2**; production installation: **1.12.1**. The
-[1.12.2 release record](docs/release/v1.12.2.md) records verified PyPI publication
-and fresh isolated CLI/MCP installation checks. The
-[1.12.1 release record](docs/release/v1.12.1.md) records the production installation
-and automatic backup activation. Pending changes belong under
+Source version: **1.12.3**. The [1.12.3 release record](docs/release/v1.12.3.md)
+identifies the verified integration repairs and publication/installation evidence.
+Before this release, PyPI served 1.12.2 and the production MCP installation was
+1.12.1. Consult the versioned GitHub release receipt and current MCP handshake
+for post-publication installation state. Pending changes belong under
 [Unreleased](CHANGELOG.md#unreleased).
 
 The core has verbatim SQLite drawers, explicit provenance, task-aware budgeted
@@ -85,41 +85,47 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session — 2026-09-10
+## Last Session — 2026-09-11
 
-Council red-team work is in progress on `codex/mcp-response-contracts`. Three
-fresh-context investigators reproduced integration defects and independently
-verified all 34 original frozen acceptance cases after repair round one. Their manifests
-and tests are immutable. The [audit](docs/verification/council-20260910.md) records
-findings and boundaries; raw evidence is under `.cairntir/integration-audit-20260910/`.
+Dependabot maintenance uses the uv ecosystem and preserves the weekly Monday
+schedule. The `dependencies` and `ci` labels exist; dependency alerts and
+automatic security-fix PRs are enabled and independently verified. The two
+reviewed patch proposals update Pages deployment to 5.0.1 and GitHub Release to
+3.0.3. MCP remains constrained to `<2`, with automatic major updates ignored:
+an isolated SDK 2.1.1 process exits before initialization because `Server.list_tools`
+was removed; the SDK 1.28.1 control initializes and lists all 21 tools. Major
+proposals require separate compatibility evidence. No package publication,
+production upgrade or app restart belongs to this maintenance task.
 
-Repairs preserve registered grants/options, pin launchers to the installing
-interpreter with host identity, reject relative store overrides, correct MCP
-error/JSON contracts, tolerate corrupt update caches and filter timeline matches
-before limiting. The installed recall assertion previously accepted zero-hit
-query echoes; the 1.12.2 release record now withdraws that evidence claim.
+Task `e18b9745-d53a-41e4-ac5c-c8fde6f5ba2d`, wing `cairntir`, room `requests`,
+tracks the maintenance PR, frozen operational acceptance, native workflow
+verification and final merge receipts. The earlier release task still tracks
+the pending local installation and MCP reconnect.
 
-The candidate wheel passed fresh installed CLI/MCP interruption, exact resumption,
-all-table restoration, production-model retrieval, failed-write rollback/retry,
-and update-notice JSON checks. All 1,745 cases passed across local selections;
-four initial sandbox permission failures passed on targeted rerun. Combined
-coverage before the final serializer repair was 92.262837%. Fourteen mutation pairs, five historical pairs, seven
-model cases and one slow case passed. Native results are tracked on PR #111.
-CI now includes macOS behavioral and three-platform installed-package verification.
-The first native behavioral jobs passed on all three platforms; macOS/Linux
-source cases passed but coverage failed. Two additional public MCP outcome tests
-pass locally; native reruns and installed-package jobs remain to be verified.
-A fourth frozen manifest adds three Unicode Codex TOML cases; one failed before
-the second-round serializer repair, and all three now pass. Its deliberate
-regression is caught with a passing control. The next Linux run cleared 92% but
-caught documentation encoding drift, since repaired with 46 policy checks passing.
-Fresh full-suite and installed-package gates must verify the final tree.
-Lou's unidentified incident has not been diagnosed.
+## Previous Session — 2026-09-10
 
-Published version stays **1.12.2**; production installation stays **1.12.1**.
-No package publication, production upgrade or application restart is authorized
-by this audit. Memory task `8cba2f40-9519-4477-9f21-bd8d5eb63a58`, wing `cairntir`,
-room `requests`, tracks this work; completed release tasks must not be reopened.
+Council repairs landed through [PR #111](https://github.com/pnmcguire480/cairntir/pull/111),
+merge `7ee239f`; its tree matches reviewed head `e3b237f`. All nine OS/Python
+source jobs, three native mutation/history jobs, three installed-package jobs,
+retrieval evaluation and CodeQL passed. Independent artifact checks verified
+37 frozen acceptance cases, 15 mutation pairs, five historical pairs, and all
+three installed-wheel hashes. Fresh local source verification passed 1,742
+cases at 92.236728% combined coverage. The council task is completed.
+
+The user then explicitly authorized: "go ahead and publish, afterwards, reset
+cairntirs mcp". Release 1.12.3 changes runtime source only at the version constant;
+tests, dependencies, frozen evidence and verification workflows remain unchanged.
+The [release record](docs/release/v1.12.3.md) defines publication and reconnect
+verification. Release task `0bfd270b-4d62-4356-a247-6a73e3415b53`, wing `cairntir`,
+room `requests`, tracks final receipts and current progress. Do not reopen the
+completed council task or repeat its audit.
+
+The earlier installed semantic-recall assertion admitted a query echo with zero
+hits; that evidence claim is withdrawn in the 1.12.2 record. The replacement
+requires retrieved identity and exact content. No specific diagnosis of Lou's
+unprovided incident or graphical host behavior is claimed. Existing custom
+Codex/CLI registrations may require a command/argument refresh that preserves
+access settings. Publication does not authorize rewriting the memory database.
 
 <!-- cairntir:begin -->
 # Cairntir — memory-first reasoning layer
