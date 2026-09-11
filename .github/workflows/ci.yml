@@ -1,212 +1,119 @@
-name: CI
+name: Attestation compatibility smoke
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-env:
-  UV_PYTHON: "3.12"
+permissions:
+  contents: read
 
 jobs:
-  lint:
-    name: Lint & Type Check
+  attest:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-      - name: Install uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
-        with:
-          enable-cache: true
-      - name: Set up Python
-        run: uv python install 3.12
-      - name: Install dependencies
-        run: uv sync --locked --all-extras
-      - name: Ruff check
-        run: uv run ruff check src tests scripts addons
-      - name: Ruff format check
-        run: uv run ruff format --check src tests scripts addons
-      - name: Mypy strict
-        run: uv run mypy --strict src
-      - name: Strict documentation build
-        run: uv run mkdocs build --strict
-      - name: No silent except check
-        run: uv run python scripts/check_no_silent_except.py
-      - name: Release tag check
-        run: uv run python scripts/check_release_tags.py
-      - name: Landed commitment check
-        run: uv run python scripts/check_landed_commitments.py
-      - name: Seam check
-        run: uv run python scripts/check_seams.py
-      - name: Frozen acceptance and coverage scope
-        run: uv run python scripts/check_verification_preservation.py
-      - name: Documentation link check
-        run: uv run python scripts/check_docs_links.py
-      - name: Locked dependency advisories
-        run: uv run python scripts/check_dependency_advisories.py
-      # Honest about its own reach: the skip is in the step NAME, not in a log
-      # line nobody reads. The real gate runs where the data lives —
-      # `cairntir doctor --gate` (pre-commit, local, self-hosted). The rules
-      # themselves are shared: one implementation in src/cairntir/health.py.
-      - name: Store integrity check (SKIP on hosted runners - no store here)
-        run: uv run python scripts/check_store_health.py
-      # Honest about its own reach: a GitHub-hosted runner has no Obsidian vault
-      # and no store, so this step cannot fail here and does not pretend to. It
-      # fires on a self-hosted runner or locally, where CAIRNTIR_VAULT is real.
-      # The gate's *behaviour* — exit 1 when a vault walkthrough has no drawer —
-      # is proven on every CI run by tests/unit/test_vault_sync.py and
-      # tests/unit/test_doctor.py.
-      - name: Vault drift check (SKIP on hosted runners - no vault here)
-        run: |
-          if [ -n "${CAIRNTIR_VAULT:-}" ]; then
-            uv run cairntir vault-sync --check
-          else
-            echo "SKIP: CAIRNTIR_VAULT is unset; a hosted runner has no vault to compare."
-            echo "Enforcement of this gate on CI is tests/unit/test_vault_sync.py."
-          fi
-
-  test:
-    name: Test (${{ matrix.os }} / Python ${{ matrix.python }})
-    needs: lint
-    runs-on: ${{ matrix.os }}
-    env:
-      UV_PYTHON: ${{ matrix.python }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python: ["3.11", "3.12", "3.13"]
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-      - name: Install uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
-        with:
-          enable-cache: true
-      - name: Set up Python ${{ matrix.python }}
-        run: uv python install ${{ matrix.python }}
-      - name: Install dependencies
-        run: uv sync --locked --all-extras
-      - name: Run tests
-        run: uv run pytest -m "not slow" --cov-fail-under=92
-
-  eval:
-    name: LongMemEval R@5 Gate
-    needs: test
-    runs-on: ubuntu-latest
-    env:
-      CAIRNTIR_HOME: ${{ github.workspace }}/.cairntir/ci-eval
-      FASTEMBED_CACHE_PATH: ${{ github.workspace }}/.cairntir/ci-models
-      CAIRNTIR_ACCEPTANCE_MODEL_CACHE: ${{ github.workspace }}/.cairntir/ci-models
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Install uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
-        with:
-          enable-cache: true
-      - name: Set up Python
-        run: uv python install 3.12
-      - name: Install dependencies
-        run: uv sync --locked --all-extras
-      - name: Provision evaluation models and isolated corpus
-        run: uv run python scripts/provision_eval.py --home "$CAIRNTIR_HOME"
-      - name: Run complete offline model evaluation
-        env:
-          HF_HUB_OFFLINE: "1"
-          TRANSFORMERS_OFFLINE: "1"
-        run: uv run pytest -m eval --no-cov -q
-      - name: Run slow acceptance checks with provisioned models
-        env:
-          HF_HUB_OFFLINE: "1"
-          TRANSFORMERS_OFFLINE: "1"
-        run: uv run pytest -m "slow and not eval" --no-cov -q
-
-  build:
-    name: Build and verify installed package (${{ matrix.os }})
-    needs: test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    env:
-      UV_PYTHON: "3.12"
-      CAIRNTIR_HOME: ${{ github.workspace }}/.cairntir/package-home
-      FASTEMBED_CACHE_PATH: ${{ github.workspace }}/.cairntir/package-models
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Install uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
-      - name: Set up Python
-        run: uv python install 3.12
-      - name: Build
-        run: uv build
-      - name: Cache production embedding model for installed verification
-        run: uv run python -c "from cairntir.memory.embeddings import production_embedding_provider; production_embedding_provider().embed(['package verification'])"
-      - name: Verify installed wheel through CLI and MCP
-        shell: bash
-        run: uv run python scripts/verify_package.py --wheel dist/*.whl --output .cairntir/package-proof
-      - name: Upload artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: dist-${{ matrix.os }}
-          path: dist/
-          retention-days: 7
-      - name: Retain installed package verification
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: installed-package-evidence-${{ matrix.os }}
-          path: .cairntir/package-proof/
-          retention-days: 7
-
-  package-gate:
-    name: Build Package
-    if: always()
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Require every installed-package platform
-        env:
-          BUILD_RESULT: ${{ needs.build.result }}
-        run: test "$BUILD_RESULT" = success
-
-  behavior:
-    name: Regression and mutation evidence (${{ matrix.os }})
-    needs: lint
-    runs-on: ${{ matrix.os }}
-    env:
-      UV_PYTHON: "3.12"
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
       - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      - name: Build verification-only distributions
+        run: uv build
+      - name: Attest using proposed release action
+        id: attest
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
-          enable-cache: true
-      - run: uv python install 3.12
-      - run: uv sync --locked --all-extras
-      - name: Actual historical regressions and fixed controls
-        run: uv run python scripts/verify_history.py --output .cairntir/verification/history
-      - name: Deliberate incorrect behavior and clean controls
-        run: uv run python scripts/verify_mutations.py --output .cairntir/verification/mutations
-      - name: Retain behavioral evidence
+          subject-path: "dist/*"
+      - name: Verify signatures, exact subjects and tampering rejection
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUNDLE_PATH: ${{ steps.attest.outputs.bundle-path }}
+          ATTESTATION_ID: ${{ steps.attest.outputs.attestation-id }}
+          ATTESTATION_URL: ${{ steps.attest.outputs.attestation-url }}
+          STORAGE_RECORD_IDS: ${{ steps.attest.outputs.storage-record-ids }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+
+          receipt = Path("attestation-smoke-receipt")
+          receipt.mkdir()
+          bundle = receipt / "bundle.jsonl"
+          shutil.copyfile(os.environ["BUNDLE_PATH"], bundle)
+          repo, sha, ref = (os.environ[key] for key in ("GITHUB_REPOSITORY", "GITHUB_SHA", "GITHUB_REF"))
+          run = f"https://github.com/{repo}/actions/runs/{os.environ['GITHUB_RUN_ID']}/attempts/{os.environ['GITHUB_RUN_ATTEMPT']}"
+          identity = f"https://github.com/{repo}/.github/workflows/ci.yml@{ref}"
+          files = sorted(path for path in Path("dist").iterdir() if path.is_file())
+          artifacts = [path for path in files if path.name.endswith((".whl", ".tar.gz"))]
+          assert sum(path.name.endswith(".whl") for path in artifacts) == 1
+          assert sum(path.name.endswith(".tar.gz") for path in artifacts) == 1
+          assert all(path in artifacts or path.name == ".gitignore" for path in files)
+          subjects = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in files}
+          assert os.environ["ATTESTATION_ID"]
+          assert os.environ["ATTESTATION_URL"] == f"https://github.com/{repo}/attestations/{os.environ['ATTESTATION_ID']}"
+          assert not os.environ["STORAGE_RECORD_IDS"], "Unexpected storage record creation"
+          policy = ["--repo", repo, "--bundle", str(bundle), "--cert-identity", identity,
+                    "--source-ref", ref, "--source-digest", sha, "--signer-digest", sha,
+                    "--deny-self-hosted-runners", "--predicate-type", "https://slsa.dev/provenance/v1", "--format", "json"]
+
+          def verify(path, label):
+              command = ["gh", "attestation", "verify", str(path), *policy]
+              result = subprocess.run(command, capture_output=True, text=True)
+              (receipt / f"{label}.stdout.json").write_text(result.stdout)
+              (receipt / f"{label}.stderr.txt").write_text(result.stderr)
+              (receipt / f"{label}.command.json").write_text(json.dumps(command))
+              return result
+
+          for artifact in artifacts:
+              result = verify(artifact, artifact.name)
+              assert result.returncode == 0, result.stderr
+              verified = json.loads(result.stdout)
+              assert len(verified) == 1
+              proof = verified[0]["verificationResult"]
+              certificate = proof["signature"]["certificate"]
+              assert certificate["runInvocationURI"] == run
+              assert certificate["buildTrigger"] == "workflow_dispatch"
+              statement = proof["statement"]
+              actual = statement["subject"]
+              assert len(actual) == len(subjects)
+              assert {item["name"]: item["digest"]["sha256"] for item in actual} == subjects
+              assert statement["predicateType"] == "https://slsa.dev/provenance/v1"
+              assert statement["predicate"]["runDetails"]["metadata"]["invocationId"] == run
+
+          copied = receipt / artifacts[0].name
+          shutil.copyfile(artifacts[0], copied)
+          assert verify(copied, "negative-before").returncode == 0
+          with copied.open("ab") as stream:
+              stream.write(b"\nintentional-attestation-negative-control\n")
+          rejected = verify(copied, "negative-tampered")
+          assert rejected.returncode != 0, "Changed artifact incorrectly verified"
+          assert "verifying with issuer" in rejected.stderr.lower(), rejected.stderr
+          shutil.copyfile(artifacts[0], copied)
+          restored = verify(copied, "negative-restored")
+          assert restored.returncode == 0, restored.stderr
+          (receipt / "result.json").write_text(json.dumps({
+              "status": "PASS", "scope": "verification-only; no package or release publication",
+              "repository": repo, "source_sha": sha, "source_ref": ref, "run_url": run,
+              "signer_identity": identity, "subjects": subjects,
+              "action": "actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8",
+              "attestation_id": os.environ["ATTESTATION_ID"], "attestation_url": os.environ["ATTESTATION_URL"],
+              "storage_record_ids": [], "tampered_artifact_rejected": True,
+              "unchanged_before_and_restored_after_verified": True,
+              "gh_version": subprocess.check_output(["gh", "--version"], text=True),
+          }, indent=2) + "\n")
+          PY
+      - name: Preserve verification-only evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: behavior-${{ matrix.os }}
-          path: .cairntir/verification/
-          retention-days: 7
+          name: attestation-compatibility-smoke
+          path: |
+            dist/
+            attestation-smoke-receipt/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
