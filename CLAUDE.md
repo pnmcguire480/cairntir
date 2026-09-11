@@ -85,7 +85,24 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session — 2026-09-10
+## Last Session — 2026-09-11
+
+Dependabot maintenance uses the uv ecosystem and preserves the weekly Monday
+schedule. The `dependencies` and `ci` labels exist; dependency alerts and
+automatic security-fix PRs are enabled and independently verified. The two
+reviewed patch proposals update Pages deployment to 5.0.1 and GitHub Release to
+3.0.3. MCP remains constrained to `<2`, with automatic major updates ignored:
+an isolated SDK 2.1.1 process exits before initialization because `Server.list_tools`
+was removed; the SDK 1.28.1 control initializes and lists all 21 tools. Major
+proposals require separate compatibility evidence. No package publication,
+production upgrade or app restart belongs to this maintenance task.
+
+Task `e18b9745-d53a-41e4-ac5c-c8fde6f5ba2d`, wing `cairntir`, room `requests`,
+tracks the maintenance PR, frozen operational acceptance, native workflow
+verification and final merge receipts. The earlier release task still tracks
+the pending local installation and MCP reconnect.
+
+## Previous Session — 2026-09-10
 
 Council repairs landed through [PR #111](https://github.com/pnmcguire480/cairntir/pull/111),
 merge `7ee239f`; its tree matches reviewed head `e3b237f`. All nine OS/Python
