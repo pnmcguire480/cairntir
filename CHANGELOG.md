@@ -13,6 +13,11 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Fixed
+
+- Update locked AnyIO to 4.14.2 to clear its active dependency advisories,
+  preserving unrelated package entries and platform markers.
+
 ### Changed
 
 - Use Dependabot's uv updater so dependency proposals maintain `uv.lock`.
