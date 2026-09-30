@@ -85,7 +85,25 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session — 2026-09-11
+## Last Session - 2026-09-30
+
+Isolated maintenance repairs update only the locked AnyIO, PyJWT and urllib3
+records to 4.14.2, 2.15.1 and 2.8.0. Fresh PyPI baseline/control evidence found
+17 active advisories before repair and none afterward across 134 locked registry
+packages. Other lock entries and platform markers remain unchanged. Existing
+test, coverage and advisory gates are preserved. Ruff, formatting, strict typing,
+documentation, commitment/seam/preservation checks and package build passed
+locally on Windows with Python 3.12; source tests and hosted verification must
+be checked at the repair PR's exact head before acceptance.
+
+The [contributor handoff guide](docs/contributor-handoff.md) documents isolated
+review, preservation of home-PC work and diverged histories, and exact commit
+receipts. No production install, merge, publication or access change is part of
+this maintenance. PR #120 and #121 remain contributor-owned proposals; this
+repair does not rewrite them. Production Cairntir MCP tools were unavailable
+in the maintenance session, so no persistent-memory checkpoint is claimed.
+
+## Previous Session - 2026-09-11
 
 Dependabot maintenance uses the uv ecosystem and preserves the weekly Monday
 schedule. The `dependencies` and `ci` labels exist; dependency alerts and

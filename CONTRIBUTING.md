@@ -80,6 +80,10 @@ Use a focused branch and Conventional Commits (`fix:`, `feat:`, `docs:`,
 for fixes, update `CHANGELOG.md` under `[Unreleased]`, and run the checks above.
 All work reaches `main` through a green pull request.
 
+For work across computers or contributors, follow the
+[contributor handoff guide](docs/contributor-handoff.md). It covers existing
+home-PC work, isolated review, diverged branches, and a verifiable handoff receipt.
+
 Use typed, surfaced exceptions, strict type hints, Google-style public
 docstrings, and Ruff formatting. Do not add dependencies without discussion.
 Never edit `lineage/`; it is attribution and read-only historical evidence.

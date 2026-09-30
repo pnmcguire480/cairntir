@@ -18,9 +18,12 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 - Update locked AnyIO to 4.14.2 to clear its active dependency advisories,
   preserving unrelated package entries and platform markers.
 - Update locked PyJWT to 2.15.1 to clear its active dependency advisories.
+- Update locked urllib3 to 2.8.0 to clear its active dependency advisories.
 
 ### Changed
 
+- Document safe source handoffs across computers and contributors, including
+  dirty checkouts, diverged branches, isolated review, and exact commit receipts.
 - Use Dependabot's uv updater so dependency proposals maintain `uv.lock`.
 - Keep automatic MCP updates within the supported major version; SDK 2 removes
   the server registration API used by Cairntir.

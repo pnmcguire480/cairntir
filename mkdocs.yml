@@ -50,6 +50,7 @@ nav:
       - Decision Replay: recipes/decision-replay/README.md
       - Signal Reader: recipes/signal-reader/README.md
   - Maintenance:
+      - Contributor Handoff: contributor-handoff.md
       - Release Policy: release-cadence.md
       - Publish Checklist: publish-checklist.md
       - Deprecation Policy: deprecation-policy.md
