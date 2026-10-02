@@ -1,0 +1,35 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_production_owner_startup_activates_backup_and_retains_transport_shape[cli] _
+
+case = <generator object case.<locals>.parameters at 0x000002D803EF1440>
+transport = 'cli'
+
+    @pytest.mark.parametrize("transport", ["cli", "mcp"])
+    def test_production_owner_startup_activates_backup_and_retains_transport_shape(
+        case: Any, transport: str
+    ) -> None:
+        api, db, destination, _ = case
+        api.configure(db, destination)
+        before = _state(db)
+        if transport == "cli":
+            result = _cli("status")
+            assert result.returncode == 0, result.stderr
+        else:
+            result = _run_child("mcp-probe", db, START)
+            assert result["tools"] == 21 and not result["error"]
+>       assert len(api.status(db)["snapshots"]) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests\acceptance\test_automatic_backups.py:478: AssertionError
+============================== warnings summary ===============================
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\config\__init__.py:1434
+  C:\Users\pnmcg\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\config\__init__.py:1434: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/acceptance/test_automatic_backups.py::test_production_owner_startup_activates_backup_and_retains_transport_shape[cli]
+1 failed, 1 warning in 2.08s

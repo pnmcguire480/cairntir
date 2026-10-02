@@ -34,6 +34,11 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 - Label host configuration separately from unverified live connectivity. Setup
   describes its direct local write/read check accurately and asks for actual
   save receipts and exact task recovery in a fresh chat.
+- Preserve automatic backups on writable owner startup while diagnostic status
+  remains read-only, with an explicit independently frozen historical-probe
+  amendment and additional due-backup controls.
+- Align release lint commands with CI's maintained source/test/script/add-on
+  scope, preserving frozen acceptance artifacts and all behavioral checks.
 - Align current release/support guidance with 1.12.3 and add a portable
   change/adoption record. These candidate changes are not installed-host proof.
 

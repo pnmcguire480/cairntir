@@ -98,6 +98,13 @@ uv also requires python-discovery 1.6.1. Only those three additional lock record
 change. The unchanged advisory gate now reports zero findings across 134 locked
 registry packages. Full hosted checks rerun on the repaired release head.
 
+Hosted matrix qualification exposed a historical backup test using status as
+a writable-startup probe. An independently frozen exact-case adapter now uses
+actual owner get startup; original assertions and files stay unchanged, with
+new due-backup status-purity and snapshot/cadence controls. Release lint scope
+matches normal CI so frozen historical evidence is not reformatted. Runtime
+backup logic, coverage and preservation gates are unchanged; fresh CI is required.
+
 Patrick explicitly narrowed acceptance to an honest maintenance release: existing
 repository CI and focused regression checks remain required. The earlier broad
 cross-host pilot, resource-budget and 35-commitment v2 program are preserved as

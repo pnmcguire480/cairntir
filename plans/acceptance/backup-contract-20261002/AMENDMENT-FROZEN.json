@@ -1,0 +1,49 @@
+{
+  "schema": "independent-backup-probe-amendment-v1",
+  "status": "FROZEN_NOT_RUN",
+  "author": "/root/final_review",
+  "frozen_utc": "2026-10-02T03:03:54.5519363Z",
+  "failed_ci_head": "6e9590ac12dcce4216bf0c2499f4c2f9e08049fd",
+  "failed_ci_run": 36957564392,
+  "governing_original_freeze": "1fe7606f6acdefb62e289eb66b18cd84a4740ca2c6bf37c01c0c9a1595d09f14",
+  "original_contract_sha256": "c9a7d087041c1efb083cfbec4512046702a08e3523c2589f5e5ecc0a950ee2c7",
+  "target": "tests/acceptance/test_automatic_backups.py::test_production_owner_startup_activates_backup_and_retains_transport_shape[cli]",
+  "original_probe": [
+    "status"
+  ],
+  "amended_probe": [
+    "get",
+    "1"
+  ],
+  "assertions": "All original snapshot/state assertions unchanged; MCP branch and every other original test unchanged",
+  "added_cases": 2,
+  "runtime_change": "NONE",
+  "preservation_gate_change": "NONE",
+  "execution": "No tests, models, network, private-store access, or candidate edits by reviewer",
+  "files": [
+    {
+      "path": "acceptance_conftest.py",
+      "sha256": "db974109fadc17ffe2aa8b660db79f9d5cd3860957d85a5ba2f4fcf9df1c2d94"
+    },
+    {
+      "path": "acceptance_test_wrapper.py",
+      "sha256": "5579cc8376f224d15c4303dd9ec528159a2ab512e3f64b4ba7839ecaa61436e5"
+    },
+    {
+      "path": "backup_probe_adapter.py",
+      "sha256": "a2c8310a90c37dd2509025f0c842303ca04f39fc429c0b78bebffeaad56f30a2"
+    },
+    {
+      "path": "original_test_automatic_backups.py",
+      "sha256": "8339755f367d8e9a91013651b28f69b53b6e95662da465b4cfffb6801b4a6da5"
+    },
+    {
+      "path": "README.md",
+      "sha256": "5cafb7f2ff6f94f32d5045d7e056e1385864a934b806f9ea958c4a19b0c4a795"
+    },
+    {
+      "path": "test_backup_contract_controls.py",
+      "sha256": "b76de2e63073ccee2c35aa41edf98af433343e5273902e4fc3deae482f11e496"
+    }
+  ]
+}

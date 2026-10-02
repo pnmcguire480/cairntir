@@ -56,3 +56,6 @@ plans/sharing-codeql-repair-result*.txt -text whitespace=-blank-at-eol,cr-at-eol
 # Preserve independently frozen maintenance controls and their byte-hash receipts.
 plans/acceptance/core-diagnostics-20261001/** -text whitespace=cr-at-eol
 plans/acceptance/core-status-20261001/** -text whitespace=cr-at-eol
+plans/acceptance/backup-contract-20261002/** -text whitespace=cr-at-eol
+plans/acceptance/backup-contract-20261002/CI-ROUND2-BACKUP-PROBE-FAILURE.txt whitespace=-blank-at-eol,cr-at-eol
+plans/acceptance/backup-contract-20261002/*-backup-check.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol

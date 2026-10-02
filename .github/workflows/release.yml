@@ -44,8 +44,10 @@ jobs:
         run: uv sync --locked --all-extras
       - name: Ruff lint and format
         run: |
-          uv run ruff check .
-          uv run ruff format --check .
+          # Match CI's maintained code scope; frozen acceptance source under
+          # plans/ is hash-preserved and executed by the normal test wrappers.
+          uv run ruff check src tests scripts addons
+          uv run ruff format --check src tests scripts addons
       - name: Mypy strict
         run: uv run mypy --strict src
       - name: Provision evaluation models and isolated corpus
