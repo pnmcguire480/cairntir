@@ -1,6 +1,6 @@
 # How to Use Cairntir
 
-**Current release: 1.12.1.** [Publication and verification](release/v1.12.1.md).
+**Current release: 1.12.3.** [Publication and verification](release/v1.12.3.md).
 
 ## Install
 
@@ -35,16 +35,49 @@ Cursor's **global** User Rule still has to be pasted into
 
 ## Check it worked
 
+The diagnostic changes described here are **unreleased**. Published 1.12.3 may
+still run registration/update callbacks for doctor/status/version, and status
+may open its store for writing. The read-only guarantees and new wording below
+apply to the candidate in the [change record](CHANGE-STATUS.md), not to an
+installation identified only by the unchanged version string.
+
 ```bash
-cairntir version    # 1.12.1
+cairntir version    # this CLI's version; current published release is 1.12.3
 cairntir status     # where the store lives, drawer counts
-cairntir doctor     # host wiring without changing anything
+cairntir doctor     # store and host wiring; see the installed-version note above
 ```
 
 Open a task in your project and ask the agent to call
 `cairntir_handoff(wing="myproject")`. It should return a tool receipt, not
-merely describe Cairntir. Ask it to remember a harmless test fact, open a fresh
-task, and check that the first handoff returns that fact verbatim.
+merely describe Cairntir. Ask it to save a harmless, unique test task using
+`cairntir_remember` with a checkpoint. Keep the actual save receipt, wing,
+`task_id`, drawer ID and revision. Open a fresh chat and request
+`cairntir_handoff(wing="myproject", resume=true, task_id="the saved ID")`.
+Use `cairntir_get` for the acknowledged drawer ID to compare the exact saved
+text, and check that the resumed task has the acknowledged current revision.
+An offer to call a tool, an unsaved chat message, a stale task or an empty
+result is not successful continuity. For ambiguity or unavailable memory,
+check the task, intended store and access before writing a replacement.
+
+`doctor` reports stored index/integrity and configuration observations. Its
+`MCP=configured` means a matching configuration entry, while `live=unverified`
+means this command has not contacted the host. Old receipts cannot prove a
+current connection. Index metadata marked `verified` does not prove semantic
+retrieval; test that separately through the actual client with a retrieved ID
+and exact content. Setup's local write/read smoke check is likewise not a
+host handshake or semantic recall test. Missing/skipped host setup and warmup
+warnings still require attention even when the local store check passes.
+
+`version`, `status` and `doctor` do not register hosts or run update checks.
+They do not initialize a missing store. Status counts use a temporary read-only
+snapshot and close it after inspection; this can take time on large stores.
+Ordinary `doctor` exits 1 for a missing store. `doctor --gate` prints an explicit
+SKIP and exits 0 there so pre-commit remains usable on fresh clones; that skip
+is not a health pass. Damage or drift on a present gated store still exits 1.
+
+For exact artifact identity, installation and rollback evidence, use the
+[change and adoption record](CHANGE-STATUS.md). Keep separate intended personal
+and work stores separate; a shared Git checkout is not database synchronization.
 
 ## Backups
 

@@ -30,12 +30,14 @@ Operational acceptance:
 
 - [ ] any schema migration/reindex rehearsed on an online backup of the real
       database; drawer count and full-table SHA-256 preserved
-- [ ] project-local Claude/Codex/Cursor MCP and policy configuration reports
-      ready
+- [ ] project-local Claude/Codex/Cursor MCP and policy configuration is present;
+      record configuration separately from a live connection
 - [ ] real Claude Code MCP health check connects through
       `cairntir-mcp --host claude`
 - [ ] live database reindex explicitly approved and verified, if one is needed
 - [ ] restart Codex and Claude so they reload the new host provenance
+- [ ] retain actual save receipts and recover the exact task/revision in a fresh
+      native-client chat; CLI setup/doctor results alone do not prove this
 - [ ] run Cursor smoke when Cursor is installed; automated adapter coverage
       remains the release fallback
 
@@ -57,9 +59,10 @@ Release operations:
 ## Past release records
 
 Evidence and known limits for each shipped release live under `docs/release/`.
-The [1.12.3 record](release/v1.12.3.md) covers the current release preparation;
+The [1.12.3 record](release/v1.12.3.md) covers the latest published release;
 the [1.12.2 record](release/v1.12.2.md) retains the prior publication evidence.
-The [1.12.1 record](release/v1.12.1.md) covers the current production installation. The [withheld 1.12.0 record](release/v1.12.0.md) preserves its failed
+The [1.12.1 record](release/v1.12.1.md) retains historical installation evidence;
+current installations and host-loaded versions require fresh observation. The [withheld 1.12.0 record](release/v1.12.0.md) preserves its failed
 verification and unchanged tag. Earlier published records include
 [1.11.0](release/v1.11.0.md) and [1.10.0](release/v1.10.0.md).
 

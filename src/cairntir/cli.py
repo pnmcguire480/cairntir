@@ -54,6 +54,7 @@ from cairntir.memory.store import (
     backup_database,
     inspect_database_integrity,
     inspect_embedding_space,
+    inspect_wing_counts,
     reindex_database,
 )
 from cairntir.memory.taxonomy import Drawer
@@ -195,10 +196,9 @@ _startup_grant: str | None = None
 def _root(ctx: typer.Context) -> None:
     """Show a one-line status banner when invoked with no subcommand.
 
-    Side effect: every CLI invocation kicks off the silent self-heal
-    registration check and the background update check. Both are
-    fail-silent — they never block, never raise, and surface only
-    through the optional banner appended at end of command output.
+    Owner commands may perform the existing registration and update checks.
+    Read-only diagnostics and continuity commands skip those side effects;
+    cached registration or update state is not a live host observation.
     """
     from cairntir.access import AccessDenied, startup_token, validate_startup
 
@@ -226,11 +226,19 @@ def _root(ctx: typer.Context) -> None:
         }:
             raise AccessDenied("access denied: restricted session: administrative command denied")
         return
-    if ctx.invoked_subcommand in {"handoff", "checkpoint", "context-demo", "backup"}:
+    if ctx.invoked_subcommand in {
+        "handoff",
+        "checkpoint",
+        "context-demo",
+        "backup",
+        "doctor",
+        "status",
+        "version",
+    }:
         return
-    # Best-effort self-heal: TRUE-until-FALSE registration. Once
-    # cairntir is installed, every CLI run guarantees the user-scope
-    # MCP entry exists. Uninstalling the package removes the
+    # Best-effort self-heal for commands not excluded above. Once
+    # cairntir is installed, these commands check the user-scope
+    # MCP entry. Uninstalling the package removes the
     # ``cairntir-mcp`` console script and Claude Code surfaces the
     # missing command — the FALSE state is visible by construction.
     ensure_registered()
@@ -263,21 +271,28 @@ def version() -> None:
 
 @app.command()
 def status() -> None:
-    """Print the store location and a drawer count per wing."""
-    home = cairntir_home()
-    path = db_path()
+    """Inspect the store location and counts without migrating or writing it."""
+    home = cairntir_home(create=False)
+    path = db_path(create=False)
     typer.echo(f"cairntir {__version__}")
     typer.echo(f"home: {home}")
     typer.echo(f"db:   {path}")
+    typer.echo("live connection: unverified (store inspection does not contact an agent host)")
     if not path.exists():
-        typer.echo("store: (not yet initialized — no drawers written)")
+        typer.echo("store: missing (not yet initialized here); check the intended store path")
         return
-    backend = _backend()
+    typer.echo(
+        "index readiness: unverified (counts do not assess embeddings; use doctor for metadata)"
+    )
+    try:
+        counts = inspect_wing_counts(path)
+    except MemoryStoreError as exc:
+        typer.echo(f"cairntir: status failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
     # A GROUP BY, not a capped scan. `cairntir status` exists to report how
     # much is in the store; counting the newest ten thousand and printing the
     # result as the total made it wrong on exactly the stores big enough to
     # need the command.
-    counts = backend._store.wing_counts()
     if not counts:
         typer.echo("store: empty")
         return
@@ -304,7 +319,11 @@ def doctor(
     ),
 ) -> None:
     """Inspect semantic-index and agent-host wiring without modifying either."""
-    path = db_path()
+    path = db_path(create=False)
+    typer.echo(
+        "live connection: unverified (not probed; configuration and prior receipts "
+        "do not verify a current host connection)"
+    )
     if gate and not path.exists():
         # A gate that runs where its subject does not exist advertises
         # protection it cannot provide. Without a store there is nothing to
@@ -314,6 +333,10 @@ def doctor(
             f"SKIP: no store at {path} -- the gate runs where the data lives; nothing to gate here."
         )
         raise typer.Exit()
+    if not path.exists():
+        typer.echo(f"store: missing at {path}; store health is unverified.")
+        typer.echo("Check the intended store path before initializing a new store.")
+        raise typer.Exit(code=1)
     provider = production_embedding_provider()
     try:
         report = inspect_embedding_space(path, provider)
@@ -330,6 +353,7 @@ def doctor(
     typer.echo(f"index generation:   {report.generation or '(unknown)'}")
     typer.echo(f"drawers / vectors:  {report.drawer_count} / {report.vector_count}")
     typer.echo(f"detail:             {report.detail}")
+    typer.echo("Index inspection checks stored metadata; semantic retrieval is not tested.")
     try:
         integrity = inspect_database_integrity(path)
     except MemoryStoreError as exc:
@@ -358,18 +382,18 @@ def doctor(
             mcp = (
                 "unknown"
                 if status.mcp_configured is None
-                else "ready"
+                else "configured"
                 if status.mcp_configured
                 else "missing"
             )
             policy = (
                 "manual"
                 if status.policy_configured is None
-                else "ready"
+                else "configured"
                 if status.policy_configured
                 else "missing"
             )
-            typer.echo(f"  {scope:7} {host:7} MCP={mcp:7} policy={policy}")
+            typer.echo(f"  {scope:7} {host:7} MCP={mcp:10} policy={policy}; live=unverified")
             if not status.mcp_configured:
                 typer.echo(f"           MCP: {status.mcp_detail}")
             if not status.policy_configured:
@@ -2024,8 +2048,8 @@ def setup_cmd(
     _emoji_tip(
         f"this downloads the ONNX model used for semantic search "
         f"({PRODUCTION_MODEL}) and caches it under {model_cache_dir()}. "
-        "After this, every fresh MCP server boot starts in seconds "
-        "instead of minutes."
+        "Successful warmup checks model loading; startup and retrieval performance "
+        "depend on the host and workload."
     )
     try:
         provider = production_embedding_provider()
@@ -2033,37 +2057,45 @@ def setup_cmd(
     except Exception as exc:  # noqa: BLE001 — we want to log + continue, not crash setup
         _emoji_warn(f"embedder warmup did not complete: {type(exc).__name__}: {exc}")
         _emoji_tip(
-            "this is not fatal — Cairntir will still work. The first "
-            "remember/recall in your next chat may be slow (~10-30s) "
-            "while the model downloads on demand. Re-run `cairntir setup` "
-            "later to retry the warmup."
+            "semantic operation remains unverified. Check the reported model/cache "
+            "error before retrying; an offline host cannot fetch missing assets. "
+            "Re-run `cairntir setup` later to retry the warmup."
         )
     else:
         _emoji_ok("embedder model cached and ready")
 
     # ---- Step 8: smoke test -----------------------------------------------
-    _emoji_step(8, total, "Smoke test: remember + recall")
+    _emoji_step(8, total, "Smoke test: local write + read by ID")
     try:
         _setup_smoke_test()
     except (MemoryStoreError, RuntimeError) as exc:
         _emoji_fail(f"smoke test failed: {exc}")
         raise typer.Exit(code=1) from exc
-    _emoji_ok("write + read round-trip passed")
+    _emoji_ok("local write + read round-trip passed")
+    _emoji_tip("semantic recall is not tested by this direct read; host connection is unverified")
 
     # ---- Done -------------------------------------------------------------
     typer.echo()
-    typer.echo(typer.style("Cairntir is ready.", fg=typer.colors.GREEN, bold=True))
+    typer.echo(typer.style("Local store check passed; host verification remains.", bold=True))
+    typer.echo("Review any skipped or failed host configuration and warmup warnings above.")
     typer.echo()
     typer.echo("Next:")
     typer.echo("  1. Fully quit the host you use — not just close the window.")
     typer.echo("  2. Reopen it in any folder.")
-    typer.echo('  3. Ask the fresh chat: "what is cairntir?"')
+    typer.echo(
+        "  3. Ask it to save a harmless, unique test task with cairntir_remember and a checkpoint."
+    )
+    typer.echo("     Require the actual tool receipt; keep the wing, task_id and revision.")
     typer.echo()
     typer.echo(
-        "  If it answers with real knowledge and offers to call cairntir_handoff, you're done."
+        "  4. In a fresh chat, call cairntir_handoff with the same wing/task_id and resume=true."
+    )
+    typer.echo("     Use cairntir_get to compare the exact saved text and current task revision.")
+    typer.echo(
+        "  A promise to call a tool is not a receipt. Missing or stale results remain unverified."
     )
     typer.echo()
-    typer.echo("Learn more:  docs/cairntir-for-dummies.md")
+    typer.echo("Learn more:  docs/how-to-use.md")
     typer.echo("Troubleshoot: cairntir status     # shows wings + drawer counts")
     typer.echo("Optional:    python -m cairntir.daemon   # spool capture; not started by setup")
     typer.echo("Recipes:     cairntir recipe-list        # CLI-only; agents do not see these")

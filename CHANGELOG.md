@@ -13,6 +13,8 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.12.4] - 2026-10-02
+
 ### Fixed
 
 - Update locked AnyIO to 4.14.2 to clear its active dependency advisories,
@@ -22,8 +24,16 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ### Changed
 
-- Document safe source handoffs across computers and contributors, including
-  dirty checkouts, diverged branches, isolated review, and exact commit receipts.
+- Document safe contributor handoffs without resetting dirty or diverged work.
+- Make doctor, status and version skip automatic registration and update checks.
+  Doctor leaves missing store directories absent; status uses a temporary
+  read-only snapshot and closes it after counting drawers.
+- Label host configuration separately from unverified live connectivity. Setup
+  describes its direct local write/read check accurately and asks for actual
+  save receipts and exact task recovery in a fresh chat.
+- Align current release/support guidance with 1.12.3 and add a portable
+  change/adoption record. These candidate changes are not installed-host proof.
+
 - Use Dependabot's uv updater so dependency proposals maintain `uv.lock`.
 - Keep automatic MCP updates within the supported major version; SDK 2 removes
   the server registration API used by Cairntir.

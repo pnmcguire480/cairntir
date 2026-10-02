@@ -610,6 +610,77 @@ def _guard_write_integrity(drawer: Drawer) -> None:
         raise AnchorError(f"write rejected: {exc}") from exc
 
 
+def _open_readonly_snapshot(
+    path: Path,
+) -> tuple[sqlite3.Connection, TemporaryDirectory[str]]:
+    """Open the existing isolated snapshot without requiring an embedding space."""
+    conn: sqlite3.Connection | None = None
+    snapshot: TemporaryDirectory[str] | None = None
+    try:
+        snapshot = TemporaryDirectory(prefix="cairntir-context-")
+        copied = Path(snapshot.name) / path.name
+        subprocess.run(  # noqa: S603 - fixed interpreter and code; paths are arguments
+            [
+                sys.executable,
+                "-c",
+                "from pathlib import Path; import sys; "
+                "from cairntir.memory.store import _copy_locked_database; "
+                "_copy_locked_database(Path(sys.argv[1]), Path(sys.argv[2]))",
+                str(path.resolve()),
+                str(copied),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=12,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+        conn = sqlite3.connect(copied)
+        conn.execute("PRAGMA busy_timeout = 5000")
+        conn.enable_load_extension(True)
+        sqlite_vec.load(conn)
+        conn.enable_load_extension(False)
+        conn.row_factory = sqlite3.Row
+        version = int(conn.execute("PRAGMA user_version").fetchone()[0])
+        conn.execute("PRAGMA query_only = ON")
+    except (OSError, sqlite3.Error, subprocess.SubprocessError) as exc:
+        if conn is not None:
+            conn.close()
+        if snapshot is not None:
+            snapshot.cleanup()
+        detail = (
+            "snapshot helper failed: "
+            + (exc.stderr.strip()[-1000:] or f"exit status {exc.returncode}")
+            if isinstance(exc, subprocess.CalledProcessError)
+            else str(exc)
+        )
+        raise MemoryStoreError(f"failed to open read-only database at {path}: {detail}") from exc
+    if version != SCHEMA_VERSION:
+        conn.close()
+        snapshot.cleanup()
+        raise MemoryStoreError(
+            f"read-only task context requires schema v{SCHEMA_VERSION}, found v{version}; "
+            "open the store normally to migrate or upgrade Cairntir"
+        )
+    return conn, snapshot
+
+
+def inspect_wing_counts(path: Path) -> dict[str, int]:
+    """Count current drawers on a closed-on-exit snapshot without loading a provider."""
+    conn, snapshot = _open_readonly_snapshot(path)
+    try:
+        rows = conn.execute(
+            "SELECT wing, COUNT(*) AS n FROM drawers WHERE valid_until > ? GROUP BY wing",
+            [datetime.now(UTC).isoformat()],
+        ).fetchall()
+        return {str(row["wing"]): int(row["n"]) for row in rows}
+    except sqlite3.Error as exc:
+        raise MemoryStoreError(f"failed to inspect drawer counts at {path}: {exc}") from exc
+    finally:
+        conn.close()
+        snapshot.cleanup()
+
+
 class DrawerStore:
     """Persistent verbatim drawer store with semantic search."""
 
@@ -667,55 +738,7 @@ class DrawerStore:
             warnings.warn(f"automatic backup failed: {exc}", BackupWarning, stacklevel=2)
 
     def _connect_readonly(self, path: Path) -> sqlite3.Connection:
-        conn: sqlite3.Connection | None = None
-        try:
-            self._read_snapshot = TemporaryDirectory(prefix="cairntir-context-")
-            copied = Path(self._read_snapshot.name) / path.name
-            subprocess.run(  # noqa: S603 - fixed interpreter and code; paths are arguments
-                [
-                    sys.executable,
-                    "-c",
-                    "from pathlib import Path; import sys; "
-                    "from cairntir.memory.store import _copy_locked_database; "
-                    "_copy_locked_database(Path(sys.argv[1]), Path(sys.argv[2]))",
-                    str(path.resolve()),
-                    str(copied),
-                ],
-                check=True,
-                capture_output=True,
-                text=True,
-                timeout=12,
-                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
-            )
-            conn = sqlite3.connect(copied)
-            conn.execute("PRAGMA busy_timeout = 5000")
-            conn.enable_load_extension(True)
-            sqlite_vec.load(conn)
-            conn.enable_load_extension(False)
-            conn.row_factory = sqlite3.Row
-            version = int(conn.execute("PRAGMA user_version").fetchone()[0])
-            conn.execute("PRAGMA query_only = ON")
-        except (OSError, sqlite3.Error, subprocess.SubprocessError) as exc:
-            if conn is not None:
-                conn.close()
-            if self._read_snapshot is not None:
-                self._read_snapshot.cleanup()
-            detail = (
-                "snapshot helper failed: "
-                + (exc.stderr.strip()[-1000:] or f"exit status {exc.returncode}")
-                if isinstance(exc, subprocess.CalledProcessError)
-                else str(exc)
-            )
-            raise MemoryStoreError(
-                f"failed to open read-only database at {path}: {detail}"
-            ) from exc
-        if version != SCHEMA_VERSION:
-            conn.close()
-            self._read_snapshot.cleanup()
-            raise MemoryStoreError(
-                f"read-only task context requires schema v{SCHEMA_VERSION}, found v{version}; "
-                "open the store normally to migrate or upgrade Cairntir"
-            )
+        conn, self._read_snapshot = _open_readonly_snapshot(path)
         return conn
 
     def _backup_before_migration(self) -> None:

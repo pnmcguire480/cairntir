@@ -1,0 +1,12 @@
+{
+  "schema": "status-seam-replacement-amendment-v1",
+  "original_test_sha256": "7c61bad292ce7339d6af23dd92365c1ee3f7e92df014db3ab6f8f5156569f1cb",
+  "obsolete_case": "test_status_existing_store_uses_readonly_boundary_and_closes",
+  "replace_in_normal_wrapper_only": true,
+  "preserve_original_bytes_and_results": true,
+  "retain_other_original_cases": 19,
+  "retain_live_overlay_cases": 6,
+  "replacement_manifest_sha256": "a0fd71e5ddcea39356d0c9ef5e9b8acbbbf558d179546e5b5f7f220f79a7d21f",
+  "wrapper_approval": "Pending exact wrapper diff/hash review before execution",
+  "reason": "Existing mocked backend seam missed genuine status regression on mismatch/unavailable provider; replace that implementation assertion with seven real-store outcomes without relaxing semantic guards."
+}

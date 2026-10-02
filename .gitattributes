@@ -52,3 +52,7 @@ plans/sharing-result-round0*.xml -text whitespace=-blank-at-eol,cr-at-eol
 plans/continuity-regression*.txt -text whitespace=-blank-at-eol,cr-at-eol
 plans/*.xml -text whitespace=-blank-at-eol,cr-at-eol
 plans/sharing-codeql-repair-result*.txt -text whitespace=-blank-at-eol,cr-at-eol
+
+# Preserve independently frozen maintenance controls and their byte-hash receipts.
+plans/acceptance/core-diagnostics-20261001/** -text whitespace=cr-at-eol
+plans/acceptance/core-status-20261001/** -text whitespace=cr-at-eol

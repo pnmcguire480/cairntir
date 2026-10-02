@@ -5,7 +5,7 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **1.12.3**. The [1.12.3 release record](docs/release/v1.12.3.md)
+Source version: **1.12.4** (maintenance candidate; not yet published). The [1.12.3 release record](docs/release/v1.12.3.md)
 identifies the verified integration repairs and publication/installation evidence.
 Before this release, PyPI served 1.12.2 and the production MCP installation was
 1.12.1. Consult the versioned GitHub release receipt and current MCP handshake
@@ -85,23 +85,52 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-09-30
+## Last Session - 2026-10-02 (1.12.4 maintenance candidate)
 
-Isolated maintenance repairs update only the locked AnyIO, PyJWT and urllib3
-records to 4.14.2, 2.15.1 and 2.8.0. Fresh PyPI baseline/control evidence found
-17 active advisories before repair and none afterward across 134 locked registry
-packages. Other lock entries and platform markers remain unchanged. Existing
-test, coverage and advisory gates are preserved. Ruff, formatting, strict typing,
-documentation, commitment/seam/preservation checks and package build passed
-locally on Windows with Python 3.12; source tests and hosted verification must
-be checked at the repair PR's exact head before acceptance.
+This release combines PR122's three dependency repairs and safe contributor
+handoff guide with the independently reviewed doctor/status/version diagnostics.
+AnyIO 4.14.2, PyJWT 2.15.1 and urllib3 2.8.0 preserve all other locked dependency
+records and platform markers. Source/package/plugin versions agree at 1.12.4.
 
-The [contributor handoff guide](docs/contributor-handoff.md) documents isolated
-review, preservation of home-PC work and diverged histories, and exact commit
-receipts. No production install, merge, publication or access change is part of
-this maintenance. PR #120 and #121 remain contributor-owned proposals; this
-repair does not rewrite them. Production Cairntir MCP tools were unavailable
-in the maintenance session, so no persistent-memory checkpoint is claimed.
+Patrick explicitly narrowed acceptance to an honest maintenance release: existing
+repository CI and focused regression checks remain required. The earlier broad
+cross-host pilot, resource-budget and 35-commitment v2 program are preserved as
+future work, not additional prerequisites for this patch. No new live-host,
+performance, automatic-ingestion or cost-saving claim is made. The synthetic
+Claude registration/grant/ACL detour is stopped; nothing was activated.
+
+See [release evidence](docs/release/v1.12.4.md) for current check status. Original
+checkouts, frozen controls and prior outcomes are preserved. PR122 remains open;
+its reviewed changes are incorporated here without rewriting its branch. No
+production install, database migration, access change or publication has occurred.
+
+## Previous Session - 2026-10-01 (unreleased diagnostic candidate)
+
+The isolated `codex/core-reliability-20261001` branch starts at
+`29c62abbd46f2d5e1b7ca0aec813bd2b4818cf43`. Doctor/status/version now skip
+registration and update callbacks without widening restricted-session access.
+Missing stores stay absent; status counts metadata through a closed temporary
+read-only snapshot without constructing an embedding provider. Doctor qualifies configuration separately from live
+connectivity; setup requires actual receipts and exact fresh-chat task recovery.
+
+Twenty independent frozen controls reproduced thirteen baseline failures.
+An additive six-case amendment closes an unknown-configuration wording gap:
+four actual-doctor cases failed on the pinned baseline. All 26 then passed on
+the candidate, alongside five existing gate and seven selected CLI regressions
+using synthetic stores. No actual native host or semantic model was exercised.
+Independent review later reproduced a status regression with mismatched or
+unavailable embeddings that the mocked seam had missed. Seven real-store
+replacement controls pass; the mismatch case also passes through the actual
+snapshot subprocess, with unchanged source bytes and cleanup. Semantic guards
+and scoped denial remain enforced. Original failures and fixture amendments
+are preserved; these are not live-host qualification. Full qualification, resource
+budgets/measurement and actual Patrick/Lou host receipts remain open; thermal
+precautions defer heavy local checks. See [change/adoption status](docs/CHANGE-STATUS.md).
+
+No publication, install, production store/access change or PR122 adoption
+occurred. The full v2 candidate remains parked and preserved. The next release
+is the dependable lightweight core, with broader features retained for later
+measured releases. Code completion still does not authorize production adoption.
 
 ## Previous Session - 2026-09-11
 

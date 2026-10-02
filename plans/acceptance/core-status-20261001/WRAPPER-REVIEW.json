@@ -1,0 +1,110 @@
+{
+  "schema": "independent-static-wrapper-review-v1",
+  "reviewed_utc": "2026-10-01T16:24:52.8269748Z",
+  "reviewer": "/root/final_review",
+  "model": "gpt-6-astra",
+  "effort": "high",
+  "decision": "APPROVED_FOR_BOUNDED_EXECUTION",
+  "scope": "Exact two normal-collection wrappers, frozen evidence byte preservation, and source identity after formatting",
+  "execution": "NO_TESTS_OR_PRODUCT_EXECUTION_BY_REVIEWER",
+  "expected_total_cases": 32,
+  "composition": "19 unchanged original diagnostic cases + 6 unchanged live-qualification overlay cases + 7 amended real-store status cases",
+  "pins": [
+    {
+      "path": "tests/acceptance/test_core_diagnostics.py",
+      "sha256": "91cd1981a97ee9c21d3ebd3c61b6fb43b0c888aa3489cc2e4bccd29ea063ab75"
+    },
+    {
+      "path": "tests/acceptance/test_status_metadata.py",
+      "sha256": "fd7f8e894d83d59b4fb1afedae55a0723a13a4fb7af4b22112c6e13f83b7e97a"
+    },
+    {
+      "path": "src/cairntir/cli.py",
+      "sha256": "0b45f5708485b4ef59182e3632cf1d971db3f563fdea7285eee8198558f69885"
+    },
+    {
+      "path": "src/cairntir/memory/store.py",
+      "sha256": "c900b06a6f637a6905f43feab6dfeb173665bd2fbdbdfb37802d1bb2d06be008"
+    }
+  ],
+  "bundled_comparisons": [
+    {
+      "path": "plans/acceptance/core-status-20261001/FROZEN.json",
+      "sha256": "a0fd71e5ddcea39356d0c9ef5e9b8acbbbf558d179546e5b5f7f220f79a7d21f",
+      "matches_original": true
+    },
+    {
+      "path": "plans/acceptance/core-status-20261001/FIXTURE-AMENDMENT.json",
+      "sha256": "64fe9f9701e62a47f2272535537a2656c262ed94fd8cb38f19334ef4ef7e2247",
+      "matches_original": true
+    },
+    {
+      "path": "plans/acceptance/core-status-20261001/FIXTURE-CLOSE-AMENDMENT.json",
+      "sha256": "de29da00b15b63740f3998c5fd6903fc9a982f8f16703281bbb9b93ce6098585",
+      "matches_original": true
+    },
+    {
+      "path": "plans/acceptance/core-status-20261001/STATUS-SEAM-AMENDMENT.json",
+      "sha256": "cf48d913c45340290b555372e45071e77ed008c89d80b842fc3389efa21d2587",
+      "matches_original": true
+    },
+    {
+      "path": "plans/acceptance/core-status-20261001/README.md",
+      "sha256": "e4ccaa4171bf3caceedc3a210d1bbb5393a2a01ca412c38b7a580177c423dc01",
+      "matches_original": true
+    },
+    {
+      "path": "plans/acceptance/core-status-20261001/test_status_metadata.py",
+      "sha256": "199a6999b7489180212141fac77b42b7acc9197d68bc407779a8ba5d16f0c2bf",
+      "matches_original": true
+    },
+    {
+      "path": "plans/acceptance/core-status-20261001/test_status_metadata_v2.py",
+      "sha256": "94896de7a56799e2c3f5d0ad664df0a8c59c06c653f1ef90bdf553037fc20133",
+      "matches_original": true
+    },
+    {
+      "path": "plans/acceptance/core-status-20261001/test_status_metadata_v3.py",
+      "sha256": "b85f114e488887f3d1317ec4b4602d1ee28d4feab70b8bfa1eff2b9c6e317c22",
+      "matches_original": true
+    },
+    {
+      "path": "plans/acceptance/core-diagnostics-20261001/FROZEN.json",
+      "sha256": "f0807e6b99c66c7a904e0b887c8a46a1150ed2c104052e83c8a707ea5e86ace3",
+      "matches_original": true
+    },
+    {
+      "path": "plans/acceptance/core-diagnostics-20261001/LIVE-QUALIFICATION-AMENDMENT.json",
+      "sha256": "5c13c2c580b1c3e1faa40ba6ae55f1a4d30072e1e9060a73a94b5eb74675bd7f",
+      "matches_original": true
+    },
+    {
+      "path": "plans/acceptance/core-diagnostics-20261001/README.md",
+      "sha256": "18374d7b5270d634e34f5a45631fe4138dbf82a696f1d9a8f2ab6bb3b18170ea",
+      "matches_original": true
+    },
+    {
+      "path": "plans/acceptance/core-diagnostics-20261001/test_core_diagnostics.py",
+      "sha256": "7c61bad292ce7339d6af23dd92365c1ee3f7e92df014db3ab6f8f5156569f1cb",
+      "matches_original": true
+    },
+    {
+      "path": "plans/acceptance/core-diagnostics-20261001/test_live_qualification_overlay.py",
+      "sha256": "0af273b566c0503b759d7bafb9c4d92d434120e391258fd06ce7d88a5a78491b",
+      "matches_original": true
+    }
+  ],
+  "findings": [
+    "Diagnostic wrapper retains original frozen manifests/control imports, then deletes only the exact obsolete case named by the hash-pinned STATUS-SEAM-AMENDMENT. No other test/assertion/fixture suppression.",
+    "Status wrapper imports the hash-pinned v3 control file and exposes all its test functions plus the bank fixture. Import-only and connection-close amendments remain separately pinned.",
+    "Both wrappers locate bundled controls relative to their repository location, with no personal workspace dependency.",
+    "All thirteen inspected bundled independent evidence files are byte-identical to their workspace originals.",
+    "The original broken fixture versions are preserved but not executed by the normal wrapper. Historical baseline errors and valid causal count failures remain distinguishable.",
+    "Expected collection is 32 cases; this static review does not claim collection or execution succeeded."
+  ],
+  "limits": [
+    "Snapshot transport assertions in default mode use the frozen closed-fixture copy seam; actual helper transport remains separately evidenced.",
+    "Broader core C1-C8 release, native-host, installed-package, full typing/coverage and performance gates remain open.",
+    "Formatting source hashes recorded here supersede only source identity, not previous behavioral receipts; no reviewer rerun."
+  ]
+}
