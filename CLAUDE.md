@@ -92,6 +92,12 @@ handoff guide with the independently reviewed doctor/status/version diagnostics.
 AnyIO 4.14.2, PyJWT 2.15.1 and urllib3 2.8.0 preserve all other locked dependency
 records and platform markers. Source/package/plugin versions agree at 1.12.4.
 
+The first release CI found newer advisories in sentence-transformers 5.3.0 and
+virtualenv 21.2.0. Their minimum advisory-fixed targets are 5.6.0 and 21.7.13;
+uv also requires python-discovery 1.6.1. Only those three additional lock records
+change. The unchanged advisory gate now reports zero findings across 134 locked
+registry packages. Full hosted checks rerun on the repaired release head.
+
 Patrick explicitly narrowed acceptance to an honest maintenance release: existing
 repository CI and focused regression checks remain required. The earlier broad
 cross-host pilot, resource-budget and 35-commitment v2 program are preserved as

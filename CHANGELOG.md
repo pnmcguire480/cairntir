@@ -21,6 +21,9 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   preserving unrelated package entries and platform markers.
 - Update locked PyJWT to 2.15.1 to clear its active dependency advisories.
 - Update locked urllib3 to 2.8.0 to clear its active dependency advisories.
+- Update locked sentence-transformers to 5.6.0 and virtualenv to 21.7.13 for
+  advisories found by release CI; retain their required python-discovery 1.6.1
+  resolution without changing unrelated packages or platform markers.
 
 ### Changed
 
