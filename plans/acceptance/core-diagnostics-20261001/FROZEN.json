@@ -1,0 +1,21 @@
+{
+  "schema": "independent-acceptance-freeze-v1",
+  "frozen_utc": "2026-10-01T15:39:43.0230919Z",
+  "base_commit": "29c62abbd46f2d5e1b7ca0aec813bd2b4818cf43",
+  "base_tree": "dbbc71b5425b1089f46e79561330e3f195b5bb8e",
+  "author": "/root/final_review",
+  "model": "gpt-6-astra",
+  "effort": "high",
+  "execution": "NOT_RUN",
+  "expected_cases": 20,
+  "files": [
+    {
+      "path": "test_core_diagnostics.py",
+      "sha256": "7c61bad292ce7339d6af23dd92365c1ee3f7e92df014db3ab6f8f5156569f1cb"
+    },
+    {
+      "path": "README.md",
+      "sha256": "18374d7b5270d634e34f5a45631fe4138dbf82a696f1d9a8f2ab6bb3b18170ea"
+    }
+  ]
+}

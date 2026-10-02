@@ -13,7 +13,34 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.12.4] - 2026-10-02
+
+### Fixed
+
+- Update locked AnyIO to 4.14.2 to clear its active dependency advisories,
+  preserving unrelated package entries and platform markers.
+- Update locked PyJWT to 2.15.1 to clear its active dependency advisories.
+- Update locked urllib3 to 2.8.0 to clear its active dependency advisories.
+- Update locked sentence-transformers to 5.6.0 and virtualenv to 21.7.13 for
+  advisories found by release CI; retain their required python-discovery 1.6.1
+  resolution without changing unrelated packages or platform markers.
+
 ### Changed
+
+- Document safe contributor handoffs without resetting dirty or diverged work.
+- Make doctor, status and version skip automatic registration and update checks.
+  Doctor leaves missing store directories absent; status uses a temporary
+  read-only snapshot and closes it after counting drawers.
+- Label host configuration separately from unverified live connectivity. Setup
+  describes its direct local write/read check accurately and asks for actual
+  save receipts and exact task recovery in a fresh chat.
+- Preserve automatic backups on writable owner startup while diagnostic status
+  remains read-only, with an explicit independently frozen historical-probe
+  amendment and additional due-backup controls.
+- Align release lint commands with CI's maintained source/test/script/add-on
+  scope, preserving frozen acceptance artifacts and all behavioral checks.
+- Align current release/support guidance with 1.12.3 and add a portable
+  change/adoption record. These candidate changes are not installed-host proof.
 
 - Use Dependabot's uv updater so dependency proposals maintain `uv.lock`.
 - Keep automatic MCP updates within the supported major version; SDK 2 removes

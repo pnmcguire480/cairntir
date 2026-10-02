@@ -28,8 +28,13 @@ the executable regression contracts.
 See the [roadmap](roadmap.md), [release policy](release-cadence.md),
 [publishing checklist](publish-checklist.md), and
 [deprecation policy](deprecation-policy.md).
+The [change and adoption record](CHANGE-STATUS.md) separates unreleased repairs
+from installed and actual-host-verified behavior.
 
 ## Release evidence
+
+Latest: [1.12.3](release/v1.12.3.md). Also see [1.12.2](release/v1.12.2.md),
+[1.12.1](release/v1.12.1.md) and [1.11.0](release/v1.11.0.md).
 
 [1.10.0](release/v1.10.0.md) · [1.9.0](release/v1.9.0.md) · [1.8.0](release/v1.8.0.md) ·
 [1.7.1](release/v1.7.1.md) · [1.7.0](release/v1.7.0.md) ·

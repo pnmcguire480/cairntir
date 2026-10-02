@@ -1,0 +1,23 @@
+{
+  "exit_code": 1,
+  "result": "FAIL",
+  "seconds": 7.063,
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-B",
+    "-m",
+    "pytest",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/acceptance/test_automatic_backups.py::test_production_owner_startup_activates_backup_and_retains_transport_shape[cli]",
+    "tests/acceptance/test_backup_contract_amendment.py"
+  ],
+  "full_suite": false,
+  "model_inference": false,
+  "installed_packages": false,
+  "tokens": null,
+  "cost": null
+}

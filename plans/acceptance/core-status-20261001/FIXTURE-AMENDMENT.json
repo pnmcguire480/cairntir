@@ -1,0 +1,21 @@
+{
+  "schema": "independent-fixture-import-amendment-v1",
+  "frozen_utc": "2026-10-01T16:13:38.9779491Z",
+  "author": "/root/final_review",
+  "reason": "Original collection failed because AccessDenied is defined in cairntir.access, not cairntir.errors. This is a fixture import error, not product failure or behavioral evidence.",
+  "original_manifest_sha256": "a0fd71e5ddcea39356d0c9ef5e9b8acbbbf558d179546e5b5f7f220f79a7d21f",
+  "original": {
+    "path": "test_status_metadata.py",
+    "sha256": "199a6999b7489180212141fac77b42b7acc9197d68bc407779a8ba5d16f0c2bf"
+  },
+  "corrected": {
+    "path": "test_status_metadata_v2.py",
+    "sha256": "94896de7a56799e2c3f5d0ad664df0a8c59c06c653f1ef90bdf553037fc20133"
+  },
+  "exact_old": "from cairntir.errors import AccessDenied, EmbeddingError, EmbeddingSpaceError",
+  "exact_new": "from cairntir.access import AccessDenied\nfrom cairntir.errors import EmbeddingError, EmbeddingSpaceError",
+  "only_delta": "One import binding correction; all seven test expectations and fixtures otherwise byte-identical",
+  "verification": "Exact single replacement and inverse string equality asserted before writing",
+  "execution": "NOT_RUN",
+  "run_instruction": "Execute corrected file explicitly; do not collect the preserved broken original. Preserve baseline collection ERROR separately."
+}

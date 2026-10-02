@@ -1,0 +1,21 @@
+{
+  "schema": "independent-status-acceptance-v1",
+  "frozen_utc": "2026-10-01T16:11:59.6684441Z",
+  "author": "/root/final_review",
+  "model": "gpt-6-astra",
+  "effort": "high",
+  "execution": "NOT_RUN",
+  "expected_cases": 7,
+  "before_cli_sha256": "fa33b29955143f9e6a1fd0d53252e02fbf9a3e37eabc84b65e5bb9da2249cfb2",
+  "before_store_sha256": "a21cd519ef12df8c7a5439d40014dc841800335c17b574aa9bb638254bc36a4b",
+  "files": [
+    {
+      "path": "test_status_metadata.py",
+      "sha256": "199a6999b7489180212141fac77b42b7acc9197d68bc407779a8ba5d16f0c2bf"
+    },
+    {
+      "path": "README.md",
+      "sha256": "e4ccaa4171bf3caceedc3a210d1bbb5393a2a01ca412c38b7a580177c423dc01"
+    }
+  ]
+}

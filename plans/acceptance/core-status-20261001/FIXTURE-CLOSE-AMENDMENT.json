@@ -1,0 +1,30 @@
+{
+  "schema": "independent-fixture-close-amendment-v1",
+  "frozen_utc": "2026-10-01T16:15:22.5774059Z",
+  "author": "/root/final_review",
+  "reason": "sqlite3.Connection context management commits/rolls back but does not guarantee close. The synthetic query-failure injector retained its destination connection until collection, contaminating Windows snapshot cleanup evidence. Explicit closing plus commit removes only the fixture-owned handle.",
+  "previous_amendment_sha256": "64fe9f9701e62a47f2272535537a2656c262ed94fd8cb38f19334ef4ef7e2247",
+  "original": {
+    "path": "test_status_metadata_v2.py",
+    "sha256": "94896de7a56799e2c3f5d0ad664df0a8c59c06c653f1ef90bdf553037fc20133"
+  },
+  "corrected": {
+    "path": "test_status_metadata_v3.py",
+    "sha256": "b85f114e488887f3d1317ec4b4602d1ee28d4feab70b8bfa1eff2b9c6e317c22"
+  },
+  "changes": [
+    {
+      "old": "from pathlib import Path",
+      "new": "from contextlib import closing\nfrom pathlib import Path"
+    },
+    {
+      "old": "            with sqlite3.connect(destination) as connection:\n                connection.execute(\"DROP TABLE drawers\")",
+      "new": "            with closing(sqlite3.connect(destination)) as connection:\n                connection.execute(\"DROP TABLE drawers\")\n                connection.commit()"
+    }
+  ],
+  "only_delta": "Add contextlib.closing import; wrap injected SQLite connection in closing and explicitly commit. Prior AccessDenied import correction retained. All seven assertions and other fixtures unchanged.",
+  "verification": "Exact two replacements and inverse equality checked before write",
+  "execution": "NOT_RUN",
+  "prior_results": "Preserve baseline-corrected run. Count failures remain valid independent evidence; query cleanup failure/teardown error is fixture-tainted and must not be claimed as a product defect.",
+  "run_instruction": "Execute v3 explicitly; preserve v1/v2 and their evidence; do not collect preserved older files."
+}

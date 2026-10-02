@@ -12,8 +12,8 @@ Cairntir stores decisions, facts, unfinished work, and outcomes as verbatim
 *drawers* in a SQLite database you own. A budgeted handoff restores complete
 drawers across sessions; semantic and file-anchored recall find deeper evidence.
 
-Current release: **1.11.0**. See the
-[release evidence](docs/release/v1.11.0.md) and [changelog](CHANGELOG.md).
+Current release: **1.12.3**. See the
+[release evidence](docs/release/v1.12.3.md) and [changelog](CHANGELOG.md).
 Published downloads are on
 [PyPI](https://pypi.org/project/cairntir/) and
 [GitHub Releases](https://github.com/pnmcguire480/cairntir/releases).
@@ -32,6 +32,22 @@ hosts it detects. Restart your agent afterward.
 cairntir version
 cairntir doctor
 ```
+
+The diagnostic changes below are **unreleased**; `pip install` currently
+selects published 1.12.3. That release's doctor/status/version may still run
+registration and update callbacks, and status may open the store for writing.
+See the change record before treating an installed diagnostic as read-only.
+
+In this candidate, `version` reports this CLI's version. `status` and `doctor` inspect the store
+and configuration without registering hosts or checking for updates. A
+configured MCP entry does not prove a live connection. Setup's local write/read
+check does not prove host delivery or semantic retrieval: require an actual
+save receipt, then recover the exact task in a fresh chat using the
+[verification steps](docs/how-to-use.md#check-it-worked).
+
+The [change and adoption record](docs/CHANGE-STATUS.md) distinguishes candidate,
+released, installed and host-verified changes, with remaining checks and rollback
+boundaries. Source edits do not update an already-running host.
 
 For one host or project, use `cairntir init --host codex`; add `--user` for
 user-scope configuration. Cursor's global User Rule requires a manual paste;

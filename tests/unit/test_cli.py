@@ -795,7 +795,7 @@ def test_setup_wizard_happy_path(tmp_path: Path, monkeypatch: object) -> None:
     # FastEmbed pre-warm step (step 7 in the new ordering).
     for i in range(1, 9):
         assert f"[{i}/8]" in result.stdout
-    assert "Cairntir is ready." in result.stdout
+    assert "Local store check passed; host verification remains." in result.stdout
     assert "smoke test" in result.stdout.lower()
     assert "cairntir_handoff" in result.stdout
     assert "Cursor Settings" in result.stdout
@@ -826,7 +826,7 @@ def test_setup_succeeds_when_claude_cli_missing(tmp_path: Path, monkeypatch: obj
     assert result.exit_code == 0, result.stdout
     assert "claude" in result.stdout.lower()
     assert "skipped" in result.stdout.lower() or "not on PATH" in result.stdout
-    assert "Cairntir is ready." in result.stdout
+    assert "Local store check passed; host verification remains." in result.stdout
     assert (tmp_path / ".cursor" / "mcp.json").exists()
     assert "Cursor Settings" in result.stdout
     assert (tmp_path / "home" / "cairntir.db").exists()

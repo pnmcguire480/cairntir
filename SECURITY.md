@@ -6,11 +6,11 @@ Cairntir is published. Only the latest release on PyPI is supported
 for security fixes. Development snapshots on `main` may include fixes
 that have not been tagged yet.
 
-| Version   | Supported |
-| --------- | --------- |
-| `1.7.x`   | ✅        |
-| `main`    | ✅ (unreleased) |
-| < 1.7.0   | ❌        |
+| Version | Security-fix support |
+| ------- | -------------------- |
+| Latest published release (currently `1.12.3`) | Supported |
+| Older published releases | Upgrade to the latest supported release |
+| `main` and other development candidates | Unreleased; not proof of an installed fix |
 
 ## Reporting a Vulnerability
 

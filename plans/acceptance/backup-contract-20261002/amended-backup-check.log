@@ -1,0 +1,37 @@
+..F                                                                      [100%]
+================================== FAILURES ===================================
+_______ test_owner_get_still_activates_exactly_one_complete_due_backup ________
+
+backup_contract_case = (<module '_independent_backup_contract_legacy' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-release-1.12.4-2...est-0/test_owner_get_still_activates0/backups'), [datetime.datetime(2026, 9, 7, 12, 0, tzinfo=datetime.timezone.utc)]))
+
+    def test_owner_get_still_activates_exactly_one_complete_due_backup(
+        backup_contract_case: Any,
+    ) -> None:
+        legacy, (api, db, destination, _) = backup_contract_case
+        api.configure(db, destination)
+        before = legacy._state(db)
+        result = legacy._cli("get", "1")
+        assert result.returncode == 0, result.stderr
+        returned = json.loads(result.stdout)
+        assert type(returned["id"]) is int and returned["id"] == 1
+        assert returned["wing"] == legacy.WING
+        state = api.status(db)
+        assert len(state["snapshots"]) == 1, "WRITABLE_OWNER_STARTUP_DID_NOT_BACK_UP"
+        copied = legacy._snapshot({"status": "created", "snapshot": state["snapshots"][0]})
+        assert copied.is_relative_to(destination)
+        assert legacy._state(copied, standalone=True) == before
+>       assert legacy._state(db) == before
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError
+
+plans\acceptance\backup-contract-20261002\test_backup_contract_controls.py:65: AssertionError
+============================== warnings summary ===============================
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\config\__init__.py:1434
+  C:\Users\pnmcg\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\config\__init__.py:1434: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/acceptance/test_backup_contract_amendment.py::test_owner_get_still_activates_exactly_one_complete_due_backup
+1 failed, 2 passed, 1 warning in 6.65s

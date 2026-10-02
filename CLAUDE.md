@@ -5,7 +5,7 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **1.12.3**. The [1.12.3 release record](docs/release/v1.12.3.md)
+Source version: **1.12.4** (maintenance candidate; not yet published). The [1.12.3 release record](docs/release/v1.12.3.md)
 identifies the verified integration repairs and publication/installation evidence.
 Before this release, PyPI served 1.12.2 and the production MCP installation was
 1.12.1. Consult the versioned GitHub release receipt and current MCP handshake
@@ -85,7 +85,67 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session — 2026-09-11
+## Last Session - 2026-10-02 (1.12.4 maintenance candidate)
+
+This release combines PR122's three dependency repairs and safe contributor
+handoff guide with the independently reviewed doctor/status/version diagnostics.
+AnyIO 4.14.2, PyJWT 2.15.1 and urllib3 2.8.0 preserve all other locked dependency
+records and platform markers. Source/package/plugin versions agree at 1.12.4.
+
+The first release CI found newer advisories in sentence-transformers 5.3.0 and
+virtualenv 21.2.0. Their minimum advisory-fixed targets are 5.6.0 and 21.7.13;
+uv also requires python-discovery 1.6.1. Only those three additional lock records
+change. The unchanged advisory gate now reports zero findings across 134 locked
+registry packages. Full hosted checks rerun on the repaired release head.
+
+Hosted matrix qualification exposed a historical backup test using status as
+a writable-startup probe. An independently frozen exact-case adapter now uses
+actual owner get startup; original assertions and files stay unchanged, with
+new due-backup status-purity and snapshot/cadence controls. Release lint scope
+matches normal CI so frozen historical evidence is not reformatted. Runtime
+backup logic, coverage and preservation gates are unchanged; fresh CI is required.
+
+Patrick explicitly narrowed acceptance to an honest maintenance release: existing
+repository CI and focused regression checks remain required. The earlier broad
+cross-host pilot, resource-budget and 35-commitment v2 program are preserved as
+future work, not additional prerequisites for this patch. No new live-host,
+performance, automatic-ingestion or cost-saving claim is made. The synthetic
+Claude registration/grant/ACL detour is stopped; nothing was activated.
+
+See [release evidence](docs/release/v1.12.4.md) for current check status. Original
+checkouts, frozen controls and prior outcomes are preserved. PR122 remains open;
+its reviewed changes are incorporated here without rewriting its branch. No
+production install, database migration, access change or publication has occurred.
+
+## Previous Session - 2026-10-01 (unreleased diagnostic candidate)
+
+The isolated `codex/core-reliability-20261001` branch starts at
+`29c62abbd46f2d5e1b7ca0aec813bd2b4818cf43`. Doctor/status/version now skip
+registration and update callbacks without widening restricted-session access.
+Missing stores stay absent; status counts metadata through a closed temporary
+read-only snapshot without constructing an embedding provider. Doctor qualifies configuration separately from live
+connectivity; setup requires actual receipts and exact fresh-chat task recovery.
+
+Twenty independent frozen controls reproduced thirteen baseline failures.
+An additive six-case amendment closes an unknown-configuration wording gap:
+four actual-doctor cases failed on the pinned baseline. All 26 then passed on
+the candidate, alongside five existing gate and seven selected CLI regressions
+using synthetic stores. No actual native host or semantic model was exercised.
+Independent review later reproduced a status regression with mismatched or
+unavailable embeddings that the mocked seam had missed. Seven real-store
+replacement controls pass; the mismatch case also passes through the actual
+snapshot subprocess, with unchanged source bytes and cleanup. Semantic guards
+and scoped denial remain enforced. Original failures and fixture amendments
+are preserved; these are not live-host qualification. Full qualification, resource
+budgets/measurement and actual Patrick/Lou host receipts remain open; thermal
+precautions defer heavy local checks. See [change/adoption status](docs/CHANGE-STATUS.md).
+
+No publication, install, production store/access change or PR122 adoption
+occurred. The full v2 candidate remains parked and preserved. The next release
+is the dependable lightweight core, with broader features retained for later
+measured releases. Code completion still does not authorize production adoption.
+
+## Previous Session - 2026-09-11
 
 Dependabot maintenance uses the uv ecosystem and preserves the weekly Monday
 schedule. The `dependencies` and `ci` labels exist; dependency alerts and

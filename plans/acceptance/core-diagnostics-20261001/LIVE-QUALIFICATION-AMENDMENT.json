@@ -1,0 +1,18 @@
+{
+  "schema": "independent-additive-acceptance-amendment-v1",
+  "frozen_utc": "2026-10-01T15:46:39.3789790Z",
+  "author": "/root/final_review",
+  "original_manifest_sha256": "f0807e6b99c66c7a904e0b887c8a46a1150ed2c104052e83c8a707ea5e86ace3",
+  "original_test_sha256": "7c61bad292ce7339d6af23dd92365c1ee3f7e92df014db3ab6f8f5156569f1cb",
+  "reason": "Original regex can match agent hosts followed by MCP=unknown without any live/connectivity qualification. Baseline unknown case passed for this reason. This adds an explicit subject/status predicate and six cases without modifying the original twenty.",
+  "execution": "NOT_RUN",
+  "expected_cases": 6,
+  "expected_baseline": "All four actual doctor cases should fail; exact old-unknown oracle rejection and honest explicit-live controls should pass. Baseline reproduction must use pinned initial source, not infer repair RED from oracle alone.",
+  "qualification": "Wording evidence only; no actual live observation or persisted freshness service tested.",
+  "files": [
+    {
+      "path": "test_live_qualification_overlay.py",
+      "sha256": "0af273b566c0503b759d7bafb9c4d92d434120e391258fd06ce7d88a5a78491b"
+    }
+  ]
+}

@@ -38,7 +38,7 @@ uv run python scripts/verify_history.py --output .cairntir/verification/history
 uv run python scripts/verify_mutations.py --output .cairntir/verification/mutations
 uv run mkdocs build --strict
 uv build
-uv run python scripts/verify_package.py --wheel dist/cairntir-1.12.3-py3-none-any.whl --output .cairntir/verification/package
+uv run python scripts/verify_package.py --wheel dist/cairntir-1.12.4-py3-none-any.whl --output .cairntir/verification/package
 ```
 
 The release-tag and dependency-advisory gates need network access to PyPI. Model-backed evaluation
@@ -79,6 +79,10 @@ Use a focused branch and Conventional Commits (`fix:`, `feat:`, `docs:`,
 `test:`, `refactor:`, `build:`, `ci:`, or `chore:`). Add regression tests
 for fixes, update `CHANGELOG.md` under `[Unreleased]`, and run the checks above.
 All work reaches `main` through a green pull request.
+
+For work across computers or contributors, follow the
+[contributor handoff guide](docs/contributor-handoff.md). It covers existing
+home-PC work, isolated review, diverged branches, and a verifiable handoff receipt.
 
 Use typed, surfaced exceptions, strict type hints, Google-style public
 docstrings, and Ruff formatting. Do not add dependencies without discussion.

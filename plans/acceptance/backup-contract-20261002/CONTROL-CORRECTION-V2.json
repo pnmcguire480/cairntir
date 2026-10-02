@@ -1,0 +1,26 @@
+{
+  "schema": "independent-backup-control-correction-v2",
+  "status": "FROZEN_NOT_RUN",
+  "author": "/root/final_review",
+  "frozen_utc": "2026-10-02T03:06:35.9290998Z",
+  "original_freeze": "5f8c12d2634b024f0d89c75f74767ac51533991d685681a822ef5ae9c9a5e630",
+  "reason": "The newly added source-state equality assertion incorrectly forbids documented writable get access_count/last_accessed_at updates. Original backup contract asserts pre-get snapshot fidelity, not pure get.",
+  "exact_control_delta": "Delete only assert legacy._state(db) == before from the new owner-get test. Retain every other byte and assertion.",
+  "original_assertions": "Original automatic-backup suite and exact single-case adapter unchanged",
+  "preserved_initial_outcome": "Coordinator reports 2 PASS / 1 FAIL in 7.063 seconds: only invalid new source equality failed; original amended CLI and status purity passed",
+  "wrapper_delta": "Only new control filename and its SHA-256 pin",
+  "original_control_sha256": "b76de2e63073ccee2c35aa41edf98af433343e5273902e4fc3deae482f11e496",
+  "files": [
+    {
+      "path": "test_backup_contract_controls_v2.py",
+      "sha256": "b9e2a2b5711864511eab70c2d9dc437d0eef6cad3e64cf5623b0e6d4a0df5efd"
+    },
+    {
+      "path": "acceptance_test_wrapper_v2.py",
+      "sha256": "2032527b2a6ae4cf64a5dfe29570bd58811eafe924007504e4ddae977bccf01e"
+    }
+  ],
+  "runtime_change": "NONE",
+  "preservation_gate_change": "NONE",
+  "execution": "Not run by reviewer"
+}
