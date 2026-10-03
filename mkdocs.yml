@@ -32,6 +32,7 @@ theme:
     - toc.follow
 
 nav:
+  - Obsidian Corrections: obsidian-corrections.md
   - Home: index.md
   - Getting Started: how-to-use.md
   - Continuity Demo: context-demo.md

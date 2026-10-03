@@ -1,0 +1,24 @@
+{
+  "frozen_at_utc": "2026-10-03T08:15:04.443742+00:00",
+  "version": 1,
+  "baseline": "37ab0b1bb7e641adec8d2305b1546d1a35b1cd7e",
+  "files_sha256": {
+    "CONTRACT.md": "c4c68321dae0d22af1fced765174543afa14b0e1078339c7ccd9c27e68424a5a",
+    "ORIGINALS-FREEZE.json": "ae275e8a9268d6424c38afa3a943e117acfa86ef622b294e5e439bca37c30154",
+    "test_integration.py": "cf53b7f84b5d14cc1b0df834ab17ef9f4cb26726495b25edb138a5faebe4b2cb",
+    "test_obsidian_frozen_acceptance.py": "aea618499c4480c9e5771f0474cf6625e572b5a670df2724716ef9d7d5ef58fc",
+    "test_real_plugin.cjs": "690b9fac1f4a3abafe0fedb47d8136e87458b4d81b48330a5c46703559ff4cca"
+  },
+  "python_original_counts": {
+    "test_correction_core.py": 12,
+    "test_correction_source_state.py": 2,
+    "test_correction_source_state_v2.py": 2,
+    "test_projection_newlines.py": 1,
+    "test_source_lifetime.py": 3,
+    "test_workspace_flow.py": 10,
+    "test_workspace_flow_v2.py": 10
+  },
+  "additional_controls": 11,
+  "required_node": "v3 46 cases and401 assertions, plus actual subprocess3calls",
+  "repair_limit": 2
+}

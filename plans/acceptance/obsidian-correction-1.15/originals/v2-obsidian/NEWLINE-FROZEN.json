@@ -1,0 +1,10 @@
+{
+  "frozen_utc": "2026-09-20T12:48:47.360473+00:00",
+  "phase": "Before proposed shared-helper newline repair, following code-review defect discovery",
+  "visibility": "PUBLIC regression",
+  "tests": 1,
+  "files": {
+    "test_projection_newlines.py": "64b931e36ad15afca63a5796b9777aad2ce1b1c339acd57a24e9d38ea9b50837"
+  },
+  "requirement": "Generated-block refresh must preserve every UTF-8 byte outside marker boundaries, including mixed LF/CRLF and non-ASCII text."
+}

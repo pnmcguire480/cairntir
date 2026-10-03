@@ -1,0 +1,55 @@
+{
+  "result": "PASS",
+  "disposition": "COMPLETE for finite public synthetic implementation acceptance; parent review and hosted qualification pending",
+  "captured_at_utc": "2026-10-03T08:31:50.837005+00:00",
+  "freeze_version": 7,
+  "freeze_sha256": "24dd9985554c716d4f758db73f80810d9d4ac3b9675cc495bfc09470cc30cd18",
+  "normal_pytest": "44 passed, 1 Windows symlink privilege skip, 21 subtests passed in 22.85s",
+  "selected_existing_regressions": "42 passed in 2.15s; unchanged E22 adapter applies1 exact original case",
+  "plugin_v3": "46 cases/401 assertions mandatory Node test passed",
+  "real_plugin": "3 actual Python CLI processes; synthetic provider and mock UI; exact Unicode/CRLF preserved, same acknowledgement afterfailure/retry, exactly two database rows",
+  "baseline_v5": "32failed/1previous CLI help passed/12structural missing bridge setup errors; exact PR125 clean source",
+  "baseline_v7_amended_controls": "3failed/42deselected because absentCLI cannot produce structured rejection JSON",
+  "prior_failures": "v1/v2 baseline and v2 round 0/v5 repair 1 preserved; fixture changes separately recorded; v6 unexecuted retained",
+  "product_repairs_used": 2,
+  "product_defects_closed": [
+    "false durable committed receipt insidecaller transaction (apply+sync)",
+    "scoped hidden-successor projection incorrectlyoffers historical source editable"
+  ],
+  "wrong_control": "transaction-state bypass in test process only: unchanged owner transaction assertion fails DID NOT RAISE in 0.22s; expected failure",
+  "original_artifacts_unchanged": 35,
+  "active_pytest_cases": 45,
+  "baseline_source_unchanged": true,
+  "candidate_source_unchanged_during_final_tests": true,
+  "candidate_source_binding_sha256": "83a76dbc46237de7b14f23592240e91f184b8d63ae601367031de4a49e23e02b",
+  "files_sha256": {
+    "baseline.txt": "9b4a7f2efd55dbda82d9fa4876c25153118e9d90b100d42aef784861347a76a2",
+    "baseline.xml": "7025ba64acdc9f6b36b56d4a45b165f1cfb824b510b20abaf9b74e154c2502e4",
+    "baseline-v2.txt": "27c028464fadc5ee2543913561772f14c80c13be2486d559f973b9fbab403fd8",
+    "baseline-v2.xml": "4bf51df26afca8a8a96d31c8374052a4dfea68adcab74128a57d1d266ec99087",
+    "candidate-round0-v2.txt": "cf0f805b420aa0217cc132dd8e0cbab7bc88b0c87dcdeb7c1e04ea86085497dc",
+    "candidate-round0-v2.xml": "a65498fa010c7e18a94afabd0c882ca514c789570bb7d1e42692705a0933ae2a",
+    "baseline-v5.txt": "23b98196cc5d91b0100bca8e75a3ca8b0973f475d516b0980aeec1e2bbd7f02e",
+    "baseline-v5.xml": "9094d568764220a4894eff31e45b90f8a000ec4c755cd7ddc767b4c47d583367",
+    "candidate-repair1-v5.txt": "12d7bb478fb74f868aac8fced18de9dd563e44346d97fbc6a7c8605a80f66b55",
+    "candidate-repair1-v5.xml": "dd8246b9618928b6bfcab4e9aec1e9d93b879c040987db483b3e913162d7dc8f",
+    "candidate-repair2-final.txt": "23386fdb1a0ba87977cfc548b2ed38ecb1fedf1c1923529abb2ce0824920bd32",
+    "candidate-repair2-final.xml": "5cc98d6c980ab1019f8de09d61b71cd72d92e25472346d551f924429d3406791",
+    "selected-existing-regressions.txt": "d8c57748988c43949c12dfba38874ef4384208f4de0d6e26b41205d13d6870a0",
+    "selected-existing-regressions.xml": "a972db5e66a1ec98f8e567859cc1c0e56f455542a30e4eaa24b31131fe245401",
+    "deliberate-guard-bypass.txt": "2be5eedc5cca349eeb4a2d1ceb2359af34ece9d88da2d3683678199934ee9d1e",
+    "deliberate-guard-bypass.xml": "16fc6428684382e5c81a530f4494b89bf2eaed46f15a7d730e9875dc32ee51f6",
+    "baseline-v7-amended-controls.txt": "5c6514e6c04175e64a0f1d5af6001d486d9c455fb569f19e152843f312c3e598",
+    "baseline-v7-amended-controls.xml": "52b0baab83b03c3c06353f5934339fd2318baf8337fd2ec0aa1e2f66a7a52663"
+  },
+  "no_live_install_private_store_auth_model_inference_network_or_release": true,
+  "remaining_required_checks": [
+    "existing public hosted CI on exact head",
+    "parent independent review"
+  ],
+  "unverified_claim_limits": [
+    "native graphical Obsidian/operator workflow not exercised",
+    "protected evaluator custody not established"
+  ],
+  "requested_model_effort": "GPT-6.1-sol/high requested; actual execution model telemetry unavailable to this tester"
+}

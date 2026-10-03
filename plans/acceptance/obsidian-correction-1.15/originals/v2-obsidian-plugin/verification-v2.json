@@ -1,0 +1,17 @@
+{
+  "schema": "cairntir.public-obsidian-plugin-verification.v1",
+  "contract_id": "v2-obsidian-plugin-2026-09-20-r1",
+  "result": "PASS",
+  "scope": "Original mock plugin boundary with exit-zero structured reports and incomplete core receipt fixture; not an actual CLI integration PASS.",
+  "main_sha256": "b38d464c11259931848aa21fc0098a4bfc5913e228e8380a0c886fcb3fafa71e",
+  "manifest_sha256": "f48f9bdd713e6663e2ef3342f03962d0572c6dde0b6c1112820db79dbc3e43e9",
+  "readme_sha256": "fa5d83f2abe8f8749555f466e1a4b202eca72f5b8c7ba1abc606bcc57b2093e6",
+  "acceptance_sha256": "4dd43afc64efe71f9b47c164985303a8868b5da128f20499f1f775f4134d39c1",
+  "cases": 23,
+  "assertions": 214,
+  "prior_environment_result": "INCONCLUSIVE: Node module-loader realpath/lstat was denied on a user-profile ancestor before assertions. The successful run used an independently SHA256-verified byte-identical copy inside the authorized workspace.",
+  "review": "Source, manifest, and README reviewed for the then-frozen contract; no additional defect was identified by that review. Later actual CLI seam mismatch is preserved separately.",
+  "native_obsidian_ui": "unverified",
+  "backend_persistence": "not exercised by this mock",
+  "candidate_repairs_used": 0
+}

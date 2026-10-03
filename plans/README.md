@@ -1,5 +1,7 @@
 # Plans
 
+- [Obsidian correction loop](obsidian-correction-loop.md): explicit workspace/backend/optional plugin candidate on reviewed PR125; qualification in progress.
+
 - [Pinned embedding artifacts](pinned-embedding-artifacts.md): single 1.14.0 candidate stacked on PR124; qualification pending.
 
 - [Complete recall-response budgeting](recall-response-budget.md): single 1.13.0 feature candidate; independent review PASS; current qualification in PR124.

@@ -1,0 +1,14 @@
+{
+  "frozen_utc": "2026-09-20T12:47:25.556273+00:00",
+  "phase": "Supplement authored after core implementation; frozen before execution, not preimplementation acceptance",
+  "visibility": "PUBLIC",
+  "tests": 3,
+  "files": {
+    "test_source_lifetime.py": "c32b78652699cbde7137e4db5156cb99fb2c1007031a59ac3aed8afa229d96ea"
+  },
+  "requirements": [
+    "Expired and future-valid sources reject fresh correction.",
+    "Accepted correction inherits exact source validity bounds.",
+    "Advancing the correction clock past expiry does not invalidate an already committed durable receipt."
+  ]
+}

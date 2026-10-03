@@ -13,7 +13,22 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
-## [1.14.0] - Unreleased
+## [1.15.0] - Unreleased
+
+### Added
+
+- Explicit Obsidian correction workspace: refresh one selected wing, inspect
+  exact current/historical memories, and submit append-only corrections through
+  a durable request/receipt workflow. Existing source/provenance remains intact.
+- Optional desktop plugin with explicit refresh/correction forms, payload-bound
+  retries and separate committed/acknowledged/projected feedback. Nothing runs
+  on plugin load or ordinary vault edits. Installation remains opt-in.
+
+### Included foundation: reviewed 1.14.0 candidate (unpublished)
+
+The pinned-artifact changes below remain included from reviewed PR125; they
+have not been published. Its deliberate FastEmbed rebuild requirement applies.
+
 
 ### Added
 

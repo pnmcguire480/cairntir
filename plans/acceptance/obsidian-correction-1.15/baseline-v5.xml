@@ -1,0 +1,1094 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="12" failures="32" skipped="0" tests="45" time="11.771" timestamp="2026-10-03T04:23:52.969639-04:00" hostname="PNMDevDesign"><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_append_preserves_original_and_exact_correction" time="0.001"><error message="failed on setup with &quot;ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'&quot;">cls = &lt;class 'frozen_obsidian_test_correction_core.CorrectionAcceptance'&gt;
+
+    @classmethod
+    def setUpClass(cls):
+&gt;       cls.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_core.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</error></testcase><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_current_correction_can_be_corrected_without_forking" time="0.000"><error message="failed on setup with &quot;ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'&quot;">cls = &lt;class 'frozen_obsidian_test_correction_core.CorrectionAcceptance'&gt;
+
+    @classmethod
+    def setUpClass(cls):
+&gt;       cls.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_core.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</error></testcase><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_equal_local_id_and_hash_in_another_store_is_not_same_source" time="0.000"><error message="failed on setup with &quot;ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'&quot;">cls = &lt;class 'frozen_obsidian_test_correction_core.CorrectionAcceptance'&gt;
+
+    @classmethod
+    def setUpClass(cls):
+&gt;       cls.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_core.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</error></testcase><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_failure_after_append_rolls_back_and_retry_can_commit" time="0.000"><error message="failed on setup with &quot;ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'&quot;">cls = &lt;class 'frozen_obsidian_test_correction_core.CorrectionAcceptance'&gt;
+
+    @classmethod
+    def setUpClass(cls):
+&gt;       cls.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_core.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</error></testcase><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_malformed_requests_never_append" time="0.000"><error message="failed on setup with &quot;ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'&quot;">cls = &lt;class 'frozen_obsidian_test_correction_core.CorrectionAcceptance'&gt;
+
+    @classmethod
+    def setUpClass(cls):
+&gt;       cls.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_core.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</error></testcase><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_new_request_against_historical_source_is_stale" time="0.000"><error message="failed on setup with &quot;ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'&quot;">cls = &lt;class 'frozen_obsidian_test_correction_core.CorrectionAcceptance'&gt;
+
+    @classmethod
+    def setUpClass(cls):
+&gt;       cls.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_core.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</error></testcase><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_reopened_retry_returns_same_commit_before_stale_check" time="0.000"><error message="failed on setup with &quot;ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'&quot;">cls = &lt;class 'frozen_obsidian_test_correction_core.CorrectionAcceptance'&gt;
+
+    @classmethod
+    def setUpClass(cls):
+&gt;       cls.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_core.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</error></testcase><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_request_id_cannot_be_reused_for_changed_payload" time="0.000"><error message="failed on setup with &quot;ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'&quot;">cls = &lt;class 'frozen_obsidian_test_correction_core.CorrectionAcceptance'&gt;
+
+    @classmethod
+    def setUpClass(cls):
+&gt;       cls.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_core.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</error></testcase><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_resumed_handoff_contains_committed_on_demand_correction" time="0.000"><error message="failed on setup with &quot;ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'&quot;">cls = &lt;class 'frozen_obsidian_test_correction_core.CorrectionAcceptance'&gt;
+
+    @classmethod
+    def setUpClass(cls):
+&gt;       cls.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_core.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</error></testcase><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_secret_and_structured_protocol_sources_refused" time="0.000"><error message="failed on setup with &quot;ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'&quot;">cls = &lt;class 'frozen_obsidian_test_correction_core.CorrectionAcceptance'&gt;
+
+    @classmethod
+    def setUpClass(cls):
+&gt;       cls.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_core.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</error></testcase><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_source_hash_wing_and_missing_id_are_checked" time="0.000"><error message="failed on setup with &quot;ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'&quot;">cls = &lt;class 'frozen_obsidian_test_correction_core.CorrectionAcceptance'&gt;
+
+    @classmethod
+    def setUpClass(cls):
+&gt;       cls.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_core.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</error></testcase><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_untrusted_correction_inherits_privacy_and_layer" time="0.000"><error message="failed on setup with &quot;ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'&quot;">cls = &lt;class 'frozen_obsidian_test_correction_core.CorrectionAcceptance'&gt;
+
+    @classmethod
+    def setUpClass(cls):
+&gt;       cls.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_core.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</error></testcase><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_apply_reopen_retry_receipt_and_bidirectional_history" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_workspace_flow_v2.WorkspaceAcceptance testMethod=test_apply_reopen_retry_receipt_and_bidirectional_history&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_workspace_flow_v2.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_bad_json_and_duplicate_keys_do_not_block_valid_requests" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_workspace_flow_v2.WorkspaceAcceptance testMethod=test_bad_json_and_duplicate_keys_do_not_block_valid_requests&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_workspace_flow_v2.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_bound_vault_rejects_another_wing_without_replacing_inventory" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_workspace_flow_v2.WorkspaceAcceptance testMethod=test_bound_vault_rejects_another_wing_without_replacing_inventory&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_workspace_flow_v2.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_cli_json_and_exit_status_report_success_and_rejection" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_workspace_flow_v2.WorkspaceAcceptance testMethod=test_cli_json_and_exit_status_report_success_and_rejection&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_workspace_flow_v2.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_failed_acknowledgement_reports_commit_and_retry_repairs_it" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_workspace_flow_v2.WorkspaceAcceptance testMethod=test_failed_acknowledgement_reports_commit_and_retry_repairs_it&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_workspace_flow_v2.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_failed_projection_preserves_unmarked_note_and_durable_commit" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_workspace_flow_v2.WorkspaceAcceptance testMethod=test_failed_projection_preserves_unmarked_note_and_durable_commit&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_workspace_flow_v2.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_inventory_is_exact_scoped_and_excludes_secret" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_workspace_flow_v2.WorkspaceAcceptance testMethod=test_inventory_is_exact_scoped_and_excludes_secret&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_workspace_flow_v2.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_refresh_preserves_annotations_and_escapes_only_markdown" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_workspace_flow_v2.WorkspaceAcceptance testMethod=test_refresh_preserves_annotations_and_escapes_only_markdown&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_workspace_flow_v2.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_stale_outbox_edit_has_visible_rejection_and_no_extra_append" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_workspace_flow_v2.WorkspaceAcceptance testMethod=test_stale_outbox_edit_has_visible_rejection_and_no_extra_append&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_workspace_flow_v2.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_symlinked_outbox_request_cannot_import_external_content" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_workspace_flow_v2.WorkspaceAcceptance testMethod=test_symlinked_outbox_request_cannot_import_external_content&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_workspace_flow_v2.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.SourceLifetimeAcceptance" name="test_acknowledged_retry_remains_available_after_validity_expiry" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_source_lifetime.SourceLifetimeAcceptance testMethod=test_acknowledged_retry_remains_available_after_validity_expiry&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_source_lifetime.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.SourceLifetimeAcceptance" name="test_expired_and_not_yet_valid_sources_cannot_be_corrected" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_source_lifetime.SourceLifetimeAcceptance testMethod=test_expired_and_not_yet_valid_sources_cannot_be_corrected&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_source_lifetime.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.SourceLifetimeAcceptance" name="test_successor_inherits_exact_validity_window" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_source_lifetime.SourceLifetimeAcceptance testMethod=test_successor_inherits_exact_validity_window&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_source_lifetime.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.ProjectionNewlinesAcceptance" name="test_refresh_preserves_mixed_newline_bytes_outside_generated_block" time="0.005"><failure message="AssertionError: b'# Human caf\xc3\xa9\r\n\r\nA prefix with LF.\r\n' != b'# Human caf\xc3\xa9\r\n\nA prefix with LF.\n'">self = &lt;frozen_obsidian_test_projection_newlines.ProjectionNewlinesAcceptance testMethod=test_refresh_preserves_mixed_newline_bytes_outside_generated_block&gt;
+
+    def test_refresh_preserves_mixed_newline_bytes_outside_generated_block(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            path = root / "note.md"
+            begin = b"&lt;!-- cairntir:generated:begin --&gt;"
+            end = b"&lt;!-- cairntir:generated:end --&gt;"
+            prefix = "# Human café\r\n\nA prefix with LF.\n".encode()
+            suffix = "\r\n\n## My Notes\r\nMixed lines\nKeep café.\r\n".encode()
+            path.write_bytes(prefix + begin + b"\r\nold generated\r\n" + end + suffix)
+            _upsert_generated(path, "new generated\nsecond line", title="Unused", root=root)
+            result = path.read_bytes()
+&gt;           self.assertEqual(result.split(begin)[0], prefix)
+E           AssertionError: b'# Human caf\xc3\xa9\r\n\r\nA prefix with LF.\r\n' != b'# Human caf\xc3\xa9\r\n\nA prefix with LF.\n'
+
+originals\v2-obsidian\test_projection_newlines.py:22: AssertionError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.SourceStateAcceptance" name="test_correction_and_retry_never_change_original_sql_row" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_correction_source_state_v2.SourceStateAcceptance testMethod=test_correction_and_retry_never_change_original_sql_row&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_source_state_v2.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance.SourceStateAcceptance" name="test_prediction_protocol_fields_require_their_own_workflow" time="0.001"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">self = &lt;frozen_obsidian_test_correction_source_state_v2.SourceStateAcceptance testMethod=test_prediction_protocol_fields_require_their_own_workflow&gt;
+
+    def setUp(self):
+&gt;       self.bridge = importlib.import_module("cairntir.obsidian_bridge")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+originals\v2-obsidian\test_correction_source_state_v2.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_fresh_cli_exact_commit_restart_and_rejection" time="1.097"><failure message="AssertionError: ('', &quot;Usage: python -m cairntir [OPTIONS] COMMAND [ARGS]...\nTry 'python -m cairntir --help' for help.\n┌─ Error ─────────────────────────────────────────────────────────────────────┐\n│ No such command 'obsidian-sync'. Did you mean 'obsidian-project'?           │\n└─────────────────────────────────────────────────────────────────────────────┘\n&quot;)">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_fresh_cli_exact_commit_re0/home/ca...g/pytest-5/test_fresh_cli_exact_commit_re0/vault/cairntir-sync/outbox/ec674552-1de3-4a2e-8b2c-30c115dc24dc.json'), ...}
+
+    def test_fresh_cli_exact_commit_restart_and_rejection(flow):
+        original = rows(flow)[0]
+        proposal = flow["proposal"].read_bytes()
+        first = cli(flow)
+&gt;       assert first.returncode == 0, (first.stdout, first.stderr)
+               ^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: ('', "Usage: python -m cairntir [OPTIONS] COMMAND [ARGS]...\nTry 'python -m cairntir --help' for help.\n┌─ Error ─────────────────────────────────────────────────────────────────────┐\n│ No such command 'obsidian-sync'. Did you mean 'obsidian-project'?           │\n└─────────────────────────────────────────────────────────────────────────────┘\n")
+
+test_integration.py:98: AssertionError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_fresh_cli_partial_commit_retry_without_duplicates[ack]" time="1.062"><failure message="json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_fresh_cli_partial_commit_0/home/ca...g/pytest-5/test_fresh_cli_partial_commit_0/vault/cairntir-sync/outbox/e216086a-407d-430c-8609-c8bcd7a5cd9f.json'), ...}
+failure = 'ack'
+
+    @pytest.mark.parametrize("failure", ["ack", "projection"])
+    def test_fresh_cli_partial_commit_retry_without_duplicates(flow, failure):
+        original = rows(flow)[0]
+        if failure == "ack":
+            conflict = (
+                flow["vault"]
+                / "cairntir-sync"
+                / "acknowledgements"
+                / (flow["request"]["request_id"] + ".json")
+            )
+            conflict.mkdir(parents=True)
+        else:
+            conflict = flow["vault"] / "cairntir-sync" / "memory" / "drawer-1.md"
+            conflict.parent.mkdir()
+            conflict.write_bytes(b"User-owned conflicting note\r\n")
+        result = cli(flow)
+        assert result.returncode != 0
+&gt;       data = report(result)
+               ^^^^^^^^^^^^^^
+
+test_integration.py:136: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+test_integration.py:91: in report
+    return json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\json\__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\json\decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;json.decoder.JSONDecoder object at 0x000001F713586850&gt;, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+&gt;           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\json\decoder.py:355: JSONDecodeError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_fresh_cli_partial_commit_retry_without_duplicates[projection]" time="1.053"><failure message="json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_fresh_cli_partial_commit_1/home/ca...g/pytest-5/test_fresh_cli_partial_commit_1/vault/cairntir-sync/outbox/a80ffd92-afef-4995-bffe-8cbeffd82c3c.json'), ...}
+failure = 'projection'
+
+    @pytest.mark.parametrize("failure", ["ack", "projection"])
+    def test_fresh_cli_partial_commit_retry_without_duplicates(flow, failure):
+        original = rows(flow)[0]
+        if failure == "ack":
+            conflict = (
+                flow["vault"]
+                / "cairntir-sync"
+                / "acknowledgements"
+                / (flow["request"]["request_id"] + ".json")
+            )
+            conflict.mkdir(parents=True)
+        else:
+            conflict = flow["vault"] / "cairntir-sync" / "memory" / "drawer-1.md"
+            conflict.parent.mkdir()
+            conflict.write_bytes(b"User-owned conflicting note\r\n")
+        result = cli(flow)
+        assert result.returncode != 0
+&gt;       data = report(result)
+               ^^^^^^^^^^^^^^
+
+test_integration.py:136: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+test_integration.py:91: in report
+    return json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\json\__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\json\decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;json.decoder.JSONDecoder object at 0x000001F713586850&gt;, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+&gt;           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\json\decoder.py:355: JSONDecodeError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_scoped_cli_denied_before_vault_or_store_change" time="1.072"><failure message="AssertionError">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_scoped_cli_denied_before_0/home/ca...g/pytest-5/test_scoped_cli_denied_before_0/vault/cairntir-sync/outbox/b5c692b9-5ff8-4947-af9d-0f0ac31ce62e.json'), ...}
+
+    def test_scoped_cli_denied_before_vault_or_store_change(flow):
+        from cairntir.access import issue_grant
+    
+        store = DrawerStore(flow["db"], HashEmbeddingProvider(dimension=16))
+        token = issue_grant(
+            store,
+            scopes=[{"wing": "fixture", "rooms": ["notes"]}],
+            capabilities=["read", "write"],
+        )
+        store.close()
+        grant = flow["home"] / "grant.txt"
+        grant.write_text(token, encoding="utf-8")
+        flow["env"]["CAIRNTIR_GRANT_FILE"] = str(grant)
+        before = rows(flow)
+        proposal = flow["proposal"].read_bytes()
+        denied = cli(flow)
+        assert denied.returncode != 0
+&gt;       assert "access denied" in denied.stdout + denied.stderr
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError
+
+test_integration.py:174: AssertionError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_scoped_bridge_cannot_escape_authority" time="0.023"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_scoped_bridge_cannot_esca0/home/ca...g/pytest-5/test_scoped_bridge_cannot_esca0/vault/cairntir-sync/outbox/b6aab124-b1f2-4e68-8e19-bf4081de4e99.json'), ...}
+
+    def test_scoped_bridge_cannot_escape_authority(flow):
+        from cairntir.access import AccessDenied, bind_grant, issue_grant
+    
+&gt;       bridge = importlib.import_module("cairntir.obsidian_bridge")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+test_integration.py:183: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_actual_cli_projection_privacy" time="1.054"><failure message="AssertionError: ('', &quot;Usage: python -m cairntir [OPTIONS] COMMAND [ARGS]...\nTry 'python -m cairntir --help' for help.\n┌─ Error ─────────────────────────────────────────────────────────────────────┐\n│ No such command 'obsidian-sync'. Did you mean 'obsidian-project'?           │\n└─────────────────────────────────────────────────────────────────────────────┘\n&quot;)">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_actual_cli_projection_pri0/home/ca...g/pytest-5/test_actual_cli_projection_pri0/vault/cairntir-sync/outbox/1a5269ae-8a95-4954-921f-2bc6d56fe67a.json'), ...}
+
+    def test_actual_cli_projection_privacy(flow):
+        store = DrawerStore(flow["db"], HashEmbeddingProvider(dimension=16))
+        store.add(Drawer(wing="foreign", room="notes", content="FOREIGN-MARKER"))
+        store.add(
+            Drawer(wing="fixture", room="notes", content="SECRET-MARKER"),
+            provenance=WriteProvenance.create(
+                host="fixture", capture_path="fixture", sensitivity=Sensitivity.SECRET
+            ),
+        )
+        store.close()
+        result = cli(flow)
+&gt;       assert result.returncode == 0, (result.stdout, result.stderr)
+               ^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: ('', "Usage: python -m cairntir [OPTIONS] COMMAND [ARGS]...\nTry 'python -m cairntir --help' for help.\n┌─ Error ─────────────────────────────────────────────────────────────────────┐\n│ No such command 'obsidian-sync'. Did you mean 'obsidian-project'?           │\n└─────────────────────────────────────────────────────────────────────────────┘\n")
+
+test_integration.py:207: AssertionError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_legacy_identity_refuses_append_without_mutating_source[None]" time="1.063"><failure message="AssertionError: ('', &quot;Usage: python -m cairntir [OPTIONS] COMMAND [ARGS]...\nTry 'python -m cairntir --help' for help.\n┌─ Error ─────────────────────────────────────────────────────────────────────┐\n│ No such command 'obsidian-sync'. Did you mean 'obsidian-project'?           │\n└─────────────────────────────────────────────────────────────────────────────┘\n&quot;)">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_legacy_identity_refuses_a0/home/ca...g/pytest-5/test_legacy_identity_refuses_a0/vault/cairntir-sync/outbox/530d5a83-066a-4187-962a-a5aa60c8f6e8.json'), ...}
+identity = None
+
+    @pytest.mark.parametrize(
+        "identity",
+        [
+            None,
+            "fastembed/text-embedding-v1/jinaai/jina-embeddings-v2-small-en",
+            "cairntir/synthetic-pinned-artifacts/sha256=" + "b" * 64,
+        ],
+    )
+    def test_legacy_identity_refuses_append_without_mutating_source(flow, identity):
+        with sqlite3.connect(flow["db"]) as conn:
+            conn.execute("DELETE FROM store_metadata WHERE key LIKE 'embedding_%'")
+            if identity is not None:
+                conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES ('embedding_space_id',?)",
+                    (identity,),
+                )
+                conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES ('embedding_dimension','16')"
+                )
+            conn.commit()
+        before = rows(flow)
+        result = cli(flow)
+        assert result.returncode != 0
+&gt;       assert "embedding" in (result.stdout + result.stderr).lower(), (
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            result.stdout,
+            result.stderr,
+        )
+E       AssertionError: ('', "Usage: python -m cairntir [OPTIONS] COMMAND [ARGS]...\nTry 'python -m cairntir --help' for help.\n┌─ Error ─────────────────────────────────────────────────────────────────────┐\n│ No such command 'obsidian-sync'. Did you mean 'obsidian-project'?           │\n└─────────────────────────────────────────────────────────────────────────────┘\n")
+
+test_integration.py:237: AssertionError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_legacy_identity_refuses_append_without_mutating_source[fastembed/text-embedding-v1/jinaai/jina-embeddings-v2-small-en]" time="1.071"><failure message="AssertionError: ('', &quot;Usage: python -m cairntir [OPTIONS] COMMAND [ARGS]...\nTry 'python -m cairntir --help' for help.\n┌─ Error ─────────────────────────────────────────────────────────────────────┐\n│ No such command 'obsidian-sync'. Did you mean 'obsidian-project'?           │\n└─────────────────────────────────────────────────────────────────────────────┘\n&quot;)">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_legacy_identity_refuses_a1/home/ca...g/pytest-5/test_legacy_identity_refuses_a1/vault/cairntir-sync/outbox/a352a224-973c-453e-8a1e-26471dd49ea6.json'), ...}
+identity = 'fastembed/text-embedding-v1/jinaai/jina-embeddings-v2-small-en'
+
+    @pytest.mark.parametrize(
+        "identity",
+        [
+            None,
+            "fastembed/text-embedding-v1/jinaai/jina-embeddings-v2-small-en",
+            "cairntir/synthetic-pinned-artifacts/sha256=" + "b" * 64,
+        ],
+    )
+    def test_legacy_identity_refuses_append_without_mutating_source(flow, identity):
+        with sqlite3.connect(flow["db"]) as conn:
+            conn.execute("DELETE FROM store_metadata WHERE key LIKE 'embedding_%'")
+            if identity is not None:
+                conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES ('embedding_space_id',?)",
+                    (identity,),
+                )
+                conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES ('embedding_dimension','16')"
+                )
+            conn.commit()
+        before = rows(flow)
+        result = cli(flow)
+        assert result.returncode != 0
+&gt;       assert "embedding" in (result.stdout + result.stderr).lower(), (
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            result.stdout,
+            result.stderr,
+        )
+E       AssertionError: ('', "Usage: python -m cairntir [OPTIONS] COMMAND [ARGS]...\nTry 'python -m cairntir --help' for help.\n┌─ Error ─────────────────────────────────────────────────────────────────────┐\n│ No such command 'obsidian-sync'. Did you mean 'obsidian-project'?           │\n└─────────────────────────────────────────────────────────────────────────────┘\n")
+
+test_integration.py:237: AssertionError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_legacy_identity_refuses_append_without_mutating_source[cairntir/synthetic-pinned-artifacts/sha256=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb]" time="1.080"><failure message="AssertionError: ('', &quot;Usage: python -m cairntir [OPTIONS] COMMAND [ARGS]...\nTry 'python -m cairntir --help' for help.\n┌─ Error ─────────────────────────────────────────────────────────────────────┐\n│ No such command 'obsidian-sync'. Did you mean 'obsidian-project'?           │\n└─────────────────────────────────────────────────────────────────────────────┘\n&quot;)">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_legacy_identity_refuses_a2/home/ca...g/pytest-5/test_legacy_identity_refuses_a2/vault/cairntir-sync/outbox/41c299c3-d5bc-4ef9-af73-4e54ff08767a.json'), ...}
+identity = 'cairntir/synthetic-pinned-artifacts/sha256=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+
+    @pytest.mark.parametrize(
+        "identity",
+        [
+            None,
+            "fastembed/text-embedding-v1/jinaai/jina-embeddings-v2-small-en",
+            "cairntir/synthetic-pinned-artifacts/sha256=" + "b" * 64,
+        ],
+    )
+    def test_legacy_identity_refuses_append_without_mutating_source(flow, identity):
+        with sqlite3.connect(flow["db"]) as conn:
+            conn.execute("DELETE FROM store_metadata WHERE key LIKE 'embedding_%'")
+            if identity is not None:
+                conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES ('embedding_space_id',?)",
+                    (identity,),
+                )
+                conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES ('embedding_dimension','16')"
+                )
+            conn.commit()
+        before = rows(flow)
+        result = cli(flow)
+        assert result.returncode != 0
+&gt;       assert "embedding" in (result.stdout + result.stderr).lower(), (
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            result.stdout,
+            result.stderr,
+        )
+E       AssertionError: ('', "Usage: python -m cairntir [OPTIONS] COMMAND [ARGS]...\nTry 'python -m cairntir --help' for help.\n┌─ Error ─────────────────────────────────────────────────────────────────────┐\n│ No such command 'obsidian-sync'. Did you mean 'obsidian-project'?           │\n└─────────────────────────────────────────────────────────────────────────────┘\n")
+
+test_integration.py:237: AssertionError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_previous_cli_contracts_still_available" time="2.110" /><testcase classname="test_obsidian_frozen_acceptance" name="test_outer_transaction_cannot_return_a_false_durable_commit" time="0.023"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_outer_transaction_cannot_0/home/ca...g/pytest-5/test_outer_transaction_cannot_0/vault/cairntir-sync/outbox/51c73c75-dad8-4b68-be03-48f31ef173ae.json'), ...}
+
+    def test_outer_transaction_cannot_return_a_false_durable_commit(flow):
+&gt;       bridge = importlib.import_module("cairntir.obsidian_bridge")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+test_integration.py:262: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_outer_transaction_sync_refuses_before_writing_acknowledgement" time="0.023"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_outer_transaction_sync_re0/home/ca...g/pytest-5/test_outer_transaction_sync_re0/vault/cairntir-sync/outbox/d969d673-e7c4-400c-8b39-5ba5190b656d.json'), ...}
+
+    def test_outer_transaction_sync_refuses_before_writing_acknowledgement(flow):
+&gt;       bridge = importlib.import_module("cairntir.obsidian_bridge")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+test_integration.py:280: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_scoped_hidden_successor_does_not_enable_stale_edit_or_leak" time="0.022"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_scoped_hidden_successor_d0/home/ca...g/pytest-5/test_scoped_hidden_successor_d0/vault/cairntir-sync/outbox/d2dcad28-9592-40c8-aee0-d601c98ca7a9.json'), ...}
+
+    def test_scoped_hidden_successor_does_not_enable_stale_edit_or_leak(flow):
+&gt;       bridge = importlib.import_module("cairntir.obsidian_bridge")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+test_integration.py:305: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_scoped_outer_transaction_has_same_durable_boundary[apply]" time="0.023"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_scoped_outer_transaction_0/home/ca...g/pytest-5/test_scoped_outer_transaction_0/vault/cairntir-sync/outbox/0c15ca4a-4408-4fcf-9a58-c86e09596d4f.json'), ...}
+operation = 'apply'
+
+    @pytest.mark.parametrize("operation", ["apply", "sync"])
+    def test_scoped_outer_transaction_has_same_durable_boundary(flow, operation):
+&gt;       bridge = importlib.import_module("cairntir.obsidian_bridge")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+test_integration.py:356: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_scoped_outer_transaction_has_same_durable_boundary[sync]" time="0.022"><failure message="ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-5/test_scoped_outer_transaction_1/home/ca...g/pytest-5/test_scoped_outer_transaction_1/vault/cairntir-sync/outbox/686d2c45-5c79-479e-958f-c77c6ae97db2.json'), ...}
+operation = 'sync'
+
+    @pytest.mark.parametrize("operation", ["apply", "sync"])
+    def test_scoped_outer_transaction_has_same_durable_boundary(flow, operation):
+&gt;       bridge = importlib.import_module("cairntir.obsidian_bridge")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+test_integration.py:356: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'cairntir.obsidian_bridge'
+import_ = &lt;function _gcd_import at 0x000001F712373D80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'cairntir.obsidian_bridge'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_required_node_v3_plugin_acceptance" time="0.066"><failure message="AssertionError: ('', &quot;Error: Cannot find module 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-obsidian-download-20261003\\addons\\...\\cairntir-obsidian-feature-20261003\\acceptance\\originals\\v2-obsidian-plugin\\test-obsidian-plugin-v3.cjs:176:19&#10;  &quot;)&#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['C:\\Program Files\\nodejs\\node.EXE', 'C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\c...\\cairntir-obsidian-feature-20261003\\acceptance\\originals\\v2-obsidian-plugin\\test-obsidian-plugin-v3.cjs:176:19\n&quot;).returncode">def test_required_node_v3_plugin_acceptance():
+        result = subprocess.run(
+            [
+                node_executable(),
+                str(
+                    PACKET
+                    / "originals"
+                    / "v2-obsidian-plugin"
+                    / "test-obsidian-plugin-v3.cjs"
+                ),
+                str(integration.REPO / "addons" / "cairntir_obsidian" / "main.js"),
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=60,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+&gt;       assert result.returncode == 0, (result.stdout, result.stderr)
+E       AssertionError: ('', "Error: Cannot find module 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-obsidian-download-20261003\\addons\\...\\cairntir-obsidian-feature-20261003\\acceptance\\originals\\v2-obsidian-plugin\\test-obsidian-plugin-v3.cjs:176:19
+E         ")
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Program Files\\nodejs\\node.EXE', 'C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\c...\\cairntir-obsidian-feature-20261003\\acceptance\\originals\\v2-obsidian-plugin\\test-obsidian-plugin-v3.cjs:176:19\n").returncode
+
+test_obsidian_frozen_acceptance.py:98: AssertionError</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_actual_plugin_python_subprocess" time="0.067"><failure message="AssertionError: ('', &quot;Error: Cannot find module 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-obsidian-download-20261003\\addons\\...mcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-obsidian-feature-20261003\\acceptance\\test_real_plugin.cjs:45:17&#10;  &quot;)&#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['C:\\Program Files\\nodejs\\node.EXE', 'C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\c...mcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-obsidian-feature-20261003\\acceptance\\test_real_plugin.cjs:45:17\n&quot;).returncode">def test_actual_plugin_python_subprocess():
+        result = subprocess.run(
+            [
+                node_executable(),
+                str(PACKET / "test_real_plugin.cjs"),
+                str(integration.REPO / "addons" / "cairntir_obsidian" / "main.js"),
+                integration.sys.executable,
+                str(integration.REPO / "src"),
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=60,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+&gt;       assert result.returncode == 0, (result.stdout, result.stderr)
+E       AssertionError: ('', "Error: Cannot find module 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-obsidian-download-20261003\\addons\\...mcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-obsidian-feature-20261003\\acceptance\\test_real_plugin.cjs:45:17
+E         ")
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Program Files\\nodejs\\node.EXE', 'C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\c...mcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-obsidian-feature-20261003\\acceptance\\test_real_plugin.cjs:45:17\n").returncode
+
+test_obsidian_frozen_acceptance.py:117: AssertionError</failure></testcase></testsuite></testsuites>

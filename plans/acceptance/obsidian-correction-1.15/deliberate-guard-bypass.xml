@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.207" timestamp="2026-10-03T04:29:46.157487-04:00" hostname="PNMDevDesign"><testcase classname="tests.test_obsidian_frozen_acceptance" name="test_outer_transaction_cannot_return_a_false_durable_commit" time="0.036"><failure message="Failed: DID NOT RAISE &lt;class 'cairntir.errors.CairntirError'&gt;">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-9/test_outer_transaction_cannot_0/home/ca...g/pytest-9/test_outer_transaction_cannot_0/vault/cairntir-sync/outbox/c67e95be-6b19-48b9-ac2b-648d808f6565.json'), ...}
+
+    def test_outer_transaction_cannot_return_a_false_durable_commit(flow):
+        bridge = importlib.import_module("cairntir.obsidian_bridge")
+        from cairntir.errors import CairntirError
+    
+        store = DrawerStore(flow["db"], HashEmbeddingProvider(dimension=16))
+        before = rows(flow)
+        try:
+            with store.transaction():
+&gt;               with pytest.raises(CairntirError):
+E               Failed: DID NOT RAISE &lt;class 'cairntir.errors.CairntirError'&gt;
+
+plans\acceptance\obsidian-correction-1.15\test_integration.py:270: Failed</failure></testcase></testsuite></testsuites>

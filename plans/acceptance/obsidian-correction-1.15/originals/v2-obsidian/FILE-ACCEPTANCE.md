@@ -1,0 +1,11 @@
+# Week 1 public workspace file acceptance
+
+Frozen before file-flow implementation. Interface sync_workspace(store, *, vault:Path, wing:str)->dict plus CLI cairntir obsidian-sync VAULT --wing W. Explicit invocation consumes only retained cairntir-sync/outbox/*.json. Arbitrary human notes are never implicitly imported.
+
+Report schema cairntir.obsidian-sync.v1: wing; results with file (vault-relative POSIX path), status committed/rejected, committed receipt, receipt_written bool and surfaced error where applicable; projection status complete/error with error when failed. CLI stdout is this JSON, exit 0 only when all import/acknowledgement/projection operations succeed; nonzero on any error.
+
+Requests use frozen core protocol. Acknowledgement at cairntir-sync/acknowledgements/UUID.json survives retries via durable DB identity. Filesystem failure after DB commit retains committed status/receipt with receipt_written false or projection error; retry repairs files without duplicate append. Individual malformed JSON, duplicate keys and stale edits produce visible rejections while valid requests continue.
+
+Machine manifest cairntir-sync/workspace.json schema cairntir.obsidian-workspace.v1 has wing and drawers containing drawer_id, source_identity, content_sha256, exact content, wing, room, layer, current bool, supersedes_id, editable bool, and vault-relative note. Scope includes nonsecret project history; historical versions are noneditable and new leaf is current. Markdown memory/drawer-ID.md and index.md link source/correction both directions. Projection preserves human annotations, refuses unmarked files, escapes reserved markers only in Markdown and retains exact JSON content. Manifest binds the vault to one wing before further writes. Resolved paths stay inside vault; symlink escapes refused.
+
+Ten public temporary-fixture tests cover these behaviors, including CLI JSON/exit codes. The symlink test explicitly skips if the host cannot create a symlink; a skip is an unexecuted boundary check, never a passing claim. No private evaluation assertion, production store, runtime install, plugin UI or model execution. Plugin interaction and validity lifetime supplements require separate evidence. Preserve all prior frozen artifacts and at most two repair rounds.

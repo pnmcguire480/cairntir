@@ -1,0 +1,19 @@
+{
+  "schema": "cairntir.public-acceptance-freeze.v1",
+  "freeze_id": "v2-obsidian-plugin-2026-09-20-r1",
+  "frozen_at_utc": "2026-09-20T12:45:45.6299172Z",
+  "frozen_before_implementation": true,
+  "artifacts": [
+    {
+      "path": "plugin-contract.json",
+      "sha256": "a6fea8ee38c1e501141af8fe7ea4252c13c8fc07d22ea0f521fa9bfa03f4b9bd",
+      "bytes": 5157
+    },
+    {
+      "path": "test-obsidian-plugin.cjs",
+      "sha256": "985d2aa287714b4de678af0a322b320e27fd263f206c6cdf65f1416a059e3ac6",
+      "bytes": 16118
+    }
+  ],
+  "rule": "Any changed artifact hash invalidates this freeze and dependent results; separately reviewed revisions preserve prior evidence. Mock testing does not establish native Obsidian or backend persistence."
+}

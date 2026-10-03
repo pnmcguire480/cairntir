@@ -1,0 +1,9 @@
+{
+  "recorded_utc": "2026-09-20T12:41:56.347140+00:00",
+  "original_unchanged_sha256": "2d5ed8f9e9cc01868026782cdf85358224d2826d0998111d9e4e1da0e79194a7",
+  "replacement_sha256": "f655c71e714a81f02fdd94d0cb35ca3f4250ac54067760386554637d561e68bf",
+  "initial_execution": "12 core cases passed; both supplementary assertions passed, one Windows cleanup error because sqlite3 context manager does not close connection.",
+  "repair": "Only add contextlib.closing around two observer connections; assertions unchanged. Frozen original retained.",
+  "new_test_execution": "pending",
+  "public_visibility": true
+}

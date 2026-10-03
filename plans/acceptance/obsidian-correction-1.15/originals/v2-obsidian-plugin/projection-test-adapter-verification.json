@@ -1,0 +1,22 @@
+{
+  "schema": "cairntir.projection-fault-adapter-verification.v1",
+  "result": "PASS",
+  "test": "tests/verification/test_projection_failure_outcomes.py",
+  "previous_sha256": "d8c5c8bb3097a858ab2d294c52e65dfc874237845d01926518aa443194e838b7",
+  "updated_sha256": "4af65ad427d0fb003bbb8438ecf6602497522296c155f7ae45679969ad8a4ab4",
+  "change": "Inject the same PermissionError through read-mode Path.open, covering Path.read_text and direct newline-preserving Path.open; assert read_fault_fired. Existing preservation, no-database-write and retry assertions unchanged.",
+  "focused_tests_passed": 7,
+  "ruff_check": "PASS with --no-cache",
+  "ruff_format": "PASS with --no-cache",
+  "prior_lint_attempt": "INCONCLUSIVE: sandbox denied Ruff cache temporary-file creation; same checks rerun without cache.",
+  "mutation": {
+    "driver": "check-read-fault-mutation.py",
+    "driver_sha256": "9169cb13c05408ce3cdc80ccbc56ddb5d1be0257a5ffe2ff8135efd65a220b86",
+    "kind": "runtime-only swallowed read-error handler",
+    "reached": 1,
+    "detected_by": "DID NOT RAISE ProjectionError",
+    "production_file_changed": false
+  },
+  "original_full_suite_failure_retained": ".cairntir/v2-week1-20260920/source-suite.log and source-suite.xml",
+  "scope": "Test seam adaptation only; no expected behavior weakened and no production source edited."
+}

@@ -1,0 +1,14 @@
+{
+  "frozen_utc": "2026-09-20T12:40:33.252749+00:00",
+  "phase": "preimplementation supplementary source-state requirements from parent before core implementation",
+  "visibility": "PUBLIC",
+  "tests": 2,
+  "requirements": [
+    "Successful correction and durable replay preserve every original drawers SQL column, including access counters and last-access timestamp.",
+    "Non-None claim, predicted_outcome, observed_outcome or delta makes source ineligible for generic correction; use its protocol workflow."
+  ],
+  "files": {
+    "test_correction_source_state.py": "2d5ed8f9e9cc01868026782cdf85358224d2826d0998111d9e4e1da0e79194a7"
+  },
+  "core_frozen_unchanged": "508b4612f28872c92c37b4de5b49ae26c102e17049c69381961da3d967184e68"
+}

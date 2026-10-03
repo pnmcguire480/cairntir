@@ -1,0 +1,28 @@
+{
+  "frozen_at_utc": "2026-10-03T08:20:57.174096+00:00",
+  "version": 3,
+  "baseline": "37ab0b1bb7e641adec8d2305b1546d1a35b1cd7e",
+  "files_sha256": {
+    "CONTRACT.md": "c4c68321dae0d22af1fced765174543afa14b0e1078339c7ccd9c27e68424a5a",
+    "ORIGINALS-FREEZE.json": "ae275e8a9268d6424c38afa3a943e117acfa86ef622b294e5e439bca37c30154",
+    "HARNESS-AMENDMENT-V2.md": "834e66dfd6ac30580990ccdaf1c206d8338610aabbceb812487ef60c5fd19a97",
+    "test_integration.py": "6ba8174f5082ec9bc8a41fe9f181f21a7f406a28deb53c8a00b81bf30438079e",
+    "test_obsidian_frozen_acceptance.py": "6abfc6aba17201478c6938db9b52441d586738dfc4bddb21ef1b3b2199d819cc",
+    "test_real_plugin.cjs": "690b9fac1f4a3abafe0fedb47d8136e87458b4d81b48330a5c46703559ff4cca",
+    "maintained_pytest_wrapper.py": "79a41f065d945afeac74b01a8f56d163fe02ada7d4afc2b45bce3dc522f1d9e3",
+    "HARNESS-AMENDMENT-V3.md": "27be04e8c2f38fe57d682f4f7ba1d8e8a2e1865092789f5eed67e427613f4f53"
+  },
+  "python_original_counts": {
+    "test_correction_core.py": 12,
+    "test_correction_source_state.py": 2,
+    "test_correction_source_state_v2.py": 2,
+    "test_projection_newlines.py": 1,
+    "test_source_lifetime.py": 3,
+    "test_workspace_flow.py": 10,
+    "test_workspace_flow_v2.py": 10
+  },
+  "additional_controls": 13,
+  "required_node": "v3 46 cases and401 assertions, plus actual subprocess3calls",
+  "repair_limit": 2,
+  "pytest_total": 43
+}

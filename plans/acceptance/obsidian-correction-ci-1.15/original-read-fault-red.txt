@@ -1,0 +1,62 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_projection_filesystem_failure_preserves_user_notes_and_allows_retry[read] _
+
+seeded = (WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-15/test_projection_filesystem_fai0/.cairntir/ca...id_until":null}}},"candidates":[],"instruction_authority":"none","budget":{"limit_chars":8192,"rendered_chars":1250}}')
+tmp_path = WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-15/test_projection_filesystem_fai0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000025AE3BF8B50>
+boundary = 'read'
+
+    @pytest.mark.parametrize("boundary", ["read", "replace", "cleanup"])
+    def test_projection_filesystem_failure_preserves_user_notes_and_allows_retry(
+        seeded, tmp_path, monkeypatch, boundary
+    ):
+        database, _, _ = seeded
+        vault = tmp_path / "vault"
+        (vault / ".obsidian").mkdir(parents=True)
+        with DrawerStore(database, HashEmbeddingProvider(dimension=32)) as store:
+            result = obsidian.project_to_obsidian(store, vault=vault)
+            note = result.learning_log
+            original = note.read_bytes() + b"\nKeep my own exact notes.\n"
+            note.write_bytes(original)
+            record_discovery(
+                store,
+                wing="recovery",
+                title="A new finding",
+                summary="Updated generated text with evidence #1; unrelated issue #98765.",
+                novelty="user",
+                evidence_ids=(1,),
+                state="candidate",
+            )
+            before = contents(database)
+            read_text = Path.read_text
+            unlink = Path.unlink
+    
+            def failed_read(path, *args, **kwargs):
+                if path == note:
+                    raise PermissionError("projection read unavailable")
+                return read_text(path, *args, **kwargs)
+    
+            def failed_replace(source, target):
+                raise OSError("projection destination unavailable")
+    
+            def failed_cleanup(path, *args, **kwargs):
+                if path.name.endswith(".tmp"):
+                    raise PermissionError("projection cleanup unavailable")
+                return unlink(path, *args, **kwargs)
+    
+            with monkeypatch.context() as patch:
+                if boundary == "read":
+                    patch.setattr(Path, "read_text", failed_read)
+                else:
+                    patch.setattr(obsidian.os, "replace", failed_replace)
+                    if boundary == "cleanup":
+                        patch.setattr(Path, "unlink", failed_cleanup)
+>               with pytest.raises(ProjectionError, match="unavailable"):
+E               Failed: DID NOT RAISE <class 'cairntir.errors.ProjectionError'>
+
+tests\verification\test_projection_failure_outcomes.py:60: Failed
+E22 complete synthetic registry/assets adapter: 0 exact original cases, no assertion changes
+=========================== short test summary info ===========================
+FAILED tests/verification/test_projection_failure_outcomes.py::test_projection_filesystem_failure_preserves_user_notes_and_allows_retry[read]
+1 failed in 0.34s

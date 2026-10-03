@@ -1,0 +1,33 @@
+{
+  "frozen_at_utc": "2026-10-03T08:27:05.611189+00:00",
+  "version": 7,
+  "baseline": "37ab0b1bb7e641adec8d2305b1546d1a35b1cd7e",
+  "files_sha256": {
+    "CONTRACT.md": "c4c68321dae0d22af1fced765174543afa14b0e1078339c7ccd9c27e68424a5a",
+    "ORIGINALS-FREEZE.json": "ae275e8a9268d6424c38afa3a943e117acfa86ef622b294e5e439bca37c30154",
+    "HARNESS-AMENDMENT-V2.md": "834e66dfd6ac30580990ccdaf1c206d8338610aabbceb812487ef60c5fd19a97",
+    "test_integration.py": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340",
+    "test_obsidian_frozen_acceptance.py": "6abfc6aba17201478c6938db9b52441d586738dfc4bddb21ef1b3b2199d819cc",
+    "test_real_plugin.cjs": "690b9fac1f4a3abafe0fedb47d8136e87458b4d81b48330a5c46703559ff4cca",
+    "maintained_pytest_wrapper.py": "c8ce530097c0125526ee3220add7eecbde5b965f6d7a7615ecdf94d74a753896",
+    "HARNESS-AMENDMENT-V3.md": "27be04e8c2f38fe57d682f4f7ba1d8e8a2e1865092789f5eed67e427613f4f53",
+    "HARNESS-AMENDMENT-V4.md": "712b805fa34c6952b0360d769fc71ff20300b77c392ec251cbd9b1873e052b28",
+    "HARNESS-AMENDMENT-V5.md": "616cf4c864c526323faf9659eef86881e2e48576b8107f0f0f0b39036b122b2d",
+    "HARNESS-AMENDMENT-V6.md": "6e8d6448a3d767fde802736e2be1ba1aecfbde3cbea485c0d80e34c817480576",
+    "guard_bypass_control.py": "8aa5abd59a5ea9fc570bf2310b71718b819124f68c92b1d692756fa28dc8ca36",
+    "HARNESS-AMENDMENT-V7.md": "504aaa0f3da1255700eceb40e80a9ed333873d101ae62c86554c81de43f99e1f"
+  },
+  "python_original_counts": {
+    "test_correction_core.py": 12,
+    "test_correction_source_state.py": 2,
+    "test_correction_source_state_v2.py": 2,
+    "test_projection_newlines.py": 1,
+    "test_source_lifetime.py": 3,
+    "test_workspace_flow.py": 10,
+    "test_workspace_flow_v2.py": 10
+  },
+  "additional_controls": 15,
+  "required_node": "v3 46 cases and401 assertions, plus actual subprocess3calls",
+  "repair_limit": 2,
+  "pytest_total": 45
+}

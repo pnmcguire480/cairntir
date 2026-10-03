@@ -1,0 +1,19 @@
+{
+  "schema": "cairntir.public-obsidian-plugin-verification.v1",
+  "contract_id": "v2-obsidian-plugin-2026-09-20-r2",
+  "result": "PASS",
+  "scope": "Final LF-normalized Node/mock Obsidian plugin boundary.",
+  "main_sha256": "9b571d3dc85cf219192ef74325fd44de16d77432082d8dad1ddc61ccf8f9b652",
+  "manifest_sha256": "bb7b09a8524e67eec11cf20d93ce385df48061043178036f3706208d8a9d9334",
+  "readme_sha256": "ac30881c2c60b021f29ea0fbd94ca9cc9c28095381a7170de7a3b53357546f99",
+  "acceptance_sha256": "d29e26bd424c445b1bc3021edae496ab3a2b6d166902cb294e7750bcf080aed4",
+  "cases": 46,
+  "assertions": 401,
+  "change_from_round1": "Independently compared main.js bytes: CRLF-to-LF normalization only. Re-ran entire frozen v3 harness against exact final bytes.",
+  "execution_location": "Byte-identical independently SHA256-verified candidate copy inside authorized workspace.",
+  "prior_evidence": ["verification-v2.json", "verification-v3-round0.json", "verification-v3-round1.json"],
+  "candidate_repairs_used": 1,
+  "candidate_repair_rounds_remaining": 1,
+  "native_obsidian_ui": "unverified",
+  "backend_persistence": "not exercised by this mock"
+}

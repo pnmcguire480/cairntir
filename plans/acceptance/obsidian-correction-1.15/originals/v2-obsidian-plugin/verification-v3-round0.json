@@ -1,0 +1,16 @@
+{
+  "schema": "cairntir.public-obsidian-plugin-verification.v1",
+  "contract_id": "v2-obsidian-plugin-2026-09-20-r2",
+  "result": "FAIL",
+  "round": 0,
+  "main_sha256": "b38d464c11259931848aa21fc0098a4bfc5913e228e8380a0c886fcb3fafa71e",
+  "acceptance_sha256": "d29e26bd424c445b1bc3021edae496ab3a2b6d166902cb294e7750bcf080aed4",
+  "intended_failure": "ordinary exit 1 matching commit acknowledged",
+  "observation": "Original 23 mocked boundary cases pass with the corrected receipt fixture. The first supplemental normal-exit-1/projection-error case does not acknowledge the committed correction because plugin rejects process error before parsing valid stdout.",
+  "amendment": "plugin-contract-amendment.json",
+  "prior_evidence": "verification-v2.json",
+  "new_fixture": "Complete actual core receipt shape and ordinary CLI exit-1 semantics frozen before candidate repair; prior assertions and artifacts preserved.",
+  "candidate_repairs_used": 0,
+  "candidate_repair_rounds_remaining": 2,
+  "native_obsidian_ui": "unverified"
+}

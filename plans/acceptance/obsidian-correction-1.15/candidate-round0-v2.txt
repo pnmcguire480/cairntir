@@ -1,0 +1,167 @@
+.....................s.........F......FFF..         [100%]
+================================== FAILURES ===================================
+_____________ test_scoped_cli_denied_before_vault_or_store_change _____________
+
+flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-4/test_scoped_cli_denied_before_0/home/ca...g/pytest-4/test_scoped_cli_denied_before_0/vault/cairntir-sync/outbox/5b415508-5071-4d83-8137-879d5d23cf39.json'), ...}
+
+    def test_scoped_cli_denied_before_vault_or_store_change(flow):
+        from cairntir.access import issue_grant
+    
+        store = DrawerStore(flow["db"], HashEmbeddingProvider(dimension=16))
+>       token = issue_grant(
+            store,
+            scopes=[{"wing": "fixture", "room": "notes"}],
+            capabilities=["read", "write"],
+        )
+
+test_integration.py:161: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+owner_store = <cairntir.memory.store.DrawerStore object at 0x0000028636E8F7D0>
+
+    def issue_grant(
+        owner_store: DrawerStore,
+        *,
+        scopes: Sequence[dict[str, Any]],
+        capabilities: Sequence[str],
+        expires_at: datetime | None = None,
+        principal: str = "local",
+    ) -> str:
+        """Issue an owner-created grant and persist only its token hash."""
+        if isinstance(owner_store, ScopedStore):
+            raise AccessDenied(_DENIED)
+        copied = json.loads(json.dumps(scopes))
+        if not isinstance(copied, list) or any(
+            not isinstance(scope, dict)
+            or set(scope) - {"wing", "rooms", "drawer_ids"}
+            or not isinstance(scope.get("wing"), str)
+            or not scope["wing"]
+            or (
+                "rooms" in scope
+                and (
+                    not isinstance(scope["rooms"], list)
+                    or any(not isinstance(room, str) for room in scope["rooms"])
+                )
+            )
+            or (
+                "drawer_ids" in scope
+                and (
+                    not isinstance(scope["drawer_ids"], list)
+                    or any(type(key) is not int or key <= 0 for key in scope["drawer_ids"])
+                )
+            )
+            for scope in copied
+        ):
+>           raise AccessDenied("invalid grant scope")
+E           cairntir.access.AccessDenied: invalid grant scope
+
+C:\Users\pnmcg\AppData\Local\Temp\cairntir-obsidian-work-20261003\src\cairntir\access.py:130: AccessDenied
+_________ test_outer_transaction_cannot_return_a_false_durable_commit _________
+
+flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-4/test_outer_transaction_cannot_0/home/ca...g/pytest-4/test_outer_transaction_cannot_0/vault/cairntir-sync/outbox/b46dc1fe-0c3d-4d80-82d6-b5c2a3224900.json'), ...}
+
+    def test_outer_transaction_cannot_return_a_false_durable_commit(flow):
+        bridge = importlib.import_module("cairntir.obsidian_bridge")
+        from cairntir.errors import CairntirError
+    
+        store = DrawerStore(flow["db"], HashEmbeddingProvider(dimension=16))
+        before = rows(flow)
+        try:
+            with store.transaction():
+>               with pytest.raises(CairntirError):
+E               Failed: DID NOT RAISE <class 'cairntir.errors.CairntirError'>
+
+test_integration.py:265: Failed
+_____ test_outer_transaction_sync_refuses_before_writing_acknowledgement ______
+
+flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-4/test_outer_transaction_sync_re0/home/ca...g/pytest-4/test_outer_transaction_sync_re0/vault/cairntir-sync/outbox/bcd37325-8270-4ee4-8d20-ad2df72b6ade.json'), ...}
+
+    def test_outer_transaction_sync_refuses_before_writing_acknowledgement(flow):
+        bridge = importlib.import_module("cairntir.obsidian_bridge")
+        from cairntir.errors import CairntirError
+    
+        store = DrawerStore(flow["db"], HashEmbeddingProvider(dimension=16))
+        before = rows(flow)
+        before_files = {
+            str(p.relative_to(flow["vault"])): p.read_bytes()
+            for p in flow["vault"].rglob("*")
+            if p.is_file()
+        }
+        try:
+            with store.transaction():
+>               with pytest.raises(CairntirError):
+E               Failed: DID NOT RAISE <class 'cairntir.errors.CairntirError'>
+
+test_integration.py:288: Failed
+_______ test_scoped_hidden_successor_does_not_enable_stale_edit_or_leak _______
+
+flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-4/test_scoped_hidden_successor_d0/home/ca...g/pytest-4/test_scoped_hidden_successor_d0/vault/cairntir-sync/outbox/ff6b7adb-3ee6-4843-b961-7fb290d0db14.json'), ...}
+
+    def test_scoped_hidden_successor_does_not_enable_stale_edit_or_leak(flow):
+        bridge = importlib.import_module("cairntir.obsidian_bridge")
+        from cairntir.access import AccessDenied, bind_grant, issue_grant
+    
+        store = DrawerStore(flow["db"], HashEmbeddingProvider(dimension=16))
+        hidden = store.add(
+            Drawer(
+                wing="fixture",
+                room="private",
+                content="HIDDEN-SUCCESSOR",
+                supersedes_id=flow["request"]["source_drawer_id"],
+            )
+        )
+        identity = store.portable_identity(hidden.id)
+>       token = issue_grant(
+            store,
+            scopes=[{"wing": "fixture", "room": "notes"}],
+            capabilities=["read", "write"],
+        )
+
+test_integration.py:314: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+owner_store = <cairntir.memory.store.DrawerStore object at 0x0000028637038250>
+
+    def issue_grant(
+        owner_store: DrawerStore,
+        *,
+        scopes: Sequence[dict[str, Any]],
+        capabilities: Sequence[str],
+        expires_at: datetime | None = None,
+        principal: str = "local",
+    ) -> str:
+        """Issue an owner-created grant and persist only its token hash."""
+        if isinstance(owner_store, ScopedStore):
+            raise AccessDenied(_DENIED)
+        copied = json.loads(json.dumps(scopes))
+        if not isinstance(copied, list) or any(
+            not isinstance(scope, dict)
+            or set(scope) - {"wing", "rooms", "drawer_ids"}
+            or not isinstance(scope.get("wing"), str)
+            or not scope["wing"]
+            or (
+                "rooms" in scope
+                and (
+                    not isinstance(scope["rooms"], list)
+                    or any(not isinstance(room, str) for room in scope["rooms"])
+                )
+            )
+            or (
+                "drawer_ids" in scope
+                and (
+                    not isinstance(scope["drawer_ids"], list)
+                    or any(type(key) is not int or key <= 0 for key in scope["drawer_ids"])
+                )
+            )
+            for scope in copied
+        ):
+>           raise AccessDenied("invalid grant scope")
+E           cairntir.access.AccessDenied: invalid grant scope
+
+C:\Users\pnmcg\AppData\Local\Temp\cairntir-obsidian-work-20261003\src\cairntir\access.py:130: AccessDenied
+=========================== short test summary info ===========================
+FAILED test_obsidian_frozen_acceptance.py::test_scoped_cli_denied_before_vault_or_store_change
+FAILED test_obsidian_frozen_acceptance.py::test_outer_transaction_cannot_return_a_false_durable_commit
+FAILED test_obsidian_frozen_acceptance.py::test_outer_transaction_sync_refuses_before_writing_acknowledgement
+FAILED test_obsidian_frozen_acceptance.py::test_scoped_hidden_successor_does_not_enable_stale_edit_or_leak
+4 failed, 38 passed, 1 skipped, 21 subtests passed in 20.18s
