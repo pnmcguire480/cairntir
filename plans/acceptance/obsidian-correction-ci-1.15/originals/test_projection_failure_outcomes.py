@@ -34,13 +34,13 @@ def test_projection_filesystem_failure_preserves_user_notes_and_allows_retry(
             state="candidate",
         )
         before = contents(database)
-        open_file = Path.open
+        read_text = Path.read_text
         unlink = Path.unlink
 
         def failed_read(path, *args, **kwargs):
             if path == note:
                 raise PermissionError("projection read unavailable")
-            return open_file(path, *args, **kwargs)
+            return read_text(path, *args, **kwargs)
 
         def failed_replace(source, target):
             raise OSError("projection destination unavailable")
@@ -52,7 +52,7 @@ def test_projection_filesystem_failure_preserves_user_notes_and_allows_retry(
 
         with monkeypatch.context() as patch:
             if boundary == "read":
-                patch.setattr(Path, "open", failed_read)
+                patch.setattr(Path, "read_text", failed_read)
             else:
                 patch.setattr(obsidian.os, "replace", failed_replace)
                 if boundary == "cleanup":

@@ -1,0 +1,37 @@
+{
+  "result": "PASS",
+  "captured_at_utc": "2026-10-03T09:10:16.526968+00:00",
+  "freeze_version": 2,
+  "freeze_sha256": "e62cda019314fb0698d68a3f967518ac6722418941661552ead3f990aa4f1c17",
+  "original_fault_test_sha256": "d8c5c8bb3097a858ab2d294c52e65dfc874237845d01926518aa443194e838b7",
+  "adapted_fault_test_sha256": "300c4e78ec627da37bc062de738dd2b7864e630758ffef15646ec77b251a6128",
+  "new_contract_tests_sha256": "256c225922d03bbac84a55502c8ed1f00f649f783225b7cdf2a7f2d0a397ee3d",
+  "minimal_adapter": "Three identifier substitutions: saved callable, fallback call and monkeypatch target from Path.read_text to Path.open.",
+  "assert_and_raises_AST_equal": true,
+  "assert_and_raises_AST_count": 9,
+  "original_baseline": "1 failed in 0.34 seconds: deliberate old read_text injector no longer triggers unchanged ProjectionError assertion.",
+  "final_focused_tests": "28 passed in 1.26 seconds: seven original cases and 21 new finite contracts.",
+  "v1_focused_tests": "28 passed in 1.30 seconds; v2 only changes import grouping, all non-import AST unchanged.",
+  "new_contract_cases": {
+    "closed_store_typed_errors": 3,
+    "scoped_revoked_or_write_only_denial": 6,
+    "exact_request_boundary_rejections": 12
+  },
+  "original_fault_test_protected_by_historical_preservation": false,
+  "lint": "PASS in actual repository context for both maintained tests",
+  "format": "PASS with repository line length 100",
+  "runtime_files_unchanged": 65,
+  "previous_sealed_acceptance_files_unchanged": 94,
+  "runtime_fix_needed": false,
+  "coverage_config_floor_unchanged": true,
+  "local_full_suite_or_coverage_run": false,
+  "remaining_required_check": "Existing hosted CI rerun on repaired exact head; local checks make no coverage-percentage claim.",
+  "files_sha256": {
+    "original-read-fault-red.txt": "47b5a1a7c66fd4f9490a1db9141b47798357733d633ca84a8a715e17cf8ef089",
+    "original-read-fault-red.xml": "87dd2a161ec34cdcd68742d10cdf0c20ae689f6b3031719b73fd273e8abe0cf6",
+    "adapted-focused.txt": "577a04d26bf302e99bb6491ce868b262ad47fa52eee1202d8eb5027978e5fdda",
+    "adapted-focused.xml": "67b67c2daab67760b507a2655e9ebcacabd9e71b3983d36554874168e8798696",
+    "adapted-focused-v2.txt": "3c39c068e85fc74c6e6707732511a0b3d85046becdebf43c2bdb4f7a4500b737",
+    "adapted-focused-v2.xml": "f3fb0b513b65d093f063a79fcb5d093ec9706da5bb31625c4355c433ce10912c"
+  }
+}
