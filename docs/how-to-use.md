@@ -283,3 +283,10 @@ That is the North Star. Details live in the repository README.
 
 File a bug at
 [github.com/pnmcguire480/cairntir/issues](https://github.com/pnmcguire480/cairntir/issues).
+
+## Embedding identity and explicit rebuilds
+
+The unpublished 1.14.0 candidate binds semantic indexes to model/tokenizer bytes
+and runtime versions. Existing name-only indexes require an explicit backed-up
+rebuild; raw recovery remains available. Read the [operator guide](embedding-artifacts.md)
+before upgrading.

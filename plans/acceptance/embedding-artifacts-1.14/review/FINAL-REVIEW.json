@@ -1,0 +1,17 @@
+{
+  "disposition": "PASS",
+  "custody": "public shared workspace",
+  "utc": "2026-10-03T06:17:29.0613422Z",
+  "final_report_sha256": "6968b4546097baf77c2b11a41fa6b2c2686ba0cfb89e085b61dfeedd486be746",
+  "underlying_controls": 12,
+  "remaining_scoped_blockers": [],
+  "runtime_edits_by_reviewer": false,
+  "pytest_parameters": 3,
+  "wrong_control_detected": true,
+  "runtime_sha256": {
+    "artifacts.py": "549095cd71e8c208d5ca4d0f930af98ef0ec178bac1a4ca8d900dde53d4f4a5f",
+    "embeddings.py": "fcbc6a5f8fa7de6a436e71e3e4f42ef4ea46a84ab214c2db53666a2df8f41cdc",
+    "store.py": "900dc793536d64e89794e821cccabefdf1ec63fab99dd246224b546f6d285002"
+  },
+  "pytest_seconds": 0.81
+}

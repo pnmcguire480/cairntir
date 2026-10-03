@@ -5,11 +5,12 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **1.13.0** (single-feature candidate; not yet published).
+Source version: **1.14.0** (single-feature candidate; not yet published).
 Published base: [1.12.4](docs/release/v1.12.4.md), merge
 `b60c2fbc537b6fcb284aa14f8023b3170f720822`. Its GitHub release receipt records
 completed publication; the older preparation document remains historical.
-Current scope is [complete recall-response budgeting](plans/recall-response-budget.md).
+Current scope is [pinned embedding-artifact identity](plans/pinned-embedding-artifacts.md),
+stacked on reviewed PR124; its recall-response budget remains unchanged.
 Pending changes belong under [Unreleased](CHANGELOG.md#unreleased).
 
 The core has verbatim SQLite drawers, explicit provenance, task-aware budgeted
@@ -85,7 +86,21 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-03 (one foundational feature)
+## Last Session - 2026-10-03 (E22 single-feature candidate)
+
+Port only existing E22 onto reviewed PR124 head `65126e49`: canonical asset and
+runtime identity, pinned local-only construction, explicit legacy refusal/raw
+recovery and backed-up reindex. No dependencies, schema or MCP tools added.
+Thirty-five independent synthetic controls are frozen; baseline red and fixture
+amendments remain preserved. Integrated checks pass: 90 tests with three Windows
+symlink privilege skips. Independent review passes 12 additional underlying
+controls and detects deliberate verification bypass; two bounded product repairs
+close invalid acquisition and typed error gaps. Hosted qualification and parent
+review remain pending; exact-head results belong in the feature PR/evidence packet. Do not infer release readiness from
+source version or historical prototype passes. Original checkouts and private
+data remain untouched. Merge, publication and live adoption require authority.
+
+## Previous Session - 2026-10-03 (one foundational feature)
 
 Port only the preserved E23 complete recall-response budget onto published
 1.12.4. Optional MCP `budget_chars` preserves whole evidence, full provenance,

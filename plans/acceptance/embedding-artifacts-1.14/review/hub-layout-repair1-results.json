@@ -1,0 +1,25 @@
+{
+  "cases": 1,
+  "elapsed_seconds": 0.031000000017229468,
+  "runtime_sha256": {
+    "embeddings.py": "da1b20727d2d8bb70208aa4a2af0fd3328dc85a53a72ce82e8072af56c9347b9",
+    "artifacts.py": "c544ee4c44513f148acf8071e2edd9b14cebe22367bca0cb52917aec32efc33d"
+  },
+  "observations": {
+    "test_hub_selected_missing_model_with_invalid_tokenizer": {
+      "calls": [
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-zqgaa85_\\cache"
+        }
+      ]
+    }
+  },
+  "failures": [
+    {
+      "name": "test_hub_selected_missing_model_with_invalid_tokenizer (__main__.main.<locals>.HubControl.test_hub_selected_missing_model_with_invalid_tokenizer)",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\hub_layout_control.py\", line 60, in test_hub_selected_missing_model_with_invalid_tokenizer\n    self.refuse_without_acquisition()\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 90, in refuse_without_acquisition\n    self.assertEqual(self.calls, [], \"invalid evidence must not enter acquisition\")\nAssertionError: Lists differ: [{'model_name': 'synthetic/review-model', [136 chars]he'}] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n{'model_name': 'synthetic/review-model', 'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-zqgaa85_\\\\cache'}\n\n+ []\n- [{'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-zqgaa85_\\\\cache',\n-   'model_name': 'synthetic/review-model'}] : invalid evidence must not enter acquisition\n"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,8 @@
+{
+  "files_sha256": {
+    "cache_permission_control.py": "a710e33823e9fc9241fdd7f9568f95332ffaf208e09d84e0817ad857d9df3556"
+  },
+  "scope": "Parent-requested existing typed-error contract, offline cache stat PermissionError parameter, before final repair2 closure.",
+  "frozen_utc": "2026-10-03T06:14:23.8592778Z",
+  "cases": 1
+}

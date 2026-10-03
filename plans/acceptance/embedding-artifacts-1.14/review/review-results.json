@@ -1,0 +1,92 @@
+{
+  "elapsed_seconds": 0.139999999984866,
+  "cases": 8,
+  "failures": [
+    {
+      "name": "test_02_nonfile_model_is_not_missing (__main__.Controls.test_02_nonfile_model_is_not_missing)",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 101, in test_02_nonfile_model_is_not_missing\n    self.refuse_without_acquisition()\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 90, in refuse_without_acquisition\n    self.assertEqual(self.calls, [], \"invalid evidence must not enter acquisition\")\nAssertionError: Lists differ: [{'model_name': 'synthetic/review-model', [136 chars]he'}] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n{'model_name': 'synthetic/review-model', 'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-xc8fz0n8\\\\cache'}\n\n+ []\n- [{'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-xc8fz0n8\\\\cache',\n-   'model_name': 'synthetic/review-model'}] : invalid evidence must not enter acquisition\n"
+    },
+    {
+      "name": "test_03_missing_model_and_missing_runtime_never_acquire (__main__.Controls.test_03_missing_model_and_missing_runtime_never_acquire)",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 106, in test_03_missing_model_and_missing_runtime_never_acquire\n    self.refuse_without_acquisition()\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 90, in refuse_without_acquisition\n    self.assertEqual(self.calls, [], \"invalid evidence must not enter acquisition\")\nAssertionError: Lists differ: [{'model_name': 'synthetic/review-model', [136 chars]he'}] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n{'model_name': 'synthetic/review-model', 'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-h91mjc9j\\\\cache'}\n\n+ []\n- [{'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-h91mjc9j\\\\cache',\n-   'model_name': 'synthetic/review-model'}] : invalid evidence must not enter acquisition\n"
+    },
+    {
+      "name": "test_04_missing_config_and_nonfile_tokenizer_never_acquire (__main__.Controls.test_04_missing_config_and_nonfile_tokenizer_never_acquire)",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 112, in test_04_missing_config_and_nonfile_tokenizer_never_acquire\n    self.refuse_without_acquisition()\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 90, in refuse_without_acquisition\n    self.assertEqual(self.calls, [], \"invalid evidence must not enter acquisition\")\nAssertionError: Lists differ: [{'model_name': 'synthetic/review-model', [136 chars]he'}] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n{'model_name': 'synthetic/review-model', 'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-hv4aypr1\\\\cache'}\n\n+ []\n- [{'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-hv4aypr1\\\\cache',\n-   'model_name': 'synthetic/review-model'}] : invalid evidence must not enter acquisition\n"
+    }
+  ],
+  "errors": [],
+  "observations": {
+    "test_01_valid_local_model_uses_pinned_constructor": {
+      "calls": [
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-uigtgtrt\\cache",
+          "specific_model_path": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-uigtgtrt\\cache\\review-model",
+          "local_files_only": true
+        }
+      ]
+    },
+    "test_02_nonfile_model_is_not_missing": {
+      "calls": [
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-xc8fz0n8\\cache"
+        }
+      ]
+    },
+    "test_03_missing_model_and_missing_runtime_never_acquire": {
+      "calls": [
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-h91mjc9j\\cache"
+        }
+      ]
+    },
+    "test_04_missing_config_and_nonfile_tokenizer_never_acquire": {
+      "calls": [
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-hv4aypr1\\cache"
+        }
+      ]
+    },
+    "test_05_genuine_missing_model_bootstraps_then_pins": {
+      "calls": [
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-6_8p8_tl\\cache"
+        },
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-6_8p8_tl\\cache",
+          "specific_model_path": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-6_8p8_tl\\cache\\review-model",
+          "local_files_only": true
+        }
+      ]
+    },
+    "test_06_permission_error_is_typed_and_never_acquires": {
+      "calls": []
+    },
+    "test_07_path_loop_is_typed_and_never_acquires": {
+      "calls": []
+    },
+    "test_08_pinned_mutation_refused_before_constructor": {
+      "calls": []
+    }
+  },
+  "runtime_sha256": {
+    "artifacts.py": "2e40f4d3127a928e05650e59e9e0c8ecefbaf89960867b06d0958d00a4375ab1",
+    "store.py": "900dc793536d64e89794e821cccabefdf1ec63fab99dd246224b546f6d285002",
+    "embeddings.py": "f4050c7ec7c16672fe2109f8312a8707b9b788b91101bd6e8c5820f39db5b5d7"
+  },
+  "wrong_control": {
+    "disable_preload_verification_detected": true,
+    "failures": [
+      {
+        "name": "test_08_pinned_mutation_refused_before_constructor (__main__.Controls.test_08_pinned_mutation_refused_before_constructor)",
+        "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 145, in test_08_pinned_mutation_refused_before_constructor\n    with self.assertRaises(EmbeddingError):\nAssertionError: EmbeddingError not raised\n"
+      }
+    ]
+  }
+}

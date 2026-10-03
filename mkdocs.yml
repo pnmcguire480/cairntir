@@ -50,6 +50,7 @@ nav:
       - Decision Replay: recipes/decision-replay/README.md
       - Signal Reader: recipes/signal-reader/README.md
   - Maintenance:
+      - Embedding Artifact Identity: embedding-artifacts.md
       - Contributor Handoff: contributor-handoff.md
       - Change and Adoption Status: CHANGE-STATUS.md
       - Release Policy: release-cadence.md

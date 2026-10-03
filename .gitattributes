@@ -63,3 +63,6 @@ plans/acceptance/backup-contract-20261002/*-backup-check.log whitespace=-blank-a
 # Preserve independently frozen recall-budget acceptance bytes.
 plans/acceptance/recall-budget-1.13/** -text
 plans/acceptance/recall-budget-1.13/FROZEN-20261003.json whitespace=cr-at-eol
+
+# Preserve all independent E22 acceptance and amendment bytes.
+plans/acceptance/embedding-artifacts-1.14/** -text whitespace=cr-at-eol

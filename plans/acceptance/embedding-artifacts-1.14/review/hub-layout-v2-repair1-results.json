@@ -1,0 +1,71 @@
+{
+  "cases": 3,
+  "elapsed_seconds": 0.09299999999348074,
+  "runtime_sha256": {
+    "embeddings.py": "da1b20727d2d8bb70208aa4a2af0fd3328dc85a53a72ce82e8072af56c9347b9",
+    "artifacts.py": "c544ee4c44513f148acf8071e2edd9b14cebe22367bca0cb52917aec32efc33d"
+  },
+  "observations": {
+    "test_hub_selected_missing_model_with_invalid_tokenizer": {
+      "calls": [
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-7e0q15qt\\cache"
+        }
+      ]
+    },
+    "test_hub_genuine_missing_model_acquires_then_pins": {
+      "calls": [
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-pxgr7_28\\cache"
+        },
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-pxgr7_28\\cache",
+          "specific_model_path": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-pxgr7_28\\cache\\models--synthetic--review\\snapshots\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "local_files_only": true
+        }
+      ]
+    },
+    "test_hub_malformed_selected_refs_refuse_without_acquisition": {
+      "calls": [
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-drtv8fb0\\cache"
+        }
+      ]
+    }
+  },
+  "failures": [
+    {
+      "name": "test_hub_selected_missing_model_with_invalid_tokenizer (__main__.main.<locals>.HubControl.test_hub_selected_missing_model_with_invalid_tokenizer)",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\hub_layout_control_v2.py\", line 60, in test_hub_selected_missing_model_with_invalid_tokenizer\n    self.refuse_without_acquisition()\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 90, in refuse_without_acquisition\n    self.assertEqual(self.calls, [], \"invalid evidence must not enter acquisition\")\nAssertionError: Lists differ: [{'model_name': 'synthetic/review-model', [136 chars]he'}] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n{'model_name': 'synthetic/review-model', 'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-7e0q15qt\\\\cache'}\n\n+ []\n- [{'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-7e0q15qt\\\\cache',\n-   'model_name': 'synthetic/review-model'}] : invalid evidence must not enter acquisition\n"
+    },
+    {
+      "name": "test_hub_malformed_selected_refs_refuse_without_acquisition (__main__.main.<locals>.HubControl.test_hub_malformed_selected_refs_refuse_without_acquisition) (reference='')",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\hub_layout_control_v2.py\", line 96, in test_hub_malformed_selected_refs_refuse_without_acquisition\n    self.refuse_without_acquisition()\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 90, in refuse_without_acquisition\n    self.assertEqual(self.calls, [], \"invalid evidence must not enter acquisition\")\nAssertionError: Lists differ: [{'model_name': 'synthetic/review-model', [136 chars]he'}] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n{'model_name': 'synthetic/review-model', 'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-drtv8fb0\\\\cache'}\n\n+ []\n- [{'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-drtv8fb0\\\\cache',\n-   'model_name': 'synthetic/review-model'}] : invalid evidence must not enter acquisition\n"
+    },
+    {
+      "name": "test_hub_malformed_selected_refs_refuse_without_acquisition (__main__.main.<locals>.HubControl.test_hub_malformed_selected_refs_refuse_without_acquisition) (reference='..')",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\hub_layout_control_v2.py\", line 96, in test_hub_malformed_selected_refs_refuse_without_acquisition\n    self.refuse_without_acquisition()\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 90, in refuse_without_acquisition\n    self.assertEqual(self.calls, [], \"invalid evidence must not enter acquisition\")\nAssertionError: Lists differ: [{'model_name': 'synthetic/review-model', [136 chars]he'}] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n{'model_name': 'synthetic/review-model', 'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-drtv8fb0\\\\cache'}\n\n+ []\n- [{'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-drtv8fb0\\\\cache',\n-   'model_name': 'synthetic/review-model'}] : invalid evidence must not enter acquisition\n"
+    },
+    {
+      "name": "test_hub_malformed_selected_refs_refuse_without_acquisition (__main__.main.<locals>.HubControl.test_hub_malformed_selected_refs_refuse_without_acquisition) (reference='../other')",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\hub_layout_control_v2.py\", line 96, in test_hub_malformed_selected_refs_refuse_without_acquisition\n    self.refuse_without_acquisition()\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 90, in refuse_without_acquisition\n    self.assertEqual(self.calls, [], \"invalid evidence must not enter acquisition\")\nAssertionError: Lists differ: [{'model_name': 'synthetic/review-model', [136 chars]he'}] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n{'model_name': 'synthetic/review-model', 'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-drtv8fb0\\\\cache'}\n\n+ []\n- [{'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-drtv8fb0\\\\cache',\n-   'model_name': 'synthetic/review-model'}] : invalid evidence must not enter acquisition\n"
+    },
+    {
+      "name": "test_hub_malformed_selected_refs_refuse_without_acquisition (__main__.main.<locals>.HubControl.test_hub_malformed_selected_refs_refuse_without_acquisition) (reference='/outside')",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\hub_layout_control_v2.py\", line 96, in test_hub_malformed_selected_refs_refuse_without_acquisition\n    self.refuse_without_acquisition()\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 90, in refuse_without_acquisition\n    self.assertEqual(self.calls, [], \"invalid evidence must not enter acquisition\")\nAssertionError: Lists differ: [{'model_name': 'synthetic/review-model', [136 chars]he'}] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n{'model_name': 'synthetic/review-model', 'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-drtv8fb0\\\\cache'}\n\n+ []\n- [{'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-drtv8fb0\\\\cache',\n-   'model_name': 'synthetic/review-model'}] : invalid evidence must not enter acquisition\n"
+    },
+    {
+      "name": "test_hub_malformed_selected_refs_refuse_without_acquisition (__main__.main.<locals>.HubControl.test_hub_malformed_selected_refs_refuse_without_acquisition) (reference='C:/outside')",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\hub_layout_control_v2.py\", line 96, in test_hub_malformed_selected_refs_refuse_without_acquisition\n    self.refuse_without_acquisition()\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 90, in refuse_without_acquisition\n    self.assertEqual(self.calls, [], \"invalid evidence must not enter acquisition\")\nAssertionError: Lists differ: [{'model_name': 'synthetic/review-model', [136 chars]he'}] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n{'model_name': 'synthetic/review-model', 'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-drtv8fb0\\\\cache'}\n\n+ []\n- [{'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-drtv8fb0\\\\cache',\n-   'model_name': 'synthetic/review-model'}] : invalid evidence must not enter acquisition\n"
+    },
+    {
+      "name": "test_hub_malformed_selected_refs_refuse_without_acquisition (__main__.main.<locals>.HubControl.test_hub_malformed_selected_refs_refuse_without_acquisition) (reference='a/b')",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\hub_layout_control_v2.py\", line 96, in test_hub_malformed_selected_refs_refuse_without_acquisition\n    self.refuse_without_acquisition()\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 90, in refuse_without_acquisition\n    self.assertEqual(self.calls, [], \"invalid evidence must not enter acquisition\")\nAssertionError: Lists differ: [{'model_name': 'synthetic/review-model', [136 chars]he'}] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n{'model_name': 'synthetic/review-model', 'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-drtv8fb0\\\\cache'}\n\n+ []\n- [{'cache_dir': 'C:\\\\Users\\\\pnmcg\\\\Documents\\\\Codex\\\\2026-09-30\\\\task\\\\cairntir-embedding-feature-20261003\\\\review\\\\synthetic-drtv8fb0\\\\cache',\n-   'model_name': 'synthetic/review-model'}] : invalid evidence must not enter acquisition\n"
+    }
+  ],
+  "errors": []
+}

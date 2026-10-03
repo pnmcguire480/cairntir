@@ -1,0 +1,5 @@
+# Bounded second-repair controls
+
+At the parent's explicit request before repair2, preserve the first Hub-layout control unchanged and add two controls for its imminent selected-ref resolver: genuine missing-only selected model may acquire then construct pinned/local-only; malformed selected refs must fail as typed EmbeddingError without acquisition. Malformed refs are empty, dot-dot, parent traversal, absolute POSIX, Windows drive absolute, and nested path forms. These are existing path-safety requirements applied to the added resolver, not a new feature.
+
+The v2 script contains three cases total; its original mixed-invalid case and shared frozen refusal assertion remain unchanged. The original one-case script, freeze and failing receipt remain preserved. The ref fault cases use a cache resolver returning no model and never dereference outside the synthetic tree. The normal missing-only case writes synthetic bytes through the permitted acquisition stub. Freeze before repair2 and run each revision separately.

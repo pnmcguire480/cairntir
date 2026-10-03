@@ -1,0 +1,5 @@
+# Portable execution adapter
+
+The original eight controls, initial freeze and failure receipts remain byte-for-byte unchanged. `run_review_portable.py` accepts an explicit `--source-root` and `--report`, imports and verifies that checkout's runtime before importing the historical test module, and runs the unchanged eight assertions plus the same deliberate in-memory wrong control. The historical module's hardcoded source path cannot replace already imported runtime modules; the wrapper checks actual module paths and records runtime hashes.
+
+All temporary fixtures remain beneath the copied review packet directory. This is a location/runner adapter, with no assertion or behavioral acceptance changes. The original freeze remains authoritative for original control bytes. `PORTABLE-FREEZE.json` freezes this adapter and explanation. For exact-candidate custody compare the report runtime hashes with the independently recorded candidate hashes; hosted CI binds those runtime bytes to its checkout and run commit.

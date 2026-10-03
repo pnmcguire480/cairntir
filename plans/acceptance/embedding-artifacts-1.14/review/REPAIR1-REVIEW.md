@@ -1,0 +1,11 @@
+# Repair1 review: FAIL for remaining Hub instance
+
+The original eight frozen controls all pass on repair1. The deliberate in-memory pre-load-verification bypass remains detected. The portable wrapper records and verifies actual imported runtime paths; `repair1-results.json` identifies artifacts SHA256 `c544ee4c44513f148acf8071e2edd9b14cebe22367bca0cb52917aec32efc33d`, embeddings SHA256 `da1b20727d2d8bb70208aa4a2af0fd3328dc85a53a72ce82e8072af56c9347b9`, and unchanged store SHA256 `900dc793536d64e89794e821cccabefdf1ec63fab99dd246224b546f6d285002`. Eight cases took 0.127 seconds.
+
+The initial finding remains in the recognized Hub snapshot layout. At `embeddings.py:443-445`, `try_to_load_from_cache` returns None when the selected snapshot's model is absent. The resolver then checks only fallback directories and returns a missing-only error without checking invalid peer assets in the selected Hub snapshot. A snapshot with missing model.onnx and tokenizer.json as a directory still reaches the unpinned acquisition constructor at `embeddings.py:226`. This is the same missing-file-masks-invalid-file pattern; the initial repair recommendation explicitly covered both layouts.
+
+The first additional frozen control positively loaded the complete selected snapshot with exact/local-only construction, then reproduced this remaining invalid-acquisition case in 0.033 seconds. `HUB-LAYOUT-FREEZE.json` and `hub-layout-repair1-results.json` preserve that evidence.
+
+Before repair2, the parent explicitly requested malformed-ref and genuine missing-only controls for its intended selected-snapshot resolver. `HUB-LAYOUT-V2-FREEZE.json` freezes those alongside the unchanged mixed-invalid case. On repair1: genuine missing-only acquisition followed by pinned construction passes; the mixed-invalid case fails; all six malformed-ref subcases fail the no-acquisition assertion. Three cases, 0.094 seconds, zero test errors. These are no new feature requirements. All original test files and earlier evidence remain preserved.
+
+Thermal test slot released. Final repair verification must use the unchanged original eight controls and frozen Hub v2 controls. No runtime files were edited by this reviewer.

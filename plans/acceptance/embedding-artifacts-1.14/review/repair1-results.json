@@ -1,0 +1,65 @@
+{
+  "elapsed_seconds": 0.1409999999741558,
+  "cases": 8,
+  "source_root": "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-embedding-work-20261003",
+  "runtime_sha256": {
+    "artifacts.py": "c544ee4c44513f148acf8071e2edd9b14cebe22367bca0cb52917aec32efc33d",
+    "embeddings.py": "da1b20727d2d8bb70208aa4a2af0fd3328dc85a53a72ce82e8072af56c9347b9",
+    "store.py": "900dc793536d64e89794e821cccabefdf1ec63fab99dd246224b546f6d285002"
+  },
+  "failures": [],
+  "errors": [],
+  "observations": {
+    "test_01_valid_local_model_uses_pinned_constructor": {
+      "calls": [
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-ytjbyadk\\cache",
+          "specific_model_path": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-ytjbyadk\\cache\\review-model",
+          "local_files_only": true
+        }
+      ]
+    },
+    "test_02_nonfile_model_is_not_missing": {
+      "calls": []
+    },
+    "test_03_missing_model_and_missing_runtime_never_acquire": {
+      "calls": []
+    },
+    "test_04_missing_config_and_nonfile_tokenizer_never_acquire": {
+      "calls": []
+    },
+    "test_05_genuine_missing_model_bootstraps_then_pins": {
+      "calls": [
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-rp6cp4sk\\cache"
+        },
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-rp6cp4sk\\cache",
+          "specific_model_path": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-rp6cp4sk\\cache\\review-model",
+          "local_files_only": true
+        }
+      ]
+    },
+    "test_06_permission_error_is_typed_and_never_acquires": {
+      "calls": []
+    },
+    "test_07_path_loop_is_typed_and_never_acquires": {
+      "calls": []
+    },
+    "test_08_pinned_mutation_refused_before_constructor": {
+      "calls": []
+    }
+  },
+  "wrong_control": {
+    "disable_preload_verification_detected": true,
+    "failures": [
+      {
+        "name": "test_08_pinned_mutation_refused_before_constructor (frozen_review_controls.Controls.test_08_pinned_mutation_refused_before_constructor)",
+        "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\adversarial_controls.py\", line 145, in test_08_pinned_mutation_refused_before_constructor\n    with self.assertRaises(EmbeddingError):\nAssertionError: EmbeddingError not raised\n"
+      }
+    ]
+  }
+}

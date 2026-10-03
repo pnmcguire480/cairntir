@@ -1,0 +1,20 @@
+{
+  "cases": 1,
+  "elapsed_seconds": 0.015000000013969839,
+  "runtime_sha256": {
+    "embeddings.py": "292a4da1ea421dd694392b68fc2476cea9386ca459c3a4febe26dba3a5fa4612",
+    "artifacts.py": "549095cd71e8c208d5ca4d0f930af98ef0ec178bac1a4ca8d900dde53d4f4a5f"
+  },
+  "observations": {
+    "test_offline_cache_stat_permission_error_is_typed": {
+      "calls": []
+    }
+  },
+  "failures": [],
+  "errors": [
+    {
+      "name": "test_offline_cache_stat_permission_error_is_typed (__main__.main.<locals>.CachePermissionControl.test_offline_cache_stat_permission_error_is_typed)",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\cache_permission_control.py\", line 48, in test_offline_cache_stat_permission_error_is_typed\n    self.provider().artifact_manifest()\n  File \"C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-embedding-work-20261003\\src\\cairntir\\memory\\embeddings.py\", line 200, in artifact_manifest\n    return self._pinned_artifacts().manifest()\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-embedding-work-20261003\\src\\cairntir\\memory\\embeddings.py\", line 195, in _pinned_artifacts\n    self._artifacts = PinnedArtifacts(self._model_name)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-embedding-work-20261003\\src\\cairntir\\memory\\artifacts.py\", line 105, in __init__\n    if not self.cache.is_dir():\n           ^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\pnmcg\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\pathlib.py\", line 1250, in is_dir\n    return S_ISDIR(self.stat().st_mode)\n                   ^^^^^^^^^^^\n  File \"C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\cache_permission_control.py\", line 44, in denied\n    raise PermissionError(\"synthetic cache stat denial\")\nPermissionError: synthetic cache stat denial\n"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "cairntir.e22.root-routing-freeze.v1",
+  "frozen_utc": "2026-10-03T06:22:26.351168+00:00",
+  "parent_freeze_sha256": "bb0bc2a21bd7fe0a3a92d1b91f2633d9f04bd53a468697617137d72e7e982dd9",
+  "historical_conftest_sha256": "a43e93cbc6abc0f182239545fb77ca4d6a61945d9ec3781d2338380edeffdbef",
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "high",
+  "actual_serving_model": "not exposed",
+  "actual_effort": "not exposed",
+  "cost": "unavailable",
+  "files_sha256": {
+    "ROOT-ROUTING-CONTRACT.md": "d2686f5c66d3421cde743e8d9c41407df3d9e5eebb06178af70d757b53a8297a",
+    "root_conftest.py": "ee2b475988dee263c70b389a7b4576083c95ee6cc02d4b9406fa3d691cf07fb8",
+    "INTEGRATION-CI-FREEZE.json": "bb0bc2a21bd7fe0a3a92d1b91f2633d9f04bd53a468697617137d72e7e982dd9"
+  }
+}

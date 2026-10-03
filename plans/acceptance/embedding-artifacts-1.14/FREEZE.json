@@ -1,0 +1,23 @@
+{
+  "schema": "cairntir.e22.acceptance-freeze.v1",
+  "frozen_utc": "2026-10-03T05:48:13.072729+00:00",
+  "base_head": "65126e49faf49f542ddc4ee8d3361a2402e2838b",
+  "base_tree_prefix": "0a12665",
+  "custody": "public synthetic shared workspace",
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "high",
+  "actual_serving_model": "not exposed",
+  "actual_effort": "not exposed",
+  "cost": "unavailable",
+  "cases": 35,
+  "implementation_started": false,
+  "files_sha256": {
+    "CONTRACT.md": "03812781e15add39a3479118c99b8712b770a35f92bb90bc6fc0465c09294de7",
+    "ORIGINAL-CONTRACT.md": "18dbe92e0e3ee294ddcf6639de31d4bd61d902ed5df0771add356aa41b9ef835",
+    "test_embedding_artifacts.py": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+    "test_relative_cache_supplement_v2.py": "b21fe31b51e07f32de992cbc08792bcee82380711575264a02b689751775c7b1",
+    "test_embedding_supplement.py": "3e3b7cddbbab9d8e730e19af68f1d4284930632624b71e9473513bcae9b5290b",
+    "run_acceptance.py": "50d1bff5056a4806a2ed40579adf52b823f5dc3b9d68e5d1a4948056e0feef17",
+    "dependency-baseline.json": "16debb29dbaa0c9381c398e3e872474f0e5d7d10e6db7baf261bfcd7d430e266"
+  }
+}
