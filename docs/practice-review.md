@@ -122,6 +122,24 @@ their exact format. Install the qualified source in participating hosts through 
 separately authorized rollout before using the new API; this feature does not
 upgrade, restart, or grant access to hosts.
 
+Observation writes and review completion commit before returning when they own
+the transaction. Inside a caller-owned transaction, returned receipts are
+provisional until that outer transaction commits; rollback invalidates them.
+Hosts must wait for the outer commit before claiming durability or delivering a
+receipt outside that transaction. A failed owned commit propagates a storage error
+and rolls back, rather than returning a successful receipt.
+
+Existing scoped access remains authoritative. Aggregate assessments, family
+histories, review queues, and freshness checks require an existing unrestricted
+read scope for the entire wing and visibility of every wing drawer under recursive
+dependency authorization. Finite drawer lists and room scopes cannot prove
+complete lifecycle coverage, even when they cover every currently known record.
+Missing coverage raises generic `AccessDenied` without exposing withheld IDs,
+contents or counts. This conservative check also denies aggregation when an
+unrelated wing drawer has an unauthorized dependency. Individual receipt getters
+remain available with authority for that receipt and its referenced records.
+No access scope is expanded automatically.
+
 Existing scoped access remains authoritative. Reading a denied record or source
 raises `AccessDenied`; incomplete visibility must not become complete statistics.
 Malformed new records raise `ProcedureError`; existing storage exceptions remain

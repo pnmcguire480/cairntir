@@ -11,6 +11,7 @@ from dataclasses import asdict, dataclass, replace
 from datetime import UTC, date, datetime
 from typing import Any
 
+from cairntir.access import AccessDenied
 from cairntir.errors import CairntirError
 from cairntir.memory.store import DrawerStore
 from cairntir.memory.taxonomy import Drawer, Layer
@@ -1082,7 +1083,15 @@ class ProcedureBook:
         else:
             return kind, material, fingerprint
 
+    def _authorize_practice_history(self, wing: str) -> None:
+        if getattr(self._store, "authorize", None) is not None:
+            complete = getattr(self._store, "_authorize_complete_wing", None)
+            if not callable(complete):
+                raise AccessDenied("access denied")
+            complete(wing)
+
     def _practice_entries(self, wing: str) -> builtins.list[tuple[str, int]]:
+        self._authorize_practice_history(wing)
         self._authorize("read", wing=wing, room=_PRACTICE_ROOM)
         result = []
         for drawer in reversed(
@@ -1093,6 +1102,7 @@ class ProcedureBook:
             value = self._practice_material(drawer.id)
             if value is not None:
                 result.append((value[0], drawer.id))
+        self._authorize_practice_history(wing)
         return result
 
     def _save_practice(
@@ -1174,13 +1184,15 @@ class ProcedureBook:
     def observation_history(self, drawer_id: int) -> builtins.list[PracticeObservationReceipt]:
         """Read all immutable observations and corrections across a practice family."""
         target, root = self._registered(drawer_id)
-        return [
+        result = [
             item
             for kind, key in self._practice_entries(target.wing)
             if kind == _OBSERVATION
             for item in (self.get_observation(key),)
             if item.root_id == root
         ]
+        self._authorize_practice_history(target.wing)
+        return result
 
     @staticmethod
     def _latest_observations(
@@ -1204,7 +1216,11 @@ class ProcedureBook:
         observation: PracticeObservation,
         supersedes_id: int | None = None,
     ) -> PracticeObservationReceipt:
-        """Register source measurements or a fresh correction without changing the practice."""
+        """Register measurements; receipts inside caller transactions remain provisional.
+
+        An owned transaction commits before return. An enclosing caller transaction
+        must commit before the host reports durability or delivers the receipt.
+        """
         _practice_id(drawer_id)
         _validate_observation(observation)
         if supersedes_id is not None:
@@ -1212,6 +1228,7 @@ class ProcedureBook:
         self._authorize("write", drawer_id=drawer_id)
         with self._store.transaction():
             target, root = self._registered(drawer_id)
+            self._authorize_practice_history(target.wing)
             if target.spec.governance is None:
                 raise ProcedureError("practice observations require opt-in governance")
             if observation.origin == "observed":
@@ -1236,6 +1253,7 @@ class ProcedureBook:
             fingerprint = _hash({"kind": _OBSERVATION, "material": material})
             for item in history:
                 if item.record_sha256 == fingerprint:
+                    self._authorize_practice_history(target.wing)
                     return item
             latest = self._latest_observations(history)
             previous = next(
@@ -1252,7 +1270,9 @@ class ProcedureBook:
                     "event replay changed or correction does not use the latest observation"
                 )
             key, _ = self._save_practice(_OBSERVATION, material, parent=supersedes_id)
-            return self.get_observation(key)
+            receipt = self.get_observation(key)
+            self._authorize_practice_history(target.wing)
+            return receipt
 
     def _load_assessment(self, value: dict[str, Any]) -> PracticeReviewAssessment:
         try:
@@ -1362,13 +1382,15 @@ class ProcedureBook:
     def review_history(self, drawer_id: int) -> builtins.list[PracticeReviewReceipt]:
         """Read immutable review outcomes for every version of the same family."""
         target, root = self._registered(drawer_id)
-        return [
+        result = [
             item
             for kind, key in self._practice_entries(target.wing)
             if kind == _REVIEW
             for item in (self.get_review(key),)
             if item.assessment.root_id == root
         ]
+        self._authorize_practice_history(target.wing)
+        return result
 
     def assess_review(
         self,
@@ -1383,6 +1405,8 @@ class ProcedureBook:
         _practice_id(drawer_id)
         _review_window(period_start, period_end, as_of)
         _validate_review_policy(policy)
+        registered, _ = self._registered(drawer_id)
+        self._authorize_practice_history(registered.wing)
         target = self._current(drawer_id)
         governance = target.spec.governance
         if governance is None:
@@ -1496,6 +1520,7 @@ class ProcedureBook:
             or self.review_history(drawer_id) != all_reviews
         ):
             raise ProcedureError("practice or evidence history changed during assessment")
+        self._authorize_practice_history(target.wing)
         return replace(assessment, assessment_sha256=_hash(_assessment_material(assessment)))
 
     def complete_review(
@@ -1508,13 +1533,19 @@ class ProcedureBook:
         rationale: str,
         next_review_due: str,
     ) -> PracticeReviewReceipt:
-        """Append a fresh, explicit review outcome without executing its decision."""
+        """Append a review; receipts inside caller transactions remain provisional.
+
+        An owned transaction commits before return. An enclosing caller transaction
+        must commit before the host reports durability or delivers the receipt.
+        """
         _practice_id(drawer_id)
         if type(assessment) is not PracticeReviewAssessment:
             raise ProcedureError("expected a PracticeReviewAssessment")
         _review_decision(assessment, reviewer, decision, rationale, next_review_due)
         self._authorize("write", drawer_id=drawer_id)
         with self._store.transaction():
+            registered, _ = self._registered(drawer_id)
+            self._authorize_practice_history(registered.wing)
             target = self._current(drawer_id)
             self._authorize("write", wing=target.wing, room=_PRACTICE_ROOM)
             try:
@@ -1533,6 +1564,7 @@ class ProcedureBook:
                     raise ProcedureError("review assessment belongs to another current procedure")
                 for item in self.review_history(drawer_id):
                     if item.receipt_sha256 == fingerprint:
+                        self._authorize_practice_history(target.wing)
                         return item
                 expected = self.assess_review(
                     drawer_id,
@@ -1544,9 +1576,12 @@ class ProcedureBook:
                 if _json(asdict(expected)) != _json(asdict(assessment)):
                     raise ProcedureError("review assessment is forged or stale")
                 key, _ = self._save_practice(_REVIEW, body)
-                return self.get_review(key)
+                receipt = self.get_review(key)
+                self._authorize_practice_history(target.wing)
             except (KeyError, TypeError, ValueError, OverflowError) as exc:
                 raise ProcedureError("review completion has malformed assessment values") from exc
+            else:
+                return receipt
 
     def due_reviews(
         self,
@@ -1560,7 +1595,8 @@ class ProcedureBook:
         """List due or evidence-triggered reviews of current promoted opted-in practices."""
         _review_window(period_start, period_end, as_of)
         _validate_review_policy(policy)
-        return [
+        self._authorize_practice_history(wing)
+        result = [
             assessment
             for item in self.list(wing=wing)
             if item.spec.governance is not None
@@ -1575,3 +1611,5 @@ class ProcedureBook:
             )
             if assessment.reasons
         ]
+        self._authorize_practice_history(wing)
+        return result
