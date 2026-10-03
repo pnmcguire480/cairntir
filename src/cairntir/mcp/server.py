@@ -545,9 +545,11 @@ def _tool_specs() -> list[types.Tool]:
                 "as snippets — enough to route, not enough to answer. Pass "
                 "full_content=N to get the top N hits with COMPLETE content, and "
                 "skip the cairntir_get round trip for the drawer that actually "
-                "answers. Full content is served under a cumulative budget_chars "
-                "ceiling; hits that do not fit are named, never truncated. One "
-                "good drawer beats ten headlines."
+                "answers. Pass budget_chars for a structured response whose complete "
+                "serialized MCP result fits that character ceiling. Whole evidence "
+                "includes provenance and hashes; omitted hits have bounded routing "
+                "receipts. With a budget, full_content=0 returns IDs without snippets. "
+                "Omit budget_chars to retain the legacy text response."
             ),
             inputSchema={
                 "type": "object",
@@ -557,6 +559,16 @@ def _tool_specs() -> list[types.Tool]:
                     "wing": {"type": "string"},
                     "room": {"type": "string"},
                     "limit": {"type": "integer", "default": 10, "minimum": 1},
+                    "budget_chars": {
+                        "type": "integer",
+                        "minimum": 1024,
+                        "maximum": 262144,
+                        "description": (
+                            "Optional complete serialized MCP result ceiling in characters, "
+                            "including JSON escaping and omission receipts. Whole evidence "
+                            "or explicit omissions; excludes outer JSON-RPC framing."
+                        ),
+                    },
                     "full_content": {
                         "type": "integer",
                         "default": 0,
@@ -1043,6 +1055,8 @@ def _dispatch(backend: CairntirBackend, name: str, args: dict[str, Any]) -> str:
         case "cairntir_settle":
             return backend.settle(**args)
         case "cairntir_recall":
+            if "budget_chars" in args:
+                return backend.recall_bounded(**args)
             return backend.recall(**args)
         case "cairntir_get":
             return backend.get(**args)
@@ -1113,6 +1127,7 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
         )
         task_mode = (
             isinstance(backend._store, ScopedStore)
+            or (name == "cairntir_recall" and "budget_chars" in arguments)
             or checkpoint_mode
             or resume_mode
             or (name == "cairntir_handoff" and arguments.get("task") is not None)

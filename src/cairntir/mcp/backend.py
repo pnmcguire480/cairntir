@@ -445,12 +445,9 @@ class CairntirBackend:
         "fit". Once the budget is spent the remaining hits fall back to
         snippets and are named with their ids, exactly as an oversize hit is.
 
-        The parameter is deliberately **not** published in the
-        ``cairntir_recall`` tool schema yet. The ceiling is what fixes the
-        defect; the tunable is new surface, and new surface makes a MINOR
-        under ``docs/release-cadence.md``. It exists here so the bound is
-        testable at small sizes, and so the next MINOR can expose it by
-        adding the property and nothing else.
+        This legacy method retains its content-only ceiling and text format.
+        MCP calls explicitly supplying ``budget_chars`` use :meth:`recall_bounded`
+        instead, which bounds the complete serialized result envelope.
         """
         if not query.strip():
             raise MCPError("recall requires a non-empty query")
@@ -495,6 +492,29 @@ class CairntirBackend:
         if full_content:
             lines.insert(1, f"  full content: {spent:,}/{budget_chars:,} chars used.")
         return "\n".join(lines) + "\n\n" + render_evidence_block(evidence)
+
+    def recall_bounded(
+        self,
+        *,
+        query: str,
+        wing: str | None = None,
+        room: str | None = None,
+        limit: int = 10,
+        full_content: int = 0,
+        budget_chars: int,
+    ) -> str:
+        """Return whole recall evidence within a complete MCP result budget."""
+        from cairntir.recall_budget import recall_bounded
+
+        return recall_bounded(
+            self._store,
+            query=query,
+            wing=wing,
+            room=room,
+            limit=limit,
+            full_content=full_content,
+            budget_chars=budget_chars,
+        )
 
     def cross_recall(self, *, query: str, limit: int = 10) -> str:
         """Semantic search over *every* wing. Returns hits annotated by wing.

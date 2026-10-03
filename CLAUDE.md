@@ -5,12 +5,12 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **1.12.4** (maintenance candidate; not yet published). The [1.12.3 release record](docs/release/v1.12.3.md)
-identifies the verified integration repairs and publication/installation evidence.
-Before this release, PyPI served 1.12.2 and the production MCP installation was
-1.12.1. Consult the versioned GitHub release receipt and current MCP handshake
-for post-publication installation state. Pending changes belong under
-[Unreleased](CHANGELOG.md#unreleased).
+Source version: **1.13.0** (single-feature candidate; not yet published).
+Published base: [1.12.4](docs/release/v1.12.4.md), merge
+`b60c2fbc537b6fcb284aa14f8023b3170f720822`. Its GitHub release receipt records
+completed publication; the older preparation document remains historical.
+Current scope is [complete recall-response budgeting](plans/recall-response-budget.md).
+Pending changes belong under [Unreleased](CHANGELOG.md#unreleased).
 
 The core has verbatim SQLite drawers, explicit provenance, task-aware budgeted
 handoff, semantic and anchored recall, portable evidence, evaluated procedures,
@@ -85,7 +85,26 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-02 (1.12.4 maintenance candidate)
+## Last Session - 2026-10-03 (one foundational feature)
+
+Port only the preserved E23 complete recall-response budget onto published
+1.12.4. Optional MCP `budget_chars` preserves whole evidence, full provenance,
+hashes, correction ancestry, scoped access and bounded omission receipts.
+Legacy calls and all 21 tool names remain compatible. No dependencies,
+database migration, live installation or other parked v2 feature is included.
+
+Independent frozen acceptance contains 21 tests and deliberate wrong controls.
+Baseline confirms the API/schema is absent; missing-method errors are structural
+baseline evidence, not an assertion-level regression reproduction. All 21
+acceptance tests and 109 integrated tests passed. Independent adversarial review
+is PASS; a deliberate raw-content-only sizing mutation fails the unchanged
+envelope assertion. Initial CI found a source-version/changelog mismatch, now
+corrected with an explicitly Unreleased 1.13.0 heading. See
+[PR124](https://github.com/pnmcguire480/cairntir/pull/124) for exact-head qualification.
+Publication, merge and installation require separate authority; do not treat
+source version as a release. Original work and private stores remain untouched.
+
+## Previous Session - 2026-10-02 (1.12.4 maintenance candidate)
 
 This release combines PR122's three dependency repairs and safe contributor
 handoff guide with the independently reviewed doctor/status/version diagnostics.

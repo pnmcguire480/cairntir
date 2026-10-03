@@ -166,6 +166,57 @@ candidate scan and discloses incomplete scans in the result.
 Try the [isolated continuity demo](context-demo.md) to inspect exact recalled
 requests, excluded stale evidence, and measured payload sizes across store sessions.
 
+## Bound a recall response
+
+In 1.13.0, callers of the existing `cairntir_recall` MCP tool can request a
+complete-response character ceiling. For example, send these tool arguments:
+
+```json
+{"query":"database decisions","wing":"myapp","limit":10,"full_content":3,"budget_chars":8192}
+```
+
+The response text is JSON with schema `cairntir.recall-budget.v1`. Each entry
+in `evidence` contains the whole original `content`, UTF-8 `content_sha256`,
+complete `provenance`, `drawer_id`, source location and `supersedes_id`.
+Retrieved text has `instruction_authority: "none"`; importing or recalling
+evidence does not make it an instruction. Existing access scope still applies.
+
+`full_content` selects how many of the top search hits are eligible for whole
+delivery. An oversized hit is omitted whole; a later eligible hit may still fit.
+The default `full_content: 0` produces routing IDs without snippets. To request
+usable evidence in the first call, set a positive `full_content` explicitly.
+Ranking and the existing search provider are unchanged.
+
+Read `status` and `omitted` before treating a response as complete:
+
+| Field | Meaning |
+| --- | --- |
+| `status: "complete"` | Every returned search hit is included; also used for zero matches. |
+| `status: "partial"` | Some whole evidence is included and some matched hits are omitted. |
+| `status: "omitted"` | Matches exist, but no whole evidence is included. |
+| `omitted.count` | Number of hits withheld from this search result, including routing-only hits. |
+| `omitted.drawer_ids` | Source IDs retrievable with `cairntir_get` using `drawer_id`. |
+| `omitted.ids_complete` | False when the ID list itself could not fit. The total count remains exact. |
+
+The counts refer to the search result up to `limit`, not every matching drawer
+in the database. To obtain omitted evidence, request selected IDs or repeat a
+focused recall with a larger budget. A `cairntir_get` response has no inherited
+recall budget. If the ID list is incomplete, narrow the query or increase the
+budget rather than assuming unseen hits do not exist.
+
+`budget_chars` must be an integer from **1,024 to 262,144**, inclusive. Null,
+booleans, fractions, strings and out-of-range values are errors. Successful
+bounded responses fit `len(CallToolResult.model_dump_json())`, including JSON
+escaping, provenance, omission receipts and the MCP result envelope. The outer
+JSON-RPC frame is excluded. Error responses are surfaced, not successful bounded
+evidence. Characters are not tokens, wire bytes, latency or a billed-cost guarantee.
+
+Bounded calls do not echo the query or append an update banner. They report
+`notification_policy: "excluded"`; a later eligible legacy call can still show
+the usual once-per-session notice. Omitting `budget_chars` retains the existing
+text/snippet behavior. This option is an MCP feature; the CLI recall command
+retains its existing interface.
+
 ## Recovering after compaction
 
 The shared host policy asks agents to save each multi-step request before work,

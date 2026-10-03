@@ -59,3 +59,7 @@ plans/acceptance/core-status-20261001/** -text whitespace=cr-at-eol
 plans/acceptance/backup-contract-20261002/** -text whitespace=cr-at-eol
 plans/acceptance/backup-contract-20261002/CI-ROUND2-BACKUP-PROBE-FAILURE.txt whitespace=-blank-at-eol,cr-at-eol
 plans/acceptance/backup-contract-20261002/*-backup-check.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+
+# Preserve independently frozen recall-budget acceptance bytes.
+plans/acceptance/recall-budget-1.13/** -text
+plans/acceptance/recall-budget-1.13/FROZEN-20261003.json whitespace=cr-at-eol

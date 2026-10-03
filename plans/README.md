@@ -1,5 +1,7 @@
 # Plans
 
+- [Complete recall-response budgeting](recall-response-budget.md): single 1.13.0 feature candidate; independent review PASS; current qualification in PR124.
+
 - [Behavioral verification](verification-structure.md): historical regression, mutation, recovery and installed-package gates; implemented and locally verified; delivery tracked in PR #108.
 - [Automatic store backups](automatic-backups.md): COMPLETE, published and installed as 1.12.1 with independently verified activation; failed 1.12.0 remains withheld.
 - [Interrupted task resumption delivery](task-resume-delivery.md): independently accepted and published as 1.11.0.
