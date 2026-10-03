@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.238" timestamp="2026-10-03T06:06:42.144143-04:00" hostname="PNMDevDesign"><testcase classname="tests.unit.test_combined_foundation_acceptance" name="test_generic_correction_refuses_structured_governed_workflows[governed]" time="0.058"><failure message="Failed: DID NOT RAISE &lt;class 'cairntir.obsidian_bridge.CorrectionError'&gt;">combined = namespace(store=&lt;cairntir.memory.store.DrawerStore object at 0x00000163B14B13D0&gt;, database=WindowsPath('C:/Users/pnmcg...cceptance._Runner object at 0x00000163AF208D50&gt;, book=&lt;cairntir.procedures.ProcedureBook object at 0x00000163B14B2050&gt;)
+kind = 'governed'
+
+    @pytest.mark.parametrize("kind", ["governed", "evaluation", "prediction"])
+    def test_generic_correction_refuses_structured_governed_workflows(combined, kind):
+        b = combined
+        evaluated = _corroborated(b)
+        drawer_id = {
+            "governed": evaluated.current_id,
+            "evaluation": evaluated.drawer_id,
+            "prediction": evaluated.cases[0].baseline_prediction_id,
+        }[kind]
+        source = b.store.get(drawer_id)
+        before = _snapshot(b.store)
+&gt;       with pytest.raises(bridge.CorrectionError, match="dedicated lifecycle"):
+E       Failed: DID NOT RAISE &lt;class 'cairntir.obsidian_bridge.CorrectionError'&gt;
+
+tests\unit\test_combined_foundation_acceptance.py:281: Failed</failure></testcase></testsuite></testsuites>

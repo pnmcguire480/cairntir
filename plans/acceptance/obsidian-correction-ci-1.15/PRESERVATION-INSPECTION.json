@@ -1,0 +1,10 @@
+{
+  "target": "tests/verification/test_projection_failure_outcomes.py",
+  "target_bound_by_baseline_preservation": false,
+  "target_bound_by_council_manifests": [],
+  "baseline_ref": "dc2607f2146b931e4fa9243fc847583d6bf99ebb",
+  "original_sha256": "d8c5c8bb3097a858ab2d294c52e65dfc874237845d01926518aa443194e838b7",
+  "adapted_sha256": "300c4e78ec627da37bc062de738dd2b7864e630758ffef15646ec77b251a6128",
+  "assert_and_raises_AST_equal": true,
+  "assert_and_raises_AST_count": 9
+}

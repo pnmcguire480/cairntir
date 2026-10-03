@@ -13,7 +13,31 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
-## [1.14.0] - Unreleased
+## [1.15.0] - Unreleased
+
+### Added
+
+- Explicit Obsidian correction workspace: refresh one selected wing, inspect
+  exact current/historical memories, and submit append-only corrections through
+  a durable request/receipt workflow. Existing source/provenance remains intact.
+- Optional desktop plugin with explicit refresh/correction forms, payload-bound
+  retries and separate committed/acknowledged/projected feedback. Nothing runs
+  on plugin load or ordinary vault edits. Installation remains opt-in.
+- Optional versioned procedure governance through the trusted Python API:
+  attributed owner, explicit family version, rationale, and review date with
+  append-only history. Legacy records retain their prior identity and payload.
+  Owner labels grant no access or promotion authority. Upgrade all participating
+  ProcedureBook clients before enabling governed records in a shared store;
+  an older client's whole list operation can fail on a governed record.
+
+These two reviewed features are being qualified together in an unpublished
+1.15.0 candidate. See [the combined plan](plans/combined-obsidian-practice.md).
+
+### Included foundation: reviewed 1.14.0 candidate (unpublished)
+
+The pinned-artifact changes below remain included from reviewed PR125; they
+have not been published. Its deliberate FastEmbed rebuild requirement applies.
+
 
 ### Added
 

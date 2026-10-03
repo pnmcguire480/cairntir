@@ -1,0 +1,21 @@
+{
+  "schema": "cairntir.public-acceptance-freeze.v1",
+  "freeze_id": "v2-obsidian-plugin-harness-2026-09-20-r2",
+  "frozen_at_utc": "2026-09-20T12:47:24.0351843Z",
+  "frozen_without_implementation_access": true,
+  "parent_freeze": "freeze.json",
+  "change": "Test fixture API fidelity only: add public Obsidian Vault.create/createFolder/getFileByPath, TFile, FileSystemAdapter.getFullPath, and DOM style/button mocks. Contract and all behavioral assertions unchanged. Discovered from declared framework API usage before any implementation read.",
+  "artifacts": [
+    {
+      "path": "plugin-contract.json",
+      "sha256": "a6fea8ee38c1e501141af8fe7ea4252c13c8fc07d22ea0f521fa9bfa03f4b9bd",
+      "bytes": 5157
+    },
+    {
+      "path": "test-obsidian-plugin-v2.cjs",
+      "sha256": "4dd43afc64efe71f9b47c164985303a8868b5da128f20499f1f775f4134d39c1",
+      "bytes": 17045
+    }
+  ],
+  "rule": "Preserve original freeze; changed artifact hash invalidates dependent results. Mock testing does not establish native Obsidian or backend persistence."
+}

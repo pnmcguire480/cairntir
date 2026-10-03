@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="1" tests="64" time="20.171" timestamp="2026-10-03T04:19:30.674467-04:00" hostname="PNMDevDesign"><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_append_preserves_original_and_exact_correction" time="0.041" /><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_current_correction_can_be_corrected_without_forking" time="0.025" /><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_equal_local_id_and_hash_in_another_store_is_not_same_source" time="0.039" /><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_failure_after_append_rolls_back_and_retry_can_commit" time="0.024" /><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_malformed_requests_never_append" time="0.024" /><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_new_request_against_historical_source_is_stale" time="0.023" /><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_reopened_retry_returns_same_commit_before_stale_check" time="0.026" /><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_request_id_cannot_be_reused_for_changed_payload" time="0.023" /><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_resumed_handoff_contains_committed_on_demand_correction" time="0.026" /><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_secret_and_structured_protocol_sources_refused" time="0.027" /><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_source_hash_wing_and_missing_id_are_checked" time="0.022" /><testcase classname="test_obsidian_frozen_acceptance.CorrectionAcceptance" name="test_untrusted_correction_inherits_privacy_and_layer" time="0.023" /><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_apply_reopen_retry_receipt_and_bidirectional_history" time="0.076" /><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_bad_json_and_duplicate_keys_do_not_block_valid_requests" time="0.058" /><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_bound_vault_rejects_another_wing_without_replacing_inventory" time="0.035" /><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_cli_json_and_exit_status_report_success_and_rejection" time="0.723" /><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_failed_acknowledgement_reports_commit_and_retry_repairs_it" time="0.059" /><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_failed_projection_preserves_unmarked_note_and_durable_commit" time="0.053" /><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_inventory_is_exact_scoped_and_excludes_secret" time="0.041" /><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_refresh_preserves_annotations_and_escapes_only_markdown" time="0.050" /><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_stale_outbox_edit_has_visible_rejection_and_no_extra_append" time="0.048" /><testcase classname="test_obsidian_frozen_acceptance.WorkspaceAcceptance" name="test_symlinked_outbox_request_cannot_import_external_content" time="0.024"><skipped type="pytest.skip" message="Symlink creation unavailable on this host: [WinError 1314] A required privilege is not held by the client: 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\tmpkyj9z4pn\\external.json' -&gt; 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\tmpkyj9z4pn\\vault\\cairntir-sync\\outbox\\external.json'">C:\Users\pnmcg\Documents\Codex\2026-09-30\task\cairntir-obsidian-feature-20261003\acceptance\originals\v2-obsidian\test_workspace_flow_v2.py:237: Symlink creation unavailable on this host: [WinError 1314] A required privilege is not held by the client: 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\tmpkyj9z4pn\\external.json' -&gt; 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\tmpkyj9z4pn\\vault\\cairntir-sync\\outbox\\external.json'</skipped></testcase><testcase classname="test_obsidian_frozen_acceptance.SourceLifetimeAcceptance" name="test_acknowledged_retry_remains_available_after_validity_expiry" time="0.026" /><testcase classname="test_obsidian_frozen_acceptance.SourceLifetimeAcceptance" name="test_expired_and_not_yet_valid_sources_cannot_be_corrected" time="0.024" /><testcase classname="test_obsidian_frozen_acceptance.SourceLifetimeAcceptance" name="test_successor_inherits_exact_validity_window" time="0.025" /><testcase classname="test_obsidian_frozen_acceptance.ProjectionNewlinesAcceptance" name="test_refresh_preserves_mixed_newline_bytes_outside_generated_block" time="0.007" /><testcase classname="test_obsidian_frozen_acceptance.SourceStateAcceptance" name="test_correction_and_retry_never_change_original_sql_row" time="0.035" /><testcase classname="test_obsidian_frozen_acceptance.SourceStateAcceptance" name="test_prediction_protocol_fields_require_their_own_workflow" time="0.036" /><testcase classname="test_obsidian_frozen_acceptance" name="test_fresh_cli_exact_commit_restart_and_rejection" time="3.055" /><testcase classname="test_obsidian_frozen_acceptance" name="test_fresh_cli_partial_commit_retry_without_duplicates[ack]" time="2.024" /><testcase classname="test_obsidian_frozen_acceptance" name="test_fresh_cli_partial_commit_retry_without_duplicates[projection]" time="2.022" /><testcase classname="test_obsidian_frozen_acceptance" name="test_scoped_cli_denied_before_vault_or_store_change" time="0.025"><failure message="cairntir.access.AccessDenied: invalid grant scope">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-4/test_scoped_cli_denied_before_0/home/ca...g/pytest-4/test_scoped_cli_denied_before_0/vault/cairntir-sync/outbox/5b415508-5071-4d83-8137-879d5d23cf39.json'), ...}
+
+    def test_scoped_cli_denied_before_vault_or_store_change(flow):
+        from cairntir.access import issue_grant
+    
+        store = DrawerStore(flow["db"], HashEmbeddingProvider(dimension=16))
+&gt;       token = issue_grant(
+            store,
+            scopes=[{"wing": "fixture", "room": "notes"}],
+            capabilities=["read", "write"],
+        )
+
+test_integration.py:161: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+owner_store = &lt;cairntir.memory.store.DrawerStore object at 0x0000028636E8F7D0&gt;
+
+    def issue_grant(
+        owner_store: DrawerStore,
+        *,
+        scopes: Sequence[dict[str, Any]],
+        capabilities: Sequence[str],
+        expires_at: datetime | None = None,
+        principal: str = "local",
+    ) -&gt; str:
+        """Issue an owner-created grant and persist only its token hash."""
+        if isinstance(owner_store, ScopedStore):
+            raise AccessDenied(_DENIED)
+        copied = json.loads(json.dumps(scopes))
+        if not isinstance(copied, list) or any(
+            not isinstance(scope, dict)
+            or set(scope) - {"wing", "rooms", "drawer_ids"}
+            or not isinstance(scope.get("wing"), str)
+            or not scope["wing"]
+            or (
+                "rooms" in scope
+                and (
+                    not isinstance(scope["rooms"], list)
+                    or any(not isinstance(room, str) for room in scope["rooms"])
+                )
+            )
+            or (
+                "drawer_ids" in scope
+                and (
+                    not isinstance(scope["drawer_ids"], list)
+                    or any(type(key) is not int or key &lt;= 0 for key in scope["drawer_ids"])
+                )
+            )
+            for scope in copied
+        ):
+&gt;           raise AccessDenied("invalid grant scope")
+E           cairntir.access.AccessDenied: invalid grant scope
+
+C:\Users\pnmcg\AppData\Local\Temp\cairntir-obsidian-work-20261003\src\cairntir\access.py:130: AccessDenied</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_scoped_bridge_cannot_escape_authority" time="0.033" /><testcase classname="test_obsidian_frozen_acceptance" name="test_actual_cli_projection_privacy" time="1.064" /><testcase classname="test_obsidian_frozen_acceptance" name="test_legacy_identity_refuses_append_without_mutating_source[None]" time="1.042" /><testcase classname="test_obsidian_frozen_acceptance" name="test_legacy_identity_refuses_append_without_mutating_source[fastembed/text-embedding-v1/jinaai/jina-embeddings-v2-small-en]" time="1.035" /><testcase classname="test_obsidian_frozen_acceptance" name="test_legacy_identity_refuses_append_without_mutating_source[cairntir/synthetic-pinned-artifacts/sha256=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb]" time="1.036" /><testcase classname="test_obsidian_frozen_acceptance" name="test_previous_cli_contracts_still_available" time="2.108" /><testcase classname="test_obsidian_frozen_acceptance" name="test_outer_transaction_cannot_return_a_false_durable_commit" time="0.034"><failure message="Failed: DID NOT RAISE &lt;class 'cairntir.errors.CairntirError'&gt;">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-4/test_outer_transaction_cannot_0/home/ca...g/pytest-4/test_outer_transaction_cannot_0/vault/cairntir-sync/outbox/b46dc1fe-0c3d-4d80-82d6-b5c2a3224900.json'), ...}
+
+    def test_outer_transaction_cannot_return_a_false_durable_commit(flow):
+        bridge = importlib.import_module("cairntir.obsidian_bridge")
+        from cairntir.errors import CairntirError
+    
+        store = DrawerStore(flow["db"], HashEmbeddingProvider(dimension=16))
+        before = rows(flow)
+        try:
+            with store.transaction():
+&gt;               with pytest.raises(CairntirError):
+E               Failed: DID NOT RAISE &lt;class 'cairntir.errors.CairntirError'&gt;
+
+test_integration.py:265: Failed</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_outer_transaction_sync_refuses_before_writing_acknowledgement" time="0.043"><failure message="Failed: DID NOT RAISE &lt;class 'cairntir.errors.CairntirError'&gt;">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-4/test_outer_transaction_sync_re0/home/ca...g/pytest-4/test_outer_transaction_sync_re0/vault/cairntir-sync/outbox/bcd37325-8270-4ee4-8d20-ad2df72b6ade.json'), ...}
+
+    def test_outer_transaction_sync_refuses_before_writing_acknowledgement(flow):
+        bridge = importlib.import_module("cairntir.obsidian_bridge")
+        from cairntir.errors import CairntirError
+    
+        store = DrawerStore(flow["db"], HashEmbeddingProvider(dimension=16))
+        before = rows(flow)
+        before_files = {
+            str(p.relative_to(flow["vault"])): p.read_bytes()
+            for p in flow["vault"].rglob("*")
+            if p.is_file()
+        }
+        try:
+            with store.transaction():
+&gt;               with pytest.raises(CairntirError):
+E               Failed: DID NOT RAISE &lt;class 'cairntir.errors.CairntirError'&gt;
+
+test_integration.py:288: Failed</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_scoped_hidden_successor_does_not_enable_stale_edit_or_leak" time="0.028"><failure message="cairntir.access.AccessDenied: invalid grant scope">flow = {'db': WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-4/test_scoped_hidden_successor_d0/home/ca...g/pytest-4/test_scoped_hidden_successor_d0/vault/cairntir-sync/outbox/ff6b7adb-3ee6-4843-b961-7fb290d0db14.json'), ...}
+
+    def test_scoped_hidden_successor_does_not_enable_stale_edit_or_leak(flow):
+        bridge = importlib.import_module("cairntir.obsidian_bridge")
+        from cairntir.access import AccessDenied, bind_grant, issue_grant
+    
+        store = DrawerStore(flow["db"], HashEmbeddingProvider(dimension=16))
+        hidden = store.add(
+            Drawer(
+                wing="fixture",
+                room="private",
+                content="HIDDEN-SUCCESSOR",
+                supersedes_id=flow["request"]["source_drawer_id"],
+            )
+        )
+        identity = store.portable_identity(hidden.id)
+&gt;       token = issue_grant(
+            store,
+            scopes=[{"wing": "fixture", "room": "notes"}],
+            capabilities=["read", "write"],
+        )
+
+test_integration.py:314: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+owner_store = &lt;cairntir.memory.store.DrawerStore object at 0x0000028637038250&gt;
+
+    def issue_grant(
+        owner_store: DrawerStore,
+        *,
+        scopes: Sequence[dict[str, Any]],
+        capabilities: Sequence[str],
+        expires_at: datetime | None = None,
+        principal: str = "local",
+    ) -&gt; str:
+        """Issue an owner-created grant and persist only its token hash."""
+        if isinstance(owner_store, ScopedStore):
+            raise AccessDenied(_DENIED)
+        copied = json.loads(json.dumps(scopes))
+        if not isinstance(copied, list) or any(
+            not isinstance(scope, dict)
+            or set(scope) - {"wing", "rooms", "drawer_ids"}
+            or not isinstance(scope.get("wing"), str)
+            or not scope["wing"]
+            or (
+                "rooms" in scope
+                and (
+                    not isinstance(scope["rooms"], list)
+                    or any(not isinstance(room, str) for room in scope["rooms"])
+                )
+            )
+            or (
+                "drawer_ids" in scope
+                and (
+                    not isinstance(scope["drawer_ids"], list)
+                    or any(type(key) is not int or key &lt;= 0 for key in scope["drawer_ids"])
+                )
+            )
+            for scope in copied
+        ):
+&gt;           raise AccessDenied("invalid grant scope")
+E           cairntir.access.AccessDenied: invalid grant scope
+
+C:\Users\pnmcg\AppData\Local\Temp\cairntir-obsidian-work-20261003\src\cairntir\access.py:130: AccessDenied</failure></testcase><testcase classname="test_obsidian_frozen_acceptance" name="test_required_node_v3_plugin_acceptance" time="0.478" /><testcase classname="test_obsidian_frozen_acceptance" name="test_actual_plugin_python_subprocess" time="3.903" /></testsuite></testsuites>

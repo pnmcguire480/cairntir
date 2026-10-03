@@ -45,6 +45,23 @@ Independent adversarial review passed. The current required CI result and
 release readiness are tracked in [PR124](https://github.com/pnmcguire480/cairntir/pull/124);
 this candidate is not yet published.
 
+## Current: explicit Obsidian correction loop
+
+The 1.15.0 candidate adds an explicit workspace and optional correction plugin,
+stacked on reviewed PR125. It preserves originals and durable retry receipts;
+ordinary vault edits are not commands. See [usage](obsidian-corrections.md) and
+the [finite plan](https://github.com/pnmcguire480/cairntir/blob/feat/obsidian-correction-loop-20261003/plans/obsidian-correction-loop.md). Nothing is installed or
+published by creating the candidate. Questions remain the next dependent feature.
+
+## Current: opt-in practice ownership and review metadata
+
+The trusted Python API can attach attributed ownership, explicit versions,
+rationale and review dates to procedure families while retaining prior verbatim
+records. See [governance and compatibility](procedure-governance.md). This does
+not authenticate owners, schedule reviews or bypass evaluation and promotion.
+Reviewed PR127 is being qualified together with PR126 in the unpublished 1.15.0
+candidate. Upgrade all participating ProcedureBook clients before opt-in.
+
 ## Next: retrieval preflight evaluation
 
 Pre-register a holdout before building an automatic retrieval path. A candidate

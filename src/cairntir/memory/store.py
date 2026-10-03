@@ -1142,6 +1142,14 @@ class DrawerStore:
         """Close on context exit."""
         self.close()
 
+    @property
+    def transaction_active(self) -> bool:
+        """Whether a caller still owns an uncommitted outer transaction."""
+        try:
+            return self._conn.in_transaction
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"cannot inspect transaction state: {exc}") from exc
+
     @contextmanager
     def transaction(self) -> Iterator[None]:
         """Run writes atomically, using savepoints when workflows nest."""

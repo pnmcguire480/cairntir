@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "frozen_at_utc": "2026-10-03T09:04:22.897044+00:00",
+  "hosted_head": "31a8fd6",
+  "files_sha256": {
+    "plans/acceptance/obsidian-correction-ci-1.15/CONTRACT.md": "ec42cac5baabd76c3b75517572daf8a7ade79b9d8223a46c18b7cab123678d82",
+    "plans/acceptance/obsidian-correction-ci-1.15/PRESERVATION-INSPECTION.json": "133a3c90affa4a2d690b00def7ebfac4bca4689778f18bb46da14fdfcc2febe1",
+    "plans/acceptance/obsidian-correction-ci-1.15/SOURCE-BINDING.json": "8c0407a8c9430c54bcb5b519eb0990efa211b45e47a5f12722f4dc6b5e7204de",
+    "plans/acceptance/obsidian-correction-ci-1.15/originals/test_projection_failure_outcomes.py": "d8c5c8bb3097a858ab2d294c52e65dfc874237845d01926518aa443194e838b7",
+    "plans/acceptance/obsidian-correction-ci-1.15/adapted_test_projection_failure_outcomes.py": "300c4e78ec627da37bc062de738dd2b7864e630758ffef15646ec77b251a6128",
+    "tests/verification/test_projection_failure_outcomes.py": "300c4e78ec627da37bc062de738dd2b7864e630758ffef15646ec77b251a6128",
+    "tests/verification/test_obsidian_correction_ci_contracts.py": "ba40385f7afa6adcab9df087572ea6e34490c38db043957062d9cca4fbdc2806"
+  },
+  "original_assertions_and_raises_AST_equal": true,
+  "original_tests": 7,
+  "new_finite_cases": 21,
+  "total_focused_cases": 28,
+  "coverage_config_floor_unchanged": true,
+  "runtime_changes_authorized": false
+}

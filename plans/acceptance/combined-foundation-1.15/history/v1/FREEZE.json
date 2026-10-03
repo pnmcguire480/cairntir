@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "frozen_at_utc": "2026-10-03T09:56:49.927127+00:00",
+  "files_sha256": {
+    "plans/acceptance/combined-foundation-1.15/CONTRACT.md": "28f167d6b7fa90997c222fe8ec4bea357374b8db4132cf6e532de981ec7643b5",
+    "plans/acceptance/combined-foundation-1.15/PRESERVED-INPUTS.json": "571d2e679ad25594fa84b3afb1ec8d49e1fbb0829f286ca3e7bda5ce51e8489e",
+    "plans/acceptance/combined-foundation-1.15/SOURCE-BINDING.json": "af29fb5d0281e8db624be0c716cd6a0f3a33c5ceaa590186ad20e9badf2ed949",
+    "plans/acceptance/combined-foundation-1.15/editable_bypass_control.py": "ea89687b0dd484aa6f3d38ed2fc44809d71d2b50177e904fca9695ff5b3cdc31",
+    "tests/unit/test_combined_foundation_acceptance.py": "52d2ad2607a0ddff5937e919fdd87712392ce56ca32348b3b84110b757e63262"
+  },
+  "new_cases": 6,
+  "normal_retained_controls": "21 frozen R17 controls; 28 original Python correction/file/lifetime/newline/source-state methods",
+  "wrong_control": "In-process _editable bypass must fail unchanged governed-source correction refusal",
+  "no_new_review_gate": true
+}

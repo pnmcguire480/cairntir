@@ -1,0 +1,12 @@
+{
+  "frozen_utc": "2026-09-20T12:39:23.368983+00:00",
+  "phase": "preimplementation",
+  "visibility": "PUBLIC shared workspace",
+  "tests": 12,
+  "files": {
+    "CORE-ACCEPTANCE.md": "7df208665f79148b0a882a85d61ec502222ad98c284dc9efb1afc61059feb3b5",
+    "test_correction_core.py": "b6fd7a0c314444e5aab74b10062abcb3b029892d780c7c63c1290a219dab9a14"
+  },
+  "implementation": "cairntir.obsidian_bridge (not yet exercised)",
+  "previous_M0_receipts": "unchanged"
+}

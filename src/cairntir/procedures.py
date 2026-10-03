@@ -7,6 +7,7 @@ import json
 import math
 from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass, replace
+from datetime import date
 from typing import Any
 
 from cairntir.errors import CairntirError
@@ -27,6 +28,16 @@ class ProcedureError(CairntirError):
 
 
 @dataclass(frozen=True)
+class PracticeGovernance:
+    """Attributed ownership and review intent, never permission or identity proof."""
+
+    owner: str
+    version: str
+    rationale: str
+    review_due: str
+
+
+@dataclass(frozen=True)
 class ProcedureSpec:
     """The complete method and its development evidence."""
 
@@ -39,6 +50,7 @@ class ProcedureSpec:
     evidence_ids: tuple[int, ...]
     counterexample_ids: tuple[int, ...] = ()
     development_case_ids: tuple[str, ...] = ()
+    governance: PracticeGovernance | None = None
 
     def __post_init__(self) -> None:
         """Detach sequence inputs from mutable caller-owned lists."""
@@ -171,16 +183,59 @@ def _positive_id(value: Any) -> None:
         raise ProcedureError("evidence IDs must be positive integers")
 
 
+def _validate_governance(value: PracticeGovernance) -> None:
+    if type(value) is not PracticeGovernance:
+        raise ProcedureError("governance must be a PracticeGovernance value")
+    for name in ("owner", "version", "rationale", "review_due"):
+        field = getattr(value, name)
+        if type(field) is not str or not field.strip():
+            raise ProcedureError(f"governance {name} must be nonblank primitive text")
+        try:
+            field.encode("utf-8")
+        except UnicodeEncodeError as exc:
+            raise ProcedureError(f"governance {name} must be valid UTF-8 text") from exc
+    if value.version != value.version.strip():
+        raise ProcedureError("governance version must not have outer whitespace")
+    try:
+        parsed = date.fromisoformat(value.review_due)
+    except ValueError as exc:
+        raise ProcedureError("review_due must be a valid YYYY-MM-DD date") from exc
+    if parsed.isoformat() != value.review_due:
+        raise ProcedureError("review_due must be a canonical YYYY-MM-DD date")
+
+
+def _spec_payload(spec: ProcedureSpec) -> dict[str, Any]:
+    """Keep legacy wire bytes unchanged while binding optional governance."""
+    if spec.governance is not None:
+        _validate_governance(spec.governance)
+    result = asdict(spec)
+    if spec.governance is None:
+        del result["governance"]
+    return result
+
+
 def _procedure(value: dict[str, Any]) -> Procedure:
-    return Procedure(
-        drawer_id=value["drawer_id"],
-        wing=value["wing"],
-        state=value["state"],
-        revision_sha256=value["revision_sha256"],
-        spec=ProcedureSpec(**value["spec"]),
-        supersedes_id=value["supersedes_id"],
-        evaluation_id=value["evaluation_id"],
-    )
+    try:
+        payload = dict(value["spec"])
+        if "governance" in payload:
+            if type(payload["governance"]) is not dict:
+                raise ProcedureError("stored governance must be a complete object")
+            payload["governance"] = PracticeGovernance(**payload["governance"])
+        result = Procedure(
+            drawer_id=value["drawer_id"],
+            wing=value["wing"],
+            state=value["state"],
+            revision_sha256=value["revision_sha256"],
+            spec=ProcedureSpec(**payload),
+            supersedes_id=value["supersedes_id"],
+            evaluation_id=value["evaluation_id"],
+        )
+        revision = _hash({"wing": result.wing, "spec": _spec_payload(result.spec)})
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ProcedureError("stored procedure specification is malformed") from exc
+    if result.revision_sha256 != revision:
+        raise ProcedureError("procedure revision fingerprint mismatch")
+    return result
 
 
 def _receipt(value: dict[str, Any]) -> EvaluationReceipt:
@@ -235,6 +290,8 @@ class ProcedureBook:
     def _validate_spec(self, wing: str, spec: ProcedureSpec) -> None:
         if not isinstance(spec, ProcedureSpec):
             raise ProcedureError("expected a ProcedureSpec")
+        if spec.governance is not None:
+            _validate_governance(spec.governance)
         for name in ("title", "applicability", "expected_outcome"):
             _text(getattr(spec, name), name)
         for name in ("prerequisites", "steps", "rollback"):
@@ -317,10 +374,6 @@ class ProcedureBook:
         if value is None:
             raise ProcedureError("drawer is not an authenticated local procedure")
         procedure = _procedure(value)
-        if procedure.revision_sha256 != _hash(
-            {"wing": procedure.wing, "spec": asdict(procedure.spec)}
-        ):
-            raise ProcedureError("procedure revision fingerprint mismatch")
         return procedure, int(value["root_id"])
 
     def _current(self, drawer_id: int) -> Procedure:
@@ -346,8 +399,9 @@ class ProcedureBook:
         note: str = "",
     ) -> Procedure:
         self._authorize("write", wing=wing, room="discoveries")
-        revision = _hash({"wing": wing, "spec": asdict(spec)})
-        content = f"Discovery: {spec.title}\nState: {state}\n\n{_json(asdict(spec))}"
+        spec_payload = _spec_payload(spec)
+        revision = _hash({"wing": wing, "spec": spec_payload})
+        content = f"Discovery: {spec.title}\nState: {state}\n\n{_json(spec_payload)}"
         if note:
             content += f"\n\n{note}"
         saved = self._store.add(
@@ -389,7 +443,10 @@ class ProcedureBook:
         )
         root_id = self._registered(parent.drawer_id)[1] if parent else saved.id
         self._store._register_procedure(
-            saved.id, root_id=root_id, parent_id=result.supersedes_id, payload=asdict(result)
+            saved.id,
+            root_id=root_id,
+            parent_id=result.supersedes_id,
+            payload={**asdict(result), "spec": spec_payload},
         )
         return result
 
@@ -407,6 +464,16 @@ class ProcedureBook:
         self._validate_spec(current.wing, spec)
         with self._store.transaction():
             current = self._current(drawer_id)
+            if current.spec.governance is not None and spec.governance is None:
+                raise ProcedureError("a governed procedure revision must retain governance")
+            if spec.governance is not None:
+                versions = {
+                    item.spec.governance.version
+                    for item in self.history(drawer_id)
+                    if item.spec.governance is not None
+                }
+                if spec.governance.version in versions:
+                    raise ProcedureError("governance version has already been used in this family")
             return self._append(wing=current.wing, spec=spec, state="candidate", parent=current)
 
     def _registration(self, evaluator_id: str) -> RegisteredEvaluation:

@@ -1,0 +1,10 @@
+{
+  "frozen_utc": "2026-09-20T12:44:33.259828+00:00",
+  "phase": "pre-file-implementation",
+  "visibility": "PUBLIC",
+  "tests": 10,
+  "files": {
+    "FILE-ACCEPTANCE.md": "b00fc41319f4df5d69a2e5f7c49805fa722130a2f84d5ef36d4c471f0f6529c8",
+    "test_workspace_flow.py": "7e0347311843c15dbd654e29bb34eeb8470119da29f7bcbdf1616641a7f0a4ec"
+  }
+}

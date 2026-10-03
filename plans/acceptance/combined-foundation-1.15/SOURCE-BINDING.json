@@ -1,0 +1,15 @@
+{
+  "captured_at_utc": "2026-10-03T09:56:49.894875+00:00",
+  "files_sha256": {
+    "src/cairntir/procedures.py": "6d0ed499a601857aa41bd3d5fbba93b57cd6f391fa6409853423bc3e46974023",
+    "src/cairntir/obsidian_bridge.py": "7cb3de559538ab9d31324c91563e5481e93cf44dd736d6c893b9b177d8fcfdbd",
+    "src/cairntir/obsidian.py": "bd60792e3a3c139a4e2627e11f04f744097180f5eaf891a51d167e33332d0a9c",
+    "src/cairntir/memory/store.py": "74bca7fd7add465ff443931a635a594c5a629fc029fc5e30a77d277fbfca05d0",
+    "src/cairntir/access.py": "eb0a759bc758299920e2a5d9047181e6d2f8ddaa77323227371ed8b73f430430"
+  },
+  "qualified_inputs": [
+    "520e0d85ea60839168cd3bc403fba1411386ccf4",
+    "c2ce782fd762bccfdaaecce6b813d4e366373337"
+  ],
+  "pre_documentation_tree": "34f33bef66e2c4fcb088ecf4ccd5363263caa52d"
+}

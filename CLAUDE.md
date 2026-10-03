@@ -5,12 +5,14 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **1.14.0** (single-feature candidate; not yet published).
+Source version: **1.15.0** (combined candidate; not yet published).
 Published base: [1.12.4](docs/release/v1.12.4.md), merge
 `b60c2fbc537b6fcb284aa14f8023b3170f720822`. Its GitHub release receipt records
 completed publication; the older preparation document remains historical.
-Current scope is [pinned embedding-artifact identity](plans/pinned-embedding-artifacts.md),
-stacked on reviewed PR124; its recall-response budget remains unchanged.
+Current scope combines the reviewed [Obsidian correction loop](plans/obsidian-correction-loop.md)
+and [opt-in practice governance](plans/practice-governance-r17.md) on PR125.
+The [combined plan](plans/combined-obsidian-practice.md) owns integration qualification.
+Earlier pinned artifacts and recall budgets remain unchanged.
 Pending changes belong under [Unreleased](CHANGELOG.md#unreleased).
 
 The core has verbatim SQLite drawers, explicit provenance, task-aware budgeted
@@ -86,7 +88,37 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-03 (E22 single-feature candidate)
+## Last Session - 2026-10-03 (combined foundation candidate)
+
+Combine reviewed PR126 `520e0d8` and PR127 `c2ce782` in a new isolated branch.
+Include R17's documentation/filter-only follow-ups at `3d9dd81`; runtime and
+frozen evidence are unchanged from its reviewed head.
+The two runtime changes occupy separate files and combine without conflicts.
+PR126 passed all 18 hosted CI jobs plus CodeQL: Linux/macOS 1,900 source passes
+with one Windows-only skip, Windows 1,901 passes without skips, coverage
+92.062577-92.284891%, seven model checks and one slow check. Parent review passed
+both feature heads; PR127 retains its own exact-head qualification records.
+Independent frozen evidence remains unchanged. Combined-source qualification is
+pending and must not be inferred from either feature passing alone. Governance
+is explicit opt-in and attribution-only; upgrade every shared ProcedureBook
+client before opting in because older clients can fail an entire list operation.
+No live store, installation, publication or main-branch merge occurred. R08 is
+the proposed next dependent feature after this combined checkpoint qualifies.
+
+## Previous Session - 2026-10-03 (Obsidian correction candidate)
+
+Port only the existing explicit correction workspace/backend/desktop plugin onto
+reviewed PR125 head `37ab0b1`. Preserve exact original memories, durable retries,
+scope/privacy, human notes and visible partial failures. No question lifecycle,
+automatic capture or graphical deployment is included. Independent frozen public
+acceptance passes 44 cases with one Windows symlink privilege skip and 21 subtests.
+The Node checks include 46 plugin cases/401 assertions and three actual synthetic
+Python CLI processes. Two repairs close premature transaction acknowledgements
+and stale scoped editability. Original failures and versioned fixture corrections
+remain preserved. Hosted exact-head qualification and parent review remain pending;
+source version does not imply publication. Original work/private stores untouched.
+
+## Previous Session - 2026-10-03 (E22 single-feature candidate)
 
 Port only existing E22 onto reviewed PR124 head `65126e49`: canonical asset and
 runtime identity, pinned local-only construction, explicit legacy refusal/raw

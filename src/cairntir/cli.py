@@ -234,6 +234,7 @@ def _root(ctx: typer.Context) -> None:
         "doctor",
         "status",
         "version",
+        "obsidian-sync",
     }:
         return
     # Best-effort self-heal for commands not excluded above. Once
@@ -1066,6 +1067,31 @@ def calibration_cmd(
     except (MCPError, MemoryStoreError) as exc:
         typer.echo(f"cairntir: {exc}", err=True)
         raise typer.Exit(code=1) from exc
+
+
+@app.command("obsidian-sync")
+def obsidian_sync_cmd(
+    vault: Path = typer.Argument(..., help="Path to the Obsidian vault."),  # noqa: B008
+    wing: str = typer.Option(..., "--wing", "-w"),
+) -> None:
+    """Acknowledge explicit vault corrections and refresh the scoped memory view."""
+    from cairntir.obsidian_bridge import sync_workspace
+
+    try:
+        with _open_store(capture_path="cli.obsidian-sync") as store:
+            report = sync_workspace(store, vault=vault, wing=wing)
+    except (CairntirError, OSError, ValueError) as exc:
+        report = {
+            "schema": "cairntir.obsidian-sync.v1",
+            "wing": wing,
+            "results": [],
+            "projection": {"status": "error", "error": str(exc)},
+        }
+    typer.echo(json.dumps(report, ensure_ascii=False))
+    if report["projection"]["status"] != "complete" or any(
+        row["status"] != "committed" or not row.get("receipt_written") for row in report["results"]
+    ):
+        raise typer.Exit(code=1)
 
 
 @app.command("obsidian-project")

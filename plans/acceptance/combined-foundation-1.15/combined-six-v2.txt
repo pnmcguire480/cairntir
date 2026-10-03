@@ -1,0 +1,88 @@
+F...F.                                                                   [100%]
+================================== FAILURES ===================================
+___ test_governed_lifecycle_and_reopened_correction_preserve_shared_history ___
+
+combined = namespace(store=<cairntir.memory.store.DrawerStore object at 0x000001E66027A5D0>, database=WindowsPath('C:/Users/pnmcg...cceptance._Runner object at 0x000001E65E1A1590>, book=<cairntir.procedures.ProcedureBook object at 0x000001E660289410>)
+
+    def test_governed_lifecycle_and_reopened_correction_preserve_shared_history(combined):
+        b = combined
+        first = b.book.propose(wing=WING, spec=b.spec)
+        original_row = b.store._conn.execute(
+            "SELECT * FROM drawers WHERE id=?", (first.drawer_id,)
+        ).fetchone()
+        second_spec = replace(b.spec, governance=replace(b.spec.governance, version="2"))
+        second = b.book.revise(first.drawer_id, spec=second_spec)
+        evaluated = b.book.evaluate(second.drawer_id, evaluator_id=EVALUATOR)
+        assert evaluated.passed is True and len(b.runner.calls) == 4
+        approvals = []
+        approving = api.ProcedureBook(
+            b.store, b.registry, operator_approval=lambda request: approvals.append(request) or True
+        )
+        promoted = approving.promote(evaluated.current_id, evaluation_id=evaluated.drawer_id)
+        assert len(approvals) == 1
+        withdrawn = approving.rollback(promoted.drawer_id, reason="Explicit fixture withdrawal")
+        history = approving.history(withdrawn.drawer_id)
+        assert [p.state for p in history] == [
+            "candidate",
+            "candidate",
+            "corroborated",
+            "promoted",
+            "expired",
+        ]
+        assert [p.spec.governance.version for p in history] == ["1", "2", "2", "2", "2"]
+        registry_before = _rows(b.store, "procedure_records")
+        evaluations_before = _rows(b.store, "procedure_evaluations")
+        assert (
+            bridge.sync_workspace(b.store, vault=b.vault, wing=WING)["projection"]["status"]
+            == "complete"
+        )
+        entries = {x["drawer_id"]: x for x in _manifest(b)["drawers"]}
+        for record in history:
+            assert entries[record.drawer_id]["editable"] is False
+            assert entries[record.drawer_id]["content"] == b.store.get(record.drawer_id).content
+        note = b.vault / entries[b.development.id]["note"]
+        annotation = "\r\nHuman cafΘ note\nretain exact bytes.\r\n".encode()
+        note.write_bytes(note.read_bytes() + annotation)
+        request = _request(b.store, b.development)
+        proposal = _submit(b, request)
+        proposal_bytes = proposal.read_bytes()
+        report = bridge.sync_workspace(b.store, vault=b.vault, wing=WING)
+        receipt = next(x["receipt"] for x in report["results"] if x["status"] == "committed")
+        assert receipt["replayed"] is False
+        assert note.read_bytes().endswith(annotation)
+        assert b.store.get(receipt["correction_drawer_id"]).content == request["content"]
+        assert b.store.get(b.development.id) == b.development
+>       assert (
+            b.store._conn.execute("SELECT * FROM drawers WHERE id=?", (first.drawer_id,)).fetchone()
+            == original_row
+        )
+E       AssertionError: assert <sqlite3.Row ...001E660242E90> == <sqlite3.Row ...001E660243010>
+E         
+E         At index 12 diff: '2026-10-03T10:03:46.732970+00:00' != '2026-10-03T10:03:46.664221+00:00'
+E         Use -v to get more diff
+
+tests\unit\test_combined_foundation_acceptance.py:222: AssertionError
+____ test_owner_attribution_does_not_replace_approval_or_scoped_authority _____
+
+combined = namespace(store=<cairntir.memory.store.DrawerStore object at 0x000001E66028B110>, database=WindowsPath('C:/Users/pnmcg...cceptance._Runner object at 0x000001E66038AED0>, book=<cairntir.procedures.ProcedureBook object at 0x000001E660389110>)
+
+    def test_owner_attribution_does_not_replace_approval_or_scoped_authority(combined):
+        b = combined
+        evaluated = _corroborated(b)
+        before = _snapshot(b.store)
+        with pytest.raises(api.ProcedureError, match="local operator approval"):
+            b.book.promote(evaluated.current_id, evaluation_id=evaluated.drawer_id)
+>       assert _snapshot(b.store) == before
+E       assert {'drawers': (...ure"}')), ...} == {'drawers': (...ure"}')), ...}
+E         
+E         Omitting 21 identical items, use -vv to show
+E         Differing items:
+E         {'drawers': ((1, 'combined-fixture', 'cases', '[9, 8, 9]\r\n', 'on_demand', '{}', ...), (10, 'combined-fixture', 'proc...a3a056df8ce99693ba01af3f5712bf", "transition_note": "Registered evaluation 13: candidate 1, baseline 0."}', ...), ...)} != {'drawers': ((1, 'combined-fixture', 'cases', '[9, 8, 9]\r\n', 'on_demand', '{}', ...), (10, 'combined-fixture', 'proc...a3a056df8ce99693ba01af3f5712bf", "transition_note": "Registered evaluation 13: candidate 1, baseline 0."}', ...), ...)}
+E         Use -v to get more diff
+
+tests\unit\test_combined_foundation_acceptance.py:271: AssertionError
+E22 complete synthetic registry/assets adapter: 0 exact original cases, no assertion changes
+=========================== short test summary info ===========================
+FAILED tests/unit/test_combined_foundation_acceptance.py::test_governed_lifecycle_and_reopened_correction_preserve_shared_history
+FAILED tests/unit/test_combined_foundation_acceptance.py::test_owner_attribution_does_not_replace_approval_or_scoped_authority
+2 failed, 4 passed in 0.98s

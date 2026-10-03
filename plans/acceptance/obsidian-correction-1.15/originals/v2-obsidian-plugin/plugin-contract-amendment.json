@@ -1,0 +1,25 @@
+{
+  "schema": "cairntir.public-obsidian-plugin-amendment.v1",
+  "contract_id": "v2-obsidian-plugin-2026-09-20-r2",
+  "parent_contract": "v2-obsidian-plugin-2026-09-20-r1",
+  "reason": "The actual CLI uses ordinary exit code 1 for structured reports containing rejected requests, acknowledged commits with receipt-write failure, or projection failure. The original public mock used exit zero for all structured reports and an incomplete receipt fixture. Its 23-case PASS remains scoped to that model, not the actual process boundary.",
+  "process_rule": "A well-formed matching report may be consumed after no process error or an ordinary numeric error.code=1 with error.killed=false and no signal. A killed/timed-out process, spawn error, signal, other numeric exit, string exit code, or malformed report cannot acknowledge a correction even if stdout contains plausible JSON.",
+  "receipt_rule": {
+    "schema": "cairntir.obsidian-correction-receipt.v1",
+    "status": "committed",
+    "request_id": "Canonical UUID matching queued request and result file name",
+    "source_drawer_id": "positive safe integer; modal compares to submitted source drawer",
+    "source_identity": "canonical UUID; modal compares to submitted source identity",
+    "correction_drawer_id": "positive safe integer",
+    "content_sha256": "lowercase 64-character hexadecimal digest; modal compares to SHA256 of exact submitted UTF-8 content",
+    "replayed": "boolean"
+  },
+  "criteria": [
+    {"id":"O08","accept":"Normal numeric exit 1 with valid matching committed receipt and projection error or receipt persistence error reports saved with explicit retry needed. A mixed committed/rejected report can acknowledge the matching committed request."},
+    {"id":"O09","accept":"Normal exit 1 with a rejected matching request provides the specific rejection and retains request for recovery; it does not collapse a valid domain result into a generic spawn/process error."},
+    {"id":"O10","accept":"Invalid process termination cannot turn plausible stdout into saved feedback, including killed, timed-out, signalled, spawn, other exit, or string-code failures."},
+    {"id":"O11","accept":"Missing or incorrect receipt schema/status/correction identity prevents saved feedback. Modal acknowledgment also rejects source-id, source-identity, or proposed-content hash mismatch; explicit refresh requires a structurally valid committed receipt bound to its result UUID."}
+  ],
+  "evidence_policy": "Preserve v1/v2 contracts, fixtures, original zero-exit PASS, environment launch failure, and the first real-seam failure. Freeze new v3 realistic fixture and additive assertions before candidate repair. This change is not permission to weaken behavior or rewrite prior evidence.",
+  "budget": {"maximum_repair_rounds":2,"candidate_repairs_used_before_amendment":0,"protected_reserve":"Complete revised acceptance and a real-process disposable-store seam check after repair."}
+}

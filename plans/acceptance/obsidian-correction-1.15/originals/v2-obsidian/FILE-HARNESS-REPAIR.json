@@ -1,0 +1,10 @@
+{
+  "recorded_utc": "2026-09-20T12:49:29.119878+00:00",
+  "phase": "Post-execution tester harness repair; original frozen source preserved",
+  "original_sha256": "7e0347311843c15dbd654e29bb34eeb8470119da29f7bcbdf1616641a7f0a4ec",
+  "reason": "UTF-8 bytes were correctly preserved; default Windows cp1252 reader misdecoded caf\u00e9 in final assertion.",
+  "change": "Only specify encoding=utf-8 for rendered-note read; no assertion or acceptance relaxation.",
+  "files": {
+    "test_workspace_flow_v2.py": "d9d1797cb0f930e51c203a4d7dd3a4a08a41dbef9c204d10d502e7f1a4d470c5"
+  }
+}
