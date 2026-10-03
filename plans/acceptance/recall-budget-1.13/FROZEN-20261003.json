@@ -1,0 +1,24 @@
+{
+  "schema": "cairntir.independent-recall-freeze.v1",
+  "frozen_at": "2026-10-03T04:39:52.7868326Z",
+  "base": "b60c2fbc537b6fcb284aa14f8023b3170f720822",
+  "runtime_inspected": false,
+  "candidate_implementation_started": false,
+  "test_count": 21,
+  "test_classes": [
+    "test_recall_budget.RecallBudgetAcceptance",
+    "test_recall_budget.RecallBudgetStdioAcceptance",
+    "test_recall_budget_supplement.RecallBudgetValidationSupplement",
+    "test_recall_budget_supplement.RecallRoutingOverflowSupplement",
+    "test_recall_adversaries.RecallAdversaries"
+  ],
+  "files": {
+    "ACCEPTANCE.md": "fde872f8036631bc7ce1c63e0bba937b17100958d54cc74f77c64c0a13b4eeef",
+    "FINITE-CONTRACT.md": "31f441f158a60b81d7195eed11df70345b6a7595f239b7ead51a876aaf5dd7a5",
+    "RELATION-AMENDMENT.md": "0377558828f9ba8b8e429160d624f5fc93b976d317e1b32a484154f60df651b3",
+    "stdio_fixture.py": "f91087db474b04b314b75760a33f4e29ecc6b0149c9a4b37bb10b2fc157c565f",
+    "test_recall_adversaries.py": "218a6fcf2b3d1697f6197a9d75cc7a0921dcc89bcaf492df03ee7b2fd55d8dbe",
+    "test_recall_budget_supplement.py": "453d077171dab7b6069f0000d494f6c59f60cfd83161df72099cff0eedaf7c7c",
+    "test_recall_budget.py": "b660f939e338a4045b2e4efbeeba3d2da57f55caa4c5f3a5379e8dfac3279ace"
+  }
+}

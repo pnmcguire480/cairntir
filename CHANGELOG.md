@@ -13,6 +13,14 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Added
+
+- Optional `budget_chars` on `cairntir_recall` bounds the complete serialized
+  MCP result while preserving whole original evidence, full provenance, hashes
+  and correction ancestry. Explicit bounded omission receipts keep large results
+  navigable. Legacy calls, search ranking and the 21-tool surface remain unchanged.
+  This additive feature is prepared for 1.13.0; it is not yet published.
+
 ## [1.12.4] - 2026-10-02
 
 ### Fixed

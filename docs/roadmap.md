@@ -34,6 +34,15 @@ preserve manual baselines, and report failures while memory writes remain usable
 See the [backup plan](https://github.com/pnmcguire480/cairntir/blob/main/plans/automatic-backups.md).
 The corrected feature is published in [1.12.1](release/v1.12.1.md).
 
+## Current: complete recall-response budgeting
+
+The 1.13.0 candidate exposes a caller-selected full MCP response ceiling on the
+existing recall tool, with whole evidence and explicit bounded omissions. This
+ports only the preserved E23 foundation; it does not activate the parked v2
+program. See [usage](how-to-use.md#bound-a-recall-response) and the
+[finite plan](https://github.com/pnmcguire480/cairntir/blob/main/plans/recall-response-budget.md).
+Independent adversarial review and required CI are pending; not yet published.
+
 ## Next: retrieval preflight evaluation
 
 Pre-register a holdout before building an automatic retrieval path. A candidate
