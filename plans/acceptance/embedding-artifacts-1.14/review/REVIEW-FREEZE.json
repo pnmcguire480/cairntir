@@ -1,0 +1,19 @@
+{
+  "files_sha256": {
+    "adversarial_controls.py": "51881aa4879c3162faefb2aa4d0a1d13b75f632ec532d63580e39132cf287510",
+    "REVIEW-CONTRACT.md": "4083da6ef5a37d2fbf8c8d0a7261ffb83f52bf73abf80c0ad93a89f0389adc10"
+  },
+  "cases": 8,
+  "product_repair_started": false,
+  "inherited_freeze_sha256": {
+    "FREEZE.json": "2f893cb586f85d8d43a409e22978ed3497b0f58339187f91b3befd96bdaf0f2d",
+    "FIXTURE-V3-FREEZE.json": "d3c906e6affe374bb4d0cb5cfba7eedc1afcf873200d596bf23b593dd4f9a362"
+  },
+  "runtime_sha256": {
+    "artifacts.py": "2e40f4d3127a928e05650e59e9e0c8ecefbaf89960867b06d0958d00a4375ab1",
+    "store.py": "900dc793536d64e89794e821cccabefdf1ec63fab99dd246224b546f6d285002",
+    "embeddings.py": "f4050c7ec7c16672fe2109f8312a8707b9b788b91101bd6e8c5820f39db5b5d7"
+  },
+  "frozen_utc": "2026-10-03T06:03:36.3174922Z",
+  "wrong_controls": 1
+}

@@ -13,15 +13,28 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
-## [1.13.0] - Unreleased
+## [1.14.0] - Unreleased
 
 ### Added
+
+- Pin FastEmbed semantic indexes to canonical hashes of model/tokenizer assets
+  and exact runtime versions, with offline detached manifests and local-only
+  construction. Detect changed bytes and prevent mutable refs redirecting a pin.
+- Keep old name-only indexes raw-readable but unverified; semantic operations
+  require the existing explicit backed-up reindex. Failed rebuilding preserves
+  the original logical database. See [migration guidance](docs/embedding-artifacts.md).
+
+This source candidate is stacked on unreleased 1.13.0. No release or live
+migration has occurred.
+
+### Included foundation: reviewed 1.13.0 candidate (unpublished)
 
 - Optional `budget_chars` on `cairntir_recall` bounds the complete serialized
   MCP result while preserving whole original evidence, full provenance, hashes
   and correction ancestry. Explicit bounded omission receipts keep large results
   navigable. Legacy calls, search ranking and the 21-tool surface remain unchanged.
-  This additive feature is prepared for 1.13.0; it is not yet published.
+  This foundation was reviewed in PR124 as a 1.13.0 candidate and remains
+  unpublished. It is included unchanged in this stacked 1.14.0 candidate.
 
 ## [1.12.4] - 2026-10-02
 

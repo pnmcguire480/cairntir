@@ -92,3 +92,7 @@ logs/
 ehthumbs.db
 Desktop.ini
 cairntir-signal-reader.zip
+
+# Disposable public E22 synthetic fixtures and receipts.
+plans/acceptance/embedding-artifacts-1.14/runs/
+plans/acceptance/embedding-artifacts-1.14/review/synthetic-*/

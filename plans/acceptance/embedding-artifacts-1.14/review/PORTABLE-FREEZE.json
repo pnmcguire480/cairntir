@@ -1,0 +1,10 @@
+{
+  "wrong_controls": 1,
+  "assertions_changed": false,
+  "cases": 8,
+  "files_sha256": {
+    "PORTABLE-CONTRACT.md": "95c1c30d98b55c40d68685b65cdc367c480464700dfc41bc922c9b37082dae9a",
+    "run_review_portable.py": "47976417dc174246228f2970dcf5ce3ac1129d2544571dd70fbd66e20f26bf9b"
+  },
+  "frozen_utc": "2026-10-03T06:07:27.4511788Z"
+}

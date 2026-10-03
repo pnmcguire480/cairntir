@@ -1,0 +1,32 @@
+{
+  "cases": 3,
+  "elapsed_seconds": 0.125,
+  "runtime_sha256": {
+    "embeddings.py": "292a4da1ea421dd694392b68fc2476cea9386ca459c3a4febe26dba3a5fa4612",
+    "artifacts.py": "549095cd71e8c208d5ca4d0f930af98ef0ec178bac1a4ca8d900dde53d4f4a5f"
+  },
+  "observations": {
+    "test_hub_selected_missing_model_with_invalid_tokenizer": {
+      "calls": []
+    },
+    "test_hub_genuine_missing_model_acquires_then_pins": {
+      "calls": [
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-5umq4caq\\cache"
+        },
+        {
+          "model_name": "synthetic/review-model",
+          "cache_dir": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-5umq4caq\\cache",
+          "specific_model_path": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-embedding-feature-20261003\\review\\synthetic-5umq4caq\\cache\\models--synthetic--review\\snapshots\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "local_files_only": true
+        }
+      ]
+    },
+    "test_hub_malformed_selected_refs_refuse_without_acquisition": {
+      "calls": []
+    }
+  },
+  "failures": [],
+  "errors": []
+}

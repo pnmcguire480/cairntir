@@ -1,0 +1,9 @@
+{
+  "frozen_utc": "2026-10-03T06:08:58.6533968Z",
+  "files_sha256": {
+    "hub_layout_control.py": "deb49b2066d452b3af8524f1c6daaad81721568696bc075b3b7bba87e1a27c78",
+    "HUB-LAYOUT-CONTRACT.md": "91f29e5a73d29ab9e2271e0636d68f7031ee1fcc4d1a32b530a68705b8d05f90"
+  },
+  "new_feature_requirement": false,
+  "cases": 1
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "cairntir.e22.integration-fixture-adapter-freeze.v2",
+  "frozen_utc": "2026-10-03T06:00:16.540168+00:00",
+  "base_head": "65126e49faf49f542ddc4ee8d3361a2402e2838b",
+  "custody": "public synthetic shared workspace",
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "high",
+  "actual_serving_model": "not exposed",
+  "actual_effort": "not exposed",
+  "cost": "unavailable",
+  "files_sha256": {
+    "INTEGRATION-ADAPTER-CONTRACT.md": "faeb05e363bfb17a21fa782c97717ce2e52e0c04766a85591e822f7ed6f63715",
+    "EXACT-ADAPTER-CONTRACT.md": "19acf715c1f0baf93f28cc06335be32290fb112ee8fb04b01d2cbfa5813fa8a7",
+    "e22_exact_fixture_adapter_v2.py": "14f1d2b5f753a44dbbfccfe9f0d0fa3f934748452d23f818bf3c69ef788414c9",
+    "run_exact_adapters_v2.py": "fc88a07996d0eea23ccda13c11d0b9c53ab7f741e0fb0fa92bca31660e4d16d5",
+    "e22_fixture_loader.py": "53d71e60bf0f1c400b46184f19bbfc676732525e6718fe175474a3c1248db9f8"
+  },
+  "original_files_sha256": {
+    "tests/verification/test_embedding_adapter_outcomes.py": "87e98d26aeb00391c44288252b1c2fa835d67479f7e8c1ed2d40919d3ed375be",
+    "tests/unit/test_store.py": "eecf66a7db47a02dc54f24bc0633840f45a1289d7f48c69b075383e9be23f053"
+  },
+  "parent_freeze_sha256": "88e1b94ba932410524923b0c68f23c1830c6adb07de38d2824bc35e937f0a3be"
+}

@@ -221,11 +221,18 @@ def _metadata(conn: sqlite3.Connection) -> dict[str, str]:
     return {str(row[0]): str(row[1]) for row in rows}
 
 
+def _current_embedding_identity(embedder: EmbeddingProvider) -> tuple[str, str | None]:
+    try:
+        return embedding_space_id(embedder), None
+    except EmbeddingError as exc:
+        return "unavailable", str(exc)
+
+
 def _embedding_status(
     conn: sqlite3.Connection,
     embedder: EmbeddingProvider,
 ) -> EmbeddingSpaceStatus:
-    current_space = embedding_space_id(embedder)
+    current_space, identity_error = _current_embedding_identity(embedder)
     if not _table_exists(conn, "drawers"):
         return EmbeddingSpaceStatus(
             state="corrupt",
@@ -268,6 +275,16 @@ def _embedding_status(
             detail=detail,
         )
 
+    if stored_space is not None and stored_space.startswith("fastembed/text-embedding-v1/"):
+        return _status(
+            "unverified",
+            "legacy FastEmbed index has no artifact provenance; raw drawers remain "
+            "readable, but an explicit backed-up reindex is required",
+        )
+    if identity_error is not None:
+        return _status(
+            "unverified", f"active embedding artifacts are unavailable: {identity_error}"
+        )
     if stored_space is None:
         return _status(
             "unverified",
@@ -325,7 +342,7 @@ def inspect_embedding_space(
     embedder: EmbeddingProvider,
 ) -> EmbeddingSpaceStatus:
     """Inspect semantic-index health without migrating or modifying ``path``."""
-    current_space = embedding_space_id(embedder)
+    current_space, _ = _current_embedding_identity(embedder)
     if not path.exists():
         return EmbeddingSpaceStatus(
             state="missing",
@@ -937,7 +954,9 @@ class DrawerStore:
         actual_dimension = _vector_dimension(self._conn)
         has_filter_columns = _vector_columns(self._conn) >= _VECTOR_FILTER_COLUMNS
         requires_rebuild = actual_dimension != desired_dimension or not has_filter_columns
-        if not requires_rebuild and _META_EMBEDDING_SPACE in metadata:
+        if not requires_rebuild and metadata.get(_META_EMBEDDING_SPACE) == embedding_space_id(
+            self._embedder
+        ):
             return
         if requires_rebuild:
             self._conn.execute("DROP TABLE vec_drawers")

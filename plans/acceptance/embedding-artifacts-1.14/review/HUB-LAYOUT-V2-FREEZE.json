@@ -1,0 +1,9 @@
+{
+  "cases": 3,
+  "frozen_utc": "2026-10-03T06:10:44.4661314Z",
+  "files_sha256": {
+    "HUB-LAYOUT-V2-CONTRACT.md": "162263cd3c8e6fa26a3533b74d34cebd13a174114ec77ea36fcaacc2bc6136d0",
+    "hub_layout_control_v2.py": "89a9c5c2eb1805583e9fb98d738ccd8ceec8cf03ab8b7a0dca1aef3a4690741e"
+  },
+  "repair2_started": false
+}
