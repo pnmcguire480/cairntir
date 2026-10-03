@@ -29,6 +29,22 @@ tester-authored controls are frozen before implementation and replayed unchanged
 a deliberately stripping source copy must fail direct assertions. A separate
 whole-branch reviewer probes uncovered input classes and transaction behavior.
 
+The public byte-preserving `acceptance/practice-governance-r17/controls.zip`
+contains the independent contract/assertions/freeze and synthetic baseline,
+candidate, mutation and adapted historical receipts. It contains no databases.
+`tests/unit/test_practice_governance_independent.py` verifies the preimplementation
+assertion/freeze hashes and replays all 21 fresh controls in normal pytest, using
+isolated inert fixtures. Original historical controls remain unchanged; their
+separate adapter uses current PR125 predecessor pins and does not claim a replay
+of the missing historical plan or old runner. The qualified runtime raw-file
+SHA256 is `6d0ed499a601857aa41bd3d5fbba93b57cd6f391fa6409853423bc3e46974023`;
+platform newline normalization may change raw source bytes without changing Git
+blob identity. All frozen archive entries retain their original exact bytes.
+The [independent evidence inventory](acceptance/practice-governance-r17/README.md)
+also retains a separate finite-scope PASS with 22 adversarial probes and eight
+inherited damaged-envelope failures reproduced on exact base. No product repair
+round was needed; general registry-corruption handling is not claimed.
+
 At most two product repair rounds follow frozen acceptance. Only light serial
 local checks are permitted; the existing full hosted CI runs on the final exact
 head. Pass evidence must identify the head/tree, test bytes and run receipts.
