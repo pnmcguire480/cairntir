@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "kind": "projection fixture only",
+  "prior_freeze_sha256": "448611a9929ea1af7d39af4ef044563a61cab792a28d58cb3031c56d21b01d8e",
+  "prior_test_sha256": "06e88054c2a8a291a0bcea04c8d47866cb5834ddc7ba5e7ca60cd35a225a3406",
+  "files_sha256": {
+    "test_managed_durable_boundaries_v2.py": "1404d419ef7e8f1f766d87e4cae1c0ee3c0f1f81c6b86a92ac237bbba958626a"
+  },
+  "all_assertion_asts_unchanged": true,
+  "assertions": 33,
+  "change": "two fixture marker literals now match existing qualified obsidian generated block markers",
+  "old_baseline_retained_by_root": "baseline24routing2: 16 fail/8 pass, projection fixture failures distinct",
+  "next_execution": "four projection cases only on unchanged historical product port"
+}

@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\plans\\acceptance\\v2-managed-runtime\\run_replay_wrong_control.py",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-feature-20261003\\acceptance\\replay-wrong-control-result.json"
+  ],
+  "exit_code": 0,
+  "expected_exit": 0,
+  "stdout_stderr_sha256": "dc51b72e5579b0f3c0136ce6b77ce10830424f54043854f1bf34241e76700353"
+}

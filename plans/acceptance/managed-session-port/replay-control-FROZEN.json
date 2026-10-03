@@ -1,0 +1,12 @@
+{
+  "original_managed_sha256": "31452b541883edae15687dc8587234ff38ef97d5b9500ab5f985dbcc94c2866b",
+  "mutated_managed_sha256": "acc28e712120c18ac76c0fff3ed0a8f037e341f6a5eccb1a86908a049783e6ca",
+  "mutation": "        if execution.replayed:\n            return self._action_status(intent, replayed=True)\n",
+  "candidate_source_edited": false,
+  "unchanged_harness_sha256": {
+    "run_replay_wrong_control.py": "7cb09803008269540aba5b5896a7f24ba85006a4447c462697b1e129b32200a9",
+    "test_managed_process.py": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452",
+    "process_driver.py": "715d9aa48e794663f9e92a740b784efd76769404823058774e5e5dad97e446c3",
+    "process_child.py": "9abe47c5a82eae0c99a454cf4a7f59d4e36b3702a6aab3d2788880c2d02817f1"
+  }
+}

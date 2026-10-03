@@ -1,0 +1,545 @@
+FFFFFFFFFFFF........FFFF                                                 [100%]
+================================== FAILURES ===================================
+_ test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-start-owner] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA16003A50>, token='VtG8ubjEDxfF9aHycR6cikGq_UIQD...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'owner', name = 'start', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("name", ["start", "capture", "brief", "acknowledge", "close"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_issue_managed_durable_receipts(durable, principal, name, style):
+        """Reject false durability without touching caller state; retry after rollback works."""
+        bundle = durable
+        store, invoke = operation(bundle, principal, name)
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                bundle.owner._conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                    ("managed_caller_work", "uncommitted caller-owned marker"),
+                )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                assert store.transaction_active is True
+>               with pytest.raises(bundle.api.ManagedRuntimeError):
+E               Failed: DID NOT RAISE <class 'cairntir.managed.ManagedRuntimeError'>
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:199: Failed
+_ test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-start-scoped] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA1603E550>, token='uK4wEPQiUVgMvAT2UjGFgnUmlX8kJ...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'scoped', name = 'start', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("name", ["start", "capture", "brief", "acknowledge", "close"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_issue_managed_durable_receipts(durable, principal, name, style):
+        """Reject false durability without touching caller state; retry after rollback works."""
+        bundle = durable
+        store, invoke = operation(bundle, principal, name)
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                bundle.owner._conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                    ("managed_caller_work", "uncommitted caller-owned marker"),
+                )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                assert store.transaction_active is True
+>               with pytest.raises(bundle.api.ManagedRuntimeError):
+E               Failed: DID NOT RAISE <class 'cairntir.managed.ManagedRuntimeError'>
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:199: Failed
+_ test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-capture-owner] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA1603DB10>, token='u0DZbM-BEGzTpmnkQnbrvqHKDN_gZ...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'owner', name = 'capture', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("name", ["start", "capture", "brief", "acknowledge", "close"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_issue_managed_durable_receipts(durable, principal, name, style):
+        """Reject false durability without touching caller state; retry after rollback works."""
+        bundle = durable
+        store, invoke = operation(bundle, principal, name)
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                bundle.owner._conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                    ("managed_caller_work", "uncommitted caller-owned marker"),
+                )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                assert store.transaction_active is True
+>               with pytest.raises(bundle.api.ManagedRuntimeError):
+E               Failed: DID NOT RAISE <class 'cairntir.managed.ManagedRuntimeError'>
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:199: Failed
+_ test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-capture-scoped] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA1603D050>, token='GjqdH1NHXjwrcPhpwUCiL_b513XmJ...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'scoped', name = 'capture', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("name", ["start", "capture", "brief", "acknowledge", "close"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_issue_managed_durable_receipts(durable, principal, name, style):
+        """Reject false durability without touching caller state; retry after rollback works."""
+        bundle = durable
+        store, invoke = operation(bundle, principal, name)
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                bundle.owner._conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                    ("managed_caller_work", "uncommitted caller-owned marker"),
+                )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                assert store.transaction_active is True
+>               with pytest.raises(bundle.api.ManagedRuntimeError):
+E               Failed: DID NOT RAISE <class 'cairntir.managed.ManagedRuntimeError'>
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:199: Failed
+_ test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-brief-owner] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA16198390>, token='8vyY7sMCbabH2Oyg_egGV5xeChnhX...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'owner', name = 'brief', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("name", ["start", "capture", "brief", "acknowledge", "close"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_issue_managed_durable_receipts(durable, principal, name, style):
+        """Reject false durability without touching caller state; retry after rollback works."""
+        bundle = durable
+        store, invoke = operation(bundle, principal, name)
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                bundle.owner._conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                    ("managed_caller_work", "uncommitted caller-owned marker"),
+                )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                assert store.transaction_active is True
+>               with pytest.raises(bundle.api.ManagedRuntimeError):
+E               Failed: DID NOT RAISE <class 'cairntir.managed.ManagedRuntimeError'>
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:199: Failed
+_ test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-brief-scoped] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA1609EFD0>, token='-OoiXlYkHqAVIGSPhlUuV6rogeH7e...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'scoped', name = 'brief', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("name", ["start", "capture", "brief", "acknowledge", "close"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_issue_managed_durable_receipts(durable, principal, name, style):
+        """Reject false durability without touching caller state; retry after rollback works."""
+        bundle = durable
+        store, invoke = operation(bundle, principal, name)
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                bundle.owner._conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                    ("managed_caller_work", "uncommitted caller-owned marker"),
+                )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                assert store.transaction_active is True
+>               with pytest.raises(bundle.api.ManagedRuntimeError):
+E               Failed: DID NOT RAISE <class 'cairntir.managed.ManagedRuntimeError'>
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:199: Failed
+_ test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-acknowledge-owner] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA1609C9D0>, token='VwP7BUPgfN2r04ZvpBK9B1-rGUT4n...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'owner', name = 'acknowledge', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("name", ["start", "capture", "brief", "acknowledge", "close"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_issue_managed_durable_receipts(durable, principal, name, style):
+        """Reject false durability without touching caller state; retry after rollback works."""
+        bundle = durable
+        store, invoke = operation(bundle, principal, name)
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                bundle.owner._conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                    ("managed_caller_work", "uncommitted caller-owned marker"),
+                )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                assert store.transaction_active is True
+>               with pytest.raises(bundle.api.ManagedRuntimeError):
+E               Failed: DID NOT RAISE <class 'cairntir.managed.ManagedRuntimeError'>
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:199: Failed
+_ test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-acknowledge-scoped] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA1618B250>, token='IbCMhdowsSBlwjg1TQMo0rv7u1MT0...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'scoped', name = 'acknowledge', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("name", ["start", "capture", "brief", "acknowledge", "close"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_issue_managed_durable_receipts(durable, principal, name, style):
+        """Reject false durability without touching caller state; retry after rollback works."""
+        bundle = durable
+        store, invoke = operation(bundle, principal, name)
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                bundle.owner._conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                    ("managed_caller_work", "uncommitted caller-owned marker"),
+                )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                assert store.transaction_active is True
+>               with pytest.raises(bundle.api.ManagedRuntimeError):
+E               Failed: DID NOT RAISE <class 'cairntir.managed.ManagedRuntimeError'>
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:199: Failed
+_ test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-close-owner] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA16003E10>, token='gENiSwz1Qd9V5dZo9NgQNfxOdE6Jq...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'owner', name = 'close', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("name", ["start", "capture", "brief", "acknowledge", "close"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_issue_managed_durable_receipts(durable, principal, name, style):
+        """Reject false durability without touching caller state; retry after rollback works."""
+        bundle = durable
+        store, invoke = operation(bundle, principal, name)
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                bundle.owner._conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                    ("managed_caller_work", "uncommitted caller-owned marker"),
+                )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                assert store.transaction_active is True
+>               with pytest.raises(bundle.api.ManagedRuntimeError):
+E               Failed: DID NOT RAISE <class 'cairntir.managed.ManagedRuntimeError'>
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:199: Failed
+_ test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-close-scoped] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA16188ED0>, token='Sc0lVG1t-G59Hox1FHYceWQdEjmk3...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'scoped', name = 'close', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("name", ["start", "capture", "brief", "acknowledge", "close"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_issue_managed_durable_receipts(durable, principal, name, style):
+        """Reject false durability without touching caller state; retry after rollback works."""
+        bundle = durable
+        store, invoke = operation(bundle, principal, name)
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                bundle.owner._conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                    ("managed_caller_work", "uncommitted caller-owned marker"),
+                )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                assert store.transaction_active is True
+>               with pytest.raises(bundle.api.ManagedRuntimeError):
+E               Failed: DID NOT RAISE <class 'cairntir.managed.ManagedRuntimeError'>
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:199: Failed
+_ test_caller_transaction_cannot_issue_managed_durable_receipts[raw-start-owner] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA1609C410>, token='EHSnPcMNBqsOAFlFVrAsiakFBTkIP...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'owner', name = 'start', style = 'raw'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("name", ["start", "capture", "brief", "acknowledge", "close"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_issue_managed_durable_receipts(durable, principal, name, style):
+        """Reject false durability without touching caller state; retry after rollback works."""
+        bundle = durable
+        store, invoke = operation(bundle, principal, name)
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                bundle.owner._conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                    ("managed_caller_work", "uncommitted caller-owned marker"),
+                )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                assert store.transaction_active is True
+                with pytest.raises(bundle.api.ManagedRuntimeError):
+                    invoke()
+                assert store.transaction_active is True
+                assert snapshot(bundle.owner._conn) == inside
+                assert snapshot(independent) == baseline
+                raise CallerRollbackError
+            assert store.transaction_active is False
+            assert snapshot(bundle.owner._conn) == baseline
+            assert snapshot(independent) == baseline
+>           committed = invoke()
+                        ^^^^^^^^
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:208: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\cairntir\managed.py:38: in call
+    return function(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <cairntir.managed.ManagedRuntime object at 0x000001EA160D3D50>
+session_id = '27011fa5-0ca9-4205-a72f-a730967435d6'
+
+    @_boundary
+    def start(self, session_id: str, *, task_id: str | None = None) -> dict[str, Any]:
+        """Discover or explicitly select a task and emit a fresh-epoch brief."""
+        self._authorize()
+        if self._session is not None:
+>           raise ManagedRuntimeError("a runtime may start only once")
+E           cairntir.managed.ManagedRuntimeError: a runtime may start only once
+
+src\cairntir\managed.py:293: ManagedRuntimeError
+_ test_caller_transaction_cannot_issue_managed_durable_receipts[raw-start-scoped] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA1609DE90>, token='juCP0Lm2sulD8NIFbwqpZED37aoEq...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'scoped', name = 'start', style = 'raw'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("name", ["start", "capture", "brief", "acknowledge", "close"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_issue_managed_durable_receipts(durable, principal, name, style):
+        """Reject false durability without touching caller state; retry after rollback works."""
+        bundle = durable
+        store, invoke = operation(bundle, principal, name)
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                bundle.owner._conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                    ("managed_caller_work", "uncommitted caller-owned marker"),
+                )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                assert store.transaction_active is True
+                with pytest.raises(bundle.api.ManagedRuntimeError):
+                    invoke()
+                assert store.transaction_active is True
+                assert snapshot(bundle.owner._conn) == inside
+                assert snapshot(independent) == baseline
+                raise CallerRollbackError
+            assert store.transaction_active is False
+            assert snapshot(bundle.owner._conn) == baseline
+            assert snapshot(independent) == baseline
+>           committed = invoke()
+                        ^^^^^^^^
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:208: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\cairntir\managed.py:38: in call
+    return function(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <cairntir.managed.ManagedRuntime object at 0x000001EA161A9950>
+session_id = 'c0231909-ef45-4bb4-a080-d8c84058f7fd'
+
+    @_boundary
+    def start(self, session_id: str, *, task_id: str | None = None) -> dict[str, Any]:
+        """Discover or explicitly select a task and emit a fresh-epoch brief."""
+        self._authorize()
+        if self._session is not None:
+>           raise ManagedRuntimeError("a runtime may start only once")
+E           cairntir.managed.ManagedRuntimeError: a runtime may start only once
+
+src\cairntir\managed.py:293: ManagedRuntimeError
+_ test_projection_cannot_publish_caller_uncommitted_checkpoint[explicit-owner] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA161998D0>, token='AEFE7seGvGa0fF5g4Nr37vzYvEF_F...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'owner', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_projection_cannot_publish_caller_uncommitted_checkpoint(durable, principal, style):
+        """Retain human bytes and durable view until pending checkpoint really commits."""
+        bundle = durable
+        store, _runtime, session, captured, brief = ready(bundle, principal)
+        target = bundle.project / "Last Session.md"
+        target.write_bytes(
+            b"Human prefix\r\n<!-- cairntir:begin -->\nold generated\n"
+            b"<!-- cairntir:end -->\r\nHuman suffix caf\xc3\xa9\r\n"
+        )
+    
+        def project():
+            return bundle.projection.project_last_session(
+                store,
+                root=bundle.project,
+                path=target,
+                wing=WING,
+                session_id=session,
+                epoch=brief["epoch"],
+            )
+    
+        initial = project()
+>       assert initial["status"] == "complete"
+E       AssertionError: assert 'error' == 'complete'
+E         
+E         - complete
+E         + error
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:242: AssertionError
+_ test_projection_cannot_publish_caller_uncommitted_checkpoint[explicit-scoped] _
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA1619BCD0>, token='1Ng0FX2kORC_gUJ1Z70wOktnDK0M7...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'scoped', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_projection_cannot_publish_caller_uncommitted_checkpoint(durable, principal, style):
+        """Retain human bytes and durable view until pending checkpoint really commits."""
+        bundle = durable
+        store, _runtime, session, captured, brief = ready(bundle, principal)
+        target = bundle.project / "Last Session.md"
+        target.write_bytes(
+            b"Human prefix\r\n<!-- cairntir:begin -->\nold generated\n"
+            b"<!-- cairntir:end -->\r\nHuman suffix caf\xc3\xa9\r\n"
+        )
+    
+        def project():
+            return bundle.projection.project_last_session(
+                store,
+                root=bundle.project,
+                path=target,
+                wing=WING,
+                session_id=session,
+                epoch=brief["epoch"],
+            )
+    
+        initial = project()
+>       assert initial["status"] == "complete"
+E       AssertionError: assert 'error' == 'complete'
+E         
+E         - complete
+E         + error
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:242: AssertionError
+___ test_projection_cannot_publish_caller_uncommitted_checkpoint[raw-owner] ___
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA16083C10>, token='-5BOlBrB9Z9iqfwjIq8_zGjXhAvCo...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'owner', style = 'raw'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_projection_cannot_publish_caller_uncommitted_checkpoint(durable, principal, style):
+        """Retain human bytes and durable view until pending checkpoint really commits."""
+        bundle = durable
+        store, _runtime, session, captured, brief = ready(bundle, principal)
+        target = bundle.project / "Last Session.md"
+        target.write_bytes(
+            b"Human prefix\r\n<!-- cairntir:begin -->\nold generated\n"
+            b"<!-- cairntir:end -->\r\nHuman suffix caf\xc3\xa9\r\n"
+        )
+    
+        def project():
+            return bundle.projection.project_last_session(
+                store,
+                root=bundle.project,
+                path=target,
+                wing=WING,
+                session_id=session,
+                epoch=brief["epoch"],
+            )
+    
+        initial = project()
+>       assert initial["status"] == "complete"
+E       AssertionError: assert 'error' == 'complete'
+E         
+E         - complete
+E         + error
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:242: AssertionError
+__ test_projection_cannot_publish_caller_uncommitted_checkpoint[raw-scoped] ___
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x000001EA16082F10>, token='e_-3kvrkw295r1fQUhQb81NzjZnPo...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'scoped', style = 'raw'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_projection_cannot_publish_caller_uncommitted_checkpoint(durable, principal, style):
+        """Retain human bytes and durable view until pending checkpoint really commits."""
+        bundle = durable
+        store, _runtime, session, captured, brief = ready(bundle, principal)
+        target = bundle.project / "Last Session.md"
+        target.write_bytes(
+            b"Human prefix\r\n<!-- cairntir:begin -->\nold generated\n"
+            b"<!-- cairntir:end -->\r\nHuman suffix caf\xc3\xa9\r\n"
+        )
+    
+        def project():
+            return bundle.projection.project_last_session(
+                store,
+                root=bundle.project,
+                path=target,
+                wing=WING,
+                session_id=session,
+                epoch=brief["epoch"],
+            )
+    
+        initial = project()
+>       assert initial["status"] == "complete"
+E       AssertionError: assert 'error' == 'complete'
+E         
+E         - complete
+E         + error
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py:242: AssertionError
+============================== warnings summary ===============================
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\config\__init__.py:1434
+  C:\Users\pnmcg\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\config\__init__.py:1434: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-start-owner]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-start-scoped]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-capture-owner]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-capture-scoped]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-brief-owner]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-brief-scoped]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-acknowledge-owner]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-acknowledge-scoped]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-close-owner]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-close-scoped]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_caller_transaction_cannot_issue_managed_durable_receipts[raw-start-owner]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_caller_transaction_cannot_issue_managed_durable_receipts[raw-start-scoped]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_projection_cannot_publish_caller_uncommitted_checkpoint[explicit-owner]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_projection_cannot_publish_caller_uncommitted_checkpoint[explicit-scoped]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_projection_cannot_publish_caller_uncommitted_checkpoint[raw-owner]
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py::test_projection_cannot_publish_caller_uncommitted_checkpoint[raw-scoped]
+16 failed, 8 passed, 1 warning in 2.45s

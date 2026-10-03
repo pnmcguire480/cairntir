@@ -1,0 +1,7 @@
+{
+  "original_sha256": "f712fcee2f6fbbc47ca46a975a29b8582959803aa68ff063d26491e1914cefc2",
+  "mutant_sha256": "33b1fdf8bdbf84f7a65bd3a54721f421c6772f862bc3462307977c89980e4ffb",
+  "mutation": "Delete only replayed-intent early return",
+  "test_sha256": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452",
+  "runner_sha256": "7cb09803008269540aba5b5896a7f24ba85006a4447c462697b1e129b32200a9"
+}

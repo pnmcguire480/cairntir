@@ -1,0 +1,48 @@
+{
+  "schema": "cairntir.public-managed-state-followup.v1",
+  "created_at": "2026-09-20T15:10:33.127152+00:00",
+  "original_package_sha256": "5ddb331d10e66649c18c3f18d4e67d0d6d33769f0cb8452ee8b625e21422936e",
+  "files": {
+    "evidence/repair-2/change.json": "7b0721a854d87311807aaa2a16ea0947242f06120fd576175276cdd06a1c0675",
+    "evidence/repair-2/result.json": "5144bcfcf7a64c9413414bfeb3e0e55374d063369dd16613eedb1f49a9b73f63",
+    "evidence/repair-2/state.log": "ca1f7e81cb8d8f784475309622c23127c3972571296a88c01983212df010caab",
+    "evidence/repair-2/static.log": "2e7de01e211e297a4c35941f1f7712628dd3ab08a1e9386b48a57cccc4d352a3",
+    "evidence/repair-2/wrapper.log": "79d279c754b1c2d5a0f5305f5da9cea5b87cefb9140f47109201e994162fc107",
+    "evidence/repair-2/wrapper.xml": "105187ddf49863da96771339ac1c61564993945fb1318fc12ff667ec2b9be3d6",
+    "evidence/repair-2-independent/close.log": "42081705d1e92da29f51f18088f8ed7d15397290807d32750ef7573f44e8934d",
+    "evidence/repair-2-independent/config.log": "6d616e35b0f79d1c5eb79e76b73b502f02de43aa113de4035994930696cdda9f",
+    "evidence/repair-2-independent/core.log": "568a4b8a0bbf04c17519689fb55048038fa29f29560448a8e51bc78199ee8d9a",
+    "evidence/repair-2-independent/process.log": "ec79801ddf8915ff0334ac561ea82e0765f0efd749583f354bfd2b70d1a99024",
+    "evidence/repair-2-independent/replay-wrong-control.log": "f11d13e1a2ffd2c7f699df9c4cbb2ff1d3c6f91e6b08e93cd2910d83800286da",
+    "evidence/repair-2-independent/review.json": "cf2bd6ada2809d936ef20c6c2368897536d3aa99cddd34cc1db13d88dda25077",
+    "evidence/repair-2-independent/run.py": "25ad27c31bbd487d45a1a42258d240f77318481af5107711b43791122eb52cd3",
+    "evidence/repair-2-independent/source.diff": "36c52dcaa4e366a264f4ce82c30b0ccd3f40b066babbcc7b976abde0d005d8f7",
+    "evidence/repair-2-independent/state.log": "ca1f7e81cb8d8f784475309622c23127c3972571296a88c01983212df010caab",
+    "evidence/repair-2-independent/wrong-control-result.json": "7b061cf15f8fcb7d6c30415045c1fb635bee4a9d55081a443967e7b1649f63ed",
+    "evidence/state-observed-race/wrapper-repair.log": "c7e7041165ed74a39e2360a9d6af00b7cdb9316ff48ff14dfc3be035c952b133",
+    "evidence/state-observed-race/wrapper-repair.xml": "e41ad56e1ff5cf60f750c92723c797cea9794174476ee96a134fe27ec9bcd356",
+    "evidence/state-repair-1-red/plan.json": "4938c85e9505786d97573e6420d5df1ef6be6fc9528d8be6b915ef4845d98414",
+    "evidence/state-repair-1-red/primary.log": "a52c54e0c482286cde80599b05696326b64ff28186e9787e6c165d023a7e4988",
+    "evidence/state-repair-1-red/run.log": "73b5cc4a630f8519f7fac12dd8400c4bbe9a4e599ca4c617c1b00bb734b88727",
+    "evidence/wrong-control-repair-2/mutation.json": "ea422d264e66fe6fd9fe6e2db5173435e4fc9b985ecfe96b8c28a4c6b6c232fa",
+    "evidence/wrong-control-repair-2/result.json": "d7d6dbf5dbb794dcb3f5e4ab6fd865996eb8ed60aa6dec058ce3643af93a70aa",
+    "evidence/wrong-control-repair-2/run.log": "793a78b4960405acd5b93c3795ea474c5ad749659abd4debe3398a800b436a5b",
+    "STATE-CONTRACT.md": "48f2f0bbe149907362ab16599faece4cd206eb1224afd295a53431a8f78ab23d",
+    "STATE-FOLLOWUP-NOTES.md": "3a156a5f9ea143835310a036ef0b40949608e0278c6f30fd2cfed8a76bae0321",
+    "STATE-FROZEN.json": "2f189ab7208a20bebfa884502ed2a28c83db15e973eccda708b849f41cd3981b",
+    "test_managed_state.py": "43e9b17d2367a54b6f8b160257b40028f142eed6c271fb5b3b915c63590f8595"
+  },
+  "current_product": {
+    "managed.py": "301eefc5c2593f3fa466c06d84b0384dfd92294aee2e015ac68b967d82585f30",
+    "cli.py": "c9ec4aec3811495803b5813d3812ba3a70f007ce968614bc2614ae154cc94448",
+    "memory/store.py": "490d2e3df639556d3aff5f555c08f04568808219a34f66af2a7174ec288c6f70",
+    "access.py": "084a03f9963d45aba34feb17227a8923d124c867c89017be22a2374251171c6c"
+  },
+  "tests": {
+    "portable_default": 26,
+    "explicit_cache_required": 2,
+    "independently_passed": 28
+  },
+  "independent_review": "evidence/repair-2-independent/review.json",
+  "remaining_product_repair_rounds": 0
+}

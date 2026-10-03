@@ -1,0 +1,32 @@
+{
+  "created_at": "2026-09-20T15:07:49.955514+00:00",
+  "status": "PASS",
+  "product": {
+    "managed.py": "301eefc5c2593f3fa466c06d84b0384dfd92294aee2e015ac68b967d82585f30",
+    "cli.py": "c9ec4aec3811495803b5813d3812ba3a70f007ce968614bc2614ae154cc94448",
+    "memory/store.py": "490d2e3df639556d3aff5f555c08f04568808219a34f66af2a7174ec288c6f70",
+    "access.py": "084a03f9963d45aba34feb17227a8923d124c867c89017be22a2374251171c6c"
+  },
+  "product_repair_round": 2,
+  "exact_source_and_acceptance_hashes_verified": true,
+  "tests": {
+    "original_frozen": 27,
+    "state_regression": 1,
+    "state_ack_subtests": 2,
+    "skipped": 0
+  },
+  "regression_red": "state-repair-1-red/run.log",
+  "wrong_control": {
+    "detected": true,
+    "external_markers": 2,
+    "result": "wrong-control-replay-repair-2/result.json"
+  },
+  "verification_authorship": "Original acceptance and new deterministic regression frozen by this agent before the assigned narrow repair; separate agent review requested.",
+  "evidence": {
+    "wrapper.log": "79d279c754b1c2d5a0f5305f5da9cea5b87cefb9140f47109201e994162fc107",
+    "wrapper.xml": "105187ddf49863da96771339ac1c61564993945fb1318fc12ff667ec2b9be3d6",
+    "state.log": "ca1f7e81cb8d8f784475309622c23127c3972571296a88c01983212df010caab",
+    "static.log": "2e7de01e211e297a4c35941f1f7712628dd3ab08a1e9386b48a57cccc4d352a3",
+    "change.json": "7b0721a854d87311807aaa2a16ea0947242f06120fd576175276cdd06a1c0675"
+  }
+}

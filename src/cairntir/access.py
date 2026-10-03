@@ -592,6 +592,21 @@ class ScopedStore:
         self.authorize("read")
         return self._owner.workflow_receipt(self._workflow_key(idempotency_key))
 
+    def _managed_records(self, *, wing: str) -> list[dict[str, Any]]:
+        self.authorize("read", wing=wing)
+        records = self._owner._managed_records(
+            wing=wing, key_prefix=self._workflow_key(""), include_events=True
+        )
+        visible = self._rows()
+        allowed = []
+        for record in records:
+            if not set(record["_managed"]["evidence_ids"]) <= visible.keys():
+                if record["_managed"]["operation"] == "managed.event.v1":
+                    continue
+                raise AccessDenied("managed workflow evidence is unavailable")
+            allowed.append(record)
+        return allowed
+
     def _task_records(self, *, wing: str) -> list[dict[str, Any]]:
         self.authorize("read")
         records = self._owner._task_records(wing=wing)

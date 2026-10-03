@@ -1,0 +1,8 @@
+{
+  "type": "owned console harness error after successful control execution",
+  "error": "UnicodeEncodeError: cp1252 cannot print U+1F9ED",
+  "original_subprocess_exit": 0,
+  "raw_result_preserved": "pre-action-oracle-controls.log",
+  "control_rerun": false,
+  "product_failure": false
+}

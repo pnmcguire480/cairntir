@@ -1,0 +1,11 @@
+# Close and restart supplement v1
+
+This narrows two explicit requirements in the frozen core contract's close paragraph. It is independent public acceptance authored after the first candidate passed the original 12 core and 10 process cases, and before repair. Original frozen files stay unchanged.
+
+Every received capture attempt is a producer claim, including malformed input. A known failed claim cannot disappear because another claim commits, even if they reuse a sequence. `capture_complete` is false until every recognized pending failure has an exact matching successful retry, or remains false when a malformed claim cannot be matched safely. A corrected or unrelated payload is not an exact retry. A final watermark matching committed events cannot override a known failed claim. This does not promise recovery of event bytes never received or persisted during a crash.
+
+The positive control retries the identical valid event after a witnessed transient storage failure: it commits once, then the matching explicit final watermark can yield capture_complete=true. The negative control successfully captures a different event at that same sequence, proving that a blanket reset of a failure flag is insufficient.
+
+Ready startup briefs additionally expose `unclean_sessions`, a list of `{session_id,epoch,task_id}` for authorized prior runtime epochs with committed brief/start records but no committed close record. The active epoch is excluded; matching logical session ID does not merge independent epochs. A later clean close does not erase another epoch's missing close. No inaccessible principal/session details may be disclosed. This field is included in canonical brief hashing and the whole-response budget. Other fields may accompany each entry; task_id is the selected task when known, otherwise null. This is evidence of a missing close, not proof that a process crashed or that every producer event was delivered.
+
+The four public tests use disposable HashEmbeddingProvider stores. There is no new host hook, shutdown guarantee, migration, private holdout or R10 projection claim. Product repair may add durable protocol records as needed within the existing schema; acceptance files are immutable after CLOSE-FROZEN.json.

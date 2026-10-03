@@ -89,7 +89,28 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-03 (explicit question candidate)
+## Last Session - 2026-10-03 (managed-session isolated port)
+
+Port the already planned explicit foreground managed runtime and Last Session
+projection onto qualified/reviewed R08 PR129 `c71abb6`. R18 is excluded while its
+scoped-visibility repair undergoes separate review. Preserve historical runtime,
+process, outcome and projection controls. Fresh independent controls reproduce
+caller-transaction false acknowledgements, consumed startup retry state,
+uncommitted projection and a hidden-required-event false complete close. Two
+bounded repairs address those contracts. Fresh independent controls pass 25 cases;
+56 historical cases and nine subtests pass, with two model CLI prerequisite skips
+and one Windows symlink privilege skip. Both deliberate fault controls are detected,
+and the independent pre-action oracle passes. A separately disclosed one-line CLI
+import restoration passes 48 retained R08 cases and 51 subtests. Original failures,
+fixture-only amendments and that integration correction remain preserved.
+
+No source-version/release change yet: the integration parent owns release order.
+Full exact-candidate hosted/installed checks, native host delivery, graphical and
+human acceptance remain pending. No publication, live store, settings, access or
+installation changes. See [managed usage](docs/managed-sessions.md). The historical
+35-commitment inventory is not promoted by this finite explicit-workflow port.
+
+## Previous Session - 2026-10-03 (explicit question candidate)
 
 Port only the previously planned R08 open/list/resolve lifecycle onto qualified
 PR128 `9e65c37`, whose all 18 hosted CI jobs and CodeQL passed. Preserve exact

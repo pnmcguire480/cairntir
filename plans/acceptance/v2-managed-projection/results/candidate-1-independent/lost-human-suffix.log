@@ -1,0 +1,14 @@
+test_read_only_restart_and_exact_human_bytes (test_managed_projection.ManagedProjectionAcceptance.test_read_only_restart_and_exact_human_bytes) ... FAIL
+
+======================================================================
+FAIL: test_read_only_restart_and_exact_human_bytes (test_managed_projection.ManagedProjectionAcceptance.test_read_only_restart_and_exact_human_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-projection-20260920\test_managed_projection.py", line 169, in test_read_only_restart_and_exact_human_bytes
+    self.assertEqual(data.split(END)[1], suffix)
+AssertionError: b'' != b'\r\nHuman trailing note\n mixed\r\nno final newline \xf0\x9f\xa7\xad'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.051s
+
+FAILED (failures=1)

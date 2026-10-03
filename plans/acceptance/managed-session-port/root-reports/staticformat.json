@@ -1,0 +1,26 @@
+{
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "ruff",
+    "format",
+    "--check",
+    "src/cairntir/managed.py",
+    "src/cairntir/managed_projection.py",
+    "src/cairntir/access.py",
+    "src/cairntir/memory/store.py",
+    "src/cairntir/cli.py",
+    "tests/unit/test_managed_runtime.py",
+    "tests/unit/test_managed_outcomes.py",
+    "tests/unit/test_last_session_projection.py",
+    "tests/unit/test_managed_port_acceptance.py"
+  ],
+  "cwd": "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003",
+  "exit_code": 0,
+  "status": "completed",
+  "seconds": 0.101,
+  "log_sha256": "2ce9758b9f8abd876ec3e76c589e099e8b05377b1e7ea2331e81ee80f07bdff8",
+  "synthetic_only": true,
+  "runtime": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-feature-20261003\\runtime-staticformat",
+  "model_inference": false
+}

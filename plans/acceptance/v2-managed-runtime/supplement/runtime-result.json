@@ -1,0 +1,31 @@
+{
+  "schema": "cairntir.managed-outcome-supplement.result.v1",
+  "status": "PASS",
+  "runtime_cases": 11,
+  "runtime_first_run_exit": 0,
+  "runtime_first_run_log_sha256": "b7a43f8578ee880f327b63713419f69a11de23a757bd654fcbb9aeac976fe883",
+  "freeze_sha256": "4160893257431e14bc45895dd58293cbcf9df52ee39773818be4844a6aafd209",
+  "source_before_after_equal": {
+    "src/cairntir/managed.py": "301eefc5c2593f3fa466c06d84b0384dfd92294aee2e015ac68b967d82585f30",
+    "src/cairntir/managed_projection.py": "53fa5cc28d256a434d181a96d82b3a87534acc5eb6710236b6bcf6b44bad4df8",
+    "src/cairntir/cli.py": "c9ec4aec3811495803b5813d3812ba3a70f007ce968614bc2614ae154cc94448",
+    "src/cairntir/memory/store.py": "490d2e3df639556d3aff5f555c08f04568808219a34f66af2a7174ec288c6f70",
+    "src/cairntir/access.py": "084a03f9963d45aba34feb17227a8923d124c867c89017be22a2374251171c6c"
+  },
+  "tests_before_after_equal": {
+    "CONTRACT.md": "a31f341136cbd8e7fc90c0e27f9dc3f117869649bc045336ecb395f3c4bf2aa5",
+    "test_managed_outcomes.py": "ced839e467f51517eb912ccd11b66a2b767ae50130861a36e0c482a0efb33bb5"
+  },
+  "original_full_coverage_unchanged_sha256": "b9dc92368c8169a80652e9880d5390fad387e6570c83fa7a7f0074be6baefb8d",
+  "wrong_control": {
+    "schema": "cairntir.public-wrong-control.v1",
+    "status": "detected",
+    "exit_code": 1,
+    "original_managed_sha256": "301eefc5c2593f3fa466c06d84b0384dfd92294aee2e015ac68b967d82585f30",
+    "mutant_managed_sha256": "a50b464f61bc3da781f5b32542c592350b17a7ddae19ef77ce28fee8a33095ca",
+    "unchanged_test_sha256": "ced839e467f51517eb912ccd11b66a2b767ae50130861a36e0c482a0efb33bb5",
+    "log_sha256": "e55ed41022d495f421e3fc6b9aa9b6c16a4613f6ab70069a7879de0a0044d057",
+    "mutation": "Only owned copy overflow detector disabled; real child emits 8192 bytes under 128-byte cap."
+  },
+  "coverage_claim": "No new coverage claim or union. Additive wrapper will enter a separate corrected full-source run."
+}

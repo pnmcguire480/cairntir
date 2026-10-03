@@ -1,0 +1,9 @@
+test_checkpoint_advance_during_read_requires_clean_retry (projection_supplement.ProjectionSupplementAcceptance.test_checkpoint_advance_during_read_requires_clean_retry) ... ok
+test_public_session_and_ack_cannot_transplant_bound_action (projection_supplement.ProjectionSupplementAcceptance.test_public_session_and_ack_cannot_transplant_bound_action) ... ok
+test_raw_action_evidence_cannot_be_recertified (projection_supplement.ProjectionSupplementAcceptance.test_raw_action_evidence_cannot_be_recertified) ... ok
+test_required_source_current_visibility (projection_supplement.ProjectionSupplementAcceptance.test_required_source_current_visibility) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.340s
+
+OK

@@ -1,0 +1,13 @@
+{
+  "fixture_dependency_sha256": {
+    "raw-projection-amendment-v3/test_managed_durable_boundaries_v3.py": "0fdb5c914a9bd912084f1a110ba0cc3f1c634b0baa0ae2ab4a7ad4aa4ca2ed94"
+  },
+  "cases": 1,
+  "files_sha256": {
+    "CONTRACT.md": "ac1cd3dd95a5d7984495612d715093bd28b3041616bd4d4fe5af89449be46ffa",
+    "test_hidden_event.py": "b8130fee1de2e94a16c0f708a9e3163c810358c23f4f2623bed89f7719c24992"
+  },
+  "runtime_execution": "none before this freeze",
+  "version": 1,
+  "scope": "Existing whole-evidence brief and capture/projection completeness only; no R18 semantics"
+}

@@ -1216,6 +1216,39 @@ class DrawerStore:
             raise WorkflowError(f"failed to read workflow receipt: {exc}") from exc
         return _row_to_workflow_receipt(row) if row is not None else None
 
+    def _managed_records(
+        self, *, wing: str, key_prefix: str = "", include_events: bool = False
+    ) -> list[dict[str, Any]]:
+        try:
+            rows = self._conn.execute(
+                "SELECT idempotency_key, operation, request_hash, result FROM workflow_runs "
+                "WHERE operation LIKE 'managed.%' AND state = 'committed'"
+            ).fetchall()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"managed registry read failed: {exc}") from exc
+        records = []
+        for row in rows:
+            if not row["idempotency_key"].startswith(key_prefix + "managed:") and not (
+                include_events and row["operation"] == "managed.event.v1"
+            ):
+                continue
+            try:
+                record = json.loads(row["result"])
+                binding = record["_managed"]
+                valid = (
+                    binding["operation"] == row["operation"]
+                    and request_hash(binding["request"]) == row["request_hash"]
+                    and isinstance(binding["evidence_ids"], list)
+                    and all(type(key) is int and key > 0 for key in binding["evidence_ids"])
+                )
+            except (ValueError, TypeError, KeyError) as exc:
+                raise MemoryStoreError("invalid committed managed registry record") from exc
+            if not valid:
+                raise MemoryStoreError("invalid committed managed registry record")
+            if binding["request"]["wing"] == wing:
+                records.append(record)
+        return records
+
     def _task_records(self, *, wing: str) -> list[dict[str, Any]]:
         try:
             rows = self._conn.execute(

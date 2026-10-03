@@ -1,0 +1,6 @@
+test_cli_changed_config_cannot_launch_using_previous_ack (__main__.ManagedConfigurationAcceptance.test_cli_changed_config_cannot_launch_using_previous_ack) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.369s
+
+OK

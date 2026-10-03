@@ -9,7 +9,7 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, cast
+from typing import Annotated, Any, cast
 
 import typer
 
@@ -208,6 +208,8 @@ def _root(ctx: typer.Context) -> None:
     from cairntir.access import AccessDenied, startup_token, validate_startup
 
     global _startup_grant
+    if ctx.invoked_subcommand == "managed":
+        return
     _startup_grant = startup_token()
     if _startup_grant is not None:
         validate_startup(db_path(create=False), _startup_grant)
@@ -1073,6 +1075,86 @@ def calibration_cmd(
     except (MCPError, MemoryStoreError) as exc:
         typer.echo(f"cairntir: {exc}", err=True)
         raise typer.Exit(code=1) from exc
+
+
+@app.command("managed")
+def managed_cmd(
+    config: Annotated[Path, typer.Option("--config")],
+    session_id: str = typer.Option(..., "--session-id"),
+    task_id: str | None = typer.Option(None, "--task-id"),
+) -> None:
+    """Run acknowledged request capture and configured actions over foreground JSONL."""
+    from cairntir.access import startup_token, validate_startup
+    from cairntir.managed import ManagedRuntime, ManagedRuntimeError, stream_command
+    from cairntir.obsidian_bridge import _read_json
+
+    global _startup_grant
+    failed = False
+    operation = "start"
+
+    def emit(value: dict[str, Any]) -> None:
+        typer.echo(json.dumps(value, ensure_ascii=False, separators=(",", ":")))
+
+    def error(exc: Exception) -> None:
+        emit(
+            {
+                "schema": "cairntir.managed-error.v1",
+                "status": "error",
+                "operation": operation,
+                "error": str(exc),
+            }
+        )
+
+    def unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ManagedRuntimeError("duplicate JSON object key")
+            result[key] = value
+        return result
+
+    try:
+        _startup_grant = startup_token()
+        if _startup_grant is not None:
+            validate_startup(db_path(create=False), _startup_grant)
+        config_hash = hashlib.sha256(config.read_bytes()).hexdigest()
+        configuration = _read_json(config, max_bytes=2 * 1024 * 1024)
+        if hashlib.sha256(config.read_bytes()).hexdigest() != config_hash:
+            raise ManagedRuntimeError("configuration changed during startup")
+        with _open_store(capture_path="cli.managed") as store:
+            runtime = ManagedRuntime(store, config=configuration)
+            emit(runtime.start(session_id, task_id=task_id))
+            closed = False
+            while not closed:
+                line = sys.stdin.readline(2 * 1024 * 1024 + 1)
+                if not line:
+                    operation = "close"
+                    emit(runtime.close())
+                    break
+                operation = "decode"
+                try:
+                    if len(line) > 2 * 1024 * 1024:
+                        while line and not line.endswith("\n"):
+                            line = sys.stdin.readline(2 * 1024 * 1024 + 1)
+                        raise ManagedRuntimeError("command exceeds JSONL input limit")
+                    command = json.loads(line, object_pairs_hook=unique)
+                    if isinstance(command, dict) and isinstance(command.get("operation"), str):
+                        operation = command["operation"]
+                    if hashlib.sha256(config.read_bytes()).hexdigest() != config_hash:
+                        raise ManagedRuntimeError(
+                            "configuration changed; restart the managed runtime"
+                        )
+                    result = stream_command(runtime, command)
+                    emit(result)
+                    closed = result.get("schema") == "cairntir.managed-close.v1"
+                except (CairntirError, OSError, ValueError) as exc:
+                    failed = True
+                    error(exc)
+    except (CairntirError, OSError, ValueError) as exc:
+        error(exc)
+        raise typer.Exit(code=1) from exc
+    if failed:
+        raise typer.Exit(code=1)
 
 
 def _question_output(action: Callable[[DrawerStore], dict[str, Any]]) -> None:

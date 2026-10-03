@@ -1,0 +1,10 @@
+{
+  "format_line100": "PASS",
+  "candidate_router_path": "tests/unit/test_managed_port_acceptance.py",
+  "lint": "PASS",
+  "files_sha256": {
+    "test_managed_port_acceptance.py": "b0d30be0d9cc6bcd9f28eb823abb5a4ccccf336da5d0626886dfcda7763f2bc8"
+  },
+  "runtime_execution": "none",
+  "fresh_freeze_sha256": "448611a9929ea1af7d39af4ef044563a61cab792a28d58cb3031c56d21b01d8e"
+}

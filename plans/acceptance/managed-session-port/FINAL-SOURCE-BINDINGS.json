@@ -1,0 +1,29 @@
+{
+  "base": "c71abb6808dffe75d9c303734f80f667d5c81cba",
+  "runtime_files_sha256": {
+    "src/cairntir/access.py": "5553a29df68c6e77701654fb5f75c943f95a7decc01d24da4526082ff29d81ad",
+    "src/cairntir/tasks.py": "420b4b0fbb99625d3cecf4fe6c381d23a71ff6b60c1dfb31daed42c7197fcad8",
+    "src/cairntir/cli.py": "d67879b62d9655ed160b9ddc1095f4c229585daa93134a7f343e4bc59dd10a81",
+    "src/cairntir/obsidian.py": "bd60792e3a3c139a4e2627e11f04f744097180f5eaf891a51d167e33332d0a9c",
+    "src/cairntir/managed.py": "31452b541883edae15687dc8587234ff38ef97d5b9500ab5f985dbcc94c2866b",
+    "src/cairntir/managed_projection.py": "c1aae484087dbf681350ef20a47c4578f211dd42be77ddd22a17ea586f0725d9",
+    "src/cairntir/memory/store.py": "26aa05d780b9763be039a3bd9adca4812affcbea4d7430d481e36d32c0527067"
+  },
+  "metadata_and_existing_installed_verifier_sha256": {
+    "src/cairntir/__init__.py": "cbc9dc16472720e3d060e7906d8e4ec61d1ddc36aa09c0f2256b7bd4219de6ad",
+    "pyproject.toml": "19ebbc8c0982303627ddbe726d44e93fccb262b36c1992b92361c659771e3d2d",
+    "scripts/verify_package.py": "5ebfccad4e9c763b9ac71982f6d8ad54943ef2d7585aa2564eb5e544f145e120"
+  },
+  "maintained_router_path": "tests/unit/test_managed_port_acceptance.py",
+  "maintained_router_sha256": "2fe9bdd5ce7f515c122e39240e9fd93779ec00ab9f4d313bcc89d0385cf2815e",
+  "managed_and_projection_unchanged_since_final_repair2_run": true,
+  "separate_mechanical_cli_import_amendment": "CLI-IMPORT-AMENDMENT-BINDING.json",
+  "checked_frozen_artifact_entries": 12,
+  "freeze_sha256": {
+    "FREEZE.json": "448611a9929ea1af7d39af4ef044563a61cab792a28d58cb3031c56d21b01d8e",
+    "marker-amendment-v2/FREEZE.json": "ac1899dfe2232e3c3ad7afb84c3dedd9fa127a15b72a0cd15a303ef276958328",
+    "raw-projection-amendment-v3/FREEZE.json": "71b3a6897fe3de130f664af9c960efb50847a65af56a8cc6ec46bfd538c0b575",
+    "visibility-v1/FREEZE.json": "b4ed819a5d0ebc88f8f8514841a0cedca1dc7b480c9c675fea5eb8711c007310",
+    "visibility-v2/FREEZE.json": "5334505390aa967d2e2f02e0825fe2bc51effd9cd5c2cc0bd37582847b37e330"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "schema": "cairntir.public-projection-supplement.freeze.v1",
+  "timing": "post-discovery, before first execution",
+  "source_sha256": "53fa5cc28d256a434d181a96d82b3a87534acc5eb6710236b6bcf6b44bad4df8",
+  "cases": 4,
+  "subcases": 9,
+  "files": {
+    "CONTRACT.md": "a25321cd3da5ce7b1b462830f44c5b8e4837b02cf5322f9a51cbb112b9b7501d",
+    "test_projection_supplement.py": "8c27103e55ffa2eecb3e5cff3f171afc707c3ce5e46f829460ae7120474c7793"
+  }
+}

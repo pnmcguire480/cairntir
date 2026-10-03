@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="4" time="1.484" timestamp="2026-10-03T09:08:37.510456-04:00" hostname="PNMDevDesign"><testcase classname="" name="test_projection_cannot_publish_caller_uncommitted_checkpoint[explicit-owner]" time="0.094"><failure message="AssertionError: assert ('complete' == 'error'&#10;  &#10;  - error&#10;  + complete)">durable = namespace(owner=&lt;cairntir.memory.store.DrawerStore object at 0x000001764B040BD0&gt;, token='qizqCnx5TY_oWuwIn09RFcEjzgKdN...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'&gt;)
+principal = 'owner', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_projection_cannot_publish_caller_uncommitted_checkpoint(durable, principal, style):
+        """Retain human bytes and durable view until pending checkpoint really commits."""
+        bundle = durable
+        store, _runtime, session, captured, brief = ready(bundle, principal)
+        target = bundle.project / "Last Session.md"
+        target.write_bytes(
+            b"Human prefix\r\n&lt;!-- cairntir:generated:begin --&gt;\nold generated\n"
+            b"&lt;!-- cairntir:generated:end --&gt;\r\nHuman suffix caf\xc3\xa9\r\n"
+        )
+    
+        def project():
+            return bundle.projection.project_last_session(
+                store,
+                root=bundle.project,
+                path=target,
+                wing=WING,
+                session_id=session,
+                epoch=brief["epoch"],
+            )
+    
+        initial = project()
+        assert initial["status"] == "complete"
+        durable_bytes = target.read_bytes()
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                checkpoint = {
+                    "task_id": captured["task_id"],
+                    "expected_revision": captured["revision"],
+                    "idempotency_key": str(uuid4()),
+                    "status": "active",
+                    "completed": [],
+                    "outstanding": [ORIGINAL, "  caller-owned pending commitment café\r\n  "],
+                    "next_action": "Pending state has not physically committed",
+                    "evidence_ids": [captured["drawer_id"]],
+                }
+                TaskBook(store).checkpoint(WING, ROOM, "Uncommitted caller checkpoint", checkpoint)
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                result = project()
+&gt;               assert result["status"] == "error" and result.get("error")
+E               AssertionError: assert ('complete' == 'error'
+E                 
+E                 - error
+E                 + complete)
+
+cairntir-managed-feature-20261003\acceptance\marker-amendment-v2\test_managed_durable_boundaries_v2.py:262: AssertionError</failure></testcase><testcase classname="" name="test_projection_cannot_publish_caller_uncommitted_checkpoint[explicit-scoped]" time="0.063"><failure message="AssertionError: assert ('complete' == 'error'&#10;  &#10;  - error&#10;  + complete)">durable = namespace(owner=&lt;cairntir.memory.store.DrawerStore object at 0x000001764AFF3450&gt;, token='QepV6siA-dSr2uglvPRn0ibrJZWgf...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'&gt;)
+principal = 'scoped', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_projection_cannot_publish_caller_uncommitted_checkpoint(durable, principal, style):
+        """Retain human bytes and durable view until pending checkpoint really commits."""
+        bundle = durable
+        store, _runtime, session, captured, brief = ready(bundle, principal)
+        target = bundle.project / "Last Session.md"
+        target.write_bytes(
+            b"Human prefix\r\n&lt;!-- cairntir:generated:begin --&gt;\nold generated\n"
+            b"&lt;!-- cairntir:generated:end --&gt;\r\nHuman suffix caf\xc3\xa9\r\n"
+        )
+    
+        def project():
+            return bundle.projection.project_last_session(
+                store,
+                root=bundle.project,
+                path=target,
+                wing=WING,
+                session_id=session,
+                epoch=brief["epoch"],
+            )
+    
+        initial = project()
+        assert initial["status"] == "complete"
+        durable_bytes = target.read_bytes()
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                checkpoint = {
+                    "task_id": captured["task_id"],
+                    "expected_revision": captured["revision"],
+                    "idempotency_key": str(uuid4()),
+                    "status": "active",
+                    "completed": [],
+                    "outstanding": [ORIGINAL, "  caller-owned pending commitment café\r\n  "],
+                    "next_action": "Pending state has not physically committed",
+                    "evidence_ids": [captured["drawer_id"]],
+                }
+                TaskBook(store).checkpoint(WING, ROOM, "Uncommitted caller checkpoint", checkpoint)
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                result = project()
+&gt;               assert result["status"] == "error" and result.get("error")
+E               AssertionError: assert ('complete' == 'error'
+E                 
+E                 - error
+E                 + complete)
+
+cairntir-managed-feature-20261003\acceptance\marker-amendment-v2\test_managed_durable_boundaries_v2.py:262: AssertionError</failure></testcase><testcase classname="" name="test_projection_cannot_publish_caller_uncommitted_checkpoint[raw-owner]" time="0.054"><failure message="cairntir.errors.MemoryStoreError: failed to begin transaction: cannot start a transaction within a transaction">self = &lt;cairntir.memory.store.DrawerStore object at 0x000001764AFF2990&gt;
+
+    @contextmanager
+    def transaction(self) -&gt; Iterator[None]:
+        """Run writes atomically, using savepoints when workflows nest."""
+        savepoint: str | None = None
+        try:
+            if self._transaction_depth == 0:
+                self._backup_if_due()
+                self._bulk_embedding = None
+&gt;               self._conn.execute("BEGIN IMMEDIATE")
+E               sqlite3.OperationalError: cannot start a transaction within a transaction
+
+..\..\..\..\AppData\Local\Temp\cairntir-managed-work-20261003\src\cairntir\memory\store.py:1161: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+durable = namespace(owner=&lt;cairntir.memory.store.DrawerStore object at 0x000001764AFF2990&gt;, token='PLmr5zSJ8T0t6zgJfSAlHDd-UN1sr...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'&gt;)
+principal = 'owner', style = 'raw'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_projection_cannot_publish_caller_uncommitted_checkpoint(durable, principal, style):
+        """Retain human bytes and durable view until pending checkpoint really commits."""
+        bundle = durable
+        store, _runtime, session, captured, brief = ready(bundle, principal)
+        target = bundle.project / "Last Session.md"
+        target.write_bytes(
+            b"Human prefix\r\n&lt;!-- cairntir:generated:begin --&gt;\nold generated\n"
+            b"&lt;!-- cairntir:generated:end --&gt;\r\nHuman suffix caf\xc3\xa9\r\n"
+        )
+    
+        def project():
+            return bundle.projection.project_last_session(
+                store,
+                root=bundle.project,
+                path=target,
+                wing=WING,
+                session_id=session,
+                epoch=brief["epoch"],
+            )
+    
+        initial = project()
+        assert initial["status"] == "complete"
+        durable_bytes = target.read_bytes()
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                checkpoint = {
+                    "task_id": captured["task_id"],
+                    "expected_revision": captured["revision"],
+                    "idempotency_key": str(uuid4()),
+                    "status": "active",
+                    "completed": [],
+                    "outstanding": [ORIGINAL, "  caller-owned pending commitment café\r\n  "],
+                    "next_action": "Pending state has not physically committed",
+                    "evidence_ids": [captured["drawer_id"]],
+                }
+&gt;               TaskBook(store).checkpoint(WING, ROOM, "Uncommitted caller checkpoint", checkpoint)
+
+cairntir-managed-feature-20261003\acceptance\marker-amendment-v2\test_managed_durable_boundaries_v2.py:258: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\AppData\Local\Temp\cairntir-managed-work-20261003\src\cairntir\tasks.py:224: in checkpoint
+    with self._store.transaction():
+..\..\..\..\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cairntir.memory.store.DrawerStore object at 0x000001764AFF2990&gt;
+
+    @contextmanager
+    def transaction(self) -&gt; Iterator[None]:
+        """Run writes atomically, using savepoints when workflows nest."""
+        savepoint: str | None = None
+        try:
+            if self._transaction_depth == 0:
+                self._backup_if_due()
+                self._bulk_embedding = None
+                self._conn.execute("BEGIN IMMEDIATE")
+            else:
+                self._savepoint_counter += 1
+                savepoint = f"cairntir_sp_{self._savepoint_counter}"
+                self._conn.execute(f"SAVEPOINT {savepoint}")
+            self._transaction_depth += 1
+        except sqlite3.Error as exc:
+&gt;           raise MemoryStoreError(f"failed to begin transaction: {exc}") from exc
+E           cairntir.errors.MemoryStoreError: failed to begin transaction: cannot start a transaction within a transaction
+
+..\..\..\..\AppData\Local\Temp\cairntir-managed-work-20261003\src\cairntir\memory\store.py:1168: MemoryStoreError</failure></testcase><testcase classname="" name="test_projection_cannot_publish_caller_uncommitted_checkpoint[raw-scoped]" time="0.057"><failure message="cairntir.errors.MemoryStoreError: failed to begin transaction: cannot start a transaction within a transaction">self = &lt;cairntir.memory.store.DrawerStore object at 0x000001764B27D010&gt;
+
+    @contextmanager
+    def transaction(self) -&gt; Iterator[None]:
+        """Run writes atomically, using savepoints when workflows nest."""
+        savepoint: str | None = None
+        try:
+            if self._transaction_depth == 0:
+                self._backup_if_due()
+                self._bulk_embedding = None
+&gt;               self._conn.execute("BEGIN IMMEDIATE")
+E               sqlite3.OperationalError: cannot start a transaction within a transaction
+
+..\..\..\..\AppData\Local\Temp\cairntir-managed-work-20261003\src\cairntir\memory\store.py:1161: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+durable = namespace(owner=&lt;cairntir.memory.store.DrawerStore object at 0x000001764B27D010&gt;, token='S_UUAnzktsIwxwViKHMvHhRwE-XwV...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'&gt;)
+principal = 'scoped', style = 'raw'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_projection_cannot_publish_caller_uncommitted_checkpoint(durable, principal, style):
+        """Retain human bytes and durable view until pending checkpoint really commits."""
+        bundle = durable
+        store, _runtime, session, captured, brief = ready(bundle, principal)
+        target = bundle.project / "Last Session.md"
+        target.write_bytes(
+            b"Human prefix\r\n&lt;!-- cairntir:generated:begin --&gt;\nold generated\n"
+            b"&lt;!-- cairntir:generated:end --&gt;\r\nHuman suffix caf\xc3\xa9\r\n"
+        )
+    
+        def project():
+            return bundle.projection.project_last_session(
+                store,
+                root=bundle.project,
+                path=target,
+                wing=WING,
+                session_id=session,
+                epoch=brief["epoch"],
+            )
+    
+        initial = project()
+        assert initial["status"] == "complete"
+        durable_bytes = target.read_bytes()
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                checkpoint = {
+                    "task_id": captured["task_id"],
+                    "expected_revision": captured["revision"],
+                    "idempotency_key": str(uuid4()),
+                    "status": "active",
+                    "completed": [],
+                    "outstanding": [ORIGINAL, "  caller-owned pending commitment café\r\n  "],
+                    "next_action": "Pending state has not physically committed",
+                    "evidence_ids": [captured["drawer_id"]],
+                }
+&gt;               TaskBook(store).checkpoint(WING, ROOM, "Uncommitted caller checkpoint", checkpoint)
+
+cairntir-managed-feature-20261003\acceptance\marker-amendment-v2\test_managed_durable_boundaries_v2.py:258: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\AppData\Local\Temp\cairntir-managed-work-20261003\src\cairntir\tasks.py:224: in checkpoint
+    with self._store.transaction():
+..\..\..\..\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Temp\cairntir-managed-work-20261003\src\cairntir\access.py:307: in transaction
+    with self._owner.transaction():
+..\..\..\..\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cairntir.memory.store.DrawerStore object at 0x000001764B27D010&gt;
+
+    @contextmanager
+    def transaction(self) -&gt; Iterator[None]:
+        """Run writes atomically, using savepoints when workflows nest."""
+        savepoint: str | None = None
+        try:
+            if self._transaction_depth == 0:
+                self._backup_if_due()
+                self._bulk_embedding = None
+                self._conn.execute("BEGIN IMMEDIATE")
+            else:
+                self._savepoint_counter += 1
+                savepoint = f"cairntir_sp_{self._savepoint_counter}"
+                self._conn.execute(f"SAVEPOINT {savepoint}")
+            self._transaction_depth += 1
+        except sqlite3.Error as exc:
+&gt;           raise MemoryStoreError(f"failed to begin transaction: {exc}") from exc
+E           cairntir.errors.MemoryStoreError: failed to begin transaction: cannot start a transaction within a transaction
+
+..\..\..\..\AppData\Local\Temp\cairntir-managed-work-20261003\src\cairntir\memory\store.py:1168: MemoryStoreError</failure></testcase></testsuite></testsuites>

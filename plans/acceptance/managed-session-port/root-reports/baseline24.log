@@ -1,0 +1,21 @@
+ERROR: found no collectors for C:\Users\pnmcg\Documents\Codex\2026-09-30\task\cairntir-managed-feature-20261003\acceptance\test_managed_durable_boundaries.py
+
+
+=================================== ERRORS ====================================
+_____________________________ ERROR collecting . ______________________________
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\runner.py:353: in from_call
+    result: TResult | None = func()
+                             ^^^^^^
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\runner.py:398: in collect
+    return list(collector.collect())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\main.py:557: in collect
+    for direntry in scandir(self.path):
+                    ^^^^^^^^^^^^^^^^^^
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\pathlib.py:963: in scandir
+    scandir_iter = os.scandir(path)
+                   ^^^^^^^^^^^^^^^^
+E   PermissionError: [WinError 5] Access is denied: 'C:\\Users\\pnmcg'
+=========================== short test summary info ===========================
+ERROR ..\..\..\.. - PermissionError: [WinError 5] Access is denied: 'C:\\User...
+1 error in 0.11s

@@ -1,0 +1,14 @@
+test_missing_close_and_unknown_watermark_are_not_complete (test_managed_projection.ManagedProjectionAcceptance.test_missing_close_and_unknown_watermark_are_not_complete) ... FAIL
+
+======================================================================
+FAIL: test_missing_close_and_unknown_watermark_are_not_complete (test_managed_projection.ManagedProjectionAcceptance.test_missing_close_and_unknown_watermark_are_not_complete)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-projection-20260920\test_managed_projection.py", line 182, in test_missing_close_and_unknown_watermark_are_not_complete
+    self.assertIs(snapshot["capture_complete"], False)
+AssertionError: True is not False
+
+----------------------------------------------------------------------
+Ran 1 test in 0.034s
+
+FAILED (failures=1)

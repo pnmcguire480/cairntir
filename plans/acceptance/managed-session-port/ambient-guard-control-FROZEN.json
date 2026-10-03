@@ -1,0 +1,18 @@
+{
+  "source_binding": {
+    "files_sha256": {
+      "src/cairntir/access.py": "5553a29df68c6e77701654fb5f75c943f95a7decc01d24da4526082ff29d81ad",
+      "src/cairntir/tasks.py": "420b4b0fbb99625d3cecf4fe6c381d23a71ff6b60c1dfb31daed42c7197fcad8",
+      "src/cairntir/cli.py": "62daa492fb5671221d9962e823fa2041bb2f6963e4f558c5b5233a6630e55ebf",
+      "src/cairntir/obsidian.py": "bd60792e3a3c139a4e2627e11f04f744097180f5eaf891a51d167e33332d0a9c",
+      "src/cairntir/managed.py": "31452b541883edae15687dc8587234ff38ef97d5b9500ab5f985dbcc94c2866b",
+      "src/cairntir/managed_projection.py": "c1aae484087dbf681350ef20a47c4578f211dd42be77ddd22a17ea586f0725d9",
+      "src/cairntir/memory/store.py": "26aa05d780b9763be039a3bd9adca4812affcbea4d7430d481e36d32c0527067"
+    },
+    "test_router_sha256": "f28672def5ba4c3c773c5309eb4ccd05c3a175ce65b4c778bc664489ea2cc796",
+    "phase": "repair2 final25 plus historical59"
+  },
+  "plugin_sha256": "071e7a5bf02eb9f4fe365c7d44094d00dea1da45fece4ed83370e8a2456ecf7b",
+  "router_sha256": "2fe9bdd5ce7f515c122e39240e9fd93779ec00ab9f4d313bcc89d0385cf2815e",
+  "mutation": "Mask transaction_active only while invoking product operation; all assertions unchanged"
+}
