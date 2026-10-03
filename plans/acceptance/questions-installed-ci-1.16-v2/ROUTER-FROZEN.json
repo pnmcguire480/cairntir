@@ -1,0 +1,10 @@
+{
+  "line_length": 100,
+  "freeze_sha256": "e2bdc7b33901223f38f1460b339ebdf484a73ca743ec7c1ad59dfab44ba0c534",
+  "files_sha256": {
+    "test_question_installed_diagnostic.py": "4562e871ef92977d142b125e5c54b5795b4e1e01b7545a8202372697e475829c",
+    "README.md": "45afd7f973b82bebe9254af587bbf45e8374f55f08c8cd70ee080043be9db0fc"
+  },
+  "normal_pytest_path": "tests/unit/test_question_installed_diagnostic.py",
+  "execution_contract": "same four existing frozen diagnostic controls via normal pytest"
+}

@@ -1,0 +1,33 @@
+2026-10-03T11:38:12.2534617Z Traceback (most recent call last):
+2026-10-03T11:38:12.2545197Z   File "D:\a\cairntir\cairntir\scripts\verify_package.py", line 492, in <module>
+2026-10-03T11:38:12.2546045Z     result = install_and_verify(wheel_path, output_path)
+2026-10-03T11:38:12.2546611Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-03T11:38:12.2547434Z   File "D:\a\cairntir\cairntir\scripts\verify_package.py", line 443, in install_and_verify
+2026-10-03T11:38:12.2548135Z     result = execute(
+2026-10-03T11:38:12.2548435Z              ^^^^^^^^
+2026-10-03T11:38:12.2548969Z   File "D:\a\cairntir\cairntir\scripts\verify_package.py", line 41, in execute
+2026-10-03T11:38:12.2550856Z     raise RuntimeError(
+2026-10-03T11:38:12.2554388Z RuntimeError: command failed (1): ['D:\\a\\cairntir\\cairntir\\.cairntir\\package-proof\\installed-i9q8lyvt\\venv\\Scripts\\python.exe', 'D:\\a\\cairntir\\cairntir\\.cairntir\\package-proof\\installed-i9q8lyvt\\verify_package.py', '--probe', '--wheel', 'D:\\a\\cairntir\\cairntir\\dist\\cairntir-1.16.0-py3-none-any.whl', '--output', 'D:\\a\\cairntir\\cairntir\\.cairntir\\package-proof\\installed-i9q8lyvt\\proof', '--question-proof', 'D:\\a\\cairntir\\cairntir\\.cairntir\\package-proof\\installed-i9q8lyvt\\question_proof.py', '--question-proof-sha256', 'ba8f812f155aef500ed002f2a33efb904931d2bffc434f477bcd94cd49e08e26']
+2026-10-03T11:38:12.2557598Z 
+2026-10-03T11:38:12.2557765Z Traceback (most recent call last):
+2026-10-03T11:38:12.2558587Z   File "D:\a\cairntir\cairntir\.cairntir\package-proof\installed-i9q8lyvt\verify_package.py", line 483, in <module>
+2026-10-03T11:38:12.2559733Z     result = asyncio.run(
+2026-10-03T11:38:12.2560070Z              ^^^^^^^^^^^^
+2026-10-03T11:38:12.2560758Z   File "D:\a\_temp\uv-python-dir\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py", line 195, in run
+2026-10-03T11:38:12.2561526Z     return runner.run(main)
+2026-10-03T11:38:12.2561852Z            ^^^^^^^^^^^^^^^^
+2026-10-03T11:38:12.2562522Z   File "D:\a\_temp\uv-python-dir\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py", line 118, in run
+2026-10-03T11:38:12.2563278Z     return self._loop.run_until_complete(task)
+2026-10-03T11:38:12.2563704Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-03T11:38:12.2564565Z   File "D:\a\_temp\uv-python-dir\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py", line 691, in run_until_complete
+2026-10-03T11:38:12.2565414Z     return future.result()
+2026-10-03T11:38:12.2565737Z            ^^^^^^^^^^^^^^^
+2026-10-03T11:38:12.2566518Z   File "D:\a\cairntir\cairntir\.cairntir\package-proof\installed-i9q8lyvt\verify_package.py", line 357, in probe
+2026-10-03T11:38:12.2567443Z     question_result = await question_module.verify_installed_questions(
+2026-10-03T11:38:12.2568073Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-03T11:38:12.2569137Z   File "D:\a\cairntir\cairntir\.cairntir\package-proof\installed-i9q8lyvt\question_proof.py", line 125, in verify_installed_questions
+2026-10-03T11:38:12.2572649Z     assert connection.execute(
+2026-10-03T11:38:12.2573128Z            ^^^^^^^^^^^^^^^^^^^
+2026-10-03T11:38:12.2573557Z sqlite3.OperationalError: disk I/O error
+2026-10-03T11:38:12.2573894Z 
+2026-10-03T11:38:12.2830055Z ##[error]Process completed with exit code 1.

@@ -1,0 +1,8 @@
+{
+  "contract": "Two serial source-only helper invocations: direct MCP and synthetic launcher child; all frozen helper assertions unchanged; no installation or model inference; retain failures and separate post-failure diagnostics",
+  "files_sha256": {
+    "original_helper": "ba8f812f155aef500ed002f2a33efb904931d2bffc434f477bcd94cd49e08e26",
+    "reproduce.py": "76e9cf099407a3cf411555b408d4488d9ce4848dc808405ab75038006a7fb250",
+    "original_verifier": "6ee604405b9c8511664c3e8e66c5cc6253583c138cc3155e16f5dec9b4b751a1"
+  }
+}

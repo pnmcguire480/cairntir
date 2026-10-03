@@ -1,0 +1,11 @@
+{
+  "contract": "Diagnostic only; original entire helper retained byte-identical prefix, all assertions and final-count-after-both-shutdown ordering unchanged; same shutdown; no retry/delay/recovery/observer substitution; exact exception rethrown; four finite controls",
+  "files_sha256": {
+    "test_diagnostics.py": "44cf3e759a53aa9e89b34e883d4b69b01ca4b1da7ea0df72767f431ba1a6f526",
+    "verify_installed_questions_v2.py": "b339401e2c1c14f02812259d6ad946a50872558a290d21fe18b83dc9d33d93a3",
+    "originals/verify_installed_questions_v1.py": "ba8f812f155aef500ed002f2a33efb904931d2bffc434f477bcd94cd49e08e26"
+  },
+  "prior_seal_sha256": "751819170293aa04b3078228e5574184688ae7eb0d533cf30140cbacdda1856f",
+  "version": 2,
+  "local_limit": "No exact installed Windows taskkill path due local Access denied; two probes only, original failure cause unresolved"
+}

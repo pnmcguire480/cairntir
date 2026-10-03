@@ -363,6 +363,9 @@ async def probe(
         environment=environment,
         version=cairntir.__version__,
     )
+    question_diagnostics = json.loads(
+        (output / "questions" / "question-proof-diagnostic.json").read_text(encoding="utf-8")
+    )
     return {
         "version": cairntir.__version__,
         "package_files": len(members),
@@ -376,8 +379,40 @@ async def probe(
         "failed_write_rollback_and_retry": "PASS",
         "update_notice_preserves_json": "PASS",
         "explicit_question_lifecycle": question_result,
+        "explicit_question_diagnostics": question_diagnostics,
         "question_proof_sha256": question_proof_sha256,
     }
+
+
+def preserve_failed_question_proof(proof: Path, output: Path) -> dict:
+    """Retain only this fixture's synthetic files, not a consistent database backup."""
+    destination = Path(tempfile.mkdtemp(prefix="failed-question-proof-", dir=output))
+    files = {}
+    for name in (
+        "cairntir.db",
+        "cairntir.db-wal",
+        "cairntir.db-shm",
+        "cairntir.db-journal",
+        "question-proof-diagnostic.json",
+    ):
+        source = proof / name
+        if source.is_symlink() or not source.resolve().is_relative_to(proof.resolve()):
+            raise OSError(f"Refusing an external fixture diagnostic path: {name}")
+        if source.is_file():
+            target = destination / name
+            shutil.copyfile(source, target)
+            files[name] = {
+                "bytes": target.stat().st_size,
+                "sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+            }
+    receipt = {
+        "directory": str(destination),
+        "files": files,
+        "synthetic_fixture_only": True,
+        "consistent_backup_claimed": False,
+    }
+    (destination / "manifest.json").write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+    return receipt
 
 
 def install_and_verify(wheel: Path, output: Path) -> dict:
@@ -430,34 +465,43 @@ def install_and_verify(wheel: Path, output: Path) -> dict:
         )
         probe_script = directory / "verify_package.py"
         shutil.copyfile(Path(__file__), probe_script)
-        relative = "plans/acceptance/questions-port-1.16/process/verify_installed_questions.py"
-        frozen = ROOT / "plans/acceptance/questions-port-1.16/process/FROZEN.json"
+        proof_directory = ROOT / "plans/acceptance/questions-installed-ci-1.16-v2"
+        relative = "verify_installed_questions_v2.py"
+        frozen = proof_directory / "FROZEN.json"
         assert hashlib.sha256(frozen.read_bytes()).hexdigest() == (
-            "d877e0a0efe6060912f8c658244714bfbb0e0501f4c19c643d96b2e1cafb0e84"
+            "e2bdc7b33901223f38f1460b339ebdf484a73ca743ec7c1ad59dfab44ba0c534"
         )
         proof_hash = json.loads(frozen.read_bytes())["files_sha256"][relative]
-        proof_source = ROOT / relative
+        proof_source = proof_directory / relative
         assert hashlib.sha256(proof_source.read_bytes()).hexdigest() == proof_hash
         proof_copy = directory / "question_proof.py"
         shutil.copyfile(proof_source, proof_copy)
-        result = execute(
-            [
-                str(python),
-                str(probe_script),
-                "--probe",
-                "--wheel",
-                str(wheel),
-                "--output",
-                str(directory / "proof"),
-                "--question-proof",
-                str(proof_copy),
-                "--question-proof-sha256",
-                proof_hash,
-            ],
-            directory,
-            env,
-            timeout=300,
-        )
+        try:
+            result = execute(
+                [
+                    str(python),
+                    str(probe_script),
+                    "--probe",
+                    "--wheel",
+                    str(wheel),
+                    "--output",
+                    str(directory / "proof"),
+                    "--question-proof",
+                    str(proof_copy),
+                    "--question-proof-sha256",
+                    proof_hash,
+                ],
+                directory,
+                env,
+                timeout=300,
+            )
+        except (RuntimeError, subprocess.TimeoutExpired) as failure:
+            try:
+                retained = preserve_failed_question_proof(directory / "proof" / "questions", output)
+                failure.add_note("Synthetic question diagnostics: " + json.dumps(retained))
+            except OSError as preservation_error:
+                failure.add_note(f"Synthetic diagnostic preservation failed: {preservation_error}")
+            raise
         receipt = json.loads(result)
         receipt.update(
             wheel_sha256=hashlib.sha256(wheel.read_bytes()).hexdigest(),

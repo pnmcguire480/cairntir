@@ -1,0 +1,9 @@
+{
+  "prior_child_pid": 17804,
+  "prior_child_running": false,
+  "files_sha256": {
+    "shim\\sitecustomize.py": "67aea44a9b980ae93de0dd5f8638d1fa7335c88f5f85d5d9b17e6df73848d38f",
+    "reproduce_v2.py": "b22f7adb09947dfc7857d17f8424e3be6dc66f6d747be6d8c9278cf9a2da7623"
+  },
+  "contract": "One bounded synthetic source-only direct-owned TerminateProcess helper invocation; exact original assertions unchanged; taskkill launcher shape untested"
+}
