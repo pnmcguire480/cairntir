@@ -56,10 +56,14 @@ live migration is needed. Legacy records are reconstructed with `governance=None
 while newly opted-in records persist a complete nested governance object. An
 explicit `governance=None` on a new spec omits that object entirely.
 
-Use a governance-aware application to manage opted-in families. An older
-`ProcedureBook` cannot reconstruct the added nested object; old raw drawer reads
-still expose the original content. No downgrade conversion or metadata stripping
-is provided. Keep any existing store backup when changing application versions.
+Upgrade every participating client to a governance-aware application before any
+family opts in. This is a persistent format compatibility change even though it
+requires no SQL schema migration. An older `ProcedureBook` cannot reconstruct the
+added nested object: `list(active_only=False)` can fail the entire listing when
+it encounters a governed record, including otherwise readable legacy records in
+that listing. Raw drawer reads and history for unrelated legacy families remain
+readable. No downgrade conversion or metadata stripping is provided. Keep any
+existing store backup when changing application versions.
 
 This finite capability is available through trusted Python startup code and the
 existing `propose`, `revise`, `history` and `list` APIs. A review date is stored

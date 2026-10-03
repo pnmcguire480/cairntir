@@ -16,7 +16,9 @@ Runtime changes are limited to `src/cairntir/procedures.py`. The port introduces
 no Obsidian import or correction-loop call, no schema/dependency/MCP surface,
 credential, grant or installed-host change. It is independent of the correction
 lane at runtime. Parent coordination retains shared source-version, changelog,
-navigation and workflow-filter ownership; combined integration is still required.
+navigation ownership; combined integration is still required. The parent authorized
+this lane to qualify normal PR checks and CodeQL; the two existing workflow branch
+filters include the exact pinned PR125 base branch without changing permissions.
 This branch retains the base's unpublished source version and does not reserve a
 new release number or imply that the correction feature is included.
 
