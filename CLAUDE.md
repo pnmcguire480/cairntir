@@ -95,10 +95,14 @@ database migration, live installation or other parked v2 feature is included.
 
 Independent frozen acceptance contains 21 tests and deliberate wrong controls.
 Baseline confirms the API/schema is absent; missing-method errors are structural
-baseline evidence, not an assertion-level regression reproduction. Candidate
-tests, adversarial review and required hosted CI are still pending. Publication,
-merge and installation require separate authority; do not treat source version
-as a release. Original dirty work and private stores remain untouched.
+baseline evidence, not an assertion-level regression reproduction. All 21
+acceptance tests and 109 integrated tests passed. Independent adversarial review
+is PASS; a deliberate raw-content-only sizing mutation fails the unchanged
+envelope assertion. Initial CI found a source-version/changelog mismatch, now
+corrected with an explicitly Unreleased 1.13.0 heading. See
+[PR124](https://github.com/pnmcguire480/cairntir/pull/124) for exact-head qualification.
+Publication, merge and installation require separate authority; do not treat
+source version as a release. Original work and private stores remain untouched.
 
 ## Previous Session - 2026-10-02 (1.12.4 maintenance candidate)
 

@@ -41,7 +41,9 @@ existing recall tool, with whole evidence and explicit bounded omissions. This
 ports only the preserved E23 foundation; it does not activate the parked v2
 program. See [usage](how-to-use.md#bound-a-recall-response) and the
 [finite plan](https://github.com/pnmcguire480/cairntir/blob/main/plans/recall-response-budget.md).
-Independent adversarial review and required CI are pending; not yet published.
+Independent adversarial review passed. The current required CI result and
+release readiness are tracked in [PR124](https://github.com/pnmcguire480/cairntir/pull/124);
+this candidate is not yet published.
 
 ## Next: retrieval preflight evaluation
 

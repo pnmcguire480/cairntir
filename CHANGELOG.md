@@ -13,6 +13,8 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+## [1.13.0] - Unreleased
+
 ### Added
 
 - Optional `budget_chars` on `cairntir_recall` bounds the complete serialized

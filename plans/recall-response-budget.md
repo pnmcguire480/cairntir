@@ -30,5 +30,9 @@ run through the existing hosted CI. COMPLETE requires independent adversarial
 PASS and all repository-required checks at the exact candidate head. Publication,
 merge, tag and live installation remain separate authority gates.
 
-Current state: implementation candidate; independent review and hosted checks
-pending. Historical E23 qualification is not reused as proof for this port.
+Current state: independent adversarial review PASS, including an actual sizing
+mutation rejected by the frozen envelope assertion. Required hosted qualification
+and the current exact-head result are recorded in [PR124](https://github.com/pnmcguire480/cairntir/pull/124).
+The first CI run exposed a source-version/changelog mismatch; the changelog now
+labels 1.13.0 explicitly Unreleased. Runtime and frozen assertions are unchanged.
+Historical E23 qualification is not reused as proof for this port.
