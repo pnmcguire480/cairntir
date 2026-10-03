@@ -1,6 +1,9 @@
 # Plans
 
-- [Obsidian correction loop](obsidian-correction-loop.md): explicit workspace/backend/optional plugin candidate on reviewed PR125; qualification in progress.
+- [Combined correction and practice foundation](combined-obsidian-practice.md): isolated integration of reviewed PR126/PR127; combined qualification pending.
+- [Opt-in practice governance](practice-governance-r17.md): attributed ownership/version/review metadata and preserved history; reviewed independently in PR127.
+
+- [Obsidian correction loop](obsidian-correction-loop.md): explicit workspace/backend/optional plugin; exact-head CI and independent review passed in PR126; combined qualification tracked above.
 
 - [Pinned embedding artifacts](pinned-embedding-artifacts.md): single 1.14.0 candidate stacked on PR124; qualification pending.
 

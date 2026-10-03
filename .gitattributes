@@ -79,3 +79,9 @@ plans/acceptance/obsidian-correction-ci-1.15/**/*.txt whitespace=-blank-at-eol,-
 plans/acceptance/obsidian-correction-ci-1.15/**/*.xml whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 tests/verification/test_projection_failure_outcomes.py -text
 tests/verification/test_obsidian_correction_ci_contracts.py -text
+
+# Preserve frozen cross-feature integration controls and evidence.
+plans/acceptance/combined-foundation-1.15/** -text whitespace=cr-at-eol
+plans/acceptance/combined-foundation-1.15/**/*.txt whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/combined-foundation-1.15/**/*.xml whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+tests/unit/test_combined_foundation_acceptance.py -text whitespace=cr-at-eol

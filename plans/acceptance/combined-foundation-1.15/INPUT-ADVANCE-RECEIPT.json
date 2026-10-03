@@ -1,0 +1,16 @@
+{
+  "captured_at_utc": "2026-10-03T09:59:02.882407+00:00",
+  "previous_reviewed_pr127_head": "c2ce782fd762bccfdaaecce6b813d4e366373337",
+  "advanced_pr127_head": "3d9dd81f0ebe841af86d4932c46165747065d87d",
+  "parent_reported_delta_paths": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/codeql.yml",
+    "docs/procedure-governance.md",
+    "plans/practice-governance-r17.md"
+  ],
+  "comparison_authority": "Parent exact GitHub compare; no independent network request by this tester.",
+  "parent_qualified_delta": "Workflow target filter matches existing PR126 behavior; documentation clarifies all-client compatibility and workflow qualification. No runtime, test or acceptance delta.",
+  "independent_source_hash_matches": 5,
+  "independent_existing_test_and_acceptance_matches": 356,
+  "frozen_v1_tests_contract_or_manifest_modified": false
+}

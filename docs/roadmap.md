@@ -53,6 +53,15 @@ ordinary vault edits are not commands. See [usage](obsidian-corrections.md) and
 the [finite plan](https://github.com/pnmcguire480/cairntir/blob/feat/obsidian-correction-loop-20261003/plans/obsidian-correction-loop.md). Nothing is installed or
 published by creating the candidate. Questions remain the next dependent feature.
 
+## Current: opt-in practice ownership and review metadata
+
+The trusted Python API can attach attributed ownership, explicit versions,
+rationale and review dates to procedure families while retaining prior verbatim
+records. See [governance and compatibility](procedure-governance.md). This does
+not authenticate owners, schedule reviews or bypass evaluation and promotion.
+Reviewed PR127 is being qualified together with PR126 in the unpublished 1.15.0
+candidate. Upgrade all participating ProcedureBook clients before opt-in.
+
 ## Next: retrieval preflight evaluation
 
 Pre-register a holdout before building an automatic retrieval path. A candidate

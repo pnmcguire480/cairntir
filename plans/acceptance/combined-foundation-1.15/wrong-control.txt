@@ -1,0 +1,26 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___ test_generic_correction_refuses_structured_governed_workflows[governed] ___
+
+combined = namespace(store=<cairntir.memory.store.DrawerStore object at 0x00000163B14B13D0>, database=WindowsPath('C:/Users/pnmcg...cceptance._Runner object at 0x00000163AF208D50>, book=<cairntir.procedures.ProcedureBook object at 0x00000163B14B2050>)
+kind = 'governed'
+
+    @pytest.mark.parametrize("kind", ["governed", "evaluation", "prediction"])
+    def test_generic_correction_refuses_structured_governed_workflows(combined, kind):
+        b = combined
+        evaluated = _corroborated(b)
+        drawer_id = {
+            "governed": evaluated.current_id,
+            "evaluation": evaluated.drawer_id,
+            "prediction": evaluated.cases[0].baseline_prediction_id,
+        }[kind]
+        source = b.store.get(drawer_id)
+        before = _snapshot(b.store)
+>       with pytest.raises(bridge.CorrectionError, match="dedicated lifecycle"):
+E       Failed: DID NOT RAISE <class 'cairntir.obsidian_bridge.CorrectionError'>
+
+tests\unit\test_combined_foundation_acceptance.py:281: Failed
+E22 complete synthetic registry/assets adapter: 0 exact original cases, no assertion changes
+=========================== short test summary info ===========================
+FAILED tests/unit/test_combined_foundation_acceptance.py::test_generic_correction_refuses_structured_governed_workflows[governed]
+1 failed in 0.25s

@@ -1,0 +1,96 @@
+{
+  "status": "PASS",
+  "captured_at_utc": "2026-10-03T10:08:27.675142+00:00",
+  "finite_contract": "CONTRACT.md",
+  "fixture_version": 3,
+  "freeze_sha256": "0261710d4e64feff9cac2aa157e8f495b0ca59413502ccd91e1e909d75446171",
+  "maintained_test": "tests/unit/test_combined_foundation_acceptance.py",
+  "maintained_test_sha256": "0e854b83994e367e587795249d65f73a1c3d6c01289e62c441d013098d95111f",
+  "qualified_input_heads": [
+    "520e0d85ea60839168cd3bc403fba1411386ccf4",
+    "3d9dd81f0ebe841af86d4932c46165747065d87d"
+  ],
+  "original_local_merge_parent": "c2ce782fd762bccfdaaecce6b813d4e366373337",
+  "input_advance_receipt": "INPUT-ADVANCE-RECEIPT.json",
+  "new_cross_feature_cases": {
+    "passed": 6,
+    "failed": 0,
+    "seconds": 0.9
+  },
+  "retained_normal_controls": {
+    "passed": 48,
+    "skipped": 1,
+    "subtests_passed": 21,
+    "deliberately_deselected": 17,
+    "seconds": 2.88,
+    "scope": "All 21 frozen R17 cases and 28 original Python correction/file/lifetime/newline/source-state methods via unchanged maintained routers. Previously qualified CLI, plugin and additional boundary wrappers were not rerun.",
+    "skip": "Windows symlink creation privilege unavailable; retained inherited skip."
+  },
+  "wrong_control": {
+    "expected_assertion_failure": true,
+    "failures": 1,
+    "seconds": 0.25,
+    "assertion": "unchanged governed-source CorrectionError refusal",
+    "fault": "in-process _editable always True; no filesystem runtime mutation"
+  },
+  "prior_fixture_receipts": {
+    "v1": "5 failed / 1 passed; raw sqlite3.Row repr order error",
+    "v2": "2 failed / 4 passed; documented read telemetry mistaken for immutable data",
+    "preserved_paths": [
+      "history/v1",
+      "history/v2"
+    ],
+    "changes": "V2 canonicalized complete row values; V3 only historical drawer and missing-local-approval comparisons allow monotonic read touches. Exact correction refusal, scoped denial and retry snapshots remain."
+  },
+  "runtime_repairs": 0,
+  "runtime_binding_matches": 5,
+  "existing_test_and_acceptance_custody_matches": 356,
+  "ruff_check": "PASS actual repository config",
+  "ruff_format_check": "PASS actual repository config (line length 100)",
+  "xml_results": {
+    "combined-six-v3": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "6",
+      "time": "0.893",
+      "timestamp": "2026-10-03T06:05:44.955481-04:00",
+      "hostname": "PNMDevDesign"
+    },
+    "retained-controls": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "1",
+      "tests": "70",
+      "time": "2.865",
+      "timestamp": "2026-10-03T06:06:19.159610-04:00",
+      "hostname": "PNMDevDesign"
+    },
+    "wrong-control": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "1",
+      "skipped": "0",
+      "tests": "1",
+      "time": "0.238",
+      "timestamp": "2026-10-03T06:06:42.144143-04:00",
+      "hostname": "PNMDevDesign"
+    }
+  },
+  "receipts_sha256": {
+    "combined-six-v3.txt": "b2b12e42218def6efdeb11b0dbb7075c7bf4906257f7640b9b8b2e0ded0f2f08",
+    "combined-six-v3.xml": "9957916dbad7c4dcd8acfbc90767417ffaeadae6fbd918efdb6b3caef64239c6",
+    "retained-controls.txt": "37b403c7433496690665b7760b171eb6a64b66fbce988c7da3068e549ca4e091",
+    "retained-controls.xml": "329dcce50f5c6d836d64e6dfb4c6a109bfc3733217cd4415fe203a118073afde",
+    "wrong-control.txt": "7e857f2d2670453d758cd0d7bfbfa0067a144ec776863f8c7218b3945aefef07",
+    "wrong-control.xml": "19ae2fb13a0519c5406711b1ac85ac2977cae2c33f10ad3101b285d2a60cce41"
+  },
+  "qualifiers": [
+    "Older ProcedureBook whole-registry listing cannot decode an opted-in governed record; clients must upgrade together.",
+    "Eight inherited damaged-envelope failures remain outside the accepted finite metadata contract, unchanged.",
+    "No native graphical or protected-custody acceptance claim; these are not new integration gates."
+  ],
+  "next_required_check": "Parent combined draft packaging and hosted CI qualification; no new final-review gate."
+}
