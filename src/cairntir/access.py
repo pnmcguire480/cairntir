@@ -294,6 +294,12 @@ class ScopedStore:
         """Close the owned connection and any private snapshot."""
         self._owner.close()
 
+    @property
+    def transaction_active(self) -> bool:
+        """Check a live read grant before inspecting transaction ownership."""
+        self.authorize("read")
+        return self._owner.transaction_active
+
     @contextmanager
     def transaction(self) -> Iterator[None]:
         """Apply the bound grant to the corresponding drawer-store operation."""

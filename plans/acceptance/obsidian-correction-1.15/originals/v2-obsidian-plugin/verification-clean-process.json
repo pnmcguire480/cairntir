@@ -1,0 +1,25 @@
+{
+  "schema": "cairntir.public-obsidian-clean-process-review.v1",
+  "contract_id": "v2-obsidian-plugin-2026-09-20-r2",
+  "result": "PASS",
+  "scope": "Supplemental clean actual Python CLI refresh through mock Obsidian UI/adapter, independently reviewed and checked read-only.",
+  "main_sha256": "9b571d3dc85cf219192ef74325fd44de16d77432082d8dad1ddc61ccf8f9b652",
+  "runner_sha256": "c383f4332a9b58d36c194df15357cb8f10d003f553b4442baa2bef6ad9f338a9",
+  "raw_result_sha256": "4b32391b500df1b5c1e87f2831cce48ad9c0749ff9c721aaffe6e7cabcfb25f0",
+  "prior_raw_result_sha256": "29bf22a9736e7d33acfb21f50ee5613f7efe867f68e0ba443d5b8dc6908914a2",
+  "local_evidence": ".cairntir/v2-week1-20260920/plugin-pilot-20260920T130002/clean-refresh-result.json",
+  "observations": {
+    "actual_cli_calls": 1,
+    "exit_code": 0,
+    "committed_replayed_receipts": 2,
+    "projection": "complete",
+    "persisted_drawers": 3,
+    "exact_database_history_unchanged": true,
+    "proposal_bytes_unchanged": true,
+    "original_five_call_result_unchanged": true,
+    "known_malformed_request_preserved_in_quarantine": true
+  },
+  "state_change": "Only the receipt-identified malformed synthetic request was moved out of the outbox to pilot quarantine after containment and exact-byte checks. Independent review verified its retained bytes remain a single opening brace.",
+  "native_obsidian_ui": "unverified",
+  "independent_evaluator_custody": "unverified"
+}

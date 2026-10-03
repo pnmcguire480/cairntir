@@ -5,12 +5,12 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **1.14.0** (single-feature candidate; not yet published).
+Source version: **1.15.0** (single-feature candidate; not yet published).
 Published base: [1.12.4](docs/release/v1.12.4.md), merge
 `b60c2fbc537b6fcb284aa14f8023b3170f720822`. Its GitHub release receipt records
 completed publication; the older preparation document remains historical.
-Current scope is [pinned embedding-artifact identity](plans/pinned-embedding-artifacts.md),
-stacked on reviewed PR124; its recall-response budget remains unchanged.
+Current scope is the [explicit Obsidian correction loop](plans/obsidian-correction-loop.md),
+stacked on reviewed PR125. Earlier pinned artifacts and recall budgets remain unchanged.
 Pending changes belong under [Unreleased](CHANGELOG.md#unreleased).
 
 The core has verbatim SQLite drawers, explicit provenance, task-aware budgeted
@@ -86,7 +86,20 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-03 (E22 single-feature candidate)
+## Last Session - 2026-10-03 (Obsidian correction candidate)
+
+Port only the existing explicit correction workspace/backend/desktop plugin onto
+reviewed PR125 head `37ab0b1`. Preserve exact original memories, durable retries,
+scope/privacy, human notes and visible partial failures. No question lifecycle,
+automatic capture or graphical deployment is included. Independent frozen public
+acceptance passes 44 cases with one Windows symlink privilege skip and 21 subtests.
+The Node checks include 46 plugin cases/401 assertions and three actual synthetic
+Python CLI processes. Two repairs close premature transaction acknowledgements
+and stale scoped editability. Original failures and versioned fixture corrections
+remain preserved. Hosted exact-head qualification and parent review remain pending;
+source version does not imply publication. Original work/private stores untouched.
+
+## Previous Session - 2026-10-03 (E22 single-feature candidate)
 
 Port only existing E22 onto reviewed PR124 head `65126e49`: canonical asset and
 runtime identity, pinned local-only construction, explicit legacy refusal/raw

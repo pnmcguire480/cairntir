@@ -1,0 +1,37 @@
+{
+  "schema": "cairntir.public-obsidian-plugin-real-process-review.v1",
+  "contract_id": "v2-obsidian-plugin-2026-09-20-r2",
+  "result": "PASS",
+  "scope": "Implementation-authored disposable pilot with mock Obsidian UI/adapter and actual Python 3.11.9 CLI, SQLite, filesystem faults, and subprocess exit codes; independent reviewer inspected runner/results and read the persisted database and proposal bytes without modifying them.",
+  "main_sha256": "9b571d3dc85cf219192ef74325fd44de16d77432082d8dad1ddc61ccf8f9b652",
+  "runner_sha256": "9a9687f8980e10138475339dac31137703c0082a337f69d9d395626407c66fd8",
+  "raw_result_sha256": "29bf22a9736e7d33acfb21f50ee5613f7efe867f68e0ba443d5b8dc6908914a2",
+  "local_evidence": ".cairntir/v2-week1-20260920/plugin-pilot-20260920T130002/",
+  "observations": {
+    "actual_cli_calls": 5,
+    "ordinary_numeric_exit_1": 5,
+    "explicit_correction_proposals": 2,
+    "persisted_drawers": 3,
+    "current_drawer_id": 3,
+    "exact_unicode_crlf_content": true,
+    "original_history_preserved": true,
+    "proposal_bytes_unchanged_after_retry": true,
+    "retry_receipts_marked_replayed": true,
+    "duplicate_drawers_created": false,
+    "unrelated_malformed_request_retained": true
+  },
+  "faults": [
+    "A directory at the first receipt-file destination caused receipt persistence failure after the database committed; the plugin acknowledged saved with receipt retry required.",
+    "A directory at the second correction's projected-note destination caused projection failure after database commit; the plugin acknowledged saved with refresh retry required.",
+    "An unrelated malformed outbox request kept later CLI calls at ordinary exit 1 while legitimate committed/replayed results remained usable."
+  ],
+  "independent_checks": ["exact persisted Unicode/CRLF content and supersession chain", "only three drawers", "two retained proposal hashes", "five normal exit-1 reports", "receipt/projection failures present in reports", "replay receipts and no duplicate effects", "current projection exact"],
+  "prior_fixture_failure": {
+    "result": "INCONCLUSIVE",
+    "local_evidence": ".cairntir/v2-week1-20260920/plugin-pilot-20260920T125322/real-process-failure.json",
+    "actual_cli_calls": 0,
+    "disposition": "Fault fixture failed before the first backend call. Evidence retained; fresh synthetic store used for repaired fixture. Not counted as a plugin repair or successful defect detection."
+  },
+  "native_obsidian_ui": "unverified",
+  "independent_evaluator_custody": "unverified"
+}

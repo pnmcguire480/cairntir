@@ -1,0 +1,28 @@
+{
+  "schema": "cairntir.public-obsidian-plugin-verification.v1",
+  "contract_id": "v2-obsidian-plugin-2026-09-20-r2",
+  "result": "PASS",
+  "round": 1,
+  "scope": "Node/mock Obsidian plugin and child-process boundary, including the corrected real CLI exit-code/report semantics.",
+  "main_sha256": "793e2feff98650e720be33535d39fe38092fed4d6d6dd93fa050a830f750f73d",
+  "manifest_sha256": "f48f9bdd713e6663e2ef3342f03962d0572c6dde0b6c1112820db79dbc3e43e9",
+  "readme_sha256": "582a765c98ce611cfe1831f794cfb4e3a09ac51c930517bb291cad09a513f039",
+  "acceptance_sha256": "d29e26bd424c445b1bc3021edae496ab3a2b6d166902cb294e7750bcf080aed4",
+  "cases": 46,
+  "assertions": 401,
+  "verified": [
+    "All original explicit-action, eligibility, exact-content, subprocess configuration, cancellation, failure, partial-result, and retry cases",
+    "Ordinary numeric exit 1 can acknowledge a matching committed receipt while disclosing projection or receipt persistence failure",
+    "Ordinary exit 1 preserves a specific rejected-result explanation",
+    "Killed, timed-out, signalled, spawn-failed, other-numeric-exit, and string-code processes cannot acknowledge plausible receipt stdout",
+    "Both correction and refresh paths reject invalid receipt schema/status/correction identity/replayed type",
+    "Correction acknowledgment binds request UUID, source drawer, source identity, and exact submitted UTF-8 content hash"
+  ],
+  "review": "Independent source diff and README review found no further actionable defect against the amended contract.",
+  "execution_location": "Byte-identical independently SHA256-verified candidate copy inside authorized workspace, due Node module-loader ancestor lstat restriction on worktree path.",
+  "prior_evidence": ["verification-v2.json", "verification-v3-round0.json"],
+  "candidate_repairs_used": 1,
+  "candidate_repair_rounds_remaining": 1,
+  "native_obsidian_ui": "unverified",
+  "backend_persistence": "not exercised by this mock"
+}

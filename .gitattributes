@@ -66,3 +66,9 @@ plans/acceptance/recall-budget-1.13/FROZEN-20261003.json whitespace=cr-at-eol
 
 # Preserve all independent E22 acceptance and amendment bytes.
 plans/acceptance/embedding-artifacts-1.14/** -text whitespace=cr-at-eol
+
+# Preserve independently frozen correction-loop acceptance bytes.
+plans/acceptance/obsidian-correction-1.15/** -text whitespace=cr-at-eol
+plans/acceptance/obsidian-correction-1.15/*.txt whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/obsidian-correction-1.15/*.xml whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+tests/test_obsidian_frozen_acceptance.py -text

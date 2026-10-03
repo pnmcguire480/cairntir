@@ -45,6 +45,14 @@ Independent adversarial review passed. The current required CI result and
 release readiness are tracked in [PR124](https://github.com/pnmcguire480/cairntir/pull/124);
 this candidate is not yet published.
 
+## Current: explicit Obsidian correction loop
+
+The 1.15.0 candidate adds an explicit workspace and optional correction plugin,
+stacked on reviewed PR125. It preserves originals and durable retry receipts;
+ordinary vault edits are not commands. See [usage](obsidian-corrections.md) and
+the [finite plan](../plans/obsidian-correction-loop.md). Nothing is installed or
+published by creating the candidate. Questions remain the next dependent feature.
+
 ## Next: retrieval preflight evaluation
 
 Pre-register a holdout before building an automatic retrieval path. A candidate

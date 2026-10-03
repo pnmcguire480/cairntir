@@ -1,0 +1,25 @@
+{
+  "schema": "cairntir.public-acceptance-freeze.v1",
+  "freeze_id": "v2-obsidian-plugin-harness-2026-09-20-r3",
+  "frozen_at_utc": "2026-09-20T12:54:20.8582698Z",
+  "frozen_before_candidate_repair": true,
+  "parent_freeze": "freeze-v2.json",
+  "change": "Real CLI normal-exit-1 and complete core-receipt contract amendment. Previous fixtures/results preserved; new failure controls distinguish valid domain results from process failure and bind corrected-content/source identity.",
+  "artifacts": [
+    {
+      "path": "plugin-contract.json",
+      "sha256": "a6fea8ee38c1e501141af8fe7ea4252c13c8fc07d22ea0f521fa9bfa03f4b9bd",
+      "bytes": 5157
+    },
+    {
+      "path": "plugin-contract-amendment.json",
+      "sha256": "9b94fa35794d795a4dc7a9a700a36d875bd8660af8823923a4da1b28a7e49648",
+      "bytes": 2952
+    },
+    {
+      "path": "test-obsidian-plugin-v3.cjs",
+      "sha256": "d29e26bd424c445b1bc3021edae496ab3a2b6d166902cb294e7750bcf080aed4",
+      "bytes": 21583
+    }
+  ]
+}

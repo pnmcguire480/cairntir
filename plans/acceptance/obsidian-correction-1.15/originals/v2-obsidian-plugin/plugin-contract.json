@@ -1,0 +1,31 @@
+{
+  "schema": "cairntir.public-obsidian-plugin-acceptance.v1",
+  "contract_id": "v2-obsidian-plugin-2026-09-20-r1",
+  "scope": "Desktop Obsidian plugin: explicit workspace refresh and explicit append-only correction submission through the existing Python backend.",
+  "authorship": "Independent test author received the public command/data protocol before reading any plugin or backend implementation.",
+  "entrypoint": "addons/cairntir_obsidian/main.js; CommonJS require('obsidian'), module.exports Plugin subclass; no build dependency",
+  "interface": {
+    "settings": ["pythonExecutable", "cairntirHome", "wing"],
+    "commands": ["refresh-workspace", "propose-correction"],
+    "refresh": {"executable":"configured pythonExecutable","argv":["-m","cairntir","obsidian-sync","vaultBasePath","--wing","configured wing"],"options":{"windowsHide":true,"timeout":120000,"maxBuffer":"explicit finite positive bound","shell":"absent or false","env":{"CAIRNTIR_HOME":"configured cairntirHome","PYTHONUTF8":"1"}}},
+    "manifest": {"path":"cairntir-sync/workspace.json","schema":"cairntir.obsidian-workspace.v1","wing":"configured wing","drawers":"list of drawer_id, source_identity canonical UUID, content_sha256, exact content, wing, room, layer, current, editable, supersedes_id, and vault-relative note"},
+    "eligibility": "Active note path exactly matches one manifest entry.note; entry.current and entry.editable are true; entry.wing and manifest.wing match configured wing. Untracked, ambiguous, stale, read-only, wrong-wing, or malformed data cannot create a request.",
+    "dialog": "Modal + Setting.addTextArea starts with exact source content. The explicit Submit correction button is the only proposal-write action; cancel writes nothing.",
+    "request": {"path":"cairntir-sync/outbox/<crypto.randomUUID()>.json","exact_keys":["schema","request_id","wing","source_drawer_id","source_identity","source_sha256","content"],"schema":"cairntir.obsidian-correction.v1","source":"exact selected manifest identity/digest","content":"exact textarea value including whitespace"},
+    "report": {"schema":"cairntir.obsidian-sync.v1","wing":"configured wing","results":"file='cairntir-sync/outbox/<request_id>.json', status committed|rejected, optional receipt with matching request_id, optional receipt_written=false, optional error","projection":"status complete|error; optional current_count/error"},
+    "success": "A correction is acknowledged saved only when report schema and wing are valid, matching result.file has status committed, and receipt.request_id matches the submitted request. Outbox creation, exit zero, unrelated committed results, or a missing/mismatched receipt never imply saved.",
+    "partial_success": "Matching committed result plus receipt_written=false means database saved but receipt persistence needs retry. Matching commit plus projection.status=error means saved but refresh failed. Surface the distinction and preserve a retry path.",
+    "retry": "Retain a queued correction on process, report, rejection, receipt, or projection errors. Retry sync using the same queued request, without silently deleting it or creating a duplicate proposal."
+  },
+  "criteria": [
+    {"id":"O01","accept":"Plugin loads without automatic sync, source writes, outbox writes, or arbitrary-note import. Both commands are registered; settings are required before any subprocess."},
+    {"id":"O02","accept":"Explicit refresh uses exact argv with execFile, bounded timeout/buffer, hidden Windows process, configured CAIRNTIR_HOME/PYTHONUTF8, and no shell interpolation."},
+    {"id":"O03","accept":"Only the exact current editable tracked note in the configured wing can open an actionable correction dialog; cancellation produces no write."},
+    {"id":"O04","accept":"Submit writes one correctly identified outbox JSON with exact source identity/digest and verbatim edited content, then invokes the backend. Original note and manifest bytes remain unchanged by the plugin."},
+    {"id":"O05","accept":"Only matching committed receipt authorizes saved feedback; malformed, wrong-wing, missing-receipt, mismatched-receipt, unrelated-file, rejected, and process-failure outcomes do not claim saved."},
+    {"id":"O06","accept":"Error and partial-success paths preserve requests and provide truthful, actionable retry feedback. A retry does not mint another correction for the same pending submission."},
+    {"id":"O07","accept":"Manifest/README identify a desktop-only plugin, required settings, explicit refresh and append-only correction workflow; no claim of automatic ingestion, in-place historical rewrite, or independent hidden-test custody."}
+  ],
+  "verification": {"artifact":"test-obsidian-plugin.cjs","kind":"Node mock Obsidian and child_process integration with disposable public synthetic vaults","limits":"Mock integration verifies plugin boundary semantics, not a native Obsidian UI session or backend persistence. Parent separately qualifies backend behavior."},
+  "budget": {"initial_implementation":1,"maximum_repair_rounds":2,"reserve":"One complete independent acceptance pass after each permitted implementation state."}
+}

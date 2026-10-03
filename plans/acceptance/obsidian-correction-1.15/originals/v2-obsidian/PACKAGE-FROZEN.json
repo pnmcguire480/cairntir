@@ -1,0 +1,16 @@
+{
+  "frozen_utc": "2026-09-20T12:45:11.606851+00:00",
+  "purpose": "Byte-preserving public acceptance package; original harness retained, resource-corrected source-state v2 is executed",
+  "files": {
+    "CORE-ACCEPTANCE.md": "7df208665f79148b0a882a85d61ec502222ad98c284dc9efb1afc61059feb3b5",
+    "CORE-FROZEN.json": "508b4612f28872c92c37b4de5b49ae26c102e17049c69381961da3d967184e68",
+    "test_correction_core.py": "b6fd7a0c314444e5aab74b10062abcb3b029892d780c7c63c1290a219dab9a14",
+    "SOURCE-STATE-FROZEN.json": "08df7ed1938922eeb202745759d99362e10b3fed062eb5d5807700c9e2eb3ad1",
+    "test_correction_source_state.py": "2d5ed8f9e9cc01868026782cdf85358224d2826d0998111d9e4e1da0e79194a7",
+    "SOURCE-STATE-HARNESS-REPAIR.json": "419afba86b0da1ee8856d779a38dabfd4c7af99085c2b9ce1ebfd7fa319a8105",
+    "test_correction_source_state_v2.py": "f655c71e714a81f02fdd94d0cb35ca3f4250ac54067760386554637d561e68bf",
+    "FILE-ACCEPTANCE.md": "b00fc41319f4df5d69a2e5f7c49805fa722130a2f84d5ef36d4c471f0f6529c8",
+    "FILE-FROZEN.json": "5814a27b7fdbf9bc69e16c16b9b92d27a51416cf158c41c83f3dc745c026e75a",
+    "test_workspace_flow.py": "7e0347311843c15dbd654e29bb34eeb8470119da29f7bcbdf1616641a7f0a4ec"
+  }
+}

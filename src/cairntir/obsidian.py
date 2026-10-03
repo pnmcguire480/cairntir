@@ -176,7 +176,8 @@ def _upsert_generated(path: Path, generated: str, *, title: str, root: Path) -> 
         _atomic_write(path, f"# {title}\n\n{block}\n{_USER_NOTES}")
         return
     try:
-        existing = path.read_text(encoding="utf-8")
+        with path.open(encoding="utf-8", newline="") as stream:
+            existing = stream.read()
     except (OSError, UnicodeError) as exc:
         raise ProjectionError(f"could not read projection {path}: {exc}") from exc
     begin = existing.find(_BEGIN)
@@ -194,7 +195,7 @@ def _upsert_generated(path: Path, generated: str, *, title: str, root: Path) -> 
 def _atomic_write(path: Path, content: str) -> None:
     temporary = path.with_name(f".{path.name}.{uuid4().hex}.tmp")
     try:
-        temporary.write_text(content, encoding="utf-8")
+        temporary.write_text(content, encoding="utf-8", newline="")
         os.replace(temporary, path)
     except OSError as exc:
         raise ProjectionError(f"could not write projection {path}: {exc}") from exc
