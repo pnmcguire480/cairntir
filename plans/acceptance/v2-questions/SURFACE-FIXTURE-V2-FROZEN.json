@@ -1,0 +1,12 @@
+{
+  "schema": "cairntir.public-fixture-amendment.v1",
+  "frozen_at": "2026-09-20T14:02:47.058362+00:00",
+  "reason": "Create existing required .obsidian marker in isolated fixture; discovered before first execution",
+  "original_sha256": "601838a353ba387f0ff8eebc0ddcc0a0e05ebbc021a2dcd38b7104d40718d93b",
+  "original_freeze_sha256": "9b010d8732f9cd181dcc1f4c1a37689b6a34b819c69387b00b7875328cdbc84a",
+  "files": {
+    "SURFACE-FIXTURE-AMENDMENT.md": "7847a553c7626dcef518e00c02005a61f2334405af81985ab92285af7e9f342f",
+    "test_questions_surfaces_v2.py": "10e4e6f81ade7cbf09ff87ec92bd1e6c3949b922d4a7b40620be5a63a27c4def"
+  },
+  "assertions_changed": false
+}

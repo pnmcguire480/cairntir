@@ -1,0 +1,29 @@
+{
+  "existing_interfaces": [
+    "DrawerStore.transaction_active reports raw connection transaction ownership",
+    "ScopedStore.transaction_active checks live read grant and delegates owner",
+    "Typed QuestionError; explicit core open/resolve/list API",
+    "Existing execute_once workflow and principal/grant namespaces",
+    "Complete scoped _question_records visibility over committed lifecycles",
+    "Existing correction refusal and source-history protection retained"
+  ],
+  "port_targets": [
+    "src/cairntir/questions.py",
+    "src/cairntir/memory/store.py",
+    "src/cairntir/access.py",
+    "src/cairntir/obsidian_bridge.py",
+    "src/cairntir/cli.py",
+    "src/cairntir/handoff.py",
+    "addons/cairntir_obsidian/main.js"
+  ],
+  "candidate_source_binding": "Fresh run-time hashes required. Base/source historical hashes are not a new acceptance PASS.",
+  "schema_dependency_mcp_changes": false,
+  "historical_fixture_portability": [
+    "Use unchanged surfaces_v2 with .obsidian marker",
+    "Canonical cairntir imports for expiry/access clock patches",
+    "CLI original is in-process synthetic CliRunner; real process proof remains separate",
+    "Supplement uses workflow_runs result, question:<UUID> key and drawer corruptions",
+    "Node installed executable discovery only; no install",
+    "Original rows are complete tuples in deterministic SQLite ordering; no access-state weakening"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "cairntir.public-surfaces-acceptance-freeze.v1",
+  "frozen_at": "2026-09-20T13:57:35.470619+00:00",
+  "visibility": "Independent public acceptance before surface implementation; no private custody claim",
+  "files": {
+    "FILE-CONTRACT.md": "41fa77e6d526965a7c6d64d481a69441e2fd47e6cc5abe95c1a4f52b9d6985fd",
+    "test_questions_surfaces.py": "601838a353ba387f0ff8eebc0ddcc0a0e05ebbc021a2dcd38b7104d40718d93b",
+    "test_question_plugin.js": "f5c2d51a9f517031528eed3a9a7bee976a76135a9cca8032068ddcbaa424dc42"
+  },
+  "python_tests": [
+    "test_outbox_roundtrip_keeps_requests_and_projects_linked_question_history",
+    "test_acknowledgement_failure_is_committed_and_restart_retry_repairs_it",
+    "test_rejected_file_does_not_block_valid_request_or_ingest_user_notes",
+    "test_register_preserves_human_bytes_and_rejects_unmarked_target",
+    "test_handoff_keeps_typed_question_until_durable_resolution_but_legacy_behavior_stays",
+    "test_cli_json_resolution_errors_duplicate_keys_and_callback_purity"
+  ],
+  "plugin_scope": "Mocked command registration/no-eager-mutation/wrong-wing refusal only; full submission and receipt UI matrix remains required manual/pilot review",
+  "execution": "Syntax/format checks only; no acceptance execution yet",
+  "core_freeze_sha256": "f5fbb8d7718cd7dcad36d97c057cc052cd857d4b6188ce452749a38246a80958"
+}

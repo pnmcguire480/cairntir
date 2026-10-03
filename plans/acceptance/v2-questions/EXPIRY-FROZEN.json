@@ -1,0 +1,8 @@
+{
+  "reason": "Evidence expiry must withhold its complete lifecycle without reopening it or aborting unrelated register/handoff; independently authored after source review before repair",
+  "files": {
+    "test_questions_expiry.py": "6e817e370fac15856f87ef4e8b50ad59d0ea3d5cc795a55b6d979d076401013a"
+  },
+  "frozen_at": "2026-09-20T14:08:20.2565411+00:00",
+  "schema": "cairntir.public-expiry-regression-freeze.v1"
+}

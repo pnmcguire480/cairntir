@@ -1,0 +1,66 @@
+{
+  "source_only": true,
+  "termination": "direct owned TerminateProcess handle",
+  "exact_installed_launcher_tree": "not reproduced",
+  "events": [
+    {
+      "phase": "before_kill",
+      "host": "codex",
+      "pid": 28748,
+      "files": {
+        "cairntir.db": 4096,
+        "cairntir.db-wal": 593312,
+        "cairntir.db-shm": 32768
+      }
+    },
+    {
+      "phase": "after_kill",
+      "host": "codex",
+      "pid": 28748,
+      "returncode": 1,
+      "files": {
+        "cairntir.db": 4096,
+        "cairntir.db-wal": 593312,
+        "cairntir.db-shm": 32768
+      }
+    },
+    {
+      "phase": "before_kill",
+      "host": "claude-code",
+      "pid": 32784,
+      "files": {
+        "cairntir.db": 335872,
+        "cairntir.db-wal": 4152,
+        "cairntir.db-shm": 32768
+      }
+    },
+    {
+      "phase": "after_kill",
+      "host": "claude-code",
+      "pid": 32784,
+      "returncode": 1,
+      "files": {
+        "cairntir.db": 335872,
+        "cairntir.db-wal": 4152,
+        "cairntir.db-shm": 32768
+      }
+    }
+  ],
+  "helper_sha256": "ba8f812f155aef500ed002f2a33efb904931d2bffc434f477bcd94cd49e08e26",
+  "result": {
+    "status": "PASS",
+    "installed_module": "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-questions-work-20261003\\src\\cairntir\\__init__.py",
+    "cli_calls": 7,
+    "mcp_processes": 2,
+    "mcp_tool_calls": 5,
+    "mcp_tools": 21,
+    "opening_and_resolution_exact_replay": "PASS",
+    "original_evidence_and_question_preserved": "PASS",
+    "restart_handoff_classification": "PASS",
+    "native_graphical_obsidian": "not exercised"
+  },
+  "final_files": {
+    "cairntir.db": 335872
+  },
+  "elapsed": 9.078000000008615
+}

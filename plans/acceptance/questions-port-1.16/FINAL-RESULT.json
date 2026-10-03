@@ -1,0 +1,212 @@
+{
+  "status": "PASS",
+  "scope": "Finite independently frozen local question lifecycle acceptance. Hosted installed proof and exact-head qualification remain pending.",
+  "captured_at_utc": "2026-10-03T11:14:57.532713+00:00",
+  "base_head": "9e65c37c9a734f88d54935933047bda598e03146",
+  "version": "1.16.0 candidate, unpublished",
+  "freeze_version": 1,
+  "freeze_sha256": "2221cfbd67242bade285d42e7d2d5ecb965bd6f7c666d1126e7581b1a0fd579e",
+  "process_freeze_version": 1,
+  "process_freeze_sha256": "d877e0a0efe6060912f8c658244714bfbb0e0501f4c19c643d96b2e1cafb0e84",
+  "source_binding": "FINAL-SOURCE-BINDING.json",
+  "source_bound_files": 14,
+  "source_binding_sha256": "9b4ce352cda79eda6da89739f17a114a5faa9b97c0911f6fd3ac673d88e7deec",
+  "historical_package_files_preserved": 72,
+  "base_test_and_acceptance_paths_preserved": 387,
+  "historical_case_and_assertion_changes": false,
+  "repair1": {
+    "product_repairs_used": 1,
+    "remaining_allowed_product_repairs": 1,
+    "change": "Both transaction guards moved inside existing CairntirError→QuestionError translators",
+    "normal_cases_passed": 48,
+    "python_cases": 46,
+    "node_harnesses": 2,
+    "subtests_passed": 51,
+    "seconds": 3.74
+  },
+  "new_durable_cases": {
+    "count": 12,
+    "scope": "Eight owner/scoped open/resolve explicit/raw enclosing-transaction refusals with full snapshots, independent invisibility, caller-work preservation and rollback; four independently visible commits with exact restart replay"
+  },
+  "plugin_question_matrix": {
+    "historical_frozen_cases_executed": 81,
+    "historical_frozen_assertions_executed": 957,
+    "small_command_harness": "PASS",
+    "false_success_receipt_checks": "Unchanged matrix exercises mismatched/malformed/process-error and partial-commit cases against candidate"
+  },
+  "actual_local_plugin_process": {
+    "pytest_cases_passed": 1,
+    "seconds": 6.18,
+    "actual_plugin_cli_launches": 5,
+    "fixture_setup_read_python_processes": 2,
+    "provider": "Synthetic hash16; no model inference",
+    "checks": "Explicit open/resolve, partial acknowledgement/projection failures, byte-identical retained retry, restart refresh, no duplicate drawers, exact evidence/question/resolution and human annotation preservation"
+  },
+  "original_correction_plugin_regression": {
+    "cases": 46,
+    "assertions": 401,
+    "seconds": 0.73,
+    "status": "PASS"
+  },
+  "retained_regressions": {
+    "passed": 68,
+    "skipped": 1,
+    "subtests_passed": 21,
+    "seconds": 5.41,
+    "selection": "All21 frozen R17; six combined controls; original28 Python correction/file/lifetime/newline/source-state; selected14 prior CI boundary controls",
+    "skip": "Inherited Windows symlink privilege limitation",
+    "scope_limit": "Finite selected regressions, not a full suite"
+  },
+  "wrong_controls": {
+    "durable_guard_concealment": {
+      "status": "DETECTED",
+      "seconds": 0.23,
+      "assertion": "Unchanged QuestionError refusal; DID NOT RAISE under fault",
+      "binds": "repair1 runtime"
+    },
+    "ordinary_supersession_closure": {
+      "status": "DETECTED",
+      "seconds": 0.92,
+      "assertion": "Unchanged expected-open lookup; KeyError as retained historical classifier recognizes",
+      "fixture_version": 2,
+      "freeze": "process/CONTROL-AMENDMENT-v2-FROZEN.json"
+    },
+    "first_ordinary_control": "Unexpected PASS retained; fault failed to reach dynamic module alias. Additive v2 changes only injector targeting and asserts installation. No product repair or original assertion change."
+  },
+  "fixture_history": {
+    "main_fixture_version": 1,
+    "normal_process_fixture_version": 1,
+    "ordinary_negative_versions": [
+      1,
+      2
+    ],
+    "intermediate_process_v2": "Preserved under process/history/v2-replaced, never executed; original normal process freeze restored at parent instruction",
+    "failing_or_uncertain_receipts_preserved": true
+  },
+  "installed_hook": {
+    "helper_sha256": "ba8f812f155aef500ed002f2a33efb904931d2bffc434f477bcd94cd49e08e26",
+    "original_verifier_assertions_preserved": 35,
+    "planned_cli_calls": 7,
+    "planned_mcp_processes": 2,
+    "planned_tool_calls": 5,
+    "tool_count": 21,
+    "execution_status": "PENDING HOSTED",
+    "second_install_required": false,
+    "source_on_installed_sys_path": false
+  },
+  "static_checks": "Maintained three routers Ruff and format PASS with actual line100 repository configuration; process Node syntax PASS",
+  "xml_results": {
+    "candidate-initial.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "1",
+      "skipped": "0",
+      "tests": "99",
+      "time": "4.120",
+      "timestamp": "2026-10-03T06:52:03.332400-04:00",
+      "hostname": "PNMDevDesign"
+    },
+    "candidate-repair1.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "99",
+      "time": "3.727",
+      "timestamp": "2026-10-03T06:56:53.480225-04:00",
+      "hostname": "PNMDevDesign"
+    },
+    "retained-regressions.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "1",
+      "tests": "90",
+      "time": "5.399",
+      "timestamp": "2026-10-03T06:53:38.813699-04:00",
+      "hostname": "PNMDevDesign"
+    },
+    "durable-wrong-control.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "1",
+      "skipped": "0",
+      "tests": "1",
+      "time": "0.218",
+      "timestamp": "2026-10-03T06:53:18.973188-04:00",
+      "hostname": "PNMDevDesign"
+    },
+    "durable-repair1-wrong-control.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "1",
+      "skipped": "0",
+      "tests": "1",
+      "time": "0.215",
+      "timestamp": "2026-10-03T07:07:56.577799-04:00",
+      "hostname": "PNMDevDesign"
+    },
+    "correction-plugin-regression.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "1",
+      "time": "0.721",
+      "timestamp": "2026-10-03T07:08:03.670863-04:00",
+      "hostname": "PNMDevDesign"
+    },
+    "process/candidate-process-v1.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "1",
+      "time": "6.168",
+      "timestamp": "2026-10-03T07:06:58.643047-04:00",
+      "hostname": "PNMDevDesign"
+    },
+    "process/ordinary-wrong-control.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "1",
+      "time": "0.716",
+      "timestamp": "2026-10-03T07:08:00.043247-04:00",
+      "hostname": "PNMDevDesign"
+    },
+    "process/ordinary-v2-wrong-control.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "1",
+      "skipped": "0",
+      "tests": "1",
+      "time": "0.909",
+      "timestamp": "2026-10-03T07:10:41.273466-04:00",
+      "hostname": "PNMDevDesign"
+    }
+  },
+  "receipt_hashes": {
+    "candidate-initial.xml": "3613ddd6ed333968ada435cb30f1b3a2b1b3a8b1b815e9aebe3bcb7c66650d66",
+    "candidate-repair1.xml": "781ffe6e824163d31c539e3ecc78fc67026ecb02a8918e1668abe7bad71297f8",
+    "retained-regressions.xml": "4f72ceec7fe5a6528bda2b5f11132475372b80587b404a138b6ef039e0b7814f",
+    "durable-wrong-control.xml": "1443dc0a0fdabeb17974166b35a6ebd007d20f3ae28b315096127c5de7eaeb95",
+    "durable-repair1-wrong-control.xml": "e8d3891f73a85b042ba430438b2cd3650efcfb3f14626d3acb667ef6d3dac4c6",
+    "correction-plugin-regression.xml": "e1aa5d493605bd04b2a476c45a3503a502dbaa51bdcf79ef99d07ba01684f450",
+    "process/candidate-process-v1.xml": "213e6331cf07b01c5f6043db5b77806dab4d05130f139a5e90a1ebfc4daa1185",
+    "process/ordinary-wrong-control.xml": "38bcc4f829722b1c2c60e23451096e59185c2942cd1269d9c6f8937407ec07b6",
+    "process/ordinary-v2-wrong-control.xml": "91552fe23bf575bb573ab4f6ba71f99aace8929b213fe608829049af77038753"
+  },
+  "no_local_fullsuite_coverage_install_or_models": true,
+  "no_live_store_api_or_native_graphical_use": true,
+  "actual_model_effort_and_cost": "Unavailable; requested route gpt-6.1-sol/high is not serving telemetry",
+  "next_required_checks": [
+    "Parent coordination review of packaged exact head",
+    "Hosted CI including additive installed-wheel proof and unchanged92percent floor"
+  ],
+  "claim_limits": [
+    "Native graphical Obsidian and protected evaluator custody remain unverified, not new gates",
+    "Resolution records an evidence-linked declaration, not proof of truth"
+  ]
+}

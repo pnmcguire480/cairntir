@@ -1,0 +1,12 @@
+{
+  "status": "PASS_STATIC_BINDING",
+  "verifier_sha256": "5ebfccad4e9c763b9ac71982f6d8ad54943ef2d7585aa2564eb5e544f145e120",
+  "generic_base_verifier_sha256": "1d8005ea1beece711f49555fd4fe291a706e9ba3ed3ea8fbdc2f5717d53d6485",
+  "original_generic_assertions_retained": 35,
+  "current_verifier_assertions": 39,
+  "helper_sha256": "b339401e2c1c14f02812259d6ad946a50872558a290d21fe18b83dc9d33d93a3",
+  "freeze_sha256": "e2bdc7b33901223f38f1460b339ebdf484a73ca743ec7c1ad59dfab44ba0c534",
+  "helper_hash_bound_via_frozen_manifest": true,
+  "execution": "none; no install or model construction",
+  "hosted_diagnostic_attempt": "pending; original Windows cause remains unresolved"
+}

@@ -1,0 +1,12 @@
+{
+  "status": "FAIL",
+  "source_binding": "CANDIDATE-INITIAL-SOURCE.json",
+  "failure": "Historical revoked scoped opening replay escaped AccessDenied because new transaction guard preceded QuestionError translator",
+  "tests_passed": 47,
+  "tests_failed": 1,
+  "subtests_passed": 51,
+  "seconds": 4.13,
+  "test_assertions_modified": false,
+  "receipt": "candidate-initial.txt",
+  "closed_by_product_repair": 1
+}

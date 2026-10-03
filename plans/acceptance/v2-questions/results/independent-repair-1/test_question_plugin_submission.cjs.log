@@ -1,0 +1,82 @@
+{"case":"open idle/form/cancel","result":"PASS"}
+{"case":"open exact fields and acknowledged success","result":"PASS"}
+{"case":"open no false saved: process-error","result":"PASS"}
+{"case":"open no false saved: malformed","result":"PASS"}
+{"case":"open no false saved: wrong-wing","result":"PASS"}
+{"case":"open no false saved: bad-report-schema","result":"PASS"}
+{"case":"open no false saved: missing-receipt","result":"PASS"}
+{"case":"open no false saved: duplicate","result":"PASS"}
+{"case":"open no false saved: wrong-request","result":"PASS"}
+{"case":"open no false saved: wrong-file","result":"PASS"}
+{"case":"open no false saved: wrong-operation","result":"PASS"}
+{"case":"open no false saved: wrong-question-hash","result":"PASS"}
+{"case":"open no false saved: bad-schema","result":"PASS"}
+{"case":"open no false saved: bad-status","result":"PASS"}
+{"case":"open no false saved: bad-replayed","result":"PASS"}
+{"case":"open no false saved: bad-question-id","result":"PASS"}
+{"case":"open no false saved: bad-question-uuid","result":"PASS"}
+{"case":"open no false saved: rejected","result":"PASS"}
+{"case":"open no false saved: killed","result":"PASS"}
+{"case":"open no false saved: signal","result":"PASS"}
+{"case":"open no false saved: spawn","result":"PASS"}
+{"case":"open no false saved: exit2","result":"PASS"}
+{"case":"open no false saved: string-exit1","result":"PASS"}
+{"case":"open no false saved: unexpected-open-resolution","result":"PASS"}
+{"case":"open partial commit: receipt-error","result":"PASS"}
+{"case":"open partial commit: projection-error","result":"PASS"}
+{"case":"open partial commit: exit1-receipt-error","result":"PASS"}
+{"case":"open partial commit: exit1-projection-error","result":"PASS"}
+{"case":"open partial commit: exit1-mixed","result":"PASS"}
+{"case":"open changed setting pythonExecutable","result":"PASS"}
+{"case":"open changed setting cairntirHome","result":"PASS"}
+{"case":"open changed setting wing","result":"PASS"}
+{"case":"open queue failure then retry","result":"PASS"}
+{"case":"open invalid evidence 999","result":"PASS"}
+{"case":"open invalid evidence 7,7","result":"PASS"}
+{"case":"open stale evidence before queue","result":"PASS"}
+{"case":"resolve idle/form/cancel","result":"PASS"}
+{"case":"resolve exact fields and acknowledged success","result":"PASS"}
+{"case":"resolve no false saved: process-error","result":"PASS"}
+{"case":"resolve no false saved: malformed","result":"PASS"}
+{"case":"resolve no false saved: wrong-wing","result":"PASS"}
+{"case":"resolve no false saved: bad-report-schema","result":"PASS"}
+{"case":"resolve no false saved: missing-receipt","result":"PASS"}
+{"case":"resolve no false saved: duplicate","result":"PASS"}
+{"case":"resolve no false saved: wrong-request","result":"PASS"}
+{"case":"resolve no false saved: wrong-file","result":"PASS"}
+{"case":"resolve no false saved: wrong-operation","result":"PASS"}
+{"case":"resolve no false saved: wrong-question-hash","result":"PASS"}
+{"case":"resolve no false saved: bad-schema","result":"PASS"}
+{"case":"resolve no false saved: bad-status","result":"PASS"}
+{"case":"resolve no false saved: bad-replayed","result":"PASS"}
+{"case":"resolve no false saved: bad-question-id","result":"PASS"}
+{"case":"resolve no false saved: bad-question-uuid","result":"PASS"}
+{"case":"resolve no false saved: rejected","result":"PASS"}
+{"case":"resolve no false saved: killed","result":"PASS"}
+{"case":"resolve no false saved: signal","result":"PASS"}
+{"case":"resolve no false saved: spawn","result":"PASS"}
+{"case":"resolve no false saved: exit2","result":"PASS"}
+{"case":"resolve no false saved: string-exit1","result":"PASS"}
+{"case":"resolve no false saved: wrong-question","result":"PASS"}
+{"case":"resolve no false saved: wrong-question-id","result":"PASS"}
+{"case":"resolve no false saved: bad-resolution-id","result":"PASS"}
+{"case":"resolve partial commit: receipt-error","result":"PASS"}
+{"case":"resolve partial commit: projection-error","result":"PASS"}
+{"case":"resolve partial commit: exit1-receipt-error","result":"PASS"}
+{"case":"resolve partial commit: exit1-projection-error","result":"PASS"}
+{"case":"resolve partial commit: exit1-mixed","result":"PASS"}
+{"case":"resolve changed setting pythonExecutable","result":"PASS"}
+{"case":"resolve changed setting cairntirHome","result":"PASS"}
+{"case":"resolve changed setting wing","result":"PASS"}
+{"case":"resolve queue failure then retry","result":"PASS"}
+{"case":"resolve invalid evidence 999","result":"PASS"}
+{"case":"resolve invalid evidence 7,7","result":"PASS"}
+{"case":"resolve stale evidence before queue","result":"PASS"}
+{"case":"opening unassigned without evidence","result":"PASS"}
+{"case":"resolution cannot omit evidence","result":"PASS"}
+{"case":"stale resolution register status","result":"PASS"}
+{"case":"stale resolution register wing","result":"PASS"}
+{"case":"stale resolution register schema","result":"PASS"}
+{"case":"stale resolution register duplicate","result":"PASS"}
+{"case":"stale resolution register hash","result":"PASS"}
+{"schema":"cairntir.public-question-plugin-result.v1","result":"PASS","cases":81,"assertions":957,"scope":"Public mocked plugin boundary; native UI and actual backend process proof remain separate"}

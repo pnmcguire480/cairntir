@@ -1,0 +1,60 @@
+{
+  "captured_at_utc": "2026-10-03T11:56:36.334704+00:00",
+  "status": "READY_FOR_ONE_DIAGNOSTIC_HOSTED_ATTEMPT",
+  "original_cause": "UNRESOLVED",
+  "product_fix": "none justified by available evidence",
+  "old_sealed_artifacts_verified": 56,
+  "old_seal_sha256": "751819170293aa04b3078228e5574184688ae7eb0d533cf30140cbacdda1856f",
+  "product_and_package_bindings_unchanged": {
+    "src/cairntir/questions.py": "53292ca3fa83b34e12546e02b60f90ebcc97ea38c1e18c131a2d508a14c05cda",
+    "src/cairntir/memory/store.py": "144f16362f4aa725b45b6d6c48930e4254f500f0cd7d45a3f608a2e02bfaae3d",
+    "src/cairntir/access.py": "b0ea571308ac82f8fb4ddff75ac0177007de6a3179f4401b6547fb38cb77f1a1",
+    "src/cairntir/handoff.py": "648a48012acec6ccb59cea80c0c724ece11639aaba304e2e43318ad647f3b9d5",
+    "src/cairntir/cli.py": "2fcb64b86657369e2850f090dc7345eba2e5df2cc9ec6760d49ba189c1a3dffa",
+    "src/cairntir/obsidian_bridge.py": "97ed673edf56de1fb4bceb12ba21a7bd16ae1f82e38405502317cac104660af9",
+    "addons/cairntir_obsidian/main.js": "f295d743a5335a33742c0b5efd8ca68303f57c34fd381eda28eee45aefbd7027",
+    "src/cairntir/obsidian.py": "bd60792e3a3c139a4e2627e11f04f744097180f5eaf891a51d167e33332d0a9c",
+    "src/cairntir/procedures.py": "6d0ed499a601857aa41bd3d5fbba93b57cd6f391fa6409853423bc3e46974023",
+    "src/cairntir/__init__.py": "cbc9dc16472720e3d060e7906d8e4ec61d1ddc36aa09c0f2256b7bd4219de6ad",
+    "pyproject.toml": "19ebbc8c0982303627ddbe726d44e93fccb262b36c1992b92361c659771e3d2d",
+    "uv.lock": "dcc015a00a3f4f71f3c341a59f4a306d1413f4e97bc7c9e8d6dd92355d9328e9",
+    "addons/cairntir_obsidian/manifest.json": "bb7b09a8524e67eec11cf20d93ce385df48061043178036f3706208d8a9d9334"
+  },
+  "original_helper_assertions_retained": 28,
+  "original_helper_byte_prefix_retained": true,
+  "amended_helper_sha256": "b339401e2c1c14f02812259d6ad946a50872558a290d21fe18b83dc9d33d93a3",
+  "freeze_sha256": "e2bdc7b33901223f38f1460b339ebdf484a73ca743ec7c1ad59dfab44ba0c534",
+  "normal_pytest_router_sha256": "4562e871ef92977d142b125e5c54b5795b4e1e01b7545a8202372697e475829c",
+  "bounded_diagnostic_controls": {
+    "passed": 4,
+    "seconds": 0.16
+  },
+  "normal_pytest_router": {
+    "passed": 4,
+    "seconds": 0.17,
+    "local_warning": "asyncio_mode unknown; plugins deliberately off"
+  },
+  "actual_candidate_router_lint_and_line100_format": "PASS",
+  "local_source_probe": {
+    "attempts": 2,
+    "v1": "taskkill denied at first exit; 4.20 seconds; no product failure claim",
+    "v1_owned_pid": 17804,
+    "v1_cleanup": "exact PID absent after driver exit; no broad cleanup performed",
+    "v2": "unchanged original helper passed after two direct owned abrupt terminations",
+    "v2_seconds": 9.078,
+    "v2_cli_calls": 7,
+    "v2_mcp_processes": 2,
+    "v2_mcp_tool_calls": 5,
+    "exact_installed_launcher_taskkill_path": "not reproduced locally"
+  },
+  "no_retries_delay_count_relocation_or_reader_substitution": true,
+  "failure_behavior": "same original exception rethrown with diagnostic JSON note",
+  "success_behavior": "same original return; separate question-proof-diagnostic.json",
+  "runtime_models_installs_network_private_stores": "not used",
+  "raw_external_probe_receipts_sha256": {
+    "FROZEN.json": "e0cf5ecf7c4ef0367b2cd3e5cb02b0a5f8338fff11850e755a1dbace7e5fd8e8",
+    "V2-FROZEN.json": "8ae5e0b717847d09580d0fc513c04a6bb342d20d677241c0e65f073a72edacca",
+    "result-direct.json": "b75cf22f9f3e0f091b726e6df1360d25d36e8c04e5bb222c0e43b774d014fcd3",
+    "result-direct-owned.json": "db9c6a4a851dfbdb9d61b054fb29ea4832532b3c9a8e5fa0e37ed20fb60f3643"
+  }
+}

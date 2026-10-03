@@ -1,11 +1,13 @@
 # Plans
 
-- [Combined correction and practice foundation](combined-obsidian-practice.md): isolated integration of reviewed PR126/PR127; combined qualification pending.
+- [Explicit question lifecycle](question-lifecycle.md): existing R08 port on qualified PR128; fresh independent and hosted qualification pending.
+
+- [Combined correction and practice foundation](combined-obsidian-practice.md): isolated integration of reviewed PR126/PR127; all 18 CI jobs and CodeQL passed at PR128 `9e65c37`.
 - [Opt-in practice governance](practice-governance-r17.md): attributed ownership/version/review metadata and preserved history; reviewed independently in PR127.
 
 - [Obsidian correction loop](obsidian-correction-loop.md): explicit workspace/backend/optional plugin; exact-head CI and independent review passed in PR126; combined qualification tracked above.
 
-- [Pinned embedding artifacts](pinned-embedding-artifacts.md): single 1.14.0 candidate stacked on PR124; qualification pending.
+- [Pinned embedding artifacts](pinned-embedding-artifacts.md): qualified PR125 foundation stacked on PR124; retained unchanged in PR128.
 
 - [Complete recall-response budgeting](recall-response-budget.md): single 1.13.0 feature candidate; independent review PASS; current qualification in PR124.
 

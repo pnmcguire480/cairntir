@@ -1,0 +1,31 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ TestQuestionCore.test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question _
+
+self = <test_questions.TestQuestionCore testMethod=test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question>
+
+    def test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question(self):
+        opened = open_question(self.store, self.request(), wing="questions")
+        self.add(
+            "Ordinary correction is not a resolution", supersedes_id=opened["question_drawer_id"]
+        )
+        self.add(
+            "Forged resolution",
+            supersedes_id=opened["question_drawer_id"],
+            metadata={
+                "kind": "question.resolution",
+                "question_id": opened["question_id"],
+                "request_id": str(uuid4()),
+                "evidence": [self.ref(self.support)],
+                "status": "resolved",
+            },
+        )
+>       self.assertEqual(self.entries()[opened["question_id"]]["status"], "open")
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: '34b01234-9fc1-4f4c-9583-a396f72b0ae2'
+
+plans\acceptance\v2-questions\test_questions_core.py:219: KeyError
+E22 complete synthetic registry/assets adapter: 0 exact original cases, no assertion changes
+=========================== short test summary info ===========================
+FAILED tests/unit/test_questions.py::TestQuestionCore::test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question
+1 failed in 0.92s

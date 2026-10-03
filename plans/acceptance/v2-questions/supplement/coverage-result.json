@@ -1,0 +1,77 @@
+{
+  "schema": "cairntir.public-question-supplement-coverage.v1",
+  "status": "PASS",
+  "python_cases": 8,
+  "subtests": 36,
+  "original_full_run_percent": 91.85366624525916,
+  "original_full_run_sha256": "3707017154249ba01d69321d0cd669d394b8635b1452096d3ca41968d4ab9b12",
+  "original_full_run_unchanged": true,
+  "union_percent": 92.1539190897598,
+  "source_unchanged": true,
+  "source_hashes": {
+    "src/cairntir/questions.py": "0180632e3579985569ad6557c1a371f07f65eb45f116a75c41a7207f826df4a5",
+    "src/cairntir/access.py": "7c6855df6acf642668d694fa80b5389a2612a23e15b9e3ba3b2cf63274f31dc7",
+    "src/cairntir/memory/store.py": "65c6a3f79fbb4d837a7f9be28778fe3555a0a9c5919dd37d731a94e548e7b6a8",
+    "src/cairntir/obsidian_bridge.py": "7b74254a2a50b93beecbc3cf11fed67d3176e9ad8db3df0977fce1b501994103",
+    "src/cairntir/handoff.py": "648a48012acec6ccb59cea80c0c724ece11639aaba304e2e43318ad647f3b9d5",
+    "src/cairntir/cli.py": "0aee20cc64729362e24b1d354981ac80835b8f5ab7946656f641baf9d8d6dea2",
+    "addons/cairntir_obsidian/main.js": "f295d743a5335a33742c0b5efd8ca68303f57c34fd381eda28eee45aefbd7027",
+    "tests/unit/test_questions.py": "132234d6a43a24ef1780f657eedce9ed98323df8f8ba5ee750fbeac422d53168",
+    "plans/acceptance/v2-questions/PACKAGE-FROZEN.json": "02f71df14b74c1659360cf45ca83fa3592896d5a087ee3ff840a81f5167f15e8",
+    "uv.lock": "eddf52913e4912685fff6952cc3c086f65c6c728f37e454edb02c7a88981aef1"
+  },
+  "full_source_rerun": false,
+  "measurement_note": "Existing coverage subprocess patch writes parallel shards. Initial JSON command reported no data before combining; preserved that output and combined actual shards without rerunning tests or changing scope.",
+  "rows": [
+    {
+      "name": "combine-supplement-shards",
+      "args": [
+        "combine",
+        "--keep",
+        "C:\\Dev\\Cairntir\\.cairntir\\v2-questions-20260920\\supplement"
+      ],
+      "exit_code": 0,
+      "log_sha256": "b66539bd4a8065b06097ed1afa0e66b77a4b9165eb411bc12fc407c8b98f1e6e"
+    },
+    {
+      "name": "supplement-json-final",
+      "args": [
+        "json",
+        "-o",
+        "C:\\Dev\\Cairntir\\.cairntir\\v2-questions-20260920\\supplement\\coverage-supplement.json"
+      ],
+      "exit_code": 0,
+      "log_sha256": "c0467f4a44e8d6dc859f48e464c051c690936f21049f45d86f8ffebf30aa799e"
+    },
+    {
+      "name": "combine-union",
+      "args": [
+        "combine",
+        "--keep",
+        "C:\\Dev\\Cairntir\\.cairntir\\v2-questions-20260920\\supplement\\coverage-full-original.sqlite",
+        "C:\\Dev\\Cairntir\\.cairntir\\v2-questions-20260920\\supplement\\coverage-supplement.sqlite"
+      ],
+      "exit_code": 0,
+      "log_sha256": "a99126a272ce73b89b953cb55bcdc100109bf7855774abc421b46311a005dae3"
+    },
+    {
+      "name": "union-json",
+      "args": [
+        "json",
+        "-o",
+        "C:\\Dev\\Cairntir\\.cairntir\\v2-questions-20260920\\supplement\\coverage-union.json"
+      ],
+      "exit_code": 0,
+      "log_sha256": "ff56fc6e2e1f753bc22cb4d985862e62f23e17aa9399501877d22960f05bdd50"
+    },
+    {
+      "name": "union-report",
+      "args": [
+        "report",
+        "--fail-under=92"
+      ],
+      "exit_code": 0,
+      "log_sha256": "2606c3696ca77c1dd6a34d11e74a418f5883819d4153d7a688bca3dd96269952"
+    }
+  ]
+}

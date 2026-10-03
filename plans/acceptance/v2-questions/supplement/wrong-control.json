@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "control": "Accept committed receipt whose original content hash differs",
+  "exit_code": 1,
+  "original_source_sha256": "0180632e3579985569ad6557c1a371f07f65eb45f116a75c41a7207f826df4a5",
+  "mutated_source_sha256": "dc29204280889274b1f69bc6331cc751a47892cc846e641611991a1ddea0058b",
+  "log_sha256": "3d2ecf2755b21f3998b92d3afca3cc8c41842cd9859ad7a4770a925320ac1524",
+  "active_source_unchanged": true,
+  "frozen_test_sha256": "f77c9512516ae566002a7a72f0db6ee5bb85ffc7ab4f589ac58dd6e055da1205"
+}

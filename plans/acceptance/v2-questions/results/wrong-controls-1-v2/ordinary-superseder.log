@@ -1,0 +1,15 @@
+test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question (__main__.QuestionsCoreAcceptance.test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question) ... ERROR
+
+======================================================================
+ERROR: test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question (__main__.QuestionsCoreAcceptance.test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\test_questions_core.py", line 219, in test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question
+    self.assertEqual(self.entries()[opened["question_id"]]["status"], "open")
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'd8e9bc22-138e-43b8-9d48-0ed472b010af'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.042s
+
+FAILED (errors=1)

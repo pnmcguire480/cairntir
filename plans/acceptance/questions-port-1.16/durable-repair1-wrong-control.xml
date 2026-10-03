@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.215" timestamp="2026-10-03T07:07:56.577799-04:00" hostname="PNMDevDesign"><testcase classname="tests.unit.test_questions_port_acceptance" name="test_caller_transaction_cannot_acknowledge_a_durable_question[explicit-open-owner]" time="0.041"><failure message="Failed: DID NOT RAISE &lt;class 'cairntir.questions.QuestionError'&gt;">durable = namespace(owner=&lt;cairntir.memory.store.DrawerStore object at 0x0000010852153390&gt;, path=WindowsPath('C:/Users/pnmcg/App...estions' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-questions-work-20261003\\src\\cairntir\\questions.py'&gt;)
+principal = 'owner', operation = 'open', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("operation", ["open", "resolve"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_acknowledge_a_durable_question(
+        durable, principal, operation, style
+    ):
+        b = durable
+        actor, invoke, request = _operation(b, principal, operation)
+        with _observer(b.path) as observer:
+            baseline = _snapshot(b.owner._conn)
+            assert _snapshot(observer) == baseline
+            with pytest.raises(_CallerRollback):
+                with _caller_transaction(b, actor, style):
+                    b.owner._conn.execute(
+                        "INSERT INTO store_metadata(key, value) VALUES (?, ?)",
+                        ("question_acceptance_caller_write", "uncommitted caller work"),
+                    )
+                    inside = _snapshot(b.owner._conn)
+                    assert inside != baseline and _snapshot(observer) == baseline
+                    assert actor.transaction_active is True
+&gt;                   with pytest.raises(b.api.QuestionError):
+E                   Failed: DID NOT RAISE &lt;class 'cairntir.questions.QuestionError'&gt;
+
+plans\acceptance\questions-port-1.16\test_questions_durable_ack.py:158: Failed</failure></testcase></testsuite></testsuites>

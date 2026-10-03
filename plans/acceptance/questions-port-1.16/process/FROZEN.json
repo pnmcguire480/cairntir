@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "frozen_at_utc": "2026-10-03T11:06:28.001097+00:00",
+  "files_sha256": {
+    "tests/unit/test_question_process_acceptance.py": "2f920869f8d2b3f475ec75f78d60bbe1779175a46bc36cea336220e83f364e9a",
+    "plans/acceptance/questions-port-1.16/process/CONTRACT.md": "60138bc95fbfbe0cc7f495c6cbe21a21b939bc7c4e84e9fb9eee99b637c95e13",
+    "plans/acceptance/questions-port-1.16/process/maintained_process_router.py": "2f920869f8d2b3f475ec75f78d60bbe1779175a46bc36cea336220e83f364e9a",
+    "plans/acceptance/questions-port-1.16/process/ordinary_supersession_control.py": "888f445ebf70f09095a9366b2b1f581b20fa16269d84346c167e9c624c9a9fc3",
+    "plans/acceptance/questions-port-1.16/process/test_real_question_plugin.cjs": "7a907bc0ce27dde2c65f1a05f1343c2d9c31b4ba3025fa0737c87b629efcf4e0",
+    "plans/acceptance/questions-port-1.16/process/verify_installed_questions.py": "ba8f812f155aef500ed002f2a33efb904931d2bffc434f477bcd94cd49e08e26"
+  },
+  "local_actual_plugin_cli_launches": 5,
+  "local_setup_read_subprocesses": 2,
+  "installed_cli_calls": 7,
+  "installed_mcp_tool_calls": 5,
+  "installed_mcp_processes": 2,
+  "actual_process_tests_executed": false,
+  "installed_helper_execution": "Hosted existing disposable installed verifier only; no second/local install",
+  "historical_assertions_modified": false
+}

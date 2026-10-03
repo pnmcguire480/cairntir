@@ -1,0 +1,24 @@
+{
+  "head": "db3d431374701a8122d32fab4bf65eb9aab1a0a6",
+  "tree": "a5c3b79711b80fe9dc062576be1c6a53a67ce3cd",
+  "ci": 37119370543,
+  "codeql": 37119370508,
+  "conclusion": "FAIL",
+  "passed": [
+    "nine source matrices",
+    "three regression/mutation jobs",
+    "lint/strict type/docs/preservation",
+    "CodeQL",
+    "7 model checks",
+    "1 slow check",
+    "Linux installed package including R08",
+    "macOS installed package including R08"
+  ],
+  "failure": {
+    "job": 111194692633,
+    "location": "frozen installed question helper line125, final independent sqlite COUNT after second MCP process exit",
+    "error": "sqlite3.OperationalError: disk I/O error",
+    "status": "Preserved; independent tester investigating; no rerun or expectation change."
+  },
+  "unchanged_candidate": true
+}

@@ -1,0 +1,8 @@
+{
+  "files": {
+    "test_questions_expiry_replay.py": "6b985aaf088f8510f890bae338be6f725d5bcb3a99981b129f9bfbaac67331e3"
+  },
+  "frozen_at": "2026-09-20T14:10:59.2205551+00:00",
+  "reason": "Temporal expiry does not invalidate exact already-committed acknowledgements; new writes and revoked access remain denied",
+  "schema": "cairntir.public-expiry-replay-freeze.v1"
+}

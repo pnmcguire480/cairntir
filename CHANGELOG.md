@@ -13,7 +13,24 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
-## [1.15.0] - Unreleased
+## [1.16.0] - Unreleased
+
+### Added
+
+- Explicit question opening, listing and evidence-linked declared resolution.
+  Preserve original text/provenance, stable portable identities and durable
+  payload-bound retry; ordinary corrections cannot falsely close typed questions.
+- Question CLI commands, optional Obsidian forms/outbox and linked register,
+  with consistent handoff classification and complete scoped-lifecycle visibility.
+  Owner labels do not authenticate users; recorded resolutions do not prove truth.
+- Refuse caller-owned transactions before acknowledging question commitment,
+  preserving the foundation's independently visible durable-receipt boundary.
+
+This candidate adds no dependency, database migration or MCP tool. Qualification
+is tracked in [the finite question plan](plans/question-lifecycle.md); source
+version does not imply publication or native graphical acceptance.
+
+### Included foundation: qualified 1.15.0 candidate (unpublished)
 
 ### Added
 
@@ -30,8 +47,8 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
   ProcedureBook clients before enabling governed records in a shared store;
   an older client's whole list operation can fail on a governed record.
 
-These two reviewed features are being qualified together in an unpublished
-1.15.0 candidate. See [the combined plan](plans/combined-obsidian-practice.md).
+These two reviewed features passed combined exact-head qualification in
+unpublished PR128 at `9e65c37`. See [the combined plan](plans/combined-obsidian-practice.md).
 
 ### Included foundation: reviewed 1.14.0 candidate (unpublished)
 

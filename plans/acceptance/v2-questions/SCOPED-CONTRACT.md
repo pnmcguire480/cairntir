@@ -1,0 +1,11 @@
+# R08 scoped durable-lifecycle supplement v1
+
+Independently frozen before the proposed owner/scoped registry adapters. Original core and surface contracts remain intact. Public shared-workspace tests, temporary stores only.
+
+A read grant covering the opening, every opening/resolution evidence reference and the committed resolution must see the same validated lifecycle as the owner. Do not depend on that reader's grant-namespaced workflow_receipt lookup to find the owner's committed operation. An existing-style dedicated `_question_records(wing=...)` adapter may expose validated operation records while the scoped adapter filters complete lifecycle groups; representation is an implementation choice. No new tables, dependencies, generic workflow lookup bypass or access widening.
+
+If any required opening, resolution or cited evidence drawer is inaccessible, withhold the entire question from that reader's current and historical registers. A hidden resolution must not turn a resolved typed question back into open. This also applies to a legacy current leaf explicitly resolved by the new dedicated lifecycle; do not substitute legacy_superseded_unverified for a hidden validated resolution. Plain untyped legacy historical supersession keeps the previously frozen compatibility semantics. Do not leak withheld UUIDs, drawer IDs, content, owners or evidence through partial entries.
+
+Read-only grants may list but not open or resolve. Revocation and expiry must be checked on the next operation and fail with a typed Cairntir access/lifecycle error, not empty-success output or cached authoritative state. Complete authorized cross-grant listing is read-only and must not change drawer/access state or workflow records. Existing per-principal/grant execute_once namespaces remain; this supplement promises cross-grant reading of authorized committed lifecycles, not cross-principal replay of a request UUID.
+
+Cases: complete reader sees owner result without mutation; hiding each required record withholds the whole group; read-only mutation denial; revoked/expired reader denial; hidden dedicated resolution of an adopted legacy leaf withholds the whole lifecycle. Critical wrong control: returning the visible opening as open when its authoritative resolution is hidden must be rejected.

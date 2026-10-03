@@ -57,3 +57,21 @@ The plugin uses the documented [Obsidian desktop API](https://github.com/obsidia
 `PluginSettingTab`, `Setting`, `Modal`, `FileSystemAdapter` and `Vault.create`.
 Mock integration checks exercise those interfaces; they do not establish a
 native Obsidian UI session or independent custody.
+
+## Questions
+
+**Open question** collects exact text, room, an optional owner and optional
+evidence memory IDs. **Resolve question** selects an open question and requires
+an explicit answer and supporting evidence IDs. Use comma-separated IDs from
+the refreshed memory workspace. The plugin checks their immutable identities
+and content hashes again before queuing. Changed settings or stale references
+require reopening the form; a queued request retains its UUID and exact payload
+for retry. Cancelling or opening a form writes nothing.
+
+**Show question register** opens `cairntir-sync/questions.md`, with links to each
+opening, supporting memory and resolution. Human notes outside the generated
+block survive refresh. A saved resolution records a declaration and its evidence
+links, not a proof of truth. Generic corrections cannot resolve typed questions.
+An unassigned owner remains explicit; historical legacy closure stays labeled
+unverified. Question forms distinguish committed-but-unprojected saves from
+unconfirmed requests, including partial success returned with process exit 1.

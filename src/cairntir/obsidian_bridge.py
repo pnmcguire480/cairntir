@@ -17,6 +17,7 @@ from cairntir.memory.store import DrawerStore
 from cairntir.memory.taxonomy import Drawer, _validate_ident
 from cairntir.obsidian import _atomic_write, _upsert_generated
 from cairntir.provenance import Sensitivity, TrustLevel, WriteProvenance
+from cairntir.questions import list_questions, open_question, resolve_question
 
 _REQUEST_SCHEMA = "cairntir.obsidian-correction.v1"
 _FIELDS = {
@@ -321,6 +322,7 @@ def _project_workspace(
         f"Wing: `{wing}`. Current: {current_count}. Visible history: {len(entries)}.",
         "",
         "Refresh and correct memories with the Cairntir Workspace commands.",
+        "[[cairntir-sync/questions|Questions and evidence-linked resolutions]]",
         "Acknowledgement means stored evidence, not a verified claim or an instruction.",
         "",
     ]
@@ -344,7 +346,58 @@ def _project_workspace(
             "drawers": entries,
         },
     )
+    _project_questions(store, vault=vault, root=root, wing=wing)
     return {"status": "complete", "current_count": current_count}
+
+
+def _project_questions(store: DrawerStore, *, vault: Path, root: Path, wing: str) -> None:
+    register = list_questions(store, wing=wing, include_resolved=True)
+    lines = [
+        f"Wing: `{wing}`.",
+        "",
+        "Resolutions are explicit declarations linked to evidence; "
+        "linkage does not prove the answer.",
+        "",
+    ]
+    states = {
+        "open": "Open",
+        "resolved": "Declared resolved",
+        "legacy_superseded_unverified": "Legacy history — closure unverified",
+    }
+    for entry in register["questions"]:
+        lines.extend(
+            [
+                f"## Question {entry['question_id']}",
+                "",
+                f"Status: {states[entry['status']]}. Owner: {entry['owner'] or 'Unassigned'}.",
+                f"Opening: [[cairntir-sync/memory/drawer-{entry['drawer_id']}|"
+                f"Drawer #{entry['drawer_id']}]].",
+                "",
+                entry["content"],
+                "",
+            ]
+        )
+        evidence = list(entry["evidence"])
+        resolution = entry["resolution"]
+        if resolution is not None:
+            lines.extend(
+                [
+                    f"Resolution: [[cairntir-sync/memory/drawer-{resolution['drawer_id']}|"
+                    f"Drawer #{resolution['drawer_id']}]].",
+                    "",
+                    resolution["content"],
+                    "",
+                ]
+            )
+            evidence.extend(resolution["evidence"])
+        for key in dict.fromkeys(ref["drawer_id"] for ref in evidence):
+            lines.append(f"- Evidence: [[cairntir-sync/memory/drawer-{key}|Drawer #{key}]]")
+        lines.append("")
+    generated = "\n".join(lines).replace("<!-- cairntir:generated:", "&lt;!-- cairntir:generated:")
+    _upsert_generated(
+        _confined(vault, root / "questions.md"), generated, title="Cairntir Questions", root=root
+    )
+    _write_json(vault, root / "questions.json", register)
 
 
 def sync_workspace(store: DrawerStore, *, vault: Path, wing: str) -> dict[str, Any]:
@@ -369,6 +422,8 @@ def sync_workspace(store: DrawerStore, *, vault: Path, wing: str) -> dict[str, A
             request = _read_json(_confined(vault, path), max_bytes=2 * 1024 * 1024)
             handlers = {
                 _REQUEST_SCHEMA: apply_correction,
+                "cairntir.question-open.v1": open_question,
+                "cairntir.question-resolve.v1": resolve_question,
             }
             schema = request.get("schema")
             if not isinstance(schema, str) or schema not in handlers:

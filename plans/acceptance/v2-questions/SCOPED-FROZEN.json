@@ -1,0 +1,17 @@
+{
+  "schema": "cairntir.public-scoped-question-freeze.v1",
+  "frozen_at": "2026-09-20T14:02:47.056361+00:00",
+  "files": {
+    "SCOPED-CONTRACT.md": "6c30ed1f0ed7dd2c77fd0316dab6bc321918ac7ad5b2a7e8bfed83a1e2ad7b9c",
+    "test_questions_scoped.py": "eed3bc5ee281b2f1025e3a396b5523e9a7f57672067209cecb5018f5adfe4f0b"
+  },
+  "tests": [
+    "test_authorized_reader_sees_owner_committed_lifecycle_without_mutation",
+    "test_each_hidden_required_record_withholds_complete_lifecycle",
+    "test_read_only_grant_cannot_open_or_resolve",
+    "test_revoked_and_expired_reader_fail_on_next_list",
+    "test_legacy_adopted_resolution_is_withheld_when_its_resolution_is_hidden"
+  ],
+  "scope": "Public observable authorization outcomes frozen before adapter implementation; no internal record representation dictated",
+  "execution": "Syntax/format only; no acceptance run yet"
+}

@@ -1253,6 +1253,54 @@ class DrawerStore:
                 records.append(record)
         return records
 
+    def _question_records(self, *, wing: str) -> tuple[list[dict[str, Any]], set[int]]:
+        try:
+            rows = self._conn.execute(
+                "SELECT operation, request_hash, result FROM workflow_runs "
+                "WHERE operation IN ('cairntir.question-open.v1', "
+                "'cairntir.question-resolve.v1') AND state = 'committed'"
+            ).fetchall()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"question registry read failed: {exc}") from exc
+        records = []
+        for row in rows:
+            try:
+                record = json.loads(row["result"])
+                payload = record["_question"].copy()
+                payload.pop("resolution_sha256", None)
+                valid = (
+                    record["schema"] == "cairntir.question-receipt.v1"
+                    and record["status"] == "committed"
+                    and record["operation"] in {"open", "resolve"}
+                    and row["operation"] == f"cairntir.question-{record['operation']}.v1"
+                    and payload["schema"] == row["operation"]
+                    and request_hash(payload) == row["request_hash"]
+                    and isinstance(record["question_id"], str)
+                    and type(record["question_drawer_id"]) is int
+                    and record["question_drawer_id"] > 0
+                    and (
+                        record["resolution_drawer_id"] is None
+                        if record["operation"] == "open"
+                        else type(record["resolution_drawer_id"]) is int
+                        and record["resolution_drawer_id"] > 0
+                    )
+                    and isinstance(payload["wing"], str)
+                    and isinstance(payload["evidence"], list)
+                    and all(
+                        isinstance(ref, dict)
+                        and type(ref.get("drawer_id")) is int
+                        and ref["drawer_id"] > 0
+                        for ref in payload["evidence"]
+                    )
+                )
+            except (ValueError, TypeError, KeyError, AttributeError) as exc:
+                raise MemoryStoreError("invalid committed question registry record") from exc
+            if not valid:
+                raise MemoryStoreError("invalid committed question registry record")
+            if payload["wing"] == wing:
+                records.append(record)
+        return records, set()
+
     def _task_drawers(self, drawer_ids: Sequence[int]) -> dict[int, tuple[Drawer, WriteProvenance]]:
         records: dict[int, tuple[Drawer, WriteProvenance]] = {}
         try:

@@ -1,0 +1,15 @@
+test_committed_receipt_mismatch_cannot_be_listed_or_replayed (__main__.QuestionBoundarySupplement.test_committed_receipt_mismatch_cannot_be_listed_or_replayed) ... 
+  test_committed_receipt_mismatch_cannot_be_listed_or_replayed (__main__.QuestionBoundarySupplement.test_committed_receipt_mismatch_cannot_be_listed_or_replayed) (field='question_sha256') ... FAIL
+
+======================================================================
+FAIL: test_committed_receipt_mismatch_cannot_be_listed_or_replayed (__main__.QuestionBoundarySupplement.test_committed_receipt_mismatch_cannot_be_listed_or_replayed) (field='question_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\supplement\test_questions_supplement.py", line 126, in test_committed_receipt_mismatch_cannot_be_listed_or_replayed
+    with self.assertRaises(QuestionError):
+AssertionError: QuestionError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.026s
+
+FAILED (failures=1)

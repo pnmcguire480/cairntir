@@ -1,0 +1,49 @@
+test_expired_opening_evidence_withholds_only_its_question (__main__.QuestionExpiryAcceptance.test_expired_opening_evidence_withholds_only_its_question) ... ERROR
+test_expired_resolution_evidence_never_reopens_or_blocks_other_questions (__main__.QuestionExpiryAcceptance.test_expired_resolution_evidence_never_reopens_or_blocks_other_questions) ... ERROR
+
+======================================================================
+ERROR: test_expired_opening_evidence_withholds_only_its_question (__main__.QuestionExpiryAcceptance.test_expired_opening_evidence_withholds_only_its_question)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\test_questions_expiry.py", line 22, in test_expired_opening_evidence_withholds_only_its_question
+    self.check_expiry(False)
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\test_questions_expiry.py", line 89, in check_expiry
+    report = list_questions(
+             ^^^^^^^^^^^^^^^
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\stage\src\cairntir\questions.py", line 337, in list_questions
+    for entry in _register(store, wing)
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\stage\src\cairntir\questions.py", line 275, in _register
+    payload = _bound(store, opened, question, "open") if opened else None
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\stage\src\cairntir\questions.py", line 244, in _bound
+    _evidence(store, payload)
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\stage\src\cairntir\questions.py", line 137, in _evidence
+    raise QuestionError("question evidence binding does not match")
+cairntir.questions.QuestionError: question evidence binding does not match
+
+======================================================================
+ERROR: test_expired_resolution_evidence_never_reopens_or_blocks_other_questions (__main__.QuestionExpiryAcceptance.test_expired_resolution_evidence_never_reopens_or_blocks_other_questions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\test_questions_expiry.py", line 25, in test_expired_resolution_evidence_never_reopens_or_blocks_other_questions
+    self.check_expiry(True)
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\test_questions_expiry.py", line 89, in check_expiry
+    report = list_questions(
+             ^^^^^^^^^^^^^^^
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\stage\src\cairntir\questions.py", line 337, in list_questions
+    for entry in _register(store, wing)
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\stage\src\cairntir\questions.py", line 279, in _register
+    resolved = _bound(store, committed, question, "resolve")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\stage\src\cairntir\questions.py", line 244, in _bound
+    _evidence(store, payload)
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\stage\src\cairntir\questions.py", line 137, in _evidence
+    raise QuestionError("question evidence binding does not match")
+cairntir.questions.QuestionError: question evidence binding does not match
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.062s
+
+FAILED (errors=2)

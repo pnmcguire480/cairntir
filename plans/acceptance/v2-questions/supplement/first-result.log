@@ -1,0 +1,13 @@
+test_authorized_scoped_writer_can_resolve_and_owner_sees_same_history (__main__.QuestionBoundarySupplement.test_authorized_scoped_writer_can_resolve_and_owner_sees_same_history) ... ok
+test_changed_original_content_or_room_is_not_trusted_as_committed (__main__.QuestionBoundarySupplement.test_changed_original_content_or_room_is_not_trusted_as_committed) ... ok
+test_committed_receipt_mismatch_cannot_be_listed_or_replayed (__main__.QuestionBoundarySupplement.test_committed_receipt_mismatch_cannot_be_listed_or_replayed) ... ok
+test_corrupted_resolution_text_or_ancestry_does_not_close_question (__main__.QuestionBoundarySupplement.test_corrupted_resolution_text_or_ancestry_does_not_close_question) ... ok
+test_malformed_public_requests_fail_typed_without_writes (__main__.QuestionBoundarySupplement.test_malformed_public_requests_fail_typed_without_writes) ... ok
+test_register_options_fail_typed (__main__.QuestionBoundarySupplement.test_register_options_fail_typed) ... ok
+test_secret_required_evidence_withholds_whole_group_and_disallows_replay (__main__.QuestionBoundarySupplement.test_secret_required_evidence_withholds_whole_group_and_disallows_replay) ... ok
+test_unpersisted_append_result_cannot_acknowledge_a_commit (__main__.QuestionBoundarySupplement.test_unpersisted_append_result_cannot_acknowledge_a_commit) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.201s
+
+OK

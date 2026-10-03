@@ -1,0 +1,32 @@
+{
+  "sealed_at_utc": "2026-10-03T11:58:53.314239+00:00",
+  "files_sha256": {
+    "bind_hook.py": "94b4ebdc8a2648aae7b073831d52b9de3d60614298bf57f3d23f0ac133c90b94",
+    "diagnostic-controls.log": "8818643171a034471f8e1a24dab8cb676f069be4e18c20cbaf82032b6021ae30",
+    "FINAL-HOOK-BINDING.json": "e0b148ddf8861d878125ade439f3efade228cfff00bdbf3c50125bc58e629e09",
+    "FINAL-SOURCE-BINDING.json": "846f4f0234138e93496bc0496b25a487ed56b958b4cc3c568873679a495028cc",
+    "finalize.py": "b1ba386e7990f80df80f2e6683f96c1dd45d8f2dc1225266af138e2f87f5d04a",
+    "FROZEN.json": "e2bdc7b33901223f38f1460b339ebdf484a73ca743ec7c1ad59dfab44ba0c534",
+    "normal-router.log": "b141d4eed7de42a8b8b82f85d9e5ceee256ad473e16ec490ecebba8e631d4eaf",
+    "README.md": "45afd7f973b82bebe9254af587bbf45e8374f55f08c8cd70ee080043be9db0fc",
+    "RESULT.json": "bfebb559f0aa733653257dc3d3a7f19863ecc219deece735d501a9b05ed1ad88",
+    "ROUTER-FROZEN.json": "9310150dedf7648cf62e6f901e6084b89fedfdf337f67216f2c161cf26171e6e",
+    "seal.py": "238ef7ad7ac0f5c04f3f53552dd90da3676cac8474a240e31c475e10c63a8457",
+    "test_diagnostics.py": "44cf3e759a53aa9e89b34e883d4b69b01ca4b1da7ea0df72767f431ba1a6f526",
+    "test_question_installed_diagnostic.py": "4562e871ef92977d142b125e5c54b5795b4e1e01b7545a8202372697e475829c",
+    "verify_installed_questions_v2.py": "b339401e2c1c14f02812259d6ad946a50872558a290d21fe18b83dc9d33d93a3",
+    "investigation/CI-ROUND0-WINDOWS-INSTALLED-FAILURE.txt": "102bd6ba5a7771c0d799a7d8318bfddef8afc54be9612c6af1970f372bfd30db",
+    "investigation/CI-ROUND0.json": "95d1782c3102f820a7f5977e6bb5caf5a3841a4e4c2e2c6aa20ac453ec968ec5",
+    "investigation/FROZEN.json": "e0cf5ecf7c4ef0367b2cd3e5cb02b0a5f8338fff11850e755a1dbace7e5fd8e8",
+    "investigation/reproduce.py": "76e9cf099407a3cf411555b408d4488d9ce4848dc808405ab75038006a7fb250",
+    "investigation/reproduce_v2.py": "b22f7adb09947dfc7857d17f8424e3be6dc66f6d747be6d8c9278cf9a2da7623",
+    "investigation/result-direct-owned.json": "db9c6a4a851dfbdb9d61b054fb29ea4832532b3c9a8e5fa0e37ed20fb60f3643",
+    "investigation/result-direct.json": "b75cf22f9f3e0f091b726e6df1360d25d36e8c04e5bb222c0e43b774d014fcd3",
+    "investigation/V2-FROZEN.json": "8ae5e0b717847d09580d0fc513c04a6bb342d20d677241c0e65f073a72edacca",
+    "investigation/shim/sitecustomize.py": "67aea44a9b980ae93de0dd5f8638d1fa7335c88f5f85d5d9b17e6df73848d38f",
+    "originals/verify_installed_questions_v1.py": "ba8f812f155aef500ed002f2a33efb904931d2bffc434f477bcd94cd49e08e26"
+  },
+  "status": "READY_FOR_ONE_DIAGNOSTIC_HOSTED_ATTEMPT",
+  "original_failure_cause": "UNRESOLVED",
+  "original_v1_packet": "unchanged"
+}

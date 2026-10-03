@@ -1,0 +1,16 @@
+{
+  "schema": "cairntir.public-plugin-matrix-freeze.v1",
+  "frozen_at": "2026-09-20T14:00:58.234626+00:00",
+  "files": {
+    "PLUGIN-SUBMISSION-CONTRACT.md": "6233aa8233717b1576dbba468ef162e548af2edcff5ebfcad23e422763a7353c",
+    "test_question_plugin_submission.cjs": "1157de20f381158503cf1c4aa8f50dab1ce6f45ec32007f69c0d201accc09846"
+  },
+  "authorship": "Independent public pre-implementation plugin submission/receipt matrix; registered commands and mocked Obsidian form controls only",
+  "prior_freezes": {
+    "CORE-FROZEN.json": "f5fbb8d7718cd7dcad36d97c057cc052cd857d4b6188ce452749a38246a80958",
+    "SURFACES-FROZEN.json": "9b010d8732f9cd181dcc1f4c1a37689b6a34b819c69387b00b7875328cdbc84a"
+  },
+  "execution": "Node syntax check only; no plugin acceptance execution yet",
+  "required_followup": "Real process/native plugin pilot after implementation; do not equate mocked boundary with installed user workflow",
+  "round_limit": "One implementation plus at most two product repair rounds"
+}

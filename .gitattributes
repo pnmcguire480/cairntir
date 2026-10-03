@@ -85,3 +85,22 @@ plans/acceptance/combined-foundation-1.15/** -text whitespace=cr-at-eol
 plans/acceptance/combined-foundation-1.15/**/*.txt whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 plans/acceptance/combined-foundation-1.15/**/*.xml whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 tests/unit/test_combined_foundation_acceptance.py -text whitespace=cr-at-eol
+
+# Preserve independently frozen R08 evidence verbatim across platforms.
+plans/acceptance/v2-questions/** -text whitespace=cr-at-eol
+plans/acceptance/v2-questions/**/*.txt whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/v2-questions/**/*.xml whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/v2-questions/**/*.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/questions-port-1.16/** -text whitespace=cr-at-eol
+plans/acceptance/questions-port-1.16/**/*.txt whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/questions-port-1.16/**/*.xml whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/questions-port-1.16/**/*.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+tests/unit/test_questions.py -text whitespace=cr-at-eol
+tests/unit/test_questions_port_acceptance.py -text whitespace=cr-at-eol
+tests/unit/test_question_process_acceptance.py -text whitespace=cr-at-eol
+plans/acceptance/questions-port-1.16-postseal/** -text whitespace=cr-at-eol
+plans/acceptance/questions-installed-ci-1.16-v2/** -text whitespace=cr-at-eol
+plans/acceptance/questions-installed-ci-1.16-v2/**/*.txt whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/questions-installed-ci-1.16-v2/**/*.xml whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/questions-installed-ci-1.16-v2/**/*.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+tests/unit/test_question_installed_diagnostic.py -text whitespace=cr-at-eol

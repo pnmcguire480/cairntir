@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "scope": "Snapshot and observer fixture validation only; no question imports, calls or acceptance tests",
+  "table_count": 22,
+  "checks": [
+    "sqlite_vec observer matches complete owner schema",
+    "uncommitted caller work invisible to observer",
+    "forced rollback restores both complete snapshots"
+  ]
+}
