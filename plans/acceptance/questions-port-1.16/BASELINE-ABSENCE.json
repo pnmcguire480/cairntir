@@ -1,0 +1,9 @@
+{
+  "classification": "STRUCTURAL ABSENCE, not test regression",
+  "head": "9e65c37c9a734f88d54935933047bda598e03146",
+  "question_module_exists": false,
+  "question_open_schema_in_bridge": false,
+  "question_group_in_cli": false,
+  "question_command_in_plugin": false,
+  "tests_executed": false
+}

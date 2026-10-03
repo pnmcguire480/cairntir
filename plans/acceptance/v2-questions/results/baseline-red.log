@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\test_questions_core.py", line 12, in <module>
+    from cairntir.questions import QuestionError, list_questions, open_question, resolve_question
+ModuleNotFoundError: No module named 'cairntir.questions'

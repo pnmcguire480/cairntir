@@ -1,0 +1,47 @@
+{"case":"load and explicit refresh","result":"PASS"}
+{"case":"missing setting pythonExecutable","result":"PASS"}
+{"case":"missing setting cairntirHome","result":"PASS"}
+{"case":"missing setting wing","result":"PASS"}
+{"case":"ineligible note {\"active\":\"untracked.md\"}","result":"PASS"}
+{"case":"ineligible note {\"active\":null}","result":"PASS"}
+{"case":"ineligible note {\"entry\":{\"current\":false}}","result":"PASS"}
+{"case":"ineligible note {\"entry\":{\"editable\":false}}","result":"PASS"}
+{"case":"ineligible note {\"entry\":{\"wing\":\"other-wing\"}}","result":"PASS"}
+{"case":"ineligible note {\"manifest\":{\"wing\":\"other-wing\"}}","result":"PASS"}
+{"case":"ineligible note {\"manifest\":{\"schema\":\"other-schema\"}}","result":"PASS"}
+{"case":"ineligible note {\"manifest\":{\"drawers\":[{\"drawer_id\":37,\"source_identity\":\"d1d6919b-1e20-441f-a5b7-8c9c97b7a2dc\",\"content_sha256\":\"043038b983d954969bfba78cc92f7d2c31ca9d874d83da8bdb083ca737865597\",\"content\":\"Synthetic original\\n\\n  preserve whitespace  \\n\",\"wing\":\"synthetic-wing\",\"room\":\"synthetic\",\"layer\":\"on_demand\",\"current\":true,\"editable\":true,\"supersedes_id\":null,\"note\":\"cairntir-sync/drawers/synthetic-note.md\"},{\"drawer_id\":37,\"source_identity\":\"d1d6919b-1e20-441f-a5b7-8c9c97b7a2dc\",\"content_sha256\":\"043038b983d954969bfba78cc92f7d2c31ca9d874d83da8bdb083ca737865597\",\"content\":\"Synthetic original\\n\\n  preserve whitespace  \\n\",\"wing\":\"synthetic-wing\",\"room\":\"synthetic\",\"layer\":\"on_demand\",\"current\":true,\"editable\":true,\"supersedes_id\":null,\"note\":\"cairntir-sync/drawers/synthetic-note.md\"}]}}","result":"PASS"}
+{"case":"cancel","result":"PASS"}
+{"case":"exact correction and committed receipt","result":"PASS"}
+{"case":"no false save: process-error","result":"PASS"}
+{"case":"no false save: malformed","result":"PASS"}
+{"case":"no false save: wrong-wing","result":"PASS"}
+{"case":"no false save: missing-receipt","result":"PASS"}
+{"case":"no false save: wrong-receipt","result":"PASS"}
+{"case":"no false save: wrong-file","result":"PASS"}
+{"case":"no false save: rejected","result":"PASS"}
+{"case":"partial commit: projection-error","result":"PASS"}
+{"case":"partial commit: receipt-error","result":"PASS"}
+{"case":"real exit semantics: exit1-projection-error","result":"PASS"}
+{"case":"real exit semantics: exit1-receipt-error","result":"PASS"}
+{"case":"real exit semantics: exit1-mixed","result":"PASS"}
+{"case":"real exit semantics: rejected","result":"PASS"}
+{"case":"receipt/process rejection: killed-with-receipt","result":"PASS"}
+{"case":"receipt/process rejection: timeout-with-receipt","result":"PASS"}
+{"case":"receipt/process rejection: signal-with-receipt","result":"PASS"}
+{"case":"receipt/process rejection: spawn-with-receipt","result":"PASS"}
+{"case":"receipt/process rejection: exit2-with-receipt","result":"PASS"}
+{"case":"receipt/process rejection: string-exit1-with-receipt","result":"PASS"}
+{"case":"receipt/process rejection: bad-receipt-schema","result":"PASS"}
+{"case":"receipt/process rejection: bad-receipt-status","result":"PASS"}
+{"case":"receipt/process rejection: bad-correction-id","result":"PASS"}
+{"case":"receipt/process rejection: missing-correction-id","result":"PASS"}
+{"case":"receipt/process rejection: wrong-source-id","result":"PASS"}
+{"case":"receipt/process rejection: wrong-source-identity","result":"PASS"}
+{"case":"receipt/process rejection: wrong-content-hash","result":"PASS"}
+{"case":"receipt/process rejection: bad-replayed","result":"PASS"}
+{"case":"refresh receipt rejection: bad-receipt-schema","result":"PASS"}
+{"case":"refresh receipt rejection: bad-receipt-status","result":"PASS"}
+{"case":"refresh receipt rejection: bad-correction-id","result":"PASS"}
+{"case":"refresh receipt rejection: missing-correction-id","result":"PASS"}
+{"case":"refresh receipt rejection: bad-replayed","result":"PASS"}
+{"schema":"cairntir.public-obsidian-plugin-result.v1","result":"PASS","cases":46,"assertions":401,"scope":"mock plugin boundary only"}

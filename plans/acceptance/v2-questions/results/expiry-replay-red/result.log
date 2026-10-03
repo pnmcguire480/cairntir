@@ -1,0 +1,32 @@
+test_expired_evidence_replays_both_acknowledgements_after_restart_but_no_new_writes (__main__.QuestionExpiryReplayAcceptance.test_expired_evidence_replays_both_acknowledgements_after_restart_but_no_new_writes) ... ERROR
+test_expired_legacy_question_replays_its_committed_resolution (__main__.QuestionExpiryReplayAcceptance.test_expired_legacy_question_replays_its_committed_resolution) ... ERROR
+test_revoked_grant_cannot_replay_committed_opening (__main__.QuestionExpiryReplayAcceptance.test_revoked_grant_cannot_replay_committed_opening) ... ok
+
+======================================================================
+ERROR: test_expired_evidence_replays_both_acknowledgements_after_restart_but_no_new_writes (__main__.QuestionExpiryReplayAcceptance.test_expired_evidence_replays_both_acknowledgements_after_restart_but_no_new_writes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\test_questions_expiry_replay.py", line 82, in test_expired_evidence_replays_both_acknowledgements_after_restart_but_no_new_writes
+    open_question(self.store, request, wing="questions"), {**opened, "replayed": True}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\expiry-replay-red\src\cairntir\questions.py", line 189, in open_question
+    _evidence(store, payload)
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\expiry-replay-red\src\cairntir\questions.py", line 137, in _evidence
+    raise QuestionError("question evidence binding does not match")
+cairntir.questions.QuestionError: question evidence binding does not match
+
+======================================================================
+ERROR: test_expired_legacy_question_replays_its_committed_resolution (__main__.QuestionExpiryReplayAcceptance.test_expired_legacy_question_replays_its_committed_resolution)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\test_questions_expiry_replay.py", line 128, in test_expired_legacy_question_replays_its_committed_resolution
+    resolve_question(self.store, request, wing="questions"),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Dev\Cairntir\.cairntir\v2-questions-20260920\expiry-replay-red\src\cairntir\questions.py", line 359, in resolve_question
+    raise QuestionError("question is unavailable")
+cairntir.questions.QuestionError: question is unavailable
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.122s
+
+FAILED (errors=2)

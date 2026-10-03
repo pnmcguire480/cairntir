@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "frozen_at_utc": "2026-10-03T10:46:38.801106+00:00",
+  "files_sha256": {
+    "tests/unit/test_questions.py": "69774d3d29854e4c3937bf2a6c4b2a44ca3edfb02a76463b95c98bb4e8de9051",
+    "tests/unit/test_questions_port_acceptance.py": "2164123fb495f01a487be60ff7c77d3d0201cbc85bca4fea5a9e16ad893e11e4",
+    "plans/acceptance/questions-port-1.16/BASE-SOURCE-BINDING.json": "0da4fe3f61fa6d8d118c001090f6c3185aafc4d774b5cb97e9d8f78da9c0c94b",
+    "plans/acceptance/questions-port-1.16/BASELINE-ABSENCE.json": "af99b18dcf75662f3118cba76511bfbff7310ea560ab37d0feb17fa54dbbab92",
+    "plans/acceptance/questions-port-1.16/bypass_transaction_control.py": "26dacb726cbf60211fa12ea457f69035f4499d9fbb08c0057c7ce20549529c5a",
+    "plans/acceptance/questions-port-1.16/CONTRACT.md": "5235c1952e079f335032eb2e149bcdfe3c53a2559f2f29390002d88330352920",
+    "plans/acceptance/questions-port-1.16/HISTORICAL-COPY.json": "244c2ce7cddd10eb04667bcb57b12f57283a00524b751a7c46211bc5bcd8215c",
+    "plans/acceptance/questions-port-1.16/maintained_port_router.py": "2164123fb495f01a487be60ff7c77d3d0201cbc85bca4fea5a9e16ad893e11e4",
+    "plans/acceptance/questions-port-1.16/originals/maintained_historical_router.py": "69774d3d29854e4c3937bf2a6c4b2a44ca3edfb02a76463b95c98bb4e8de9051",
+    "plans/acceptance/questions-port-1.16/originals/questions.py": "0180632e3579985569ad6557c1a371f07f65eb45f116a75c41a7207f826df4a5",
+    "plans/acceptance/questions-port-1.16/PREFREEZE-FIXTURE-CHECK.json": "6a482d224f1058961f9703f4adfd1a2eeb1b30ab866c9470c866a668613c968f",
+    "plans/acceptance/questions-port-1.16/PRESERVED-BASE.json": "d19c6a9e0206cc1818123c10ee8fc203f07d7303b9b9a45b9168345613f07a0c",
+    "plans/acceptance/questions-port-1.16/SOURCE-EXPECTATIONS.json": "941a84b02396eec9c284f93ee6f1e30240ff4e076f6c8f871b19f9aae1a0e03f",
+    "plans/acceptance/questions-port-1.16/test_questions_durable_ack.py": "37e9123e740fb5c481e3d7e075d9b2ddcee2ecceaa22995bd330c6596632ff04"
+  },
+  "historical_cases": 34,
+  "historical_subtests_recorded": 51,
+  "new_durable_ack_cases": 12,
+  "node_normal_pytest_routes": 2,
+  "execution": "Frozen before implementation. No question acceptance executed.",
+  "initial_implementation_plus_max_product_repairs": 2,
+  "verification_reserve_percent_min": 25,
+  "wrong_control": "Only during question call, conceal transaction_active; unchanged explicit owner refusal must fail.",
+  "required_actual_process_proof": "Existing historical file/plugin contracts; separately frozen helper before later run, no carry-forward historical counts."
+}

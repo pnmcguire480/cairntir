@@ -51,7 +51,7 @@ The 1.15.0 candidate adds an explicit workspace and optional correction plugin,
 stacked on reviewed PR125. It preserves originals and durable retry receipts;
 ordinary vault edits are not commands. See [usage](obsidian-corrections.md) and
 the [finite plan](https://github.com/pnmcguire480/cairntir/blob/feat/obsidian-correction-loop-20261003/plans/obsidian-correction-loop.md). Nothing is installed or
-published by creating the candidate. Questions remain the next dependent feature.
+published by creating the candidate. The existing question lifecycle is the current dependent candidate below.
 
 ## Current: opt-in practice ownership and review metadata
 
@@ -59,8 +59,19 @@ The trusted Python API can attach attributed ownership, explicit versions,
 rationale and review dates to procedure families while retaining prior verbatim
 records. See [governance and compatibility](procedure-governance.md). This does
 not authenticate owners, schedule reviews or bypass evaluation and promotion.
-Reviewed PR127 is being qualified together with PR126 in the unpublished 1.15.0
-candidate. Upgrade all participating ProcedureBook clients before opt-in.
+Reviewed PR127 and PR126 passed combined qualification in unpublished PR128
+at `9e65c37`. Upgrade all participating ProcedureBook clients before opt-in.
+
+## Current: explicit question lifecycle
+
+The 1.16.0 candidate records exact owned or unassigned questions and appends
+declared evidence-linked resolutions, retaining originals, portable identity and
+durable retry. CLI, optional Obsidian forms/register and handoff share the same
+validated lifecycle. Ordinary corrections cannot close typed questions. See
+[usage](question-lifecycle.md) and the
+[finite plan](https://github.com/pnmcguire480/cairntir/blob/feat/explicit-question-lifecycle-20261003/plans/question-lifecycle.md).
+New-candidate qualification is pending; native graphical/human adoption remains
+distinct from synthetic, process and installed-package checks.
 
 ## Next: retrieval preflight evaluation
 

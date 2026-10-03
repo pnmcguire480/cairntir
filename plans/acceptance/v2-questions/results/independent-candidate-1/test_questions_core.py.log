@@ -1,0 +1,15 @@
+test_failed_resolution_append_rolls_back_then_exact_retry_succeeds (__main__.QuestionsCoreAcceptance.test_failed_resolution_append_rolls_back_then_exact_retry_succeeds) ... ok
+test_generic_obsidian_correction_cannot_edit_typed_question (__main__.QuestionsCoreAcceptance.test_generic_obsidian_correction_cannot_edit_typed_question) ... ok
+test_legacy_history_is_unverified_and_current_leaf_can_be_explicitly_resolved (__main__.QuestionsCoreAcceptance.test_legacy_history_is_unverified_and_current_leaf_can_be_explicitly_resolved) ... ok
+test_open_verbatim_binding_and_restart_replay (__main__.QuestionsCoreAcceptance.test_open_verbatim_binding_and_restart_replay) ... ok
+test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question (__main__.QuestionsCoreAcceptance.test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question) ... ok
+test_request_uuid_cannot_be_rebound_to_another_payload_or_operation (__main__.QuestionsCoreAcceptance.test_request_uuid_cannot_be_rebound_to_another_payload_or_operation) ... ok
+test_resolution_rejects_wrong_store_wing_and_question_binding (__main__.QuestionsCoreAcceptance.test_resolution_rejects_wrong_store_wing_and_question_binding) ... ok
+test_resolution_requires_valid_same_wing_nonsecret_bound_evidence (__main__.QuestionsCoreAcceptance.test_resolution_requires_valid_same_wing_nonsecret_bound_evidence) ... ok
+test_supported_resolution_preserves_original_and_replays_after_restart (__main__.QuestionsCoreAcceptance.test_supported_resolution_preserves_original_and_replays_after_restart) ... ok
+test_unassigned_owner_and_empty_opening_evidence_are_honest (__main__.QuestionsCoreAcceptance.test_unassigned_owner_and_empty_opening_evidence_are_honest) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.854s
+
+OK

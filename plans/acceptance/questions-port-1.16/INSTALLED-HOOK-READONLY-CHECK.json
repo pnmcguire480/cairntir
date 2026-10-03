@@ -1,0 +1,9 @@
+{
+  "status": "PASS static hook check only",
+  "source_sha256": "c7057071c228fb0e7cae85aee64960245045674c2c6c932562e65f8b75ff2030",
+  "original_verifier_assertions_preserved": 35,
+  "additional_assertions": 4,
+  "helper_copy_and_hash_forwarded": true,
+  "repository_src_added_to_installed_path": false,
+  "installed_execution": "Pending hosted CI; no local installation or model execution"
+}

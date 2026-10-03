@@ -1,0 +1,4 @@
+......................................................... [ 82%]
+s...........                                                       [100%]
+E22 complete synthetic registry/assets adapter: 0 exact original cases, no assertion changes
+68 passed, 1 skipped, 24 deselected, 21 subtests passed in 5.41s

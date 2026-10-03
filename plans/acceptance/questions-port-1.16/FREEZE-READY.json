@@ -1,0 +1,28 @@
+{
+  "status": "FREEZE READY",
+  "freeze_sha256": "2221cfbd67242bade285d42e7d2d5ecb965bd6f7c666d1126e7581b1a0fd579e",
+  "durable_tests_sha256": "37e9123e740fb5c481e3d7e075d9b2ddcee2ecceaa22995bd330c6596632ff04",
+  "port_router_sha256": "2164123fb495f01a487be60ff7c77d3d0201cbc85bca4fea5a9e16ad893e11e4",
+  "historical_package_sha256": "44213394900601e3b83a2a1861b5f97fc3b464087e5d25b2d6c1ae4abe6b4781",
+  "historical_copy_files": 72,
+  "preserved_base_paths": 387,
+  "base_source_paths": 67,
+  "structural_absence": {
+    "classification": "STRUCTURAL ABSENCE, not test regression",
+    "head": "9e65c37c9a734f88d54935933047bda598e03146",
+    "question_module_exists": false,
+    "question_open_schema_in_bridge": false,
+    "question_group_in_cli": false,
+    "question_command_in_plugin": false,
+    "tests_executed": false
+  },
+  "acceptance_tests_executed": false,
+  "static_checks": "Maintained routers Ruff + format PASS under actual repo line100 configuration; new fixtures parse and format",
+  "fixture_probe": "Complete 22-table snapshot/observer/rollback only; no question import or calls",
+  "paths": [
+    "plans/acceptance/v2-questions",
+    "plans/acceptance/questions-port-1.16",
+    "tests/unit/test_questions.py",
+    "tests/unit/test_questions_port_acceptance.py"
+  ]
+}

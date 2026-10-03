@@ -1,0 +1,10 @@
+{
+  "schema": "cairntir.public-question-boundary-freeze.v1",
+  "frozen_at": "2026-09-20T14:32:12.1115316+00:00",
+  "test_cases": 8,
+  "files": {
+    "CONTRACT.md": "237b7e4bd8f057a6d2623095d735b4c3941ad844ca5d97d185f421fe4560a475",
+    "test_questions_supplement.py": "f77c9512516ae566002a7a72f0db6ee5bb85ffc7ab4f589ac58dd6e055da1205"
+  },
+  "stage": "frozen before execution; no product changes"
+}

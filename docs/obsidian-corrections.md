@@ -1,6 +1,7 @@
 # Correct a Cairntir memory from Obsidian
 
-This optional workflow is part of the **unpublished 1.15.0 candidate**. SQLite
+This optional workflow is retained in the **unpublished 1.16.0 candidate**,
+with the [explicit question lifecycle](question-lifecycle.md). SQLite
 remains authoritative. A correction adds a new memory that supersedes an earlier
 one; it does not rewrite or delete the original. A committed receipt means stored
 evidence, not authenticated authorship or proof that a claim is true.
@@ -31,7 +32,7 @@ files are local copies: use a vault appropriate for that data and its recipients
 
 ## Submit and retry a correction
 
-The [optional desktop plugin](https://github.com/pnmcguire480/cairntir/blob/feat/obsidian-correction-loop-20261003/addons/cairntir_obsidian/README.md) provides
+The [optional desktop plugin](https://github.com/pnmcguire480/cairntir/blob/feat/explicit-question-lifecycle-20261003/addons/cairntir_obsidian/README.md) provides
 **Refresh workspace** and **Correct current memory**. Configure the Python
 executable, Cairntir home and wing explicitly. Loading the plugin runs no sync.
 The correction form starts from exact manifest text; Cancel submits nothing.

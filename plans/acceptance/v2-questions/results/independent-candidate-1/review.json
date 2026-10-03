@@ -1,0 +1,35 @@
+{
+  "status": "FAIL",
+  "candidate": 1,
+  "public_only": true,
+  "base_acceptance": {
+    "status": "PASS",
+    "python_cases": 21,
+    "plugin_matrix_cases": 81,
+    "plugin_matrix_assertions": 957,
+    "receipt": "independent-candidate-1/result.json"
+  },
+  "historical_plugin_regression": {
+    "cases": 46,
+    "assertions": 401,
+    "status": "PASS"
+  },
+  "wrong_controls": "wrong-controls-1-v2/classification-amendment.json",
+  "findings": [
+    {
+      "id": "R08-ER1",
+      "severity": "blocking",
+      "description": "Expired committed opening or resolution evidence raises from _bound/_evidence and aborts unrelated register/handoff instead of withholding the affected lifecycle.",
+      "reproducer": "test_questions_expiry.py",
+      "frozen_manifest": "EXPIRY-FROZEN.json",
+      "result": "2 errors",
+      "log": "independent-candidate-1/expiry.log"
+    }
+  ],
+  "source_review": "Committed workflow request hashes and exact UUID/content bindings gate typed closure; ordinary metadata cannot forge it. Scoped adapters withhold complete groups including adopted legacy closure. Plugin explicitly checks operation, opening hash or resolution identity, unique matching result, durable pending UUID and partial process outcomes. No additional demonstrated blocker beyond expiry; concurrent-read atomicity not certified.",
+  "remaining": [
+    "Expiry repair and independent rerun",
+    "Actual-process pilot",
+    "Integration/package and full repository verification owned by parent"
+  ]
+}

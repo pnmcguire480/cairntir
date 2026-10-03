@@ -1,0 +1,7 @@
+test_expired_opening_evidence_withholds_only_its_question (__main__.QuestionExpiryAcceptance.test_expired_opening_evidence_withholds_only_its_question) ... ok
+test_expired_resolution_evidence_never_reopens_or_blocks_other_questions (__main__.QuestionExpiryAcceptance.test_expired_resolution_evidence_never_reopens_or_blocks_other_questions) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.076s
+
+OK

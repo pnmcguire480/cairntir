@@ -416,7 +416,10 @@ def _gather(
     predictions = _fresh(_open_predictions(wing_drawers))
     protocol = _fresh(store.list_by(wing=wing, layer=Layer.IDENTITY, limit=_SCAN_LIMIT))
     deltas = _fresh(store.list_by(wing=wing, layer=Layer.ESSENTIAL, limit=max_deltas))
-    questions = _fresh(_open_questions(wing_drawers))
+    from cairntir.questions import list_questions
+
+    open_ids = {entry["drawer_id"] for entry in list_questions(store, wing=wing)["questions"]}
+    questions = _fresh(_open_questions(wing_drawers, open_ids=open_ids))
     anchored = _fresh(_anchored(store, wing=wing, files=files))
     # Gathered last so _fresh() has already claimed every drawer another
     # section wants: this is a fallback, never a competitor. DEEP stays
@@ -515,7 +518,9 @@ def _open_predictions(wing_drawers: list[Drawer]) -> list[Drawer]:
     return [d for d in wing_drawers if is_open_prediction(d) and d.id not in settled]
 
 
-def _open_questions(wing_drawers: list[Drawer]) -> list[Drawer]:
+def _open_questions(
+    wing_drawers: list[Drawer], *, open_ids: set[int] | None = None
+) -> list[Drawer]:
     """Drawers explicitly flagged as an unanswered question.
 
     One shape counts, and it is an exact match rather than a guess: a
@@ -531,6 +536,8 @@ def _open_questions(wing_drawers: list[Drawer]) -> list[Drawer]:
     from prose. A question nobody recorded as one is not surfaced, which is the
     honest behaviour.
     """
+    if open_ids is not None:
+        return [d for d in wing_drawers if d.id in open_ids]
     superseded = {d.supersedes_id for d in wing_drawers if d.supersedes_id is not None}
     return [
         d for d in wing_drawers if bool(d.metadata.get("open_question")) and d.id not in superseded

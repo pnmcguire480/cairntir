@@ -97,6 +97,11 @@ app = typer.Typer(
     add_completion=False,
 )
 
+question_app = typer.Typer(
+    help="Record and resolve evidence-linked questions.", no_args_is_help=True
+)
+app.add_typer(question_app, name="question")
+
 backup_app = typer.Typer(
     help="Configure and inspect verified SQLite backups.", no_args_is_help=True
 )
@@ -235,6 +240,7 @@ def _root(ctx: typer.Context) -> None:
         "status",
         "version",
         "obsidian-sync",
+        "question",
     }:
         return
     # Best-effort self-heal for commands not excluded above. Once
@@ -1067,6 +1073,61 @@ def calibration_cmd(
     except (MCPError, MemoryStoreError) as exc:
         typer.echo(f"cairntir: {exc}", err=True)
         raise typer.Exit(code=1) from exc
+
+
+def _question_output(action: Callable[[DrawerStore], dict[str, Any]]) -> None:
+    try:
+        with _open_store(capture_path="cli.question") as store:
+            result = action(store)
+    except (CairntirError, OSError, ValueError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(json.dumps(result, ensure_ascii=False))
+
+
+@question_app.command("open")
+def question_open_cmd(
+    request: Path,
+    wing: str = typer.Option(..., "--wing", "-w"),
+) -> None:
+    """Append an explicitly owned or unassigned question from a JSON request."""
+    from cairntir.obsidian_bridge import _read_json
+    from cairntir.questions import open_question
+
+    _question_output(
+        lambda store: open_question(
+            store, _read_json(request, max_bytes=2 * 1024 * 1024), wing=wing
+        )
+    )
+
+
+@question_app.command("resolve")
+def question_resolve_cmd(
+    request: Path,
+    wing: str = typer.Option(..., "--wing", "-w"),
+) -> None:
+    """Append an explicit resolution bound to the question and supporting evidence."""
+    from cairntir.obsidian_bridge import _read_json
+    from cairntir.questions import resolve_question
+
+    _question_output(
+        lambda store: resolve_question(
+            store, _read_json(request, max_bytes=2 * 1024 * 1024), wing=wing
+        )
+    )
+
+
+@question_app.command("list")
+def question_list_cmd(
+    wing: str = typer.Option(..., "--wing", "-w"),
+    include_resolved: bool = typer.Option(False, "--include-resolved"),
+) -> None:
+    """Read current questions, optionally including declared resolutions and legacy history."""
+    from cairntir.questions import list_questions
+
+    _question_output(
+        lambda store: list_questions(store, wing=wing, include_resolved=include_resolved)
+    )
 
 
 @app.command("obsidian-sync")

@@ -1,0 +1,8 @@
+test_expired_evidence_replays_both_acknowledgements_after_restart_but_no_new_writes (__main__.QuestionExpiryReplayAcceptance.test_expired_evidence_replays_both_acknowledgements_after_restart_but_no_new_writes) ... ok
+test_expired_legacy_question_replays_its_committed_resolution (__main__.QuestionExpiryReplayAcceptance.test_expired_legacy_question_replays_its_committed_resolution) ... ok
+test_revoked_grant_cannot_replay_committed_opening (__main__.QuestionExpiryReplayAcceptance.test_revoked_grant_cannot_replay_committed_opening) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.085s
+
+OK

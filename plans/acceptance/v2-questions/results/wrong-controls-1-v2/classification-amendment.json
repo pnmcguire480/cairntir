@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "earlier_receipt_preserved": "result.json",
+  "classification_amendment": "The original classifier required AssertionError for the absent question, but KeyError at its expected-open lookup is the direct wrong behavior. The plugin mutation first fails wrong-question-hash, not wrong-request (outer file binding already rejects that). No assertions or test runs changed for these controls.",
+  "environment_retry": "Original Node execution from the external worktree failed sandbox lstat EPERM; exact-byte test copy in owned directory ran successfully.",
+  "controls": [
+    {
+      "name": "ordinary-superseder-closes-typed-question",
+      "detected": true,
+      "failure": "Expected open question is absent; exact lookup raises KeyError"
+    },
+    {
+      "name": "question-receipt-ignores-request-binding",
+      "detected": true,
+      "failure": "Invalid question hash is falsely claimed saved; frozen assertion fails"
+    }
+  ],
+  "existing_plugin_regression": {
+    "cases": 46,
+    "assertions": 401,
+    "status": "PASS"
+  },
+  "logs": {
+    "ordinary-superseder.log": "35bd0fd84479bfa0e2e195bd294a20d8419c6693950bb305880fb054e93f87f0",
+    "mismatched-receipt.log": "2ff39a12d0f2ce92f8042ddc4c593b7b31737f81a832dc25a474a1d26e635329",
+    "existing-plugin-local-copy.log": "d55841e134fc95b99db7a016d29000b4658f9f6ab5b4425a50dbee5890f0f951"
+  }
+}

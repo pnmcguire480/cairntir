@@ -5,13 +5,14 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **1.15.0** (combined candidate; not yet published).
+Source version: **1.16.0** (question lifecycle candidate; not yet published).
 Published base: [1.12.4](docs/release/v1.12.4.md), merge
 `b60c2fbc537b6fcb284aa14f8023b3170f720822`. Its GitHub release receipt records
 completed publication; the older preparation document remains historical.
-Current scope combines the reviewed [Obsidian correction loop](plans/obsidian-correction-loop.md)
-and [opt-in practice governance](plans/practice-governance-r17.md) on PR125.
-The [combined plan](plans/combined-obsidian-practice.md) owns integration qualification.
+Current scope ports the existing [explicit question lifecycle](plans/question-lifecycle.md)
+onto qualified combined PR128 `9e65c37`: Obsidian corrections and opt-in practice
+governance, with pinned embedding artifacts and complete recall budgets retained.
+The question plan owns fresh feature qualification; historical results stay historical.
 Earlier pinned artifacts and recall budgets remain unchanged.
 Pending changes belong under [Unreleased](CHANGELOG.md#unreleased).
 
@@ -88,7 +89,23 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-03 (combined foundation candidate)
+## Last Session - 2026-10-03 (explicit question candidate)
+
+Port only the previously planned R08 open/list/resolve lifecycle onto qualified
+PR128 `9e65c37`, whose all 18 hosted CI jobs and CodeQL passed. Preserve exact
+question evidence, portable identity, declared resolution, scoped legacy handling,
+durable retry and consistent handoff. Optional forms submit explicitly; ordinary
+note edits do not ingest or resolve questions. No new dependency/schema/MCP tool.
+Independent historical 72-file packet is unchanged; 12 fresh owner/scoped durable
+acknowledgement controls were frozen before implementation. Independent local
+acceptance passes 48 checks/51 subtests after one scoped-error translation repair;
+five actual synthetic plugin CLI launches pass, as do both injected fault controls.
+Selected retained regressions pass 68 checks/21 subtests with one inherited local
+Windows symlink privilege skip. The installed question proof is hash-bound and
+ready; installed execution, full coverage and exact-head hosted CI remain pending.
+Original work/private stores remain untouched; no merge, release or live adoption.
+
+## Previous Session - 2026-10-03 (combined foundation candidate)
 
 Combine reviewed PR126 `520e0d8` and PR127 `c2ce782` in a new isolated branch.
 Include R17's documentation/filter-only follow-ups at `3d9dd81`; runtime and

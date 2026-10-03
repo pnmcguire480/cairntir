@@ -1,0 +1,17 @@
+{"case":"open idle/form/cancel","result":"PASS"}
+{"case":"open exact fields and acknowledged success","result":"PASS"}
+{"case":"open no false saved: process-error","result":"PASS"}
+{"case":"open no false saved: malformed","result":"PASS"}
+{"case":"open no false saved: wrong-wing","result":"PASS"}
+{"case":"open no false saved: bad-report-schema","result":"PASS"}
+{"case":"open no false saved: missing-receipt","result":"PASS"}
+{"case":"open no false saved: duplicate","result":"PASS"}
+{"case":"open no false saved: wrong-request","result":"PASS"}
+{"case":"open no false saved: wrong-file","result":"PASS"}
+{"case":"open no false saved: wrong-operation","result":"PASS"}
+AssertionError [ERR_ASSERTION]: invalid/uncertain result must not claim saved
+    at check (C:\Dev\Cairntir\.cairntir\v2-questions-20260920\test_question_plugin_submission.cjs:23:53)
+    at C:\Dev\Cairntir\.cairntir\v2-questions-20260920\test_question_plugin_submission.cjs:212:66
+    at async withFixture (C:\Dev\Cairntir\.cairntir\v2-questions-20260920\test_question_plugin_submission.cjs:184:103)
+    at async run (C:\Dev\Cairntir\.cairntir\v2-questions-20260920\test_question_plugin_submission.cjs:183:31)
+    at async C:\Dev\Cairntir\.cairntir\v2-questions-20260920\test_question_plugin_submission.cjs:211:35

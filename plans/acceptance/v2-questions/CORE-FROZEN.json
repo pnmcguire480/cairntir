@@ -1,0 +1,24 @@
+{
+  "schema": "cairntir.public-core-acceptance-freeze.v1",
+  "frozen_at": "2026-09-20T13:52:03.429175+00:00",
+  "visibility": "public/shared workspace, independently authored before questions.py exists",
+  "files": {
+    "CONTRACT.md": "ac1e4bb4e6a73c040e2bd11c07f4379f6c78bd103ca421045a3c1f2932b241ce",
+    "test_questions_core.py": "cd47a737b518bea8ee4abaec399803d0a18b6b1f493c6da1c28ec6471cf822c0"
+  },
+  "tests": [
+    "test_open_verbatim_binding_and_restart_replay",
+    "test_unassigned_owner_and_empty_opening_evidence_are_honest",
+    "test_request_uuid_cannot_be_rebound_to_another_payload_or_operation",
+    "test_supported_resolution_preserves_original_and_replays_after_restart",
+    "test_resolution_requires_valid_same_wing_nonsecret_bound_evidence",
+    "test_resolution_rejects_wrong_store_wing_and_question_binding",
+    "test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question",
+    "test_generic_obsidian_correction_cannot_edit_typed_question",
+    "test_legacy_history_is_unverified_and_current_leaf_can_be_explicitly_resolved",
+    "test_failed_resolution_append_rolls_back_then_exact_retry_succeeds"
+  ],
+  "implementation_exists": false,
+  "execution": "Not yet run; no application edits",
+  "budget": "One implementation plus at most two product repairs; verification reserve required"
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.909" timestamp="2026-10-03T07:10:41.273466-04:00" hostname="PNMDevDesign"><testcase classname="tests.unit.test_questions.TestQuestionCore" name="test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question" time="0.029"><failure message="KeyError: '34b01234-9fc1-4f4c-9583-a396f72b0ae2'">self = &lt;test_questions.TestQuestionCore testMethod=test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question&gt;
+
+    def test_ordinary_and_forged_resolution_superseders_cannot_close_typed_question(self):
+        opened = open_question(self.store, self.request(), wing="questions")
+        self.add(
+            "Ordinary correction is not a resolution", supersedes_id=opened["question_drawer_id"]
+        )
+        self.add(
+            "Forged resolution",
+            supersedes_id=opened["question_drawer_id"],
+            metadata={
+                "kind": "question.resolution",
+                "question_id": opened["question_id"],
+                "request_id": str(uuid4()),
+                "evidence": [self.ref(self.support)],
+                "status": "resolved",
+            },
+        )
+&gt;       self.assertEqual(self.entries()[opened["question_id"]]["status"], "open")
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: '34b01234-9fc1-4f4c-9583-a396f72b0ae2'
+
+plans\acceptance\v2-questions\test_questions_core.py:219: KeyError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,11 @@
+test_acknowledgement_failure_is_committed_and_restart_retry_repairs_it (__main__.QuestionSurfacesAcceptance.test_acknowledgement_failure_is_committed_and_restart_retry_repairs_it) ... ok
+test_cli_json_resolution_errors_duplicate_keys_and_callback_purity (__main__.QuestionSurfacesAcceptance.test_cli_json_resolution_errors_duplicate_keys_and_callback_purity) ... ok
+test_handoff_keeps_typed_question_until_durable_resolution_but_legacy_behavior_stays (__main__.QuestionSurfacesAcceptance.test_handoff_keeps_typed_question_until_durable_resolution_but_legacy_behavior_stays) ... ok
+test_outbox_roundtrip_keeps_requests_and_projects_linked_question_history (__main__.QuestionSurfacesAcceptance.test_outbox_roundtrip_keeps_requests_and_projects_linked_question_history) ... ok
+test_register_preserves_human_bytes_and_rejects_unmarked_target (__main__.QuestionSurfacesAcceptance.test_register_preserves_human_bytes_and_rejects_unmarked_target) ... ok
+test_rejected_file_does_not_block_valid_request_or_ingest_user_notes (__main__.QuestionSurfacesAcceptance.test_rejected_file_does_not_block_valid_request_or_ingest_user_notes) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.509s
+
+OK

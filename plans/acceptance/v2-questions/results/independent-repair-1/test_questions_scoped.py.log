@@ -1,0 +1,10 @@
+test_authorized_reader_sees_owner_committed_lifecycle_without_mutation (__main__.ScopedQuestionAcceptance.test_authorized_reader_sees_owner_committed_lifecycle_without_mutation) ... ok
+test_each_hidden_required_record_withholds_complete_lifecycle (__main__.ScopedQuestionAcceptance.test_each_hidden_required_record_withholds_complete_lifecycle) ... ok
+test_legacy_adopted_resolution_is_withheld_when_its_resolution_is_hidden (__main__.ScopedQuestionAcceptance.test_legacy_adopted_resolution_is_withheld_when_its_resolution_is_hidden) ... ok
+test_read_only_grant_cannot_open_or_resolve (__main__.ScopedQuestionAcceptance.test_read_only_grant_cannot_open_or_resolve) ... ok
+test_revoked_and_expired_reader_fail_on_next_list (__main__.ScopedQuestionAcceptance.test_revoked_and_expired_reader_fail_on_next_list) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.179s
+
+OK

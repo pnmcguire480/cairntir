@@ -1,0 +1,46 @@
+.........................F......................                                              [100%]
+================================== FAILURES ===================================
+_ TestQuestionExpiryReplay.test_revoked_grant_cannot_replay_committed_opening _
+
+self = <test_questions.TestQuestionExpiryReplay testMethod=test_revoked_grant_cannot_replay_committed_opening>
+
+    def test_revoked_grant_cannot_replay_committed_opening(self):
+        token = issue_grant(
+            self.store, scopes=[{"wing": "questions"}], capabilities=["read", "write"]
+        )
+        reader = bind_grant(self.store, token)
+        request = self.opening([])
+        open_question(reader, request, wing="questions")
+        revoke_grant(self.store, token)
+        with self.assertRaises(QuestionError):
+>           open_question(reader, request, wing="questions")
+
+plans\acceptance\v2-questions\test_questions_expiry_replay.py:146: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\cairntir\questions.py:197: in open_question
+    if store.transaction_active:
+       ^^^^^^^^^^^^^^^^^^^^^^^^
+src\cairntir\access.py:300: in transaction_active
+    self.authorize("read")
+src\cairntir\access.py:268: in authorize
+    grant = self._grant()
+            ^^^^^^^^^^^^^
+src\cairntir\access.py:211: in _grant
+    row = _active(row)
+          ^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def _active(row: sqlite3.Row | None) -> sqlite3.Row:
+        if (
+            row is None
+            or row["revoked"]
+            or (row["expires_at"] and datetime.fromisoformat(row["expires_at"]) <= datetime.now(UTC))
+        ):
+>           raise AccessDenied(_DENIED)
+E           cairntir.access.AccessDenied: access denied
+
+src\cairntir\access.py:93: AccessDenied
+E22 complete synthetic registry/assets adapter: 0 exact original cases, no assertion changes
+=========================== short test summary info ===========================
+FAILED tests/unit/test_questions.py::TestQuestionExpiryReplay::test_revoked_grant_cannot_replay_committed_opening
+1 failed, 47 passed, 51 subtests passed in 4.13s

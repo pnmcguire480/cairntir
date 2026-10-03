@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "frozen_at_utc": "2026-10-03T11:10:13.794925+00:00",
+  "files_sha256": {
+    "ordinary_supersession_control_v2.py": "c866eaeac9dcc3d1e534e96626c1f1e71bae04c08c6014e5f84a97cb8179888c",
+    "FIXTURE-AMENDMENT-v2.md": "5d12f92a22064e362272d9839bbf28ffe669592b6f332a144110e730aba03dc9"
+  },
+  "normal_process_freeze_unchanged": "d877e0a0efe6060912f8c658244714bfbb0e0501f4c19c643d96b2e1cafb0e84",
+  "prior_failed_injection": "ordinary-wrong-control.txt",
+  "normal_helper_or_assertion_changes": false,
+  "history": "history/v2-replaced retains an intermediate combined freeze, not executed; original normal v1 freeze restored at parent direction."
+}

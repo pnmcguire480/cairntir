@@ -613,6 +613,24 @@ class ScopedStore:
             raise AccessDenied(_DENIED)
         return {key: _context_record(visible[key]) for key in drawer_ids}
 
+    def _question_records(self, *, wing: str) -> tuple[list[dict[str, Any]], set[int]]:
+        visible = self._rows()
+        records, _ = self._owner._question_records(wing=wing)
+        hidden: set[int] = set()
+        for record in records:
+            required = {
+                record["question_drawer_id"],
+                *(ref["drawer_id"] for ref in record["_question"]["evidence"]),
+            }
+            if record["resolution_drawer_id"] is not None:
+                required.add(record["resolution_drawer_id"])
+            if not required <= visible.keys():
+                hidden.add(record["question_drawer_id"])
+        return (
+            [record for record in records if record["question_drawer_id"] not in hidden],
+            hidden & visible.keys(),
+        )
+
     def execute_once(
         self,
         *,

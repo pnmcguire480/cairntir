@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-09-20T13:54:41.770353+00:00",
+  "status": "EXPECTED_MISSING_INTERFACE_RED",
+  "behavioral_failure_evidence": false,
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "C:\\Dev\\Cairntir\\.cairntir\\v2-questions-20260920\\test_questions_core.py"
+  ],
+  "returncode": 1,
+  "frozen_sha256": "f5fbb8d7718cd7dcad36d97c057cc052cd857d4b6188ce452749a38246a80958",
+  "log_sha256": "4f4d388b899201f58d3f8b157d20c8e5b61fbfddfa111428d5275b6f97624b26",
+  "note": "No tests executed: questions.py is absent. This is an interface baseline, not a behavioral regression proof."
+}
