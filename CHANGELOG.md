@@ -26,6 +26,13 @@ This candidate preserves all historical controls and adds independently frozen
 boundary checks. It installs no host hooks and adds no schema, dependency or MCP
 tool. Full exact-candidate qualification and release integration remain pending.
 
+The first PR131 hosted attempt failed strict documentation and reported CodeQL
+findings in frozen evidence. The repair corrects the contract link, preserves the
+eight historical resources in a pinned lossless archive, and reconstructs their
+original capsules for unchanged gates. Maintained fixture amendments retain every
+behavioral oracle. No runtime code, coverage threshold or security query changed;
+fresh hosted qualification is still required.
+
 ## [1.16.0] - Unreleased
 
 ### Added

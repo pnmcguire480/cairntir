@@ -89,7 +89,22 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-03 (managed-session isolated port)
+## Last Session - 2026-10-03 (managed hosted qualification repair)
+
+PR131 head `22a291c` failed its strict documentation link and separate CodeQL
+security check, despite successful analysis execution. The isolated repair fixes
+the link and transports eight frozen historical sources without changing their
+bytes or manifests. Tests reconstruct disposable capsules before unchanged
+verification; corrected active fixtures retain the original behavioral oracles.
+All 254 original capsule files and 44 installed-verifier assertions are preserved.
+New bounded controls pass 50 cases with one inherited Windows symlink privilege
+skip and nine subtests. Historical routed controls pass 43 cases with that same
+privilege gate skipped; 28 runtime cases collect with unchanged bindings.
+Coverage, security workflows, root fixtures and production source are unchanged.
+Full exact repaired-tree hosted/installed qualification and independent review
+remain pending. No merge, release, native activation or live-store change.
+
+## Previous Session - 2026-10-03 (managed-session isolated port)
 
 Port the already planned explicit foreground managed runtime and Last Session
 projection onto qualified/reviewed R08 PR129 `c71abb6`. R18 is excluded while its

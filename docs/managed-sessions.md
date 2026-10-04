@@ -34,7 +34,7 @@ cannot authorize dispatch.
 
 Send one JSON object per input line, with schema `cairntir.managed-command.v1`,
 an `operation` and its `request`. The exact request shapes and examples are in
-the preserved [runtime contract](../plans/acceptance/v2-managed-runtime/CONTRACT.md).
+the preserved [runtime contract](https://github.com/pnmcguire480/cairntir/blob/22a291cd3868b568af1c5013519f14af53aff24f/plans/acceptance/v2-managed-runtime/CONTRACT.md).
 
 1. `capture` submits an exact producer event, event UUID and sequence number.
    The first event supplies the original request. A successful receipt follows

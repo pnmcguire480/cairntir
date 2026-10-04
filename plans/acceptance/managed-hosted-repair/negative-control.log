@@ -1,0 +1,50 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_archive_structural_defects_reject_after_independent_transport_binding[content] _
+
+fixture = (<module 'independent_managed_archive' from 'C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-ho...es\n        assert snapshot(bundle.owner._conn) == baseline\n        assert snapshot(independent) == baseline\n', ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002A88D398D90>
+defect = 'content'
+
+    @pytest.mark.parametrize(
+        "defect", ["missing", "duplicate", "traversal", "extra", "symlink", "content"]
+    )
+    def test_archive_structural_defects_reject_after_independent_transport_binding(
+        fixture, monkeypatch, defect
+    ):
+        module, _source, archive, _destination, contents = fixture
+        entries = [(name, raw, False) for name, raw in contents.items()]
+        if defect == "missing":
+            entries.pop()
+        elif defect == "duplicate":
+            entries.append(entries[0])
+        elif defect == "traversal":
+            entries.append(("../outside-proof.py", b"forbidden", False))
+        elif defect == "extra":
+            entries.append(("plans/acceptance/extra-proof.py", b"forbidden", False))
+        elif defect == "symlink":
+            name, raw, _ = entries[0]
+            entries[0] = (name, raw, True)
+        else:
+            name, raw, _ = entries[0]
+            entries[0] = (name, raw[:-1] + bytes([raw[-1] ^ 1]), False)
+        make_archive(archive, entries)
+        # Exercise member validation without weakening any of the eight source bindings.
+        monkeypatch.setattr(module, "ARCHIVE_SHA256", sha(archive.read_bytes()))
+>       refused(fixture)
+
+..\..\acceptance\test_managed_archive_acceptance.py:160: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+fixture = (<module 'independent_managed_archive' from 'C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-ho...es\n        assert snapshot(bundle.owner._conn) == baseline\n        assert snapshot(independent) == baseline\n', ...})
+
+    def refused(fixture):
+        module, source, _archive, destination, _contents = fixture
+        before = physical_tree(source)
+>       with pytest.raises((ValueError, RuntimeError, OSError)):
+E       Failed: DID NOT RAISE any of (<class 'ValueError'>, <class 'RuntimeError'>, <class 'OSError'>)
+
+..\..\acceptance\test_managed_archive_acceptance.py:94: Failed
+=========================== short test summary info ===========================
+FAILED ..\..\acceptance\test_managed_archive_acceptance.py::test_archive_structural_defects_reject_after_independent_transport_binding[content]
+1 failed in 0.17s

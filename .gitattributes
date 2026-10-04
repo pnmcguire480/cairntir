@@ -117,3 +117,7 @@ tests/unit/test_managed_port_acceptance.py -text whitespace=cr-at-eol
 # Preserve the independently frozen installed managed proof.
 plans/acceptance/managed-installed-qualification/** -text whitespace=cr-at-eol
 tests/unit/test_managed_installed_qualification.py -text whitespace=cr-at-eol
+
+# Preserve the lossless transport map and independent hosted repair evidence.
+plans/acceptance/managed-evidence-archive/** -text whitespace=cr-at-eol
+plans/acceptance/managed-hosted-repair/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol

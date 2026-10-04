@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "cases": 1,
+  "files_sha256": {
+    "test_hidden_event_v2.py": "1fb15d60edfd8205b4156c63d07ba93fae64b49ab1887388b70d6cf7d7e64eb5",
+    "ROW-FIXTURE-PROOF.json": "8f6d8a5384f7afe9b460ffb6f9466ec3af4305e5de3b4ed36e3a1a4c302f9cf5"
+  },
+  "fixture_dependency_sha256": {
+    "raw-projection-amendment-v3/test_managed_durable_boundaries_v3.py": "0fdb5c914a9bd912084f1a110ba0cc3f1c634b0baa0ae2ab4a7ad4aa4ca2ed94"
+  },
+  "prior_freeze_sha256": "b4ed819a5d0ebc88f8f8514841a0cedca1dc7b480c9c675fea5eb8711c007310",
+  "prior_test_sha256": "b8130fee1de2e94a16c0f708a9e3163c810358c23f4f2623bed89f7719c24992",
+  "only_change": "tuple-normalize sqlite3.Row; original SELECT, drawer ID and exact content tuple unchanged",
+  "all_other_assertion_asts_unchanged": true,
+  "assertions": 14,
+  "runtime_changes": "none",
+  "preserved_result": "candidate-repair2-final:80 pass/3 skip/9 subtests; one Row-vs-tuple fixture failure"
+}

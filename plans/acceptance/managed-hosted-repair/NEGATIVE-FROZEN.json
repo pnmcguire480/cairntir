@@ -1,0 +1,10 @@
+{
+  "runner_sha256": "e418b2e319b260bf4a9aaa1f32e8df75f8b4563466db548650be6dcf2fcc5a03",
+  "candidate_helper_sha256": "7efbb6c49f36c8a5944d3354963776b18dbe072ace51a2d1729759262f96f11b",
+  "mutated_helper_sha256": "dfef104997ce1581fdb47aed362ec7d612643be38d0ee2b48ceb1919967552b1",
+  "acceptance_sha256": "efda5248eae8605f2b642971221ef9266c3432ad062401472463a4bbfa6b7ccb",
+  "freeze_sha256": "a76a2d7be6d30b29cf01f8a2e5d5847786328da60605a950f43fedd741b5f946",
+  "mutation": "Disable only individual member content hash rejection; transport and membership checks retained",
+  "oracle": "Unchanged frozen content-defect case must fail DID NOT RAISE",
+  "no_candidate_write": true
+}
