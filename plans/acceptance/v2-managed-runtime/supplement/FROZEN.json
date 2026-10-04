@@ -1,0 +1,19 @@
+{
+  "schema": "cairntir.public-acceptance-freeze.v1",
+  "frozen_before_execution": true,
+  "created_utc": "2026-09-20T15:27:38.8779715Z",
+  "tests": 11,
+  "files": {
+    "CONTRACT.md": "a31f341136cbd8e7fc90c0e27f9dc3f117869649bc045336ecb395f3c4bf2aa5",
+    "test_managed_outcomes.py": "ced839e467f51517eb912ccd11b66a2b767ae50130861a36e0c482a0efb33bb5"
+  },
+  "candidate_files": {
+    "src/cairntir/managed.py": "301eefc5c2593f3fa466c06d84b0384dfd92294aee2e015ac68b967d82585f30",
+    "src/cairntir/managed_projection.py": "53fa5cc28d256a434d181a96d82b3a87534acc5eb6710236b6bcf6b44bad4df8",
+    "src/cairntir/cli.py": "c9ec4aec3811495803b5813d3812ba3a70f007ce968614bc2614ae154cc94448",
+    "src/cairntir/memory/store.py": "490d2e3df639556d3aff5f555c08f04568808219a34f66af2a7174ec288c6f70",
+    "src/cairntir/access.py": "084a03f9963d45aba34feb17227a8923d124c867c89017be22a2374251171c6c"
+  },
+  "original_coverage_sha256": "b9dc92368c8169a80652e9880d5390fad387e6570c83fa7a7f0074be6baefb8d",
+  "scope": "Public managed outcome supplement; no product edits, no original evidence changes, no threshold or exclusion change"
+}

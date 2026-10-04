@@ -1,0 +1,10 @@
+{
+  "phase": "repair1 independent hidden visibility boundary",
+  "files_sha256": {
+    "src/cairntir/memory/store.py": "26aa05d780b9763be039a3bd9adca4812affcbea4d7430d481e36d32c0527067",
+    "src/cairntir/managed.py": "0f4d98328bfd338df3926095ad1bda2cffda8029e3b7c35c1feb09377a651dbc",
+    "src/cairntir/access.py": "5553a29df68c6e77701654fb5f75c943f95a7decc01d24da4526082ff29d81ad",
+    "src/cairntir/cli.py": "62daa492fb5671221d9962e823fa2041bb2f6963e4f558c5b5233a6630e55ebf",
+    "src/cairntir/managed_projection.py": "c1aae484087dbf681350ef20a47c4578f211dd42be77ddd22a17ea586f0725d9"
+  }
+}

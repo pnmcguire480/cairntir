@@ -1,0 +1,12 @@
+F821 Undefined name `Annotated`
+    --> src\cairntir\cli.py:1082:13
+     |
+1080 | @app.command("managed")
+1081 | def managed_cmd(
+1082 |     config: Annotated[Path, typer.Option("--config")],
+     |             ^^^^^^^^^
+1083 |     session_id: str = typer.Option(..., "--session-id"),
+1084 |     task_id: str | None = typer.Option(None, "--task-id"),
+     |
+
+Found 1 error.

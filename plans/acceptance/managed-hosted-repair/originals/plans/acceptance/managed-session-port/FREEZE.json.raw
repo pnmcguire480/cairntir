@@ -1,0 +1,17 @@
+{
+  "frozen_at_utc": "2026-10-03T13:04:02.259062+00:00",
+  "version": 1,
+  "cases": 24,
+  "files_sha256": {
+    "CONTRACT.md": "41a930993c320962e9bcdb50b3a14a24d29a39fa3a44ced43785108baeab6f18",
+    "test_managed_durable_boundaries.py": "06e88054c2a8a291a0bcea04c8d47866cb5834ddc7ba5e7ca60cd35a225a3406",
+    "bypass_guard_control.py": "071e7a5bf02eb9f4fe365c7d44094d00dea1da45fece4ed83370e8a2456ecf7b",
+    "INPUT-EXPECTATIONS.json": "f152fe39f7fe7826cd2de62af21b7a9e341acca4cd49cd4489363d8ee4610888",
+    "originals/managed.py": "301eefc5c2593f3fa466c06d84b0384dfd92294aee2e015ac68b967d82585f30",
+    "originals/managed_projection.py": "53fa5cc28d256a434d181a96d82b3a87534acc5eb6710236b6bcf6b44bad4df8"
+  },
+  "runtime_tests_executed": false,
+  "scope": "existing explicit managed foreground runtime plus explicit Last Session projection",
+  "repair_rounds": 2,
+  "verification_reserve_fraction": 0.25
+}

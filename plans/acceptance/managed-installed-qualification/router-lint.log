@@ -1,0 +1,23 @@
+N802 Function name `runTest` should be lowercase
+  --> tests\unit\test_managed_installed_qualification.py:41:13
+   |
+39 | def test_installed_proof_cannot_report_pass_after_unchanged_case_failure():
+40 |     class Failed(unittest.TestCase):
+41 |         def runTest(self):
+   |             ^^^^^^^
+42 |             self.assertEqual("false durable receipt", "committed original evidence")
+   |
+help: Consider adding `@typing.override` if this method overrides a method from a superclass
+
+N802 Function name `runTest` should be lowercase
+  --> tests\unit\test_managed_installed_qualification.py:50:13
+   |
+48 | def test_installed_proof_cannot_substitute_skips_for_model_cases():
+49 |     class Skipped(unittest.TestCase):
+50 |         def runTest(self):
+   |             ^^^^^^^
+51 |             self.skipTest("production model prerequisite missing")
+   |
+help: Consider adding `@typing.override` if this method overrides a method from a superclass
+
+Found 2 errors.

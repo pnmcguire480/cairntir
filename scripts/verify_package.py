@@ -226,7 +226,12 @@ async def rejected_write_and_retry(peer: Peer) -> None:
 
 
 async def probe(
-    wheel: Path, output: Path, question_proof: Path, question_proof_sha256: str
+    wheel: Path,
+    output: Path,
+    question_proof: Path,
+    question_proof_sha256: str,
+    managed_proof: Path,
+    managed_proof_sha256: str,
 ) -> dict:
     """Exercise this installed wheel through CLI, MCP, interruption and restoration."""
     import cairntir
@@ -366,6 +371,21 @@ async def probe(
     question_diagnostics = json.loads(
         (output / "questions" / "question-proof-diagnostic.json").read_text(encoding="utf-8")
     )
+    assert hashlib.sha256((managed_proof / "FROZEN.json").read_bytes()).hexdigest() == (
+        managed_proof_sha256
+    )
+    managed_files = json.loads((managed_proof / "FROZEN.json").read_bytes())["files_sha256"]
+    for relative, digest in managed_files.items():
+        assert hashlib.sha256((managed_proof / relative).read_bytes()).hexdigest() == digest
+    managed_spec = importlib.util.spec_from_file_location(
+        "frozen_installed_managed", managed_proof / "verify_installed_managed.py"
+    )
+    assert managed_spec is not None and managed_spec.loader is not None
+    managed_module = importlib.util.module_from_spec(managed_spec)
+    managed_spec.loader.exec_module(managed_module)
+    managed_result = managed_module.verify_installed_managed(
+        model_cache=Path(os.environ["FASTEMBED_CACHE_PATH"]), version=cairntir.__version__
+    )
     return {
         "version": cairntir.__version__,
         "package_files": len(members),
@@ -381,6 +401,8 @@ async def probe(
         "explicit_question_lifecycle": question_result,
         "explicit_question_diagnostics": question_diagnostics,
         "question_proof_sha256": question_proof_sha256,
+        "explicit_managed_session": managed_result,
+        "managed_proof_sha256": managed_proof_sha256,
     }
 
 
@@ -423,6 +445,14 @@ def install_and_verify(wheel: Path, output: Path) -> dict:
         raise RuntimeError("uv is required to install the package under verification")
     with tempfile.TemporaryDirectory(prefix="installed-", dir=output) as temporary:
         directory = Path(temporary)
+        restore_spec = importlib.util.spec_from_file_location(
+            "managed_evidence_restore", ROOT / "scripts/restore_managed_evidence.py"
+        )
+        if restore_spec is None or restore_spec.loader is None:
+            raise RuntimeError("managed evidence reconstruction helper is unavailable")
+        restore_module = importlib.util.module_from_spec(restore_spec)
+        restore_spec.loader.exec_module(restore_module)
+        restored = restore_module.restore(ROOT, directory / "managed-source")
         env = environment(directory / "home")
         requirements = directory / "requirements.txt"
         execute(
@@ -476,6 +506,19 @@ def install_and_verify(wheel: Path, output: Path) -> dict:
         assert hashlib.sha256(proof_source.read_bytes()).hexdigest() == proof_hash
         proof_copy = directory / "question_proof.py"
         shutil.copyfile(proof_source, proof_copy)
+        managed_source = restored / "plans/acceptance/managed-installed-qualification"
+        managed_hash = "53a59ffa4e0dbfded002cc505ad335062074321faf8f70d4a841b1f4c612e0ad"
+        managed_manifest = (managed_source / "FROZEN.json").read_bytes()
+        assert hashlib.sha256(managed_manifest).hexdigest() == managed_hash
+        managed_copy = directory / "managed_proof"
+        managed_copy.mkdir()
+        (managed_copy / "FROZEN.json").write_bytes(managed_manifest)
+        for relative, digest in json.loads(managed_manifest)["files_sha256"].items():
+            source = managed_source / relative
+            assert hashlib.sha256(source.read_bytes()).hexdigest() == digest, relative
+            target = managed_copy / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source, target)
         try:
             result = execute(
                 [
@@ -490,6 +533,10 @@ def install_and_verify(wheel: Path, output: Path) -> dict:
                     str(proof_copy),
                     "--question-proof-sha256",
                     proof_hash,
+                    "--managed-proof",
+                    str(managed_copy),
+                    "--managed-proof-sha256",
+                    managed_hash,
                 ],
                 directory,
                 env,
@@ -518,18 +565,24 @@ if __name__ == "__main__":
     parser.add_argument("--probe", action="store_true")
     parser.add_argument("--question-proof", type=Path)
     parser.add_argument("--question-proof-sha256")
+    parser.add_argument("--managed-proof", type=Path)
+    parser.add_argument("--managed-proof-sha256")
     arguments = parser.parse_args()
     wheel_path, output_path = arguments.wheel.resolve(), arguments.output.resolve()
     output_path.mkdir(parents=True, exist_ok=True)
     if arguments.probe:
         if arguments.question_proof is None or arguments.question_proof_sha256 is None:
             parser.error("--probe requires a bound --question-proof and --question-proof-sha256")
+        if arguments.managed_proof is None or arguments.managed_proof_sha256 is None:
+            parser.error("--probe requires a bound --managed-proof and --managed-proof-sha256")
         result = asyncio.run(
             probe(
                 wheel_path,
                 output_path,
                 arguments.question_proof.resolve(),
                 arguments.question_proof_sha256,
+                arguments.managed_proof.resolve(),
+                arguments.managed_proof_sha256,
             )
         )
     else:

@@ -1,0 +1,9 @@
+{
+  "status": "EXPECTED_BASELINE_RED",
+  "returncode": 1,
+  "reason": "Projection module absent before implementation",
+  "log_sha256": "10205a71648bc16f5d0c967afa9736303d3c271c22de2402847af9641399e235",
+  "freeze_sha256": "4a3598a201abb0b69710600bec6755dd1c50c9c51e083d4871b0d5c5bf507d07",
+  "production_modified": false,
+  "behavioral_cases_executed": 0
+}

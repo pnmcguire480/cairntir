@@ -1,0 +1,14 @@
+{
+  "version": 3,
+  "kind": "raw projection caller setup only",
+  "previous_freeze_sha256": "ac1899dfe2232e3c3ad7afb84c3dedd9fa127a15b72a0cd15a303ef276958328",
+  "previous_test_sha256": "1404d419ef7e8f1f766d87e4cae1c0ee3c0f1f81c6b86a92ac237bbba958626a",
+  "files_sha256": {
+    "test_managed_durable_boundaries_v3.py": "0fdb5c914a9bd912084f1a110ba0cc3f1c634b0baa0ae2ab4a7ad4aa4ca2ed94"
+  },
+  "all_assertion_asts_unchanged": true,
+  "assertions": 33,
+  "contract": "Explicit cases retain real provisional TaskBook checkpoint; raw cases retain committed valid checkpoint and insert unrelated uncommitted caller marker, because public TaskBook cannot nest into raw BEGIN. Both require renderer refusal and unchanged file/database/caller work. No transaction bypass or production change.",
+  "preserved_previous_result": "projection-baseline-v2:2 genuine publication failures plus2 raw TaskBook fixture errors",
+  "next_execution": "two raw projection cases only on unchanged historical product port"
+}

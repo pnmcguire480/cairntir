@@ -1,0 +1,5 @@
+{
+  "runner_sha256": "bd44c37a27f7a61280db65a209c1746a0829e9bda1cdbf31a60d1b6720580159",
+  "source_imported": false,
+  "assertions": "Original child denies invisible uncommitted prediction and accepts committed prediction"
+}

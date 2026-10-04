@@ -1,0 +1,18 @@
+[
+  {
+    "name": "test_projection_corruption.py",
+    "returncode": 1,
+    "log_sha256": "279d56ec7f0491de74fc586c9e3cab89e9ea066d182483e892934c5f94b105a8",
+    "adapter_note": "Log preserved before outer console UTF8 print error; four tests executed, two expected failures"
+  },
+  {
+    "name": "test_projection_outcome_binding.py",
+    "returncode": 1,
+    "log_sha256": "fe5258d82097acd73528bdad49d83272d8d418e5fe70039f67a040333fbdf82c"
+  },
+  {
+    "name": "wrong_controls.py",
+    "returncode": 0,
+    "log_sha256": "d90166d7d97236f0be214aa8b2e23fb7850d76c6fdabca1db9c7f4400e14fda8"
+  }
+]

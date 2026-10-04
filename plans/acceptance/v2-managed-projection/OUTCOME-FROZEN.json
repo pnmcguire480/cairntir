@@ -1,0 +1,11 @@
+{
+  "schema": "cairntir.public-projection-outcome-freeze.v1",
+  "frozen_at": "2026-09-20T15:00:49.031632+00:00",
+  "files": {
+    "test_projection_outcome_binding.py": "ea8c14fd0b1b04341375bc29d1ea59a1d903f518c2f3de6a13f50b3e0eb73e7f"
+  },
+  "contract_sha256": "c18752a2687971d4e4cf19f383ca14c6381647774377bfb4c2ed18f365dbba84",
+  "reason": "Same committed-result binding family; outcome public action ID must match its bound intent before uncertainty is removed",
+  "source_sha256": "5e0e5a6380203d4e81253addda281fadd3e0b44b2e37430690ae15750443ad89",
+  "scope": "Frozen before execution and product repair; prior freezes unchanged"
+}

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "ruff",
+    "format",
+    "--check",
+    "src/cairntir/cli.py"
+  ],
+  "cwd": "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003",
+  "exit_code": 0,
+  "status": "completed",
+  "seconds": 0.097,
+  "log_sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50",
+  "synthetic_only": true,
+  "runtime": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-feature-20261003\\runtime-importformat",
+  "model_inference": false
+}

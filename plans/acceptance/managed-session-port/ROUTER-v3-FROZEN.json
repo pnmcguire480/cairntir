@@ -1,0 +1,13 @@
+{
+  "runtime_execution": "none by this router version before freeze",
+  "normal_cases": 25,
+  "version": 3,
+  "original_router_public_history": "router-history/v1/test_managed_port_acceptance.py",
+  "lint": "PASS",
+  "candidate_router_path": "tests/unit/test_managed_port_acceptance.py",
+  "original_router_sha256": "b0d30be0d9cc6bcd9f28eb823abb5a4ccccf336da5d0626886dfcda7763f2bc8",
+  "files_sha256": {
+    "test_managed_port_acceptance_v3.py": "f28672def5ba4c3c773c5309eb4ccd05c3a175ce65b4c778bc664489ea2cc796"
+  },
+  "format_line100": "PASS"
+}

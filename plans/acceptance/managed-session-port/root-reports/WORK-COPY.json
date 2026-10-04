@@ -1,0 +1,34 @@
+{
+  "path": "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003",
+  "base": "c71abb6808dffe75d9c303734f80f667d5c81cba",
+  "tree": "b8ee1f78b166cc8d3e2f38d02dcf92131f7a06cf",
+  "branch": "feat/explicit-managed-session-20261003",
+  "initial_clean": true,
+  "historical_mapping": {
+    "src/cairntir/memory/store.py": {
+      "source_sha256": "490d2e3df639556d3aff5f555c08f04568808219a34f66af2a7174ec288c6f70",
+      "extracted": "src__cairntir__memory__store.py.txt"
+    },
+    "src/cairntir/access.py": {
+      "source_sha256": "626909ed2df72b98a0bedf142e23ad0e5a06fed310d3ad728096c5d50216e864",
+      "extracted": "src__cairntir__access.py.txt"
+    },
+    "src/cairntir/cli.py": {
+      "source_sha256": "c9ec4aec3811495803b5813d3812ba3a70f007ce968614bc2614ae154cc94448",
+      "extracted": "src__cairntir__cli.py.txt"
+    }
+  },
+  "source_baseline_sha256": {
+    "managed.py": "301eefc5c2593f3fa466c06d84b0384dfd92294aee2e015ac68b967d82585f30",
+    "managed_projection.py": "53fa5cc28d256a434d181a96d82b3a87534acc5eb6710236b6bcf6b44bad4df8",
+    "src__cairntir__access.py.txt": "b8e216a2700b7d97968f153acd91e5aea0d46080992ff6bcf2d13fc3bb50d1a8",
+    "src__cairntir__cli.py.txt": "f1f603ff35bcbd166d016fc63f0a88612a1bcfb6fb085e4d2b50a322d934297c",
+    "src__cairntir__memory__store.py.txt": "b950736d660ee6ae30325449f4fa3cb5d625db1f6f707d130d1d0cd26d8d7746"
+  },
+  "git_stderr": [
+    "Switched to a new branch 'feat/explicit-managed-session-20261003'\n",
+    "warning: unable to access 'C:\\Users\\pnmcg/.config/git/ignore': Permission denied\nwarning: unable to access 'C:\\Users\\pnmcg/.config/git/ignore': Permission denied\n"
+  ],
+  "port_performed": false,
+  "r18_included": false
+}

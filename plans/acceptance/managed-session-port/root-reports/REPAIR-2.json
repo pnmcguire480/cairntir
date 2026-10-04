@@ -1,0 +1,8 @@
+{
+  "round": 2,
+  "remaining_product_repairs": 0,
+  "behavior": "Refuse close when selected task evidence is unavailable; no hidden content disclosed.",
+  "source_sha256": "31452b541883edae15687dc8587234ff38ef97d5b9500ab5f985dbcc94c2866b",
+  "tests_changed_by_implementer": false,
+  "r18_included": false
+}

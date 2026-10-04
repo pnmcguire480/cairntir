@@ -1,0 +1,25 @@
+{
+  "schema": "cairntir.public-managed-process-freeze.v1",
+  "frozen_at": "2026-09-20T14:33:46.064909+00:00",
+  "core_freeze_sha256": "ff4352fd687800c1b5d74453da601af79da4a48dafaad37b0ccb41e77e67fe52",
+  "files": {
+    "PROCESS-CONTRACT.md": "461086ae7e42cdeec946566e5349d1f399efa75f3eb55864e08edb7eaf1ab3d2",
+    "process_child.py": "9abe47c5a82eae0c99a454cf4a7f59d4e36b3702a6aab3d2788880c2d02817f1",
+    "process_driver.py": "715d9aa48e794663f9e92a740b784efd76769404823058774e5e5dad97e446c3",
+    "test_managed_process.py": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452",
+    "oracle_controls.py": "bd44c37a27f7a61280db65a209c1746a0829e9bda1cdbf31a60d1b6720580159"
+  },
+  "tests": [
+    "test_actual_child_observes_commit_before_effect_and_completed_retry_does_not_launch",
+    "test_kill_after_committed_intent_before_spawn_stays_uncertain_without_replay",
+    "test_kill_after_external_effect_preserves_prediction_and_never_relaunches",
+    "test_outcome_persistence_fault_is_witnessed_and_never_repeats_effect",
+    "test_two_authorized_processes_racing_same_action_id_launch_once",
+    "test_owner_outer_transaction_cannot_fake_preaction_commit",
+    "test_scoped_outer_transaction_cannot_fake_preaction_commit",
+    "test_changed_executable_cannot_use_previous_acknowledgement",
+    "test_unsafe_profile_configuration_is_rejected_before_launch",
+    "test_real_cli_jsonl_start_capture_brief_ack_dispatch_close"
+  ],
+  "scope": "Public independent assertions before dispatch implementation; no candidate execution or inspection; actual process observations, controlled crashes, concurrency, outer transactions, profiles and JSONL CLI. No native host event delivery or independent private custody claim."
+}

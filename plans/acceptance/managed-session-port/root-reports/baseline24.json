@@ -1,0 +1,20 @@
+{
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-feature-20261003\\acceptance\\test_managed_durable_boundaries.py",
+    "--no-cov",
+    "-q",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "cwd": "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003",
+  "exit_code": 4,
+  "status": "completed",
+  "seconds": 0.412,
+  "log_sha256": "9c971a9defb37382ff5568bcd4299f541a7b1acad07d0da07579db7338ca1747",
+  "synthetic_only": true,
+  "runtime": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-feature-20261003\\runtime-baseline24",
+  "model_inference": false
+}

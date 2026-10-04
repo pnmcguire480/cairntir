@@ -1,0 +1,42 @@
+{
+  "plans/acceptance/managed-session-port/visibility-v1/test_hidden_event.py": {
+    "sha256": "b8130fee1de2e94a16c0f708a9e3163c810358c23f4f2623bed89f7719c24992",
+    "size": 3868,
+    "input": "originals/plans/acceptance/managed-session-port/visibility-v1/test_hidden_event.py.raw"
+  },
+  "plans/acceptance/managed-session-port/visibility-v2/test_hidden_event_v2.py": {
+    "sha256": "1fb15d60edfd8205b4156c63d07ba93fae64b49ab1887388b70d6cf7d7e64eb5",
+    "size": 3897,
+    "input": "originals/plans/acceptance/managed-session-port/visibility-v2/test_hidden_event_v2.py.raw"
+  },
+  "plans/acceptance/managed-session-port/test_managed_durable_boundaries.py": {
+    "sha256": "06e88054c2a8a291a0bcea04c8d47866cb5834ddc7ba5e7ca60cd35a225a3406",
+    "size": 10895,
+    "input": "originals/plans/acceptance/managed-session-port/test_managed_durable_boundaries.py.raw"
+  },
+  "plans/acceptance/managed-session-port/marker-amendment-v2/test_managed_durable_boundaries_v2.py": {
+    "sha256": "1404d419ef7e8f1f766d87e4cae1c0ee3c0f1f81c6b86a92ac237bbba958626a",
+    "size": 10915,
+    "input": "originals/plans/acceptance/managed-session-port/marker-amendment-v2/test_managed_durable_boundaries_v2.py.raw"
+  },
+  "plans/acceptance/managed-session-port/raw-projection-amendment-v3/test_managed_durable_boundaries_v3.py": {
+    "sha256": "0fdb5c914a9bd912084f1a110ba0cc3f1c634b0baa0ae2ab4a7ad4aa4ca2ed94",
+    "size": 11197,
+    "input": "originals/plans/acceptance/managed-session-port/raw-projection-amendment-v3/test_managed_durable_boundaries_v3.py.raw"
+  },
+  "plans/acceptance/managed-installed-qualification/originals/test_managed_projection.py": {
+    "sha256": "d2596ed498de7a30a2f835c268a1f134000be7c60b8ae91e518fabb350f9cbed",
+    "size": 14931,
+    "input": "originals/plans/acceptance/managed-installed-qualification/originals/test_managed_projection.py.raw"
+  },
+  "plans/acceptance/v2-managed-projection/test_managed_projection.py": {
+    "sha256": "d2596ed498de7a30a2f835c268a1f134000be7c60b8ae91e518fabb350f9cbed",
+    "size": 14931,
+    "input": "originals/plans/acceptance/v2-managed-projection/test_managed_projection.py.raw"
+  },
+  "plans/acceptance/v2-managed-runtime/evidence/repair-2-independent/run.py": {
+    "sha256": "25ad27c31bbd487d45a1a42258d240f77318481af5107711b43791122eb52cd3",
+    "size": 6394,
+    "input": "originals/plans/acceptance/v2-managed-runtime/evidence/repair-2-independent/run.py.raw"
+  }
+}

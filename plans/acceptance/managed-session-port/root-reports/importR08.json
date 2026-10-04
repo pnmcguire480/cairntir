@@ -1,0 +1,21 @@
+{
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/unit/test_questions.py",
+    "tests/unit/test_questions_port_acceptance.py",
+    "--no-cov",
+    "-q",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "cwd": "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003",
+  "exit_code": 0,
+  "status": "completed",
+  "seconds": 4.248,
+  "log_sha256": "47e1ba52b9e06d4a593fd3e74b9b34776a695b9c1b409009a2befda588d05a05",
+  "synthetic_only": true,
+  "runtime": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-feature-20261003\\runtime-importR08",
+  "model_inference": false
+}

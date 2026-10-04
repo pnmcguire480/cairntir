@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "product_imported": false,
+  "sqlite_row_direct_tuple_equality": false,
+  "sqlite_row_normalized_tuple_equality": true,
+  "column_content_unchanged": true
+}

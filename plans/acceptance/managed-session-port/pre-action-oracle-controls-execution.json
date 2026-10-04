@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\plans\\acceptance\\v2-managed-runtime\\oracle_controls.py"
+  ],
+  "exit_code": 0,
+  "expected_exit": 0,
+  "stdout_stderr_sha256": "dd84f8b5b5720ab6186479705c9950c73e306ce5768e75aa58243d2370a88c2e"
+}

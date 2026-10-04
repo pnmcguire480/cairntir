@@ -1,0 +1,34 @@
+{
+  "result": "PASS bounded amendment acceptance; hosted qualification pending",
+  "normal_execution_owner": "root, immutable receipt independently inspected",
+  "normal": {
+    "passed": 50,
+    "skipped": 1,
+    "subtests_passed": 9,
+    "pytest_seconds": 4.78,
+    "wall_seconds": 5.469
+  },
+  "skip": "Inherited Windows symlink privilege prerequisite in original projection controls",
+  "negative": {
+    "expected_failed_cases": 1,
+    "pytest_seconds": 0.17,
+    "wall_seconds": 0.469,
+    "unchanged_rejection_oracle": true
+  },
+  "contract": {
+    "resources": 8,
+    "packets": 4,
+    "frozen_artifacts": 38,
+    "original_manifest_entries_verified": 250,
+    "packaging_cases": 15,
+    "durable_visibility_cases": 25,
+    "projection_cases": 11
+  },
+  "review": "No additional defect found in validate-before-write helper, trusted member paths, snapshot lifetime or installed copy/pin routing",
+  "assertions": "All 33 durable assertion ASTs and 14 normalized visibility assertion ASTs retained; projection AST identical after diagnostic normalization; old consumer bodies/assertions retained",
+  "limits": [
+    "No local full suite, coverage, model load or installed package execution",
+    "Fresh hosted CI and CodeQL remain required; no hosted pass claimed"
+  ],
+  "source_bindings_sha256": "835f155c75b59d4d431fcaa87aed47240e834d4993e1bc8cc85ea29a6bb53bb6"
+}

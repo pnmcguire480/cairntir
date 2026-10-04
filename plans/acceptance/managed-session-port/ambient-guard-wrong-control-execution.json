@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-c",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\pyproject.toml",
+    "--rootdir",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003",
+    "--confcutdir",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\plans\\acceptance\\managed-session-port",
+    "--override-ini",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "-p",
+    "bypass_guard_control",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\tests\\unit\\test_managed_port_acceptance.py",
+    "-k",
+    "test_caller_transaction_cannot_issue_managed_durable_receipts and explicit and capture and owner",
+    "--junitxml",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-feature-20261003\\acceptance\\ambient-guard-wrong-control.xml"
+  ],
+  "exit_code": 1,
+  "expected_exit": 1,
+  "stdout_stderr_sha256": "d128b0576c5401793b187491981e56ffc9773ed36ce37345d60590b78ab06d72"
+}

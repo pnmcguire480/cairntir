@@ -1,0 +1,77 @@
+................F...............................                                              [100%]
+================================== FAILURES ===================================
+_ TestQuestionSurfaces.test_cli_json_resolution_errors_duplicate_keys_and_callback_purity _
+
+self = <test_questions.TestQuestionSurfaces testMethod=test_cli_json_resolution_errors_duplicate_keys_and_callback_purity>
+
+    def test_cli_json_resolution_errors_duplicate_keys_and_callback_purity(self):
+        request = self.request()
+        path = Path(self.temp.name) / "request.json"
+        path.write_text(json.dumps(request, ensure_ascii=False), encoding="utf-8")
+        with (
+            patch.dict(os.environ, {"CAIRNTIR_HOME": str(self.home)}),
+            patch(
+                "cairntir.cli.production_embedding_provider", return_value=HashEmbeddingProvider(32)
+            ),
+            patch("cairntir.cli.ensure_registered") as registration,
+            patch("cairntir.cli.maybe_check_in_background") as update,
+            patch(
+                "cairntir.cli.pending_update_banner", return_value="Unrelated update notice"
+            ) as banner,
+        ):
+            runner = CliRunner()
+>           opened = runner.invoke(app, ["question", "open", str(path), "--wing", "questions"])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+plans\acceptance\v2-questions\test_questions_surfaces_v2.py:229: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\typer\testing.py:21: in invoke
+    use_cli = _get_command(app)
+              ^^^^^^^^^^^^^^^^^
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\typer\main.py:1181: in get_command
+    click_command: click.Command = get_group(typer_instance)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\typer\main.py:1162: in get_group
+    group = get_group_from_info(
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\typer\main.py:1293: in get_group_from_info
+    command = get_command_from_info(
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\typer\main.py:1399: in get_command_from_info
+    ) = get_params_convertors_ctx_param_name_from_function(command_info.callback)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\typer\main.py:1370: in get_params_convertors_ctx_param_name_from_function
+    parameters = get_params_from_function(callback)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\typer\utils.py:108: in get_params_from_function
+    signature = inspect.signature(func, eval_str=True)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\Programs\Python\Python311\Lib\inspect.py:3263: in signature
+    return Signature.from_callable(obj, follow_wrapped=follow_wrapped,
+..\..\Programs\Python\Python311\Lib\inspect.py:3011: in from_callable
+    return _signature_from_callable(obj, sigcls=cls,
+..\..\Programs\Python\Python311\Lib\inspect.py:2523: in _signature_from_callable
+    return _signature_from_function(sigcls, obj,
+..\..\Programs\Python\Python311\Lib\inspect.py:2358: in _signature_from_function
+    annotations = get_annotations(func, globals=globals, locals=locals, eval_str=eval_str)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\Programs\Python\Python311\Lib\inspect.py:276: in get_annotations
+    return_value = {key:
+..\..\Programs\Python\Python311\Lib\inspect.py:277: in <dictcomp>
+    value if not isinstance(value, str) else eval(value, globals, locals)
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+>   ???
+E   NameError: name 'Annotated' is not defined
+
+<string>:1: NameError
+============================== warnings summary ===============================
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\config\__init__.py:1434
+  C:\Users\pnmcg\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\config\__init__.py:1434: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+E22 complete synthetic registry/assets adapter: 0 exact original cases, no assertion changes
+=========================== short test summary info ===========================
+FAILED tests/unit/test_questions.py::TestQuestionSurfaces::test_cli_json_resolution_errors_duplicate_keys_and_callback_purity
+1 failed, 47 passed, 1 warning, 51 subtests passed in 7.03s

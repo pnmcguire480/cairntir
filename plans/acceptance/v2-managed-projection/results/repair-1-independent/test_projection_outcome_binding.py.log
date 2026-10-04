@@ -1,0 +1,6 @@
+test_outcome_public_action_id_cannot_hide_different_uncertain_intent (__main__.ProjectionOutcomeAcceptance.test_outcome_public_action_id_cannot_hide_different_uncertain_intent) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.141s
+
+OK

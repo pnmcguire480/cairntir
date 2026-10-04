@@ -1,0 +1,50 @@
+{
+  "created_at": "2026-09-20T14:48:27.637363+00:00",
+  "status": "REPAIR_REQUIRED",
+  "source": "candidate-1-independent/source",
+  "source_hashes": {
+    "managed.py": "5f99407591df068123b0977f975bcc4589cbcb50d4c8cc2474c8a121414df67b",
+    "cli.py": "cd661ec7e9b9c65e83d1cafd76ee9521c3e85fd6fd30d0b58dc3259f91290cf8",
+    "memory/store.py": "490d2e3df639556d3aff5f555c08f04568808219a34f66af2a7174ec288c6f70",
+    "access.py": "084a03f9963d45aba34feb17227a8923d124c867c89017be22a2374251171c6c"
+  },
+  "frozen_acceptance_unchanged": {
+    "CORE-FROZEN.json": "ff4352fd687800c1b5d74453da601af79da4a48dafaad37b0ccb41e77e67fe52",
+    "PROCESS-FROZEN.json": "19503ada718a4b49ae123bc1881d7d77700e29b75f92e9da5232c8407580c7a4",
+    "CLOSE-FROZEN.json": "72e0d599ca6251851959bbd3a93434f3866b6f3b2c3a489375814845f59bfb8c",
+    "CONFIG-FROZEN.json": "76c2fbf351670631facff23ef107004bd2a336359aec256c84afa04ca984fd23"
+  },
+  "observed": {
+    "core": "12 PASS",
+    "process": "10 PASS; actual child DB observation, kills, restart, same-ID race, owner/scoped outer transaction, profile controls, actual CLI",
+    "close": "1 PASS, 2 FAIL, 1 ERROR; exact retry positive passed",
+    "config": "1 FAIL; changed config returned an action receipt",
+    "wrong_control": "Outcome-less replay guard removal detected by unchanged frozen test; two actual external child markers retained"
+  },
+  "confirmed_findings": [
+    "Known malformed capture can falsely close capture_complete=true.",
+    "A different successful capture clears a previously failed claim.",
+    "Prior runtime epochs lacking committed close are not identified.",
+    "CLI ignores post-acknowledgement configuration file changes."
+  ],
+  "read_only_review": [
+    "Intent and prediction physically commit before native Popen; caller outer transactions refused.",
+    "Only fresh execute_once intent may launch; replay returns historical status without a new action.",
+    "Fixed profile argv uses shell=False; executable bytes are rehashed.",
+    "Timeout, output cap, pipe/read uncertainty remain uncertain; no process-tree cleanup proof claimed.",
+    "Scoped lifecycle is principal-specific with authorized owner-event reading; no raw owner bypass added to runtime."
+  ],
+  "unproven_interpretation": "A failed received capture should invalidate older readiness, consistent with core capture wording; no frozen assertion was silently added for this interpretation.",
+  "limitations": [
+    "Public local synthetic acceptance, not independent custody/private holdouts.",
+    "No universal native coding-host delivery/action mediation or R10 generated projection proof.",
+    "No arbitrary descendant containment or storage-device power-loss test."
+  ],
+  "evidence": {
+    "core.log": "d0d24a356da9770364418182d70907ffbef9e5d0a7c3de71487d12d02c59eb1b",
+    "process.log": "d1c9e6373b5b9e1fbc31dced8bcff3f4705373d188bbbdb8940abcd1a53e0d65",
+    "close.log": "5479b1728ce9fd7b737e30adf5673998225ec6c0789b0bc06dfe8015f7bef7cd",
+    "config.log": "7f1a1f2a2e6035e59e347d9e95f69c62fabf53381f9361cca770b380132b438e"
+  },
+  "wrong_control_receipt_sha256": "9e914bc53ec5ff63041df9b561abb40779aff2f5aad2c4a8d6d7b46e994bc496"
+}

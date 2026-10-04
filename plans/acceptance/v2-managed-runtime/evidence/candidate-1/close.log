@@ -1,0 +1,34 @@
+test_different_successful_claim_does_not_erase_failed_claim (__main__.ManagedCloseAcceptance.test_different_successful_claim_does_not_erase_failed_claim) ... FAIL
+test_exact_failed_claim_retry_can_restore_complete_close (__main__.ManagedCloseAcceptance.test_exact_failed_claim_retry_can_restore_complete_close) ... ok
+test_malformed_claim_cannot_be_hidden_by_matching_committed_watermark (__main__.ManagedCloseAcceptance.test_malformed_claim_cannot_be_hidden_by_matching_committed_watermark) ... FAIL
+test_restart_reports_prior_unclean_epoch_and_excludes_closed_epoch (__main__.ManagedCloseAcceptance.test_restart_reports_prior_unclean_epoch_and_excludes_closed_epoch) ... ERROR
+
+======================================================================
+ERROR: test_restart_reports_prior_unclean_epoch_and_excludes_closed_epoch (__main__.ManagedCloseAcceptance.test_restart_reports_prior_unclean_epoch_and_excludes_closed_epoch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\test_managed_close.py", line 102, in test_restart_reports_prior_unclean_epoch_and_excludes_closed_epoch
+    records = restarted["unclean_sessions"]
+              ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+KeyError: 'unclean_sessions'
+
+======================================================================
+FAIL: test_different_successful_claim_does_not_erase_failed_claim (__main__.ManagedCloseAcceptance.test_different_successful_claim_does_not_erase_failed_claim)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\test_managed_close.py", line 88, in test_different_successful_claim_does_not_erase_failed_claim
+    self.assertIs(self.runtime.close(last_sequence=2)["capture_complete"], False)
+AssertionError: True is not False
+
+======================================================================
+FAIL: test_malformed_claim_cannot_be_hidden_by_matching_committed_watermark (__main__.ManagedCloseAcceptance.test_malformed_claim_cannot_be_hidden_by_matching_committed_watermark)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\test_managed_close.py", line 81, in test_malformed_claim_cannot_be_hidden_by_matching_committed_watermark
+    self.assertIs(self.runtime.close(last_sequence=1)["capture_complete"], False)
+AssertionError: True is not False
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.148s
+
+FAILED (failures=2, errors=1)

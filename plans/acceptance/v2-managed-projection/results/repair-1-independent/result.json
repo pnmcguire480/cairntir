@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "rows": [
+    {
+      "name": "test_managed_projection.py",
+      "returncode": 0,
+      "log_sha256": "dfae2effebf136a0723ef2997a37de6a8dba094a42bd2b754aa6d4350f5eb8b8"
+    },
+    {
+      "name": "test_projection_corruption.py",
+      "returncode": 0,
+      "log_sha256": "dccff348047fdc6d912c178b2cadf9476386f22f7d11dfe461bb09ffe934d5c3"
+    },
+    {
+      "name": "test_projection_outcome_binding.py",
+      "returncode": 0,
+      "log_sha256": "8b62b07641e7d0ae7c8f22ae8258b8d10b4254815de7b295a21349c064b8844d"
+    },
+    {
+      "name": "wrong_controls.py",
+      "returncode": 0,
+      "log_sha256": "8c10736a887375814069ec2ba7f534dffe04851759945e57eb5b9f476617cfa9"
+    }
+  ],
+  "source_hashes": {
+    "src/cairntir/managed_projection.py": "53fa5cc28d256a434d181a96d82b3a87534acc5eb6710236b6bcf6b44bad4df8",
+    "src/cairntir/managed.py": "f712fcee2f6fbbc47ca46a975a29b8582959803aa68ff063d26491e1914cefc2",
+    "src/cairntir/access.py": "084a03f9963d45aba34feb17227a8923d124c867c89017be22a2374251171c6c",
+    "src/cairntir/memory/store.py": "490d2e3df639556d3aff5f555c08f04568808219a34f66af2a7174ec288c6f70",
+    "src/cairntir/cli.py": "c9ec4aec3811495803b5813d3812ba3a70f007ce968614bc2614ae154cc94448"
+  },
+  "freezes": {
+    "FROZEN.json": "4a3598a201abb0b69710600bec6755dd1c50c9c51e083d4871b0d5c5bf507d07",
+    "CORRUPTION-FROZEN.json": "76ec8bdbd6a7513766e1fc28825a51fb6319c1aee9f581ef89026250a95dd597",
+    "OUTCOME-FROZEN.json": "09ebedaa9685fee1c4c6df140f4320ca3c296e050dc00e545f6ee979cdc3fb45"
+  },
+  "cases": 16,
+  "windows_symlink_skip": 1,
+  "original_receipts_unchanged": true
+}

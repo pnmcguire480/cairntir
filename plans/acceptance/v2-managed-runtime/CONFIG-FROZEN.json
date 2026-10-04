@@ -1,0 +1,15 @@
+{
+  "schema": "cairntir.public-managed-config-freeze.v1",
+  "frozen_at": "2026-09-20T14:47:21.632580+00:00",
+  "files": {
+    "CONFIG-CONTRACT.md": "daae9bcaf03e1edcfb95901f7d72916b56c6ad43bff1fd3ddae58ee7e33b295b",
+    "test_managed_config.py": "ce482af7f4e30f0a47ebeb69b7533265f947af60c01e35bc1accc0d2a41f6639"
+  },
+  "fixture_dependency": {
+    "test_managed_process.py": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452"
+  },
+  "tests": [
+    "test_cli_changed_config_cannot_launch_using_previous_ack"
+  ],
+  "scope": "Existing frozen configuration invalidation requirement; before repair/execution; actual CLI and owned offline cache only."
+}

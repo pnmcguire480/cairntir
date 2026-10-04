@@ -1,0 +1,5 @@
+{
+  "before": "f712fcee2f6fbbc47ca46a975a29b8582959803aa68ff063d26491e1914cefc2",
+  "after": "301eefc5c2593f3fa466c06d84b0384dfd92294aee2e015ac68b967d82585f30",
+  "change": "Exclude missing-close epoch telemetry from authoritative state; retain it in whole brief and close responses."
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "cairntir.public-managed-core-freeze.v1",
+  "frozen_at": "2026-09-20T14:24:22.425821+00:00",
+  "files": {
+    "CONTRACT.md": "b829ec863a75aa92219a2061ed2e8ade27f3b8ee90a395c0ae081216343223bc",
+    "test_managed_core.py": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b"
+  },
+  "tests": [
+    "test_capture_exact_original_receipt_and_restart_replay",
+    "test_second_event_preserves_original_outstanding_and_first_replay",
+    "test_event_uuid_sequence_and_stale_revision_conflicts",
+    "test_failed_append_is_witnessed_atomic_and_exact_retry_works",
+    "test_ready_brief_is_exact_hashed_and_does_not_touch_original",
+    "test_forged_hash_and_stale_ack_block_before_launch",
+    "test_restart_has_new_epoch_and_old_ack_cannot_be_reused",
+    "test_ambiguous_tasks_need_explicit_selection",
+    "test_incomplete_brief_cannot_be_acknowledged",
+    "test_sequence_gap_is_visible_and_cannot_claim_complete_close",
+    "test_revoked_grant_cannot_replay_or_dispatch",
+    "test_input_validation_and_metadata_cannot_forge_authority"
+  ],
+  "scope": "Public independently authored before managed.py; no execution yet; product implementation forbidden from editing frozen assertions",
+  "remaining": "Separately frozen actual-process/CLI/crash/concurrency witnesses required; R10/native host delivery remain owed"
+}

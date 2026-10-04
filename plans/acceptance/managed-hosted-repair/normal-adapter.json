@@ -1,0 +1,18 @@
+{
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/unit/test_managed_hosted_repair.py",
+    "-q",
+    "--no-cov",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "cwd": "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-hosted-repair-20261003",
+  "seconds": 5.469,
+  "returncode": 0,
+  "result": "PASS"
+}

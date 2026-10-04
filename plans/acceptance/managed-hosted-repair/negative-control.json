@@ -1,0 +1,20 @@
+{
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "--confcutdir",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-hosted-repair-20261003\\acceptance",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-hosted-repair-20261003\\acceptance\\test_managed_archive_acceptance.py::test_archive_structural_defects_reject_after_independent_transport_binding[content]"
+  ],
+  "returncode": 1,
+  "seconds": 0.469,
+  "expected_failed_rejection_assertion": true,
+  "candidate_helper_unchanged": true,
+  "negative_freeze_sha256": "c0197f42633012897aafc7fc6e12af893e98a94262af9ba97245cd7cbef47b5b"
+}

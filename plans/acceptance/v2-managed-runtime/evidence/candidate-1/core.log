@@ -1,0 +1,17 @@
+test_ambiguous_tasks_need_explicit_selection (__main__.ManagedCoreAcceptance.test_ambiguous_tasks_need_explicit_selection) ... ok
+test_capture_exact_original_receipt_and_restart_replay (__main__.ManagedCoreAcceptance.test_capture_exact_original_receipt_and_restart_replay) ... ok
+test_event_uuid_sequence_and_stale_revision_conflicts (__main__.ManagedCoreAcceptance.test_event_uuid_sequence_and_stale_revision_conflicts) ... ok
+test_failed_append_is_witnessed_atomic_and_exact_retry_works (__main__.ManagedCoreAcceptance.test_failed_append_is_witnessed_atomic_and_exact_retry_works) ... ok
+test_forged_hash_and_stale_ack_block_before_launch (__main__.ManagedCoreAcceptance.test_forged_hash_and_stale_ack_block_before_launch) ... ok
+test_incomplete_brief_cannot_be_acknowledged (__main__.ManagedCoreAcceptance.test_incomplete_brief_cannot_be_acknowledged) ... ok
+test_input_validation_and_metadata_cannot_forge_authority (__main__.ManagedCoreAcceptance.test_input_validation_and_metadata_cannot_forge_authority) ... ok
+test_ready_brief_is_exact_hashed_and_does_not_touch_original (__main__.ManagedCoreAcceptance.test_ready_brief_is_exact_hashed_and_does_not_touch_original) ... ok
+test_restart_has_new_epoch_and_old_ack_cannot_be_reused (__main__.ManagedCoreAcceptance.test_restart_has_new_epoch_and_old_ack_cannot_be_reused) ... ok
+test_revoked_grant_cannot_replay_or_dispatch (__main__.ManagedCoreAcceptance.test_revoked_grant_cannot_replay_or_dispatch) ... ok
+test_second_event_preserves_original_outstanding_and_first_replay (__main__.ManagedCoreAcceptance.test_second_event_preserves_original_outstanding_and_first_replay) ... ok
+test_sequence_gap_is_visible_and_cannot_claim_complete_close (__main__.ManagedCoreAcceptance.test_sequence_gap_is_visible_and_cannot_claim_complete_close) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.609s
+
+OK

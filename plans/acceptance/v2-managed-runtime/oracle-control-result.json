@@ -1,0 +1,8 @@
+{
+  "created_at": "2026-09-20T14:34:01.169969+00:00",
+  "process_freeze_sha256": "19503ada718a4b49ae123bc1881d7d77700e29b75f92e9da5232c8407580c7a4",
+  "exit_code": 0,
+  "stdout": "{\"status\": \"PASS\", \"uncommitted_control\": {\"exit_code\": 23, \"stderr\": \"NO UNIQUE COMMITTED PRE-ACTION INTENT\", \"markers\": 0}, \"committed_control\": {\"exit_code\": 0, \"stdout\": \"actual child café 🧭\", \"markers\": 1}, \"candidate_imported\": false}\n",
+  "stderr": "",
+  "frozen_bytes_unchanged": true
+}

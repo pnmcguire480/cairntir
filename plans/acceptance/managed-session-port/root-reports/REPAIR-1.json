@@ -1,0 +1,15 @@
+{
+  "round": 1,
+  "before_sha256": {
+    "managed.py": "301eefc5c2593f3fa466c06d84b0384dfd92294aee2e015ac68b967d82585f30",
+    "managed_projection.py": "53fa5cc28d256a434d181a96d82b3a87534acc5eb6710236b6bcf6b44bad4df8"
+  },
+  "after_sha256": {
+    "managed.py": "0f4d98328bfd338df3926095ad1bda2cffda8029e3b7c35c1feb09377a651dbc",
+    "managed_projection.py": "c1aae484087dbf681350ef20a47c4578f211dd42be77ddd22a17ea586f0725d9"
+  },
+  "changed_scope": "five runtime receipt boundaries and projection caller-transaction refusal",
+  "capture_failure_tracking_preserved": true,
+  "tests_changed": false,
+  "originals_changed": false
+}

@@ -1,0 +1,26 @@
+{
+  "files_sha256": {
+    "src/cairntir/managed.py": "31452b541883edae15687dc8587234ff38ef97d5b9500ab5f985dbcc94c2866b",
+    "src/cairntir/managed_projection.py": "c1aae484087dbf681350ef20a47c4578f211dd42be77ddd22a17ea586f0725d9",
+    "src/cairntir/access.py": "5553a29df68c6e77701654fb5f75c943f95a7decc01d24da4526082ff29d81ad",
+    "src/cairntir/memory/store.py": "26aa05d780b9763be039a3bd9adca4812affcbea4d7430d481e36d32c0527067",
+    "src/cairntir/cli.py": "d67879b62d9655ed160b9ddc1095f4c229585daa93134a7f343e4bc59dd10a81",
+    "src/cairntir/tasks.py": "420b4b0fbb99625d3cecf4fe6c381d23a71ff6b60c1dfb31daed42c7197fcad8",
+    "src/cairntir/obsidian.py": "bd60792e3a3c139a4e2627e11f04f744097180f5eaf891a51d167e33332d0a9c",
+    "scripts/restore_managed_evidence.py": "7efbb6c49f36c8a5944d3354963776b18dbe072ace51a2d1729759262f96f11b",
+    "scripts/verify_package.py": "2b89228d3a89298842e8e5cda4c9e05a2203d660ba7e35975179ac5246f5af4e",
+    "scripts/check_verification_preservation.py": "2f47b2d238b254e4b2c7cf7e7c6f468d0ef95ed6ab434cefbb8c6f887dce6757",
+    "tests/unit/test_managed_runtime.py": "08e6697b857abf3f12822f96224707eed02043786b8382fbd847467d1095f234",
+    "tests/unit/test_last_session_projection.py": "4efa9437e6ab10f348a3cbaf54677e2acb8b9f63120a54b9723c2ec77972264a",
+    "tests/unit/test_managed_port_acceptance.py": "9702176c0ce8706f1aade6f6a76183aa24d87a7044ec9d14705556ffbacf980a",
+    "tests/unit/test_managed_installed_qualification.py": "38bbfe81157b72b9112595006a4c3c42551c9578c121f9f7e14ad0c688e32f9e",
+    "tests/unit/test_managed_hosted_repair.py": "78dd97adec595436342bc96bac5c9376a1513fb2f308c5ca059ef37a96aaf790",
+    "plans/acceptance/managed-evidence-archive/resources.zip": "1edcbfc15631a0803aa79b6b2cee7cc0524abab7681040b686bd73e5cd9f9735",
+    ".github/workflows/ci.yml": "51d363757759932cf1df278c0c7497584a54a11613fcd2c80ed98149f2d114bd",
+    ".github/workflows/codeql.yml": "30d348461c94958ddd09d87ce65a77cdb1235cb915a78f0d4f6e951d79237247",
+    "pyproject.toml": "19ebbc8c0982303627ddbe726d44e93fccb262b36c1992b92361c659771e3d2d"
+  },
+  "runtime_byte_identical_to_pre_repair_candidate": true,
+  "frozen_artifacts_exact_in_candidate": 38,
+  "freeze_sha256": "a76a2d7be6d30b29cf01f8a2e5d5847786328da60605a950f43fedd741b5f946"
+}

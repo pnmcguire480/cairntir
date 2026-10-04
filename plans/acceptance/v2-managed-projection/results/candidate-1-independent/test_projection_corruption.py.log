@@ -1,0 +1,35 @@
+test_changed_captured_content_is_not_recertified_with_new_hash (__main__.ProjectionCorruptionAcceptance.test_changed_captured_content_is_not_recertified_with_new_hash) ... ok
+test_checkpoint_metadata_disagreement_does_not_certify_completion (__main__.ProjectionCorruptionAcceptance.test_checkpoint_metadata_disagreement_does_not_certify_completion) ... FAIL
+test_close_result_disagreement_cannot_certify_unknown_tail (__main__.ProjectionCorruptionAcceptance.test_close_result_disagreement_cannot_certify_unknown_tail) ... FAIL
+test_missing_required_source_does_not_replace_existing_view (__main__.ProjectionCorruptionAcceptance.test_missing_required_source_does_not_replace_existing_view) ... ok
+
+======================================================================
+FAIL: test_checkpoint_metadata_disagreement_does_not_certify_completion (__main__.ProjectionCorruptionAcceptance.test_checkpoint_metadata_disagreement_does_not_certify_completion)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-projection-20260920\test_projection_corruption.py", line 75, in test_checkpoint_metadata_disagreement_does_not_certify_completion
+    self.assert_refused(prior)
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-projection-20260920\test_projection_corruption.py", line 22, in assert_refused
+    self.assertEqual(result["status"], "error", result)
+AssertionError: 'complete' != 'error'
+- complete
++ error
+ : {'schema': 'cairntir.managed-projection.v1', 'wing': 'projection', 'session_id': '4068661d-57de-4919-97b9-4906678b6c08', 'epoch': '1204c100-88f3-419d-b47e-01f9bf61ac7b', 'status': 'complete', 'task_id': '1e8cd6e7-5439-4ade-b791-fdbc7bad7418', 'snapshot': {'schema': 'cairntir.managed-last-session.v1', 'wing': 'projection', 'session_id': '4068661d-57de-4919-97b9-4906678b6c08', 'epoch': '1204c100-88f3-419d-b47e-01f9bf61ac7b', 'task_id': '1e8cd6e7-5439-4ade-b791-fdbc7bad7418', 'revision': 2, 'original_request': '  Keep original café 🧭\r\nDeferred: inspect later  ', 'completed': ['Accepted recorded completion'], 'outstanding': ['  Keep original café 🧭\r\nDeferred: inspect later  '], 'next_action': 'Retain original', 'last_received_sequence': 1, 'declared_last_sequence': None, 'gaps': [], 'capture_complete': False, 'unknown_tail': True, 'close_status': 'missing', 'pending_captures': [], 'unclean_sessions': [{'session_id': '4068661d-57de-4919-97b9-4906678b6c08', 'epoch': '1204c100-88f3-419d-b47e-01f9bf61ac7b', 'task_id': '1e8cd6e7-5439-4ade-b791-fdbc7bad7418'}], 'uncertain_actions': [], 'sources': [{'drawer_id': 1, 'source_identity': 'b0cbc5c4-9dd6-47e8-a6db-73f35d52ed7a', 'content_sha256': '36dd83898fba4c1411a5fbb1e11d1e8edd4ab40f04d0cd375c30174c92a761ae'}, {'drawer_id': 2, 'source_identity': 'd2dfc53e-b000-49e4-9521-1c4fa99c8355', 'content_sha256': 'a9e325946ce1a7b20cd3f7ecc17ae1f60ac605c34a69fb641dadb58af63c9a5a'}]}, 'generated_sha256': '044d9d4940aa621faefb689ff312cf16a27bf650984d5d132ee0653d4186e517'}
+
+======================================================================
+FAIL: test_close_result_disagreement_cannot_certify_unknown_tail (__main__.ProjectionCorruptionAcceptance.test_close_result_disagreement_cannot_certify_unknown_tail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-projection-20260920\test_projection_corruption.py", line 93, in test_close_result_disagreement_cannot_certify_unknown_tail
+    self.assert_refused(prior)
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-projection-20260920\test_projection_corruption.py", line 22, in assert_refused
+    self.assertEqual(result["status"], "error", result)
+AssertionError: 'complete' != 'error'
+- complete
++ error
+ : {'schema': 'cairntir.managed-projection.v1', 'wing': 'projection', 'session_id': '8f3c69e9-12f0-467b-b1c3-5ba106b6119a', 'epoch': '8a0b2474-e02f-4edb-812e-0b4dcb537eca', 'status': 'complete', 'task_id': '5bc2ffa0-1ec8-4a9b-b20b-76741ef36efb', 'snapshot': {'schema': 'cairntir.managed-last-session.v1', 'wing': 'projection', 'session_id': '8f3c69e9-12f0-467b-b1c3-5ba106b6119a', 'epoch': '8a0b2474-e02f-4edb-812e-0b4dcb537eca', 'task_id': '5bc2ffa0-1ec8-4a9b-b20b-76741ef36efb', 'revision': 1, 'original_request': '  Keep original café 🧭\r\nDeferred: inspect later  ', 'completed': [], 'outstanding': ['  Keep original café 🧭\r\nDeferred: inspect later  '], 'next_action': 'Resume the captured commitments with a fresh managed brief.', 'last_received_sequence': 1, 'declared_last_sequence': 1, 'gaps': [], 'capture_complete': True, 'unknown_tail': False, 'close_status': 'closed', 'pending_captures': [], 'unclean_sessions': [], 'uncertain_actions': [], 'sources': [{'drawer_id': 1, 'source_identity': '4f1221fd-5d2e-42aa-b735-509607344dbb', 'content_sha256': '36dd83898fba4c1411a5fbb1e11d1e8edd4ab40f04d0cd375c30174c92a761ae'}]}, 'generated_sha256': 'b3bd7c05b29a059012f012a75ed09129f8e37cbdb43fc70d274f51d45bf0aac4'}
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.167s
+
+FAILED (failures=2)

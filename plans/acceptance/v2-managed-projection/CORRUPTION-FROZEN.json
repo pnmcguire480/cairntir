@@ -1,0 +1,12 @@
+{
+  "schema": "cairntir.public-projection-corruption-freeze.v1",
+  "frozen_at": "2026-09-20T15:00:05.140045+00:00",
+  "files": {
+    "CORRUPTION-CONTRACT.md": "c18752a2687971d4e4cf19f383ca14c6381647774377bfb4c2ed18f365dbba84",
+    "test_projection_corruption.py": "8cd7a2c9afadc2b8011d4d52316d4ace6e9afb84e4c9ea4943386326ef9140ff",
+    "wrong_controls.py": "e5d19742e0b3f611faa58016eeaa4d7203c503775b1ad0fd52944ecf3a0ed706"
+  },
+  "original_freeze_sha256": "4a3598a201abb0b69710600bec6755dd1c50c9c51e083d4871b0d5c5bf507d07",
+  "source_sha256": "5e0e5a6380203d4e81253addda281fadd3e0b44b2e37430690ae15750443ad89",
+  "scope": "Four post-review corruption tests and three wrong controls frozen before execution; no product edits"
+}

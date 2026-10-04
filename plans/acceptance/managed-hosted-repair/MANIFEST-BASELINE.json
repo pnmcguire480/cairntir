@@ -1,0 +1,50 @@
+{
+  "managed-session-port/FREEZE.json": {
+    "sha256": "448611a9929ea1af7d39af4ef044563a61cab792a28d58cb3031c56d21b01d8e",
+    "entries": 6
+  },
+  "managed-session-port/marker-amendment-v2/FREEZE.json": {
+    "sha256": "ac1899dfe2232e3c3ad7afb84c3dedd9fa127a15b72a0cd15a303ef276958328",
+    "entries": 1
+  },
+  "managed-session-port/raw-projection-amendment-v3/FREEZE.json": {
+    "sha256": "71b3a6897fe3de130f664af9c960efb50847a65af56a8cc6ec46bfd538c0b575",
+    "entries": 1
+  },
+  "managed-session-port/visibility-v1/FREEZE.json": {
+    "sha256": "b4ed819a5d0ebc88f8f8514841a0cedca1dc7b480c9c675fea5eb8711c007310",
+    "entries": 2
+  },
+  "managed-session-port/visibility-v2/FREEZE.json": {
+    "sha256": "5334505390aa967d2e2f02e0825fe2bc51effd9cd5c2cc0bd37582847b37e330",
+    "entries": 2
+  },
+  "managed-session-port/SEAL.json": {
+    "sha256": "7e432fd76b6aaaad293422fde13566537d2579537c7c20df2060e3929d451a81",
+    "entries": 101
+  },
+  "managed-installed-qualification/FROZEN.json": {
+    "sha256": "53a59ffa4e0dbfded002cc505ad335062074321faf8f70d4a841b1f4c612e0ad",
+    "entries": 7
+  },
+  "managed-installed-qualification/SEAL.json": {
+    "sha256": "ac6d18ee4d669ea18c7c5e60dac6a31a79b184dd86aa831add47b9a30cf721c6",
+    "entries": 28
+  },
+  "v2-managed-projection/FROZEN.json": {
+    "sha256": "4a3598a201abb0b69710600bec6755dd1c50c9c51e083d4871b0d5c5bf507d07",
+    "entries": 2
+  },
+  "v2-managed-projection/PACKAGE-FROZEN.json": {
+    "sha256": "1ecdeb684e803f450304a641a14150328efdf5798433a13e290f048bfc03e67a",
+    "entries": 34
+  },
+  "v2-managed-runtime/PACKAGE-FROZEN.json": {
+    "sha256": "5ddb331d10e66649c18c3f18d4e67d0d6d33769f0cb8452ee8b625e21422936e",
+    "entries": 38
+  },
+  "v2-managed-runtime/STATE-FOLLOWUP.json": {
+    "sha256": "53e32d6df660e315868de4ee5b41eea924607f315091d0c7429266c35f34afdd",
+    "entries": 28
+  }
+}

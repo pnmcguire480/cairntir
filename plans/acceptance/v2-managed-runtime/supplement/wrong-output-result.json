@@ -1,0 +1,10 @@
+{
+  "schema": "cairntir.public-wrong-control.v1",
+  "status": "detected",
+  "exit_code": 1,
+  "original_managed_sha256": "301eefc5c2593f3fa466c06d84b0384dfd92294aee2e015ac68b967d82585f30",
+  "mutant_managed_sha256": "a50b464f61bc3da781f5b32542c592350b17a7ddae19ef77ce28fee8a33095ca",
+  "unchanged_test_sha256": "ced839e467f51517eb912ccd11b66a2b767ae50130861a36e0c482a0efb33bb5",
+  "log_sha256": "e55ed41022d495f421e3fc6b9aa9b6c16a4613f6ab70069a7879de0a0044d057",
+  "mutation": "Only owned copy overflow detector disabled; real child emits 8192 bytes under 128-byte cap."
+}
