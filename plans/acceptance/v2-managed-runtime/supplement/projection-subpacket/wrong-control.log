@@ -1,0 +1,48 @@
+test_required_source_current_visibility (projection_supplement_control.ProjectionSupplementAcceptance.test_required_source_current_visibility) ... 
+  test_required_source_current_visibility (projection_supplement_control.ProjectionSupplementAcceptance.test_required_source_current_visibility) (name='secret') ... FAIL
+  test_required_source_current_visibility (projection_supplement_control.ProjectionSupplementAcceptance.test_required_source_current_visibility) (name='expired') ... FAIL
+  test_required_source_current_visibility (projection_supplement_control.ProjectionSupplementAcceptance.test_required_source_current_visibility) (name='future') ... FAIL
+
+======================================================================
+FAIL: test_required_source_current_visibility (projection_supplement_control.ProjectionSupplementAcceptance.test_required_source_current_visibility) (name='secret')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\supplement\projection-subpacket\test_projection_supplement.py", line 128, in test_required_source_current_visibility
+    self.refused(prior)
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\supplement\projection-subpacket\test_projection_supplement.py", line 80, in refused
+    self.assertEqual(result["status"], "error", result)
+AssertionError: 'complete' != 'error'
+- complete
++ error
+ : {'schema': 'cairntir.managed-projection.v1', 'wing': 'projection', 'session_id': '14f1fc02-89d8-41a0-b87c-52c17547b882', 'epoch': '57c20aac-8dcd-4f23-af71-cfd02488ba7b', 'status': 'complete', 'task_id': '953941a7-1726-4432-b10f-265877f6fa0c', 'snapshot': {'schema': 'cairntir.managed-last-session.v1', 'wing': 'projection', 'session_id': '14f1fc02-89d8-41a0-b87c-52c17547b882', 'epoch': '57c20aac-8dcd-4f23-af71-cfd02488ba7b', 'task_id': '953941a7-1726-4432-b10f-265877f6fa0c', 'revision': 1, 'original_request': 'Preserve the violet receipt exactly.\r\n', 'completed': [], 'outstanding': ['Preserve the violet receipt exactly.\r\n'], 'next_action': 'Resume the captured commitments with a fresh managed brief.', 'last_received_sequence': 1, 'declared_last_sequence': None, 'gaps': [], 'capture_complete': False, 'unknown_tail': True, 'close_status': 'missing', 'pending_captures': [], 'unclean_sessions': [{'session_id': '14f1fc02-89d8-41a0-b87c-52c17547b882', 'epoch': '57c20aac-8dcd-4f23-af71-cfd02488ba7b', 'task_id': '953941a7-1726-4432-b10f-265877f6fa0c'}], 'uncertain_actions': [], 'sources': [{'drawer_id': 1, 'source_identity': '6b2b85cf-2e71-44dc-916f-f1b9d45b7330', 'content_sha256': '91068fa5b792b3c8956c8019f6873d6e76ebab2f77692f8e1f40403f6f2d654a'}]}, 'generated_sha256': '0c475b649945a4522c6db80e805af2b048081a3036ca1743aa939bdc9a37eee1'}
+
+======================================================================
+FAIL: test_required_source_current_visibility (projection_supplement_control.ProjectionSupplementAcceptance.test_required_source_current_visibility) (name='expired')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\supplement\projection-subpacket\test_projection_supplement.py", line 128, in test_required_source_current_visibility
+    self.refused(prior)
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\supplement\projection-subpacket\test_projection_supplement.py", line 80, in refused
+    self.assertEqual(result["status"], "error", result)
+AssertionError: 'complete' != 'error'
+- complete
++ error
+ : {'schema': 'cairntir.managed-projection.v1', 'wing': 'projection', 'session_id': '14f1fc02-89d8-41a0-b87c-52c17547b882', 'epoch': '57c20aac-8dcd-4f23-af71-cfd02488ba7b', 'status': 'complete', 'task_id': '953941a7-1726-4432-b10f-265877f6fa0c', 'snapshot': {'schema': 'cairntir.managed-last-session.v1', 'wing': 'projection', 'session_id': '14f1fc02-89d8-41a0-b87c-52c17547b882', 'epoch': '57c20aac-8dcd-4f23-af71-cfd02488ba7b', 'task_id': '953941a7-1726-4432-b10f-265877f6fa0c', 'revision': 1, 'original_request': 'Preserve the violet receipt exactly.\r\n', 'completed': [], 'outstanding': ['Preserve the violet receipt exactly.\r\n'], 'next_action': 'Resume the captured commitments with a fresh managed brief.', 'last_received_sequence': 1, 'declared_last_sequence': None, 'gaps': [], 'capture_complete': False, 'unknown_tail': True, 'close_status': 'missing', 'pending_captures': [], 'unclean_sessions': [{'session_id': '14f1fc02-89d8-41a0-b87c-52c17547b882', 'epoch': '57c20aac-8dcd-4f23-af71-cfd02488ba7b', 'task_id': '953941a7-1726-4432-b10f-265877f6fa0c'}], 'uncertain_actions': [], 'sources': [{'drawer_id': 1, 'source_identity': '6b2b85cf-2e71-44dc-916f-f1b9d45b7330', 'content_sha256': '91068fa5b792b3c8956c8019f6873d6e76ebab2f77692f8e1f40403f6f2d654a'}]}, 'generated_sha256': '0c475b649945a4522c6db80e805af2b048081a3036ca1743aa939bdc9a37eee1'}
+
+======================================================================
+FAIL: test_required_source_current_visibility (projection_supplement_control.ProjectionSupplementAcceptance.test_required_source_current_visibility) (name='future')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\supplement\projection-subpacket\test_projection_supplement.py", line 128, in test_required_source_current_visibility
+    self.refused(prior)
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\supplement\projection-subpacket\test_projection_supplement.py", line 80, in refused
+    self.assertEqual(result["status"], "error", result)
+AssertionError: 'complete' != 'error'
+- complete
++ error
+ : {'schema': 'cairntir.managed-projection.v1', 'wing': 'projection', 'session_id': '14f1fc02-89d8-41a0-b87c-52c17547b882', 'epoch': '57c20aac-8dcd-4f23-af71-cfd02488ba7b', 'status': 'complete', 'task_id': '953941a7-1726-4432-b10f-265877f6fa0c', 'snapshot': {'schema': 'cairntir.managed-last-session.v1', 'wing': 'projection', 'session_id': '14f1fc02-89d8-41a0-b87c-52c17547b882', 'epoch': '57c20aac-8dcd-4f23-af71-cfd02488ba7b', 'task_id': '953941a7-1726-4432-b10f-265877f6fa0c', 'revision': 1, 'original_request': 'Preserve the violet receipt exactly.\r\n', 'completed': [], 'outstanding': ['Preserve the violet receipt exactly.\r\n'], 'next_action': 'Resume the captured commitments with a fresh managed brief.', 'last_received_sequence': 1, 'declared_last_sequence': None, 'gaps': [], 'capture_complete': False, 'unknown_tail': True, 'close_status': 'missing', 'pending_captures': [], 'unclean_sessions': [{'session_id': '14f1fc02-89d8-41a0-b87c-52c17547b882', 'epoch': '57c20aac-8dcd-4f23-af71-cfd02488ba7b', 'task_id': '953941a7-1726-4432-b10f-265877f6fa0c'}], 'uncertain_actions': [], 'sources': [{'drawer_id': 1, 'source_identity': '6b2b85cf-2e71-44dc-916f-f1b9d45b7330', 'content_sha256': '91068fa5b792b3c8956c8019f6873d6e76ebab2f77692f8e1f40403f6f2d654a'}]}, 'generated_sha256': '0c475b649945a4522c6db80e805af2b048081a3036ca1743aa939bdc9a37eee1'}
+
+----------------------------------------------------------------------
+Ran 1 test in 0.051s
+
+FAILED (failures=3)

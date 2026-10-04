@@ -1,0 +1,22 @@
+{
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-c",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\pyproject.toml",
+    "--rootdir",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003",
+    "--confcutdir",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-qualification-20261003\\acceptance",
+    "--override-ini",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\tests\\unit\\test_managed_installed_qualification.py",
+    "--junitxml",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-qualification-20261003\\acceptance\\local-controls.xml"
+  ],
+  "exit_code": 0,
+  "no_installed_or_model_execution": true
+}

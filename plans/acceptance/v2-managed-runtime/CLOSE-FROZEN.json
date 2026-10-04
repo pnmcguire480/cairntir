@@ -1,0 +1,15 @@
+{
+  "schema": "cairntir.public-managed-close-freeze.v1",
+  "frozen_at": "2026-09-20T14:44:45.244361+00:00",
+  "files": {
+    "CLOSE-CONTRACT.md": "2713a3d8ac3dbda871a68fcad047a528611e7ccc0eb8bfc77258eb13f64506fc",
+    "test_managed_close.py": "9e59ec79df2d7cc9cb7d19e09e2945e8990531e0c1ccb213ff4aef383de1c2ba"
+  },
+  "tests": [
+    "test_malformed_claim_cannot_be_hidden_by_matching_committed_watermark",
+    "test_different_successful_claim_does_not_erase_failed_claim",
+    "test_exact_failed_claim_retry_can_restore_complete_close",
+    "test_restart_reports_prior_unclean_epoch_and_excludes_closed_epoch"
+  ],
+  "scope": "First candidate already passed original22 cases; authored before repair or execution; no edits to original freezes."
+}

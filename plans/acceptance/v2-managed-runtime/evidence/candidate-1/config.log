@@ -1,0 +1,19 @@
+test_cli_changed_config_cannot_launch_using_previous_ack (__main__.ManagedConfigurationAcceptance.test_cli_changed_config_cannot_launch_using_previous_ack) ... FAIL
+
+======================================================================
+FAIL: test_cli_changed_config_cannot_launch_using_previous_ack (__main__.ManagedConfigurationAcceptance.test_cli_changed_config_cannot_launch_using_previous_ack)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\test_managed_config.py", line 116, in test_cli_changed_config_cannot_launch_using_previous_ack
+    self.assertEqual(result["schema"], "cairntir.managed-error.v1")
+AssertionError: 'cairntir.managed-action-receipt.v1' != 'cairntir.managed-error.v1'
+- cairntir.managed-action-receipt.v1
+?                  ^^^^ -- ------
++ cairntir.managed-error.v1
+?                  ^^^
+
+
+----------------------------------------------------------------------
+Ran 1 test in 2.680s
+
+FAILED (failures=1)

@@ -1,0 +1,19 @@
+{
+  "schema": "cairntir.public-projection-supplement.package.v1",
+  "status": "PASS",
+  "cases": 4,
+  "explicit_subcases": 9,
+  "wrong_control_expected_failures": 3,
+  "source_sha256": "53fa5cc28d256a434d181a96d82b3a87534acc5eb6710236b6bcf6b44bad4df8",
+  "files": {
+    "CONTRACT.md": "a25321cd3da5ce7b1b462830f44c5b8e4837b02cf5322f9a51cbb112b9b7501d",
+    "FROZEN.json": "709391830b289dd37c3b30f009e6b9deb7f918fba3176af2f9957dbf037aaf1a",
+    "test_projection_supplement.py": "8c27103e55ffa2eecb3e5cff3f171afc707c3ce5e46f829460ae7120474c7793",
+    "first-run.json": "f2aca5d681d945fa0ae8d75fcd70e6d48cf7f70cd672fe02d86338d059518e8a",
+    "first-run.log": "7c17aa2961318499b2c7cda8e53ea212f38896f9566920b481a4a8e1e5644d3e",
+    "wrong_control.py": "45c108240adf4734c00a94d82b5824d28e5f91def84df14fea0371f8c0cb2a0d",
+    "wrong-control.json": "9d6a226a80f61eed7bd39dd6c91c3c467f25cf0c3059e4fe283963b3eb8c0b01",
+    "wrong-control.log": "a27eabbbeca866bf129b2bb1619098ec5a82b5ff4fd01b192bb588c5611c7dba",
+    "REVIEW.md": "b5ecbd26eae61ab53b21297e35090e7d38aa1aa48aa9c96a94ef51613c8d3cf7"
+  }
+}

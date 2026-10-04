@@ -104,3 +104,27 @@ plans/acceptance/questions-installed-ci-1.16-v2/**/*.txt whitespace=-blank-at-eo
 plans/acceptance/questions-installed-ci-1.16-v2/**/*.xml whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 plans/acceptance/questions-installed-ci-1.16-v2/**/*.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 tests/unit/test_question_installed_diagnostic.py -text whitespace=cr-at-eol
+
+# Preserve independently frozen managed-session evidence and historical controls.
+plans/acceptance/v2-managed-runtime/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/v2-managed-projection/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/managed-session-port/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+tests/unit/test_managed_runtime.py -text whitespace=cr-at-eol
+tests/unit/test_managed_outcomes.py -text whitespace=cr-at-eol
+tests/unit/test_last_session_projection.py -text whitespace=cr-at-eol
+tests/unit/test_managed_port_acceptance.py -text whitespace=cr-at-eol
+
+# Preserve the independently frozen installed managed proof.
+plans/acceptance/managed-installed-qualification/** -text whitespace=cr-at-eol
+tests/unit/test_managed_installed_qualification.py -text whitespace=cr-at-eol
+
+# Preserve the lossless transport map and independent hosted repair evidence.
+plans/acceptance/managed-evidence-archive/** -text whitespace=cr-at-eol
+plans/acceptance/managed-hosted-repair/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+
+# Preserve independently frozen platform and interpreter/protocol repair evidence.
+plans/acceptance/managed-portability/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/managed-environment/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/managed-protocol/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/managed-installed-boundary/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/managed-installed-followup/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol

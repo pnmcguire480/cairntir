@@ -1,0 +1,31 @@
+test_read_only_restart_and_exact_human_bytes (test_managed_projection.ManagedProjectionAcceptance.test_read_only_restart_and_exact_human_bytes) ... FAIL
+
+======================================================================
+FAIL: test_read_only_restart_and_exact_human_bytes (test_managed_projection.ManagedProjectionAcceptance.test_read_only_restart_and_exact_human_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-projection-20260920\test_managed_projection.py", line 166, in test_read_only_restart_and_exact_human_bytes
+    first = self.snapshot()
+            ^^^^^^^^^^^^^^^
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-projection-20260920\test_managed_projection.py", line 85, in snapshot
+    result = self.project()
+             ^^^^^^^^^^^^^^
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-projection-20260920\test_managed_projection.py", line 69, in project
+    return project_last_session(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-projection-20260920\wrong_controls.py", line 21, in mutating_brief
+    acceptance.ManagedRuntime.brief(None)
+  File "C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\unittest\mock.py", line 1124, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\unittest\mock.py", line 1128, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\unittest\mock.py", line 1183, in _execute_mock_call
+    raise effect
+AssertionError: projection cannot write brief
+
+----------------------------------------------------------------------
+Ran 1 test in 0.039s
+
+FAILED (failures=1)

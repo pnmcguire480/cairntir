@@ -1,0 +1,112 @@
+{
+  "schema": "cairntir.managed-repair2-independent-review.v1",
+  "status": "PASS",
+  "started_at": "2026-09-20T15:09:29.095845+00:00",
+  "product_sha256": {
+    "managed.py": "301eefc5c2593f3fa466c06d84b0384dfd92294aee2e015ac68b967d82585f30",
+    "cli.py": "c9ec4aec3811495803b5813d3812ba3a70f007ce968614bc2614ae154cc94448",
+    "memory/store.py": "490d2e3df639556d3aff5f555c08f04568808219a34f66af2a7174ec288c6f70",
+    "access.py": "084a03f9963d45aba34feb17227a8923d124c867c89017be22a2374251171c6c"
+  },
+  "calls": [
+    {
+      "name": "core",
+      "command": [
+        "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Dev\\Cairntir\\.cairntir\\v2-managed-runtime-20260920\\test_managed_core.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "568a4b8a0bbf04c17519689fb55048038fa29f29560448a8e51bc78199ee8d9a"
+    },
+    {
+      "name": "process",
+      "command": [
+        "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Dev\\Cairntir\\.cairntir\\v2-managed-runtime-20260920\\test_managed_process.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "ec79801ddf8915ff0334ac561ea82e0765f0efd749583f354bfd2b70d1a99024"
+    },
+    {
+      "name": "close",
+      "command": [
+        "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Dev\\Cairntir\\.cairntir\\v2-managed-runtime-20260920\\test_managed_close.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "42081705d1e92da29f51f18088f8ed7d15397290807d32750ef7573f44e8934d"
+    },
+    {
+      "name": "config",
+      "command": [
+        "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Dev\\Cairntir\\.cairntir\\v2-managed-runtime-20260920\\test_managed_config.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "6d616e35b0f79d1c5eb79e76b73b502f02de43aa113de4035994930696cdda9f"
+    },
+    {
+      "name": "state",
+      "command": [
+        "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Dev\\Cairntir\\.cairntir\\v2-managed-runtime-20260920\\test_managed_state.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "ca1f7e81cb8d8f784475309622c23127c3972571296a88c01983212df010caab"
+    },
+    {
+      "name": "replay-wrong-control",
+      "command": [
+        "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Dev\\Cairntir\\.cairntir\\v2-managed-runtime-20260920\\run_replay_wrong_control.py",
+        "C:\\Dev\\Cairntir\\.cairntir\\v2-managed-runtime-20260920\\repair-2-independent\\wrong-control-result.json"
+      ],
+      "exit_code": 0,
+      "log_sha256": "f11d13e1a2ffd2c7f699df9c4cbb2ff1d3c6f91e6b08e93cd2910d83800286da"
+    }
+  ],
+  "source_review": "Exactly one readiness-state field removed; brief/close read that authorized telemetry directly. Task/evidence/pending capture/config/action state and full brief hash/budget remain unchanged.",
+  "original_freezes": {
+    "CORE-FROZEN.json": "ff4352fd687800c1b5d74453da601af79da4a48dafaad37b0ccb41e77e67fe52",
+    "PROCESS-FROZEN.json": "19503ada718a4b49ae123bc1881d7d77700e29b75f92e9da5232c8407580c7a4",
+    "CLOSE-FROZEN.json": "72e0d599ca6251851959bbd3a93434f3866b6f3b2c3a489375814845f59bfb8c",
+    "CONFIG-FROZEN.json": "76c2fbf351670631facff23ef107004bd2a336359aec256c84afa04ca984fd23",
+    "STATE-FROZEN.json": "2f189ab7208a20bebfa884502ed2a28c83db15e973eccda708b849f41cd3981b"
+  },
+  "wrong_control": {
+    "status": "REJECTED",
+    "mutant_sha256": "9b27f7e5a47d8e0dc0e79bab197ea975c4191222c949ff623e79fb3147d4fce4",
+    "external_markers": 2,
+    "assertion_failures": 1,
+    "harness_errors": 0,
+    "result_sha256": "7b061cf15f8fcb7d6c30415045c1fb635bee4a9d55081a443967e7b1649f63ed"
+  },
+  "original_cases": 27,
+  "state_regression_cases": 1,
+  "state_ack_subtests": 2,
+  "candidate_cases": 28,
+  "skips": 0,
+  "source_unchanged": true,
+  "original_frozen_assertions_unchanged": true,
+  "product_edits_by_reviewer": false,
+  "source_diff_sha256": "36c52dcaa4e366a264f4ce82c30b0ccd3f40b066babbcc7b976abde0d005d8f7",
+  "finished_at": "2026-09-20T15:09:52.142227+00:00"
+}

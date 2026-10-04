@@ -1,0 +1,30 @@
+test_exact_invocation_and_input_preserved_but_canonical_target_is_bound (test_managed_environment.ManagedEnvironmentAcceptance.test_exact_invocation_and_input_preserved_but_canonical_target_is_bound) ... FAIL
+test_posix_managed_child_retains_venv_prefix_and_private_module (test_managed_environment.ManagedEnvironmentAcceptance.test_posix_managed_child_retains_venv_prefix_and_private_module) ... skipped 'actual symlinked venv proof is a required POSIX hosted gate'
+test_same_byte_target_retarget_after_ack_refuses_dispatch_without_writes (test_managed_environment.ManagedEnvironmentAcceptance.test_same_byte_target_retarget_after_ack_refuses_dispatch_without_writes) ... ok
+
+======================================================================
+FAIL: test_exact_invocation_and_input_preserved_but_canonical_target_is_bound (test_managed_environment.ManagedEnvironmentAcceptance.test_exact_invocation_and_input_preserved_but_canonical_target_is_bound)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\pnmcg\Documents\Codex\2026-09-30\task\cairntir-managed-environment-20261004\acceptance\test_managed_environment.py", line 96, in test_exact_invocation_and_input_preserved_but_canonical_target_is_bound
+    self.assertEqual(profile["argv"], original["profiles"]["check"]["argv"])
+AssertionError: Lists differ: ['C:\[62 chars]exj\\target-a.bin', '-c', "print('exact argume[19 chars]arg'] != ['C:\[62 chars]exj\\configured-interpreter.bin', '-c', "print[33 chars]arg']
+
+First differing element 0:
+'C:\\[30 chars]Temp\\managed-environment-z2bczexj\\target-a.bin'
+'C:\\[30 chars]Temp\\managed-environment-z2bczexj\\configured-interpreter.bin'
+
+- ['C:\\Users\\pnmcg\\AppData\\Local\\Temp\\managed-environment-z2bczexj\\target-a.bin',
+?                                                                          ^ ^  ^^
+
++ ['C:\\Users\\pnmcg\\AppData\\Local\\Temp\\managed-environment-z2bczexj\\configured-interpreter.bin',
+?                                                                         +++++++++++++ ^ ^^  ^^
+
+   '-c',
+   "print('exact argument tail')",
+   'space arg']
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.097s
+
+FAILED (failures=1, skipped=1)

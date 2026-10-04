@@ -1,0 +1,15 @@
+{
+  "schema": "cairntir.public-managed-state-freeze.v1",
+  "frozen_at": "2026-09-20T15:05:27.736411+00:00",
+  "files": {
+    "STATE-CONTRACT.md": "48f2f0bbe149907362ab16599faece4cd206eb1224afd295a53431a8f78ab23d",
+    "test_managed_state.py": "43e9b17d2367a54b6f8b160257b40028f142eed6c271fb5b3b915c63590f8595"
+  },
+  "fixture_dependency": {
+    "test_managed_close.py": "9e59ec79df2d7cc9cb7d19e09e2945e8990531e0c1ccb213ff4aef383de1c2ba"
+  },
+  "tests": [
+    "test_second_runtime_start_does_not_invalidate_first_complete_brief"
+  ],
+  "scope": "Existing brief-only state requirement; deterministic supplement after actual race failure and before repair2"
+}

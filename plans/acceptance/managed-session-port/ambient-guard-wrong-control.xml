@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.028" timestamp="2026-10-03T09:27:45.101793-04:00" hostname="PNMDevDesign"><testcase classname="tests.unit.test_managed_port_acceptance" name="test_caller_transaction_cannot_issue_managed_durable_receipts[explicit-capture-owner]" time="0.059"><failure message="Failed: DID NOT RAISE &lt;class 'cairntir.managed.ManagedRuntimeError'&gt;">durable = namespace(owner=&lt;cairntir.memory.store.DrawerStore object at 0x00000184B3B34150&gt;, token='53o1cFov2iZ_bWcn-ZIwV78wrUauO...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'&gt;)
+principal = 'owner', name = 'capture', style = 'explicit'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("name", ["start", "capture", "brief", "acknowledge", "close"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_caller_transaction_cannot_issue_managed_durable_receipts(durable, principal, name, style):
+        """Reject false durability without touching caller state; retry after rollback works."""
+        bundle = durable
+        store, invoke = operation(bundle, principal, name)
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                bundle.owner._conn.execute(
+                    "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                    ("managed_caller_work", "uncommitted caller-owned marker"),
+                )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                assert store.transaction_active is True
+&gt;               with pytest.raises(bundle.api.ManagedRuntimeError):
+E               Failed: DID NOT RAISE &lt;class 'cairntir.managed.ManagedRuntimeError'&gt;
+
+plans\acceptance\managed-session-port\raw-projection-amendment-v3\test_managed_durable_boundaries_v3.py:199: Failed</failure></testcase></testsuite></testsuites>

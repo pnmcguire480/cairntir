@@ -1,0 +1,12 @@
+{
+  "durable_assertion_asts_identical": 33,
+  "visibility_semantic_assertions_retained": 14,
+  "projection_entire_ast_equal_after_exact_diagnostic_normalization": true,
+  "active_files_sha256": {
+    "test_hidden_event_v3.py": "bdb290bbda03e4f719878f2c773e3167347068a2de540e5fb760c41422ba6c02",
+    "test_managed_durable_boundaries_v4.py": "eb8012464251ac9a9e5a4b99348a1e64b1914788eebeb68e822ceb564ee84618",
+    "test_managed_projection_v2.py": "55507d0d563f6c0c922a91d76df5bc7cf0eabb148842068f596ce091977bab5b"
+  },
+  "runtime_changes": false,
+  "test_execution": false
+}

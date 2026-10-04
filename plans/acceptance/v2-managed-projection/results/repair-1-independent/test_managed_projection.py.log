@@ -1,0 +1,16 @@
+test_bad_markers_reject_without_touching_file_or_database (__main__.ManagedProjectionAcceptance.test_bad_markers_reject_without_touching_file_or_database) ... ok
+test_committed_intent_without_outcome_stays_uncertain (__main__.ManagedProjectionAcceptance.test_committed_intent_without_outcome_stays_uncertain) ... ok
+test_exact_checkpoint_descriptions_and_source_links (__main__.ManagedProjectionAcceptance.test_exact_checkpoint_descriptions_and_source_links) ... ok
+test_known_gap_and_pending_claim_remain_visible (__main__.ManagedProjectionAcceptance.test_known_gap_and_pending_claim_remain_visible) ... ok
+test_missing_close_and_unknown_watermark_are_not_complete (__main__.ManagedProjectionAcceptance.test_missing_close_and_unknown_watermark_are_not_complete) ... ok
+test_projection_failure_after_close_repairs_without_replaying_lifecycle (__main__.ManagedProjectionAcceptance.test_projection_failure_after_close_repairs_without_replaying_lifecycle) ... ok
+test_read_only_restart_and_exact_human_bytes (__main__.ManagedProjectionAcceptance.test_read_only_restart_and_exact_human_bytes) ... ok
+test_reserved_markers_are_inert_but_snapshot_content_exact (__main__.ManagedProjectionAcceptance.test_reserved_markers_are_inert_but_snapshot_content_exact) ... ok
+test_revoked_grant_cannot_refresh_previous_projection (__main__.ManagedProjectionAcceptance.test_revoked_grant_cannot_refresh_previous_projection) ... ok
+test_symlink_target_escape_refused_when_fixture_supported (__main__.ManagedProjectionAcceptance.test_symlink_target_escape_refused_when_fixture_supported) ... skipped "symlink fixture unavailable: [WinError 1314] A required privilege is not held by the client: 'C:\\\\Users\\\\pnmcg\\\\AppData\\\\Local\\\\Temp\\\\tmp5q81os2c\\\\outside-human.md' -> 'C:\\\\Users\\\\pnmcg\\\\AppData\\\\Local\\\\Temp\\\\tmp5q81os2c\\\\workspace\\\\Last Session.md'"
+test_wrong_selection_and_escape_do_not_create_projection (__main__.ManagedProjectionAcceptance.test_wrong_selection_and_escape_do_not_create_projection) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.502s
+
+OK (skipped=1)

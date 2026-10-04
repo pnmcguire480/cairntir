@@ -1,0 +1,17 @@
+test_output_cap_is_bounded_uncertain_and_never_relaunched (__main__.ManagedOutcomeAcceptance.test_output_cap_is_bounded_uncertain_and_never_relaunched) ... FAIL
+
+======================================================================
+FAIL: test_output_cap_is_bounded_uncertain_and_never_relaunched (__main__.ManagedOutcomeAcceptance.test_output_cap_is_bounded_uncertain_and_never_relaunched)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\supplement\test_managed_outcomes.py", line 224, in test_output_cap_is_bounded_uncertain_and_never_relaunched
+    self.assertEqual(result["status"], "uncertain")
+AssertionError: 'completed' != 'uncertain'
+- completed
++ uncertain
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.134s
+
+FAILED (failures=1)

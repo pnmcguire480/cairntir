@@ -1,0 +1,18 @@
+{
+  "schema": "cairntir.managed-environment-local-review-seal.v1",
+  "sealed_at": "2026-10-04T00:40:16.8689589Z",
+  "source_sha256": "7d1c1bfb8ebee9ee3eff89b5bdd5b87c9108830a98091c02d54cdd4dff652a93",
+  "files_sha256": {
+    "FROZEN.json": "eae874e88a3d09cba95acd23d56313a1a8ebf04486246f98c52eeb7cc2cec714",
+    "CONTRACT.md": "2e92c0032268f37b60222817826af698eca93e59cce8dc1567ccea401a5e483d",
+    "test_managed_environment.py": "da903fb6ef2c8d06a09fbf796d7a380266ebc6b3909c306ea18f8249906cf7c0",
+    "BASELINE.json": "89c930fd8e669354b96caa81e03daea3fee75b826f9a4aa76b7fe106707f97ec",
+    "baseline.log": "6f70ccda25440a24c31bd275d78f156a5c0c0db65b1ba53c7a1766298b3f8f46",
+    "candidate-clean.json": "52abad774ee35081e53073dcd5e35257fe18620d78f687e8efcaa388b2fabbd9",
+    "candidate-clean.log": "702c210e522c695494edc5efa2e21e0027e96d1670acb526d241ac7cd7b86bb5",
+    "IDENTITY-BYPASS.json": "cc25a7c7539f23c642bb5dcebb608711cb6e4b2fe449a3123a3c0612b3d166f5",
+    "identity-bypass.log": "f337a5882fb5f2770e305bf81ce296287b3fe4f96db3b0798747784e67dd93c4",
+    "review_identity_control.py": "4ad23ee91c9e4e8856cc83d91de364d003c59b63da9f2c0e7c774321f48977a9",
+    "FINAL-LOCAL-REVIEW.json": "313873a312ac8c913991dca81e221f8a01c85de0de7933a41d422501b92f7dc0"
+  }
+}

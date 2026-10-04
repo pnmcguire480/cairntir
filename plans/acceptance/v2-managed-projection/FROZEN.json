@@ -1,0 +1,46 @@
+{
+  "schema": "cairntir.public-managed-projection-freeze.v1",
+  "frozen_at": "2026-09-20T14:48:30.041095+00:00",
+  "files": {
+    "CONTRACT.md": "b1a69c8052fbff1e679194d93cc84556d31931ba8387bba463086e7415156a80",
+    "test_managed_projection.py": "d2596ed498de7a30a2f835c268a1f134000be7c60b8ae91e518fabb350f9cbed"
+  },
+  "tests": [
+    "test_exact_checkpoint_descriptions_and_source_links",
+    "test_read_only_restart_and_exact_human_bytes",
+    "test_missing_close_and_unknown_watermark_are_not_complete",
+    "test_known_gap_and_pending_claim_remain_visible",
+    "test_committed_intent_without_outcome_stays_uncertain",
+    "test_bad_markers_reject_without_touching_file_or_database",
+    "test_reserved_markers_are_inert_but_snapshot_content_exact",
+    "test_projection_failure_after_close_repairs_without_replaying_lifecycle",
+    "test_wrong_selection_and_escape_do_not_create_projection",
+    "test_revoked_grant_cannot_refresh_previous_projection",
+    "test_symlink_target_escape_refused_when_fixture_supported"
+  ],
+  "source_evidence": {
+    "approved_commitments": {
+      "path": "C:\\Dev\\Cairntir\\.cairntir\\evolution-audit-20260920\\approved-v2-baseline-r1\\04-Cairntir Integration Commitments.md",
+      "sha256": "af14f0d28d951ce7c313368416ac97a988e84abb3e08fc999930e2be428ae245",
+      "section": "R10"
+    },
+    "historical_source": {
+      "path": "C:\\Dev\\Cairntir\\.cairntir\\evolution-audit-20260920\\sources\\31b0df5c9a156994.md",
+      "line": 223
+    },
+    "design_notes": {
+      "path": "C:\\Dev\\Cairntir\\.cairntir\\v2-managed-runtime-20260920\\DESIGN-NOTES.md",
+      "sha256": "dbbd36e2c3a9fafbdc922c7f6f2dc3f7abd771371e33566468851ad7af03a9be",
+      "authority": "proposed implementation detail; approval from baseline and user begin"
+    }
+  },
+  "scope": "Public tests frozen before projection implementation; no behavioral execution yet; disposable stores only",
+  "repair_limit": 2,
+  "verification_reserve_fraction": 0.25,
+  "known_limits": [
+    "No coding-host hook or automatic CLI projection",
+    "No native graphical Obsidian proof",
+    "No protected holdout custody",
+    "Symlink fixture may explicitly skip when Windows denies creation"
+  ]
+}

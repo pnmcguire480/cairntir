@@ -1,0 +1,14 @@
+{
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "ruff",
+    "check",
+    "--config",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\pyproject.toml",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\tests\\unit\\test_managed_installed_qualification.py",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\scripts\\verify_package.py"
+  ],
+  "exit_code": 0,
+  "model_or_install_execution": false
+}

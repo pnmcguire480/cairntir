@@ -1,0 +1,38 @@
+......F...                                                               [100%]
+================================== FAILURES ===================================
+___ test_only_four_caller_expressions_change_all_integrity_bodies_retained ____
+
+    def test_only_four_caller_expressions_change_all_integrity_bodies_retained():
+        for relative in ROUTERS:
+            original = (ROOT / "originals" / relative).read_bytes()
+            assert original.count(b"Path(_EVIDENCE_TEMP.name)") == 1
+            expected = original.replace(
+                b"Path(_EVIDENCE_TEMP.name)", b"Path(_EVIDENCE_TEMP.name).resolve()"
+            )
+            assert (CANDIDATE / relative).read_bytes() == expected, relative
+        for relative, expected in BASELINE["unchanged"].items():
+            if relative == "scripts/verify_package.py":
+                original = (ROOT / "originals" / relative).read_bytes()
+                original = original.replace(
+                    b'TemporaryDirectory(prefix="installed-", dir=output)',
+                    b'TemporaryDirectory(prefix="installed-")',
+                )
+                original = original.replace(
+                    b"directory = Path(temporary)\n", b"directory = Path(temporary).resolve()\n"
+                )
+                expected = hashlib.sha256(original).hexdigest()
+            assert digest(CANDIDATE / relative) == expected, relative
+        verifier = ast.parse((CANDIDATE / "scripts/verify_package.py").read_bytes())
+        assignments = [ast.unparse(node) for node in ast.walk(verifier) if isinstance(node, ast.Assign)]
+        assert (
+            "wheel_path, output_path = (arguments.wheel.resolve(), arguments.output.resolve())"
+            in assignments
+        )
+>       assert any("directory = Path(temporary)" == node for node in assignments)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError
+
+..\..\acceptance\test_portability_v2.py:136: AssertionError
+=========================== short test summary info ===========================
+FAILED ..\..\acceptance\test_installed_boundary.py::test_only_four_caller_expressions_change_all_integrity_bodies_retained
+1 failed, 9 passed in 2.63s

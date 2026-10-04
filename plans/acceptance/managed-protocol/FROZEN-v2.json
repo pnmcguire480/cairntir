@@ -1,0 +1,16 @@
+{
+  "files_sha256": {
+    "CONTRACT.md": "f6604fbc002d6248179a53848c488d5b49bbc2cc7a94a384f34350b172c1d213",
+    "freeze.py": "112b60be571ff50f9a36b445d1d80b8e7760dd84152618595203bec001903368",
+    "test_managed_protocol.py": "674ec5d36d6b57346a1e0cb5632413f42a8a608a1ed235bf23316e794e0e389a",
+    "wrong_control.py": "3d8ca5d08ade8690cbc88f931ac987e4f056724e35027d94ca59b9ea4f028eaa",
+    "FROZEN.json": "dc2ba602e71599f142f0515d2efd7fad14972a981819167cccdf1dd5b9060a2a",
+    "test_managed_protocol_v2.py": "df8e97c5ecc82d41006646cd9213dab31cd457e8715b8455218c9810c0a9117a",
+    "V2-AMENDMENT.json": "6e2a791b249c13aa4f5e9f767590678579121986a4b078a150c9b53e45a3aac0",
+    "amend_v2.py": "f63b4acb164177fd8781a77f7b2d176f0675162e8d09e1b3d64e002e51fcf1ab"
+  },
+  "normal_cases": 33,
+  "wrong_control_cases": 1,
+  "normal_module": "test_managed_protocol_v2.py",
+  "fixture_amendment_only": true
+}

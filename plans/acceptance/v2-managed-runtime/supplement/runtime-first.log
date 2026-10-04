@@ -1,0 +1,16 @@
+test_ack_requires_its_brief_in_the_committed_registry (__main__.ManagedOutcomeAcceptance.test_ack_requires_its_brief_in_the_committed_registry) ... ok
+test_changed_raw_event_cannot_authorize_dispatch (__main__.ManagedOutcomeAcceptance.test_changed_raw_event_cannot_authorize_dispatch) ... ok
+test_completed_action_rejects_profile_rebinding_after_restart (__main__.ManagedOutcomeAcceptance.test_completed_action_rejects_profile_rebinding_after_restart) ... ok
+test_invalid_actions_and_missing_ack_have_no_durable_effect (__main__.ManagedOutcomeAcceptance.test_invalid_actions_and_missing_ack_have_no_durable_effect) ... ok
+test_invalid_configuration_never_writes_or_launches (__main__.ManagedOutcomeAcceptance.test_invalid_configuration_never_writes_or_launches) ... ok
+test_nonzero_child_is_failed_without_completing_the_request (__main__.ManagedOutcomeAcceptance.test_nonzero_child_is_failed_without_completing_the_request) ... ok
+test_observation_read_error_is_witnessed_and_remains_uncertain (__main__.ManagedOutcomeAcceptance.test_observation_read_error_is_witnessed_and_remains_uncertain) ... ok
+test_output_cap_is_bounded_uncertain_and_never_relaunched (__main__.ManagedOutcomeAcceptance.test_output_cap_is_bounded_uncertain_and_never_relaunched) ... ok
+test_protocol_errors_and_unknown_status_do_not_change_state (__main__.ManagedOutcomeAcceptance.test_protocol_errors_and_unknown_status_do_not_change_state) ... ok
+test_revoked_grant_cannot_read_completed_result_or_replay (__main__.ManagedOutcomeAcceptance.test_revoked_grant_cannot_read_completed_result_or_replay) ... ok
+test_timeout_retains_uncertainty_and_blocks_another_action (__main__.ManagedOutcomeAcceptance.test_timeout_retains_uncertainty_and_blocks_another_action) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 2.181s
+
+OK

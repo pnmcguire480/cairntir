@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-c",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\pyproject.toml",
+    "--rootdir",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003",
+    "--confcutdir",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\plans\\acceptance\\managed-session-port",
+    "--override-ini",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\tests\\unit\\test_managed_port_acceptance.py",
+    "--junitxml",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-feature-20261003\\acceptance\\router-v4-final25.xml"
+  ],
+  "exit_code": 0,
+  "expected_exit": 0,
+  "stdout_stderr_sha256": "6809c9659887906b48100006efaa99a0f2baa4c64954a41af14300e463ae7606"
+}

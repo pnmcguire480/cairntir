@@ -1,0 +1,9 @@
+{
+  "tests/unit/test_managed_port_acceptance.py": "2fe9bdd5ce7f515c122e39240e9fd93779ec00ab9f4d313bcc89d0385cf2815e",
+  "tests/unit/test_managed_runtime.py": "24204db845f370dbc0c5d5a2a119c020cd5995059ace67966233c163fd9435ab",
+  "tests/unit/test_last_session_projection.py": "c595d582fa902d6ba9d2aabe66361f43dce2f39529c0871f88791ffc3dbf6887",
+  "tests/unit/test_managed_installed_qualification.py": "b3d25eebfbfc9935c766b2150c2920e2b4bfaee314bb2fe823753597fa898b86",
+  "scripts/check_verification_preservation.py": "2f47b2d238b254e4b2c7cf7e7c6f468d0ef95ed6ab434cefbb8c6f887dce6757",
+  "scripts/verify_package.py": "3a7b323635c94bd3a7b1855b0783f406587712e37e46fca664d5bc0e55bc5401",
+  "pyproject.toml": "19ebbc8c0982303627ddbe726d44e93fccb262b36c1992b92361c659771e3d2d"
+}

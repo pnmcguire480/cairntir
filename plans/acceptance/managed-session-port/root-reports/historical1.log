@@ -1,0 +1,13 @@
+..................s.......s.........................s......     [100%]
+============================== warnings summary ===============================
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\config\__init__.py:1434
+  C:\Users\pnmcg\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\config\__init__.py:1434: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+E22 complete synthetic registry/assets adapter: 0 exact original cases, no assertion changes
+=========================== short test summary info ===========================
+SKIPPED [2] tests\unit\test_managed_runtime.py:79: Set MANAGED_ACCEPTANCE_MODEL_CACHE to run the explicit offline production-model CLI gate
+SKIPPED [1] plans\acceptance\v2-managed-projection\test_managed_projection.py:336: symlink fixture unavailable: [WinError 1314] A required privilege is not held by the client: 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\tmpn_txoked\\outside-human.md' -> 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\tmpn_txoked\\workspace\\Last Session.md'
+56 passed, 3 skipped, 1 warning, 9 subtests passed in 14.71s

@@ -13,6 +13,48 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Planned managed-session port (qualification pending)
+
+- Explicit foreground request capture, current-brief acknowledgement, configured
+  action dispatch and durable no-replay uncertainty, with honest close receipts.
+- Explicit rebuildable Last Session projection preserving human content and
+  requiring committed authorized evidence. Caller-owned transactions are refused
+  before durable acknowledgement or file publication; unavailable selected-task
+  evidence cannot produce a successful close.
+
+This candidate preserves all historical controls and adds independently frozen
+boundary checks. It installs no host hooks and adds no schema, dependency or MCP
+tool. Full exact-candidate qualification and release integration remain pending.
+
+The first PR131 hosted attempt failed strict documentation and reported CodeQL
+findings in frozen evidence. The repair corrects the contract link, preserves the
+eight historical resources in a pinned lossless archive, and reconstructs their
+original capsules for unchanged gates. Maintained fixture amendments retain every
+behavioral oracle. No runtime code, coverage threshold or security query changed;
+fresh hosted qualification is still required.
+
+The subsequent platform repair preserves configured executable invocation paths
+(including Python virtual environments) while independently binding the resolved
+target and its bytes. It also canonicalizes owned evidence temporary directories
+on systems with aliased temp roots. New frozen checks cover invocation identity,
+strict JSONL routing, surfaced input failures and truthful close receipts. Original
+tests and the 92% coverage floor remain unchanged; hosted qualification is pending.
+
+All nine hosted source matrix jobs then passed above 92% coverage, but installed
+qualification exposed an evidence directory inside the source checkout. The
+verifier now uses canonical platform temporary storage outside that checkout;
+its 44 proof assertions and strict restoration guard remain unchanged. Ten
+independent boundary controls pass without running tools or installations. Fresh
+exact-candidate installed qualification remains pending.
+
+The next hosted run passes every source platform but reaches a historical
+installed-source hash predating the interpreter repair. A separate frozen
+manifest binds the reviewed runtime while retaining the original installed
+helper, its four cases and all historical evidence. Windows also reports an
+unresolved SQLite truncate error after abrupt shutdown in the question proof;
+no retry or weakened crash-recovery assertion is introduced. This remains an
+unqualified candidate until fresh installed checks and failure review complete.
+
 ## [1.16.0] - Unreleased
 
 ### Added

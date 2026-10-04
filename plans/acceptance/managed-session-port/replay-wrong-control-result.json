@@ -1,0 +1,24 @@
+{
+  "tests": 1,
+  "failures": 1,
+  "errors": 0,
+  "external_markers": [
+    [
+      {
+        "action_id": "a2f55746-98ba-4330-ac2a-98da3238bf06",
+        "prediction_drawer_id": 2,
+        "claim": "  The child sees committed intent café\r\n",
+        "predicted_outcome": "The child verifies committed prediction before its marker.",
+        "pid": 21640
+      },
+      {
+        "action_id": "a2f55746-98ba-4330-ac2a-98da3238bf06",
+        "prediction_drawer_id": 2,
+        "claim": "  The child sees committed intent café\r\n",
+        "predicted_outcome": "The child verifies committed prediction before its marker.",
+        "pid": 6708
+      }
+    ]
+  ],
+  "meaningful_detection": true
+}

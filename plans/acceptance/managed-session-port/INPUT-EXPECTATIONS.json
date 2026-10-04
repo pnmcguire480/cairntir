@@ -1,0 +1,42 @@
+{
+  "base_head": "c71abb6808dffe75d9c303734f80f667d5c81cba",
+  "historical_manifests_sha256": {
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-final-0930\\plans\\acceptance\\v2-managed-runtime\\PACKAGE-FROZEN.json": "5ddb331d10e66649c18c3f18d4e67d0d6d33769f0cb8452ee8b625e21422936e",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-final-0930\\plans\\acceptance\\v2-managed-runtime\\CORE-FROZEN.json": "ff4352fd687800c1b5d74453da601af79da4a48dafaad37b0ccb41e77e67fe52",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-final-0930\\plans\\acceptance\\v2-managed-runtime\\PROCESS-FROZEN.json": "19503ada718a4b49ae123bc1881d7d77700e29b75f92e9da5232c8407580c7a4",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-final-0930\\plans\\acceptance\\v2-managed-runtime\\CLOSE-FROZEN.json": "72e0d599ca6251851959bbd3a93434f3866b6f3b2c3a489375814845f59bfb8c",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-final-0930\\plans\\acceptance\\v2-managed-runtime\\CONFIG-FROZEN.json": "76c2fbf351670631facff23ef107004bd2a336359aec256c84afa04ca984fd23",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-final-0930\\plans\\acceptance\\v2-managed-runtime\\STATE-FROZEN.json": "2f189ab7208a20bebfa884502ed2a28c83db15e973eccda708b849f41cd3981b",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-final-0930\\plans\\acceptance\\v2-managed-runtime\\STATE-FOLLOWUP.json": "53e32d6df660e315868de4ee5b41eea924607f315091d0c7429266c35f34afdd",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-final-0930\\plans\\acceptance\\v2-managed-runtime\\supplement\\PACKAGE.json": "a74ed500834440c6ba70b452c13f5ac2bca4027e8d4d82efb14ff2101c4c537d",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-final-0930\\plans\\acceptance\\v2-managed-runtime\\supplement\\FROZEN.json": "4160893257431e14bc45895dd58293cbcf9df52ee39773818be4844a6aafd209",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-final-0930\\plans\\acceptance\\v2-managed-projection\\PACKAGE-FROZEN.json": "1ecdeb684e803f450304a641a14150328efdf5798433a13e290f048bfc03e67a",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-final-0930\\plans\\acceptance\\v2-managed-projection\\FROZEN.json": "4a3598a201abb0b69710600bec6755dd1c50c9c51e083d4871b0d5c5bf507d07",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-final-0930\\plans\\acceptance\\v2-managed-projection\\CORRUPTION-FROZEN.json": "76ec8bdbd6a7513766e1fc28825a51fb6319c1aee9f581ef89026250a95dd597",
+    "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-final-0930\\plans\\acceptance\\v2-managed-projection\\OUTCOME-FROZEN.json": "09ebedaa9685fee1c4c6df140f4320ca3c296e050dc00e545f6ee979cdc3fb45"
+  },
+  "platform_source_sha256": {
+    "src/cairntir/memory/store.py": "144f16362f4aa725b45b6d6c48930e4254f500f0cd7d45a3f608a2e02bfaae3d",
+    "src/cairntir/access.py": "b0ea571308ac82f8fb4ddff75ac0177007de6a3179f4401b6547fb38cb77f1a1",
+    "src/cairntir/tasks.py": "420b4b0fbb99625d3cecf4fe6c381d23a71ff6b60c1dfb31daed42c7197fcad8",
+    "src/cairntir/durability.py": "77b1ada357dbdb3b038787e75a711e66300495a61aee8edfc6243e9b56476644",
+    "src/cairntir/obsidian.py": "bd60792e3a3c139a4e2627e11f04f744097180f5eaf891a51d167e33332d0a9c",
+    "src/cairntir/cli.py": "2fcb64b86657369e2850f090dc7345eba2e5df2cc9ec6760d49ba189c1a3dffa",
+    "src/cairntir/questions.py": "53292ca3fa83b34e12546e02b60f90ebcc97ea38c1e18c131a2d508a14c05cda"
+  },
+  "runtime_input_sha256": "301eefc5c2593f3fa466c06d84b0384dfd92294aee2e015ac68b967d82585f30",
+  "projection_input_sha256": "53fa5cc28d256a434d181a96d82b3a87534acc5eb6710236b6bcf6b44bad4df8",
+  "historical_controls": {
+    "runtime": 28,
+    "runtime_outcomes": 11,
+    "projection": 16,
+    "projection_supplement": 4
+  },
+  "historical_paths_are_inert_reference_only": true,
+  "fresh_candidate_binding_required_before_each_execution": true,
+  "structural_absence": {
+    "managed_module_absent": true,
+    "projection_module_absent": true,
+    "not_a_runtime_regression_claim": true
+  }
+}

@@ -1,0 +1,15 @@
+test_actual_child_observes_commit_before_effect_and_completed_retry_does_not_launch (__main__.ManagedProcessAcceptance.test_actual_child_observes_commit_before_effect_and_completed_retry_does_not_launch) ... ok
+test_changed_executable_cannot_use_previous_acknowledgement (__main__.ManagedProcessAcceptance.test_changed_executable_cannot_use_previous_acknowledgement) ... ok
+test_kill_after_committed_intent_before_spawn_stays_uncertain_without_replay (__main__.ManagedProcessAcceptance.test_kill_after_committed_intent_before_spawn_stays_uncertain_without_replay) ... ok
+test_kill_after_external_effect_preserves_prediction_and_never_relaunches (__main__.ManagedProcessAcceptance.test_kill_after_external_effect_preserves_prediction_and_never_relaunches) ... ok
+test_outcome_persistence_fault_is_witnessed_and_never_repeats_effect (__main__.ManagedProcessAcceptance.test_outcome_persistence_fault_is_witnessed_and_never_repeats_effect) ... ok
+test_owner_outer_transaction_cannot_fake_preaction_commit (__main__.ManagedProcessAcceptance.test_owner_outer_transaction_cannot_fake_preaction_commit) ... ok
+test_real_cli_jsonl_start_capture_brief_ack_dispatch_close (__main__.ManagedProcessAcceptance.test_real_cli_jsonl_start_capture_brief_ack_dispatch_close) ... ok
+test_scoped_outer_transaction_cannot_fake_preaction_commit (__main__.ManagedProcessAcceptance.test_scoped_outer_transaction_cannot_fake_preaction_commit) ... ok
+test_two_authorized_processes_racing_same_action_id_launch_once (__main__.ManagedProcessAcceptance.test_two_authorized_processes_racing_same_action_id_launch_once) ... ok
+test_unsafe_profile_configuration_is_rejected_before_launch (__main__.ManagedProcessAcceptance.test_unsafe_profile_configuration_is_rejected_before_launch) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 12.392s
+
+OK

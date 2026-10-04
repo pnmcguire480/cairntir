@@ -1,0 +1,28 @@
+{
+  "source_review": "PASS",
+  "local_acceptance": "PASS: 2 inert Windows controls, 1 explicit POSIX-only skip",
+  "overall_environment_acceptance": "INCONCLUSIVE until the actual POSIX environment witness passes without skips",
+  "source": "ct-r1004/src/cairntir/managed.py",
+  "source_sha256": "7d1c1bfb8ebee9ee3eff89b5bdd5b87c9108830a98091c02d54cdd4dff652a93",
+  "prior_source_sha256": "31452b541883edae15687dc8587234ff38ef97d5b9500ab5f985dbcc94c2866b",
+  "frozen_manifest_sha256": "eae874e88a3d09cba95acd23d56313a1a8ebf04486246f98c52eeb7cc2cec714",
+  "review": [
+    "Exact runtime delta replaces rewriting argv[0] with binding executable_path to the resolved target, plus two explanatory comment lines. No other managed.py code changed.",
+    "Configured invocation argv is preserved. The internal canonical target and existing byte hash both participate in the normalized configuration digest rechecked before dispatch.",
+    "The operator input remains deep-copied, and _run continues passing the configured argv with shell=False. No fixture expectation normalization or execution-provider substitution occurs.",
+    "Historical baseline reproduces invocation rewriting, with same-byte retarget rejection already passing. Candidate clean execution passes both inert controls in 0.060 seconds; actual POSIX environment execution is correctly skipped on Windows.",
+    "The in-memory negative control drops only executable_path from normalized configuration. Both unchanged frozen assertions fail: canonical identity collapses and a same-byte retarget reaches the forbidden Popen interceptor. Two failures, zero errors/skips in 0.070 seconds demonstrate that argv preservation alone is insufficient.",
+    "Product and frozen acceptance hashes remained unchanged throughout review. No real action was launched by the negative control."
+  ],
+  "remaining_gates": [
+    "Hosted POSIX must pass all three frozen tests without skips, including the actual temporary symlinked venv, private-module positive witness and canonical-target negative witness.",
+    "Existing unchanged before-spawn crash and no-replay tests must pass on hosted platforms.",
+    "Required full CI and unchanged 92 percent coverage floor remain separate qualification gates."
+  ],
+  "preserved_evidence": [
+    "FROZEN.json", "CONTRACT.md", "test_managed_environment.py",
+    "BASELINE.json", "baseline.log", "candidate-clean.json", "candidate-clean.log",
+    "IDENTITY-BYPASS.json", "identity-bypass.log", "review_identity_control.py"
+  ],
+  "limits": "No models, package installation, API billing, production-store access, host configuration edits or original frozen fixture edits. No full local suite. No private holdout claim."
+}

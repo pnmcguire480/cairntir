@@ -1,0 +1,6 @@
+test_second_runtime_start_does_not_invalidate_first_complete_brief (__main__.ManagedStateAcceptance.test_second_runtime_start_does_not_invalidate_first_complete_brief) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.048s
+
+OK

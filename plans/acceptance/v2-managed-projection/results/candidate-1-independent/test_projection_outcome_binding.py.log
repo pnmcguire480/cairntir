@@ -1,0 +1,19 @@
+test_outcome_public_action_id_cannot_hide_different_uncertain_intent (__main__.ProjectionOutcomeAcceptance.test_outcome_public_action_id_cannot_hide_different_uncertain_intent) ... FAIL
+
+======================================================================
+FAIL: test_outcome_public_action_id_cannot_hide_different_uncertain_intent (__main__.ProjectionOutcomeAcceptance.test_outcome_public_action_id_cannot_hide_different_uncertain_intent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-projection-20260920\test_projection_outcome_binding.py", line 60, in test_outcome_public_action_id_cannot_hide_different_uncertain_intent
+    self.assert_refused(prior)
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-projection-20260920\test_projection_corruption.py", line 22, in assert_refused
+    self.assertEqual(result["status"], "error", result)
+AssertionError: 'complete' != 'error'
+- complete
++ error
+ : {'schema': 'cairntir.managed-projection.v1', 'wing': 'projection', 'session_id': '013d1ad4-3142-471e-8ab8-b0d9f1f800a3', 'epoch': 'ed44b743-f6e7-4ab0-997f-a3763d4a2e87', 'status': 'complete', 'task_id': 'f901dfd8-946e-4e2f-8fcd-149c118766d9', 'snapshot': {'schema': 'cairntir.managed-last-session.v1', 'wing': 'projection', 'session_id': '013d1ad4-3142-471e-8ab8-b0d9f1f800a3', 'epoch': 'ed44b743-f6e7-4ab0-997f-a3763d4a2e87', 'task_id': 'f901dfd8-946e-4e2f-8fcd-149c118766d9', 'revision': 2, 'original_request': '  Keep original café 🧭\r\nDeferred: inspect later  ', 'completed': [], 'outstanding': ['  Keep original café 🧭\r\nDeferred: inspect later  '], 'next_action': 'Resume the captured commitments with a fresh managed brief.', 'last_received_sequence': 1, 'declared_last_sequence': None, 'gaps': [], 'capture_complete': False, 'unknown_tail': True, 'close_status': 'missing', 'pending_captures': [], 'unclean_sessions': [{'session_id': '013d1ad4-3142-471e-8ab8-b0d9f1f800a3', 'epoch': 'ed44b743-f6e7-4ab0-997f-a3763d4a2e87', 'task_id': 'f901dfd8-946e-4e2f-8fcd-149c118766d9'}], 'uncertain_actions': [{'action_id': 'f13cf392-b6ca-46ab-8d5f-78131bdb9749', 'prediction_drawer_id': 2}], 'sources': [{'drawer_id': 1, 'source_identity': '0fe9b618-1566-4880-9654-bdc6f6ed72a4', 'content_sha256': '36dd83898fba4c1411a5fbb1e11d1e8edd4ab40f04d0cd375c30174c92a761ae'}, {'drawer_id': 2, 'source_identity': 'de20005d-8db9-4ec3-b66f-89477c626422', 'content_sha256': '9256cd68ef7ebfd778b0ad4c88dc5f89cff63f78dc3cba7afc1aa17a8750c2ae'}, {'drawer_id': 3, 'source_identity': 'c9d11c33-c5bb-4d6c-9de2-e7b6544992b9', 'content_sha256': '8084878764ef4ef4bcf8c7a5dcee43f587962b8455fd8089652e4d670458bbe3'}, {'drawer_id': 4, 'source_identity': '8de84ac5-81a7-41ae-b72a-d23a1bfe4677', 'content_sha256': '8084878764ef4ef4bcf8c7a5dcee43f587962b8455fd8089652e4d670458bbe3'}]}, 'generated_sha256': '717dd61781b0beb70a33db43cb603ba5d41188f5e7e0c55832ef367f29dafbef'}
+
+----------------------------------------------------------------------
+Ran 1 test in 0.148s
+
+FAILED (failures=1)

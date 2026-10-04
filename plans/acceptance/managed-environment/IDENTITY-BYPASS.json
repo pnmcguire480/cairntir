@@ -1,0 +1,15 @@
+{
+  "negative_control": "PASS: canonical identity bypass rejected by both unchanged frozen controls",
+  "mutant_result": "2 failures, 0 errors, 0 skips",
+  "observed_failures": [
+    "same-byte target identity binding collapsed",
+    "retargeted action reached forbidden Popen"
+  ],
+  "source_sha256": "7d1c1bfb8ebee9ee3eff89b5bdd5b87c9108830a98091c02d54cdd4dff652a93",
+  "source_and_frozen_tests_unchanged": true,
+  "baseline_log_sha256": "6f70ccda25440a24c31bd275d78f156a5c0c0db65b1ba53c7a1766298b3f8f46",
+  "candidate_clean_receipt_sha256": "52abad774ee35081e53073dcd5e35257fe18620d78f687e8efcaa388b2fabbd9",
+  "candidate_clean_log_sha256": "702c210e522c695494edc5efa2e21e0027e96d1670acb526d241ac7cd7b86bb5",
+  "negative_log_sha256": "f337a5882fb5f2770e305bf81ce296287b3fe4f96db3b0798747784e67dd93c4",
+  "qualification": "Windows inert controls pass; actual POSIX venv/module witness and hosted full gates remain required"
+}

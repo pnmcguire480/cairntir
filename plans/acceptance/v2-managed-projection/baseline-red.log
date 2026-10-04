@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-projection-20260920\test_managed_projection.py", line 13, in <module>
+    from cairntir.managed_projection import project_last_session
+ModuleNotFoundError: No module named 'cairntir.managed_projection'

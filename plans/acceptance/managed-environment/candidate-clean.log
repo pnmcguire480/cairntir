@@ -1,0 +1,8 @@
+test_exact_invocation_and_input_preserved_but_canonical_target_is_bound (__main__.ManagedEnvironmentAcceptance.test_exact_invocation_and_input_preserved_but_canonical_target_is_bound) ... ok
+test_posix_managed_child_retains_venv_prefix_and_private_module (__main__.ManagedEnvironmentAcceptance.test_posix_managed_child_retains_venv_prefix_and_private_module) ... skipped 'actual symlinked venv proof is a required POSIX hosted gate'
+test_same_byte_target_retarget_after_ack_refuses_dispatch_without_writes (__main__.ManagedEnvironmentAcceptance.test_same_byte_target_retarget_after_ack_refuses_dispatch_without_writes) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.060s
+
+OK (skipped=1)

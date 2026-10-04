@@ -1,0 +1,9 @@
+test_different_successful_claim_does_not_erase_failed_claim (__main__.ManagedCloseAcceptance.test_different_successful_claim_does_not_erase_failed_claim) ... ok
+test_exact_failed_claim_retry_can_restore_complete_close (__main__.ManagedCloseAcceptance.test_exact_failed_claim_retry_can_restore_complete_close) ... ok
+test_malformed_claim_cannot_be_hidden_by_matching_committed_watermark (__main__.ManagedCloseAcceptance.test_malformed_claim_cannot_be_hidden_by_matching_committed_watermark) ... ok
+test_restart_reports_prior_unclean_epoch_and_excludes_closed_epoch (__main__.ManagedCloseAcceptance.test_restart_reports_prior_unclean_epoch_and_excludes_closed_epoch) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.184s
+
+OK

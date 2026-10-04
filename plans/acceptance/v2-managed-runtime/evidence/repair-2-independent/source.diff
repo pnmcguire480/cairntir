@@ -1,0 +1,28 @@
+--- repair1/managed.py
++++ repair2/managed.py
+@@ -237,7 +237,6 @@
+             "last_sequence": previous,
+             "events": sorted((item["event_id"], item["sequence"]) for item in events),
+             "config_sha256": self._config_sha,
+-            "unclean_sessions": self._unclean_sessions(),
+             "pending_captures": self._pending(),
+         }
+ 
+@@ -440,7 +439,7 @@
+                 and not omitted
+                 and not state["pending_captures"],
+                 "state_sha256": _sha(_json(state)),
+-                "unclean_sessions": state["unclean_sessions"],
++                "unclean_sessions": self._unclean_sessions(),
+                 "pending_captures": state["pending_captures"],
+             }
+             result["brief_sha256"] = _sha(_json(result))
+@@ -832,7 +831,7 @@
+                 and not omitted
+                 and not state["pending_captures"],
+                 "uncertain_actions": state["uncertain_actions"],
+-                "unclean_sessions": state["unclean_sessions"],
++                "unclean_sessions": self._unclean_sessions(),
+                 "pending_captures": state["pending_captures"],
+             }
+             self._execute("close", self._epoch, result, lambda: (result, []))

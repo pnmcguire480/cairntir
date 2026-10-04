@@ -1,0 +1,24 @@
+{
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-c",
+    "pyproject.toml",
+    "--rootdir=C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-feature-20261003\\acceptance\\raw-projection-amendment-v3",
+    "--confcutdir=C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-feature-20261003\\acceptance\\raw-projection-amendment-v3",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-feature-20261003\\acceptance\\raw-projection-amendment-v3\\test_managed_durable_boundaries.py",
+    "--no-cov",
+    "-q",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "cwd": "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003",
+  "exit_code": 4,
+  "status": "completed",
+  "seconds": 0.351,
+  "log_sha256": "28795a818b3dd183c1adfdea4280e8df1eaea1f1f2b1a586f25633d26a31ddad",
+  "synthetic_only": true,
+  "runtime": "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-feature-20261003\\runtime-repair1",
+  "model_inference": false
+}

@@ -1,0 +1,23 @@
+test_second_runtime_start_does_not_invalidate_first_complete_brief (__main__.ManagedStateAcceptance.test_second_runtime_start_does_not_invalidate_first_complete_brief) ... 
+  test_second_runtime_start_does_not_invalidate_first_complete_brief (__main__.ManagedStateAcceptance.test_second_runtime_start_does_not_invalidate_first_complete_brief) (epoch='08a26feb-c65e-4642-9004-84223172d7ce') ... ERROR
+
+======================================================================
+ERROR: test_second_runtime_start_does_not_invalidate_first_complete_brief (__main__.ManagedStateAcceptance.test_second_runtime_start_does_not_invalidate_first_complete_brief) (epoch='08a26feb-c65e-4642-9004-84223172d7ce')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\test_managed_state.py", line 22, in test_second_runtime_start_does_not_invalidate_first_complete_brief
+    ack = runtime.acknowledge(
+          ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\repair-1-independent\source\cairntir\managed.py", line 38, in call
+    return function(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\repair-1-independent\source\cairntir\managed.py", line 512, in acknowledge
+    self._ack_state(brief)
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\repair-1-independent\source\cairntir\managed.py", line 498, in _ack_state
+    raise ManagedRuntimeError("brief is incomplete, stale or from another epoch")
+cairntir.managed.ManagedRuntimeError: brief is incomplete, stale or from another epoch
+
+----------------------------------------------------------------------
+Ran 1 test in 0.052s
+
+FAILED (errors=1)

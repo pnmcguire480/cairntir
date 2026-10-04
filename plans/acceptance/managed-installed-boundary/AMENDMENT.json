@@ -1,0 +1,7 @@
+{
+  "old_portability_seal_sha256": "5c7d52db32d06b13305ca7986ce45de7aa19c5a850cf544031e24490e49a1091",
+  "old23_artifacts_exact": true,
+  "old_freeze_sha256": "5e4c59ffce6d9187ff3e814ba0f7a89aed3b47baf7536a7c1c4d3222280665ae",
+  "unchanged_functions": 5,
+  "amendment": "Only expected verifier two lines and corresponding source-string oracle; all six alias/security cases unchanged; four caller-byte checks unchanged"
+}

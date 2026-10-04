@@ -1,0 +1,54 @@
+....................F......                                              [100%]
+================================== FAILURES ===================================
+_ test_frozen_managed_runtime[test_two_authorized_processes_racing_same_action_id_launch_once] _
+
+tmp_path = WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-809/test_frozen_managed_runtime_te20')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002478A02E0D0>
+suite = 'process'
+name = 'test_two_authorized_processes_racing_same_action_id_launch_once'
+
+    @pytest.mark.parametrize(("suite", "name"), CASES, ids=[name for _, name in CASES])
+    def test_frozen_managed_runtime(tmp_path, monkeypatch, suite, name):
+        if name in MODEL_CASES and not os.environ.get("MANAGED_ACCEPTANCE_MODEL_CACHE"):
+            pytest.skip(
+                "Set MANAGED_ACCEPTANCE_MODEL_CACHE to run the explicit "
+                "offline production-model CLI gate"
+            )
+        monkeypatch.setenv("PYTHONPATH", str(Path(cairntir.managed.__file__).resolve().parents[1]))
+        monkeypatch.setenv("CAIRNTIR_HOME", str(tmp_path / "home"))
+        monkeypatch.setenv("CAIRNTIR_DISABLE_AUTOREGISTER", "1")
+        monkeypatch.setenv("CAIRNTIR_DISABLE_UPDATE_CHECK", "1")
+        monkeypatch.setenv("HF_HUB_OFFLINE", "1")
+        monkeypatch.setenv("PYTHONUTF8", "1")
+        monkeypatch.setenv("PYTHONDONTWRITEBYTECODE", "1")
+        result = unittest.TestResult()
+        SUITES[suite](name).run(result)
+>       assert not result.errors, "\n".join(detail for _, detail in result.errors)
+E       AssertionError: Traceback (most recent call last):
+E           File "C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\shutil.py", line 632, in _rmtree_unsafe
+E             os.unlink(fullname)
+E         PermissionError: [WinError 5] Access is denied: 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\tmpppkcxt4g\\memory.db-shm'
+E         
+E         During handling of the above exception, another exception occurred:
+E         
+E         Traceback (most recent call last):
+E           File "C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\tempfile.py", line 947, in cleanup
+E             self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+E           File "C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\tempfile.py", line 929, in _rmtree
+E             _shutil.rmtree(name, onerror=onerror)
+E           File "C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\shutil.py", line 787, in rmtree
+E             return _rmtree_unsafe(path, onerror)
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\shutil.py", line 634, in _rmtree_unsafe
+E             onerror(os.unlink, fullname, sys.exc_info())
+E           File "C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\tempfile.py", line 893, in onerror
+E             _os.unlink(path)
+E         PermissionError: [WinError 5] Access is denied: 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\tmpppkcxt4g\\memory.db-shm'
+E         
+E       assert not [(<frozen_managed_test_managed_process.py.ManagedProcessAcceptance testMethod=test_two_authorized_processes_racing_sam...WinError 5] Access is denied: \'C:\\\\Users\\\\pnmcg\\\\AppData\\\\Local\\\\Temp\\\\tmpppkcxt4g\\\\memory.db-shm\'\n')]
+E        +  where [(<frozen_managed_test_managed_process.py.ManagedProcessAcceptance testMethod=test_two_authorized_processes_racing_sam...WinError 5] Access is denied: \'C:\\\\Users\\\\pnmcg\\\\AppData\\\\Local\\\\Temp\\\\tmpppkcxt4g\\\\memory.db-shm\'\n')] = <unittest.result.TestResult run=1 errors=1 failures=1>.errors
+
+tests\unit\test_managed_runtime.py:83: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/unit/test_managed_runtime.py::test_frozen_managed_runtime[test_two_authorized_processes_racing_same_action_id_launch_once]
+1 failed, 26 passed in 16.60s

@@ -1,0 +1,135 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+___ test_projection_cannot_publish_caller_uncommitted_checkpoint[raw-owner] ___
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x00000242DF8AC8D0>, token='DQz-8C9misRG1zy635jnk9acLLLVI...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'owner', style = 'raw'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_projection_cannot_publish_caller_uncommitted_checkpoint(durable, principal, style):
+        """Retain human bytes and durable view until pending checkpoint really commits."""
+        bundle = durable
+        store, _runtime, session, captured, brief = ready(bundle, principal)
+        target = bundle.project / "Last Session.md"
+        target.write_bytes(
+            b"Human prefix\r\n<!-- cairntir:generated:begin -->\nold generated\n"
+            b"<!-- cairntir:generated:end -->\r\nHuman suffix caf\xc3\xa9\r\n"
+        )
+    
+        def project():
+            return bundle.projection.project_last_session(
+                store,
+                root=bundle.project,
+                path=target,
+                wing=WING,
+                session_id=session,
+                epoch=brief["epoch"],
+            )
+    
+        initial = project()
+        assert initial["status"] == "complete"
+        durable_bytes = target.read_bytes()
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                checkpoint = {
+                    "task_id": captured["task_id"],
+                    "expected_revision": captured["revision"],
+                    "idempotency_key": str(uuid4()),
+                    "status": "active",
+                    "completed": [],
+                    "outstanding": [ORIGINAL, "  caller-owned pending commitment cafΘ\r\n  "],
+                    "next_action": "Pending state has not physically committed",
+                    "evidence_ids": [captured["drawer_id"]],
+                }
+                if style == "explicit":
+                    TaskBook(store).checkpoint(WING, ROOM, "Uncommitted caller checkpoint", checkpoint)
+                else:
+                    bundle.owner._conn.execute(
+                        "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                        ("managed_raw_caller_work", "raw uncommitted caller-owned marker"),
+                    )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                result = project()
+>               assert result["status"] == "error" and result.get("error")
+E               AssertionError: assert ('complete' == 'error'
+E                 
+E                 - error
+E                 + complete)
+
+cairntir-managed-feature-20261003\acceptance\raw-projection-amendment-v3\test_managed_durable_boundaries_v3.py:268: AssertionError
+__ test_projection_cannot_publish_caller_uncommitted_checkpoint[raw-scoped] ___
+
+durable = namespace(owner=<cairntir.memory.store.DrawerStore object at 0x00000242DF8AC950>, token='QoyRRzz-LjuDWzpk_UKosWGayCZ5F...' from 'C:\\Users\\pnmcg\\AppData\\Local\\Temp\\cairntir-managed-work-20261003\\src\\cairntir\\managed_projection.py'>)
+principal = 'scoped', style = 'raw'
+
+    @pytest.mark.parametrize("principal", ["owner", "scoped"])
+    @pytest.mark.parametrize("style", ["explicit", "raw"])
+    def test_projection_cannot_publish_caller_uncommitted_checkpoint(durable, principal, style):
+        """Retain human bytes and durable view until pending checkpoint really commits."""
+        bundle = durable
+        store, _runtime, session, captured, brief = ready(bundle, principal)
+        target = bundle.project / "Last Session.md"
+        target.write_bytes(
+            b"Human prefix\r\n<!-- cairntir:generated:begin -->\nold generated\n"
+            b"<!-- cairntir:generated:end -->\r\nHuman suffix caf\xc3\xa9\r\n"
+        )
+    
+        def project():
+            return bundle.projection.project_last_session(
+                store,
+                root=bundle.project,
+                path=target,
+                wing=WING,
+                session_id=session,
+                epoch=brief["epoch"],
+            )
+    
+        initial = project()
+        assert initial["status"] == "complete"
+        durable_bytes = target.read_bytes()
+        with observer(bundle.path) as independent:
+            baseline = snapshot(bundle.owner._conn)
+            assert snapshot(independent) == baseline
+            with pytest.raises(CallerRollbackError), caller_transaction(bundle, store, style):
+                checkpoint = {
+                    "task_id": captured["task_id"],
+                    "expected_revision": captured["revision"],
+                    "idempotency_key": str(uuid4()),
+                    "status": "active",
+                    "completed": [],
+                    "outstanding": [ORIGINAL, "  caller-owned pending commitment cafΘ\r\n  "],
+                    "next_action": "Pending state has not physically committed",
+                    "evidence_ids": [captured["drawer_id"]],
+                }
+                if style == "explicit":
+                    TaskBook(store).checkpoint(WING, ROOM, "Uncommitted caller checkpoint", checkpoint)
+                else:
+                    bundle.owner._conn.execute(
+                        "INSERT INTO store_metadata(key,value) VALUES (?,?)",
+                        ("managed_raw_caller_work", "raw uncommitted caller-owned marker"),
+                    )
+                inside = snapshot(bundle.owner._conn)
+                assert inside != baseline and snapshot(independent) == baseline
+                result = project()
+>               assert result["status"] == "error" and result.get("error")
+E               AssertionError: assert ('complete' == 'error'
+E                 
+E                 - error
+E                 + complete)
+
+cairntir-managed-feature-20261003\acceptance\raw-projection-amendment-v3\test_managed_durable_boundaries_v3.py:268: AssertionError
+============================== warnings summary ===============================
+..\..\..\..\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\config\__init__.py:1434
+  C:\Users\pnmcg\.codex\worktrees\v2-foundation\Cairntir\.venv\Lib\site-packages\_pytest\config\__init__.py:1434: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED ..\..\..\..\AppData\Local\Temp\cairntir-managed-work-20261003::test_projection_cannot_publish_caller_uncommitted_checkpoint[raw-owner]
+FAILED ..\..\..\..\AppData\Local\Temp\cairntir-managed-work-20261003::test_projection_cannot_publish_caller_uncommitted_checkpoint[raw-scoped]
+2 failed, 22 deselected, 1 warning in 1.18s

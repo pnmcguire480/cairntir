@@ -1,0 +1,13 @@
+{
+  "prior_verifier_sha256": "5ebfccad4e9c763b9ac71982f6d8ad54943ef2d7585aa2564eb5e544f145e120",
+  "final_verifier_sha256": "3a7b323635c94bd3a7b1855b0783f406587712e37e46fca664d5bc0e55bc5401",
+  "prior_assertions_retained_in_order": 39,
+  "generic_assertions": 35,
+  "prior_question_binding_assertions": 4,
+  "current_total_assertions": 44,
+  "unchanged_question_helper_call_ast": true,
+  "unchanged_execute_environment_question_diagnostics_ast": true,
+  "manifest_pin": "53a59ffa4e0dbfded002cc505ad335062074321faf8f70d4a841b1f4c612e0ad",
+  "new_installed_proof": "four unchanged cases after all prior generic/question checks",
+  "real_installed_model_execution": "hosted pending; none locally"
+}

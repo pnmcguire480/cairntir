@@ -1,0 +1,7 @@
+{
+  "exit_code": 1,
+  "source": "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\ct-p1004\\src",
+  "log_sha256": "6f70ccda25440a24c31bd275d78f156a5c0c0db65b1ba53c7a1766298b3f8f46",
+  "platform": "Windows",
+  "expected": "one invocation preservation failure, one guard pass, one POSIX-only skip"
+}

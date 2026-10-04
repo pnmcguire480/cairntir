@@ -1,0 +1,14 @@
+{
+  "product": {
+    "managed.py": "f712fcee2f6fbbc47ca46a975a29b8582959803aa68ff063d26491e1914cefc2",
+    "cli.py": "c9ec4aec3811495803b5813d3812ba3a70f007ce968614bc2614ae154cc94448",
+    "memory/store.py": "490d2e3df639556d3aff5f555c08f04568808219a34f66af2a7174ec288c6f70",
+    "access.py": "084a03f9963d45aba34feb17227a8923d124c867c89017be22a2374251171c6c"
+  },
+  "freezes": {
+    "CORE-FROZEN.json": "ff4352fd687800c1b5d74453da601af79da4a48dafaad37b0ccb41e77e67fe52",
+    "PROCESS-FROZEN.json": "19503ada718a4b49ae123bc1881d7d77700e29b75f92e9da5232c8407580c7a4",
+    "CLOSE-FROZEN.json": "72e0d599ca6251851959bbd3a93434f3866b6f3b2c3a489375814845f59bfb8c",
+    "CONFIG-FROZEN.json": "76c2fbf351670631facff23ef107004bd2a336359aec256c84afa04ca984fd23"
+  }
+}

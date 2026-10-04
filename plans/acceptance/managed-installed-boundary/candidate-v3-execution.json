@@ -1,0 +1,28 @@
+{
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "--confcutdir",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-installed-boundary-20261004\\acceptance",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-installed-boundary-20261004\\acceptance\\test_installed_boundary_v3.py"
+  ],
+  "returncode": 0,
+  "seconds": 2.937,
+  "files_sha256": {
+    "scripts/verify_package.py": "05d3b42df0a8272ac9fe88e2564648214648a70ad433e33c66dc921b80e743c0",
+    "scripts/restore_managed_evidence.py": "7efbb6c49f36c8a5944d3354963776b18dbe072ace51a2d1729759262f96f11b",
+    "src/cairntir/managed.py": "7d1c1bfb8ebee9ee3eff89b5bdd5b87c9108830a98091c02d54cdd4dff652a93",
+    "tests/unit/test_managed_runtime.py": "682d57f74847be35c2cb86422669e1340ad8883d6677d84dc268dbeadc72d0aa",
+    "tests/unit/test_last_session_projection.py": "016fbfc579507be76fca114f369a66a425fc9bc2e78089e6d5a52b6c883ca8fe",
+    "tests/unit/test_managed_port_acceptance.py": "4e5d54b389ff2645e37a113b40661562e8b3d59e801608b992decc928146f4ae",
+    "tests/unit/test_managed_installed_qualification.py": "4970690de5d4f5f32011cefac40e6b45b5480ac660b3c81d135461b4b1fc6829"
+  },
+  "runner_sha256": "35b0272bd463660e9344f8c89c24e99e5618813089d8c62e0ddb2ba54a661ad5",
+  "frozen_sha256": "f663c514a6d83f180a831737bf1030ff30ad78f568a8ad5ab4fc92fccf50b620"
+}

@@ -1,0 +1,57 @@
+{
+  "created_at": "2026-09-20T14:52:27.575897+00:00",
+  "status": "PASS",
+  "product": {
+    "managed.py": "f712fcee2f6fbbc47ca46a975a29b8582959803aa68ff063d26491e1914cefc2",
+    "cli.py": "c9ec4aec3811495803b5813d3812ba3a70f007ce968614bc2614ae154cc94448",
+    "memory/store.py": "490d2e3df639556d3aff5f555c08f04568808219a34f66af2a7174ec288c6f70",
+    "access.py": "084a03f9963d45aba34feb17227a8923d124c867c89017be22a2374251171c6c"
+  },
+  "acceptance_freezes": {
+    "CORE-FROZEN.json": "ff4352fd687800c1b5d74453da601af79da4a48dafaad37b0ccb41e77e67fe52",
+    "PROCESS-FROZEN.json": "19503ada718a4b49ae123bc1881d7d77700e29b75f92e9da5232c8407580c7a4",
+    "CLOSE-FROZEN.json": "72e0d599ca6251851959bbd3a93434f3866b6f3b2c3a489375814845f59bfb8c",
+    "CONFIG-FROZEN.json": "76c2fbf351670631facff23ef107004bd2a336359aec256c84afa04ca984fd23"
+  },
+  "before_after_exact": true,
+  "tests": {
+    "core": 12,
+    "process": 10,
+    "close": 4,
+    "config": 1,
+    "total_passed": 27,
+    "skipped": 0
+  },
+  "actual_process_claims": [
+    "Child observed committed intent and prediction through independent SQLite connection before external marker",
+    "Forced driver termination before spawn and after child effect, followed by process restart, never repeated action",
+    "Concurrent same action-ID dispatch launched one child",
+    "Owner and scoped caller outer transactions refused before Popen; same authorized action passed outside transaction",
+    "Real CLI capture/brief/ack/dispatch/close and config replacement rejection with owned offline production cache copies"
+  ],
+  "wrong_control": {
+    "result": "DETECTED",
+    "failures": 1,
+    "errors": 0,
+    "observed_child_markers": 2,
+    "source": "wrong-control-replay-repair-1/result.json"
+  },
+  "review": [
+    "Pending claims bind exact payloads; unrelated successful claims no longer erase failures. Failed received claims alter state and invalidate old readiness.",
+    "Prior epochs missing durable close are reported; closed epoch and active epoch excluded. Missing close is not asserted to prove a crash.",
+    "CLI hashes configuration around startup read and before each command; module rehashes configured executable before launch.",
+    "Physical pre-action commit and principal-specific replay remain intact. Conservative timeout, cap, pipe or cleanup uncertainty remains truthful."
+  ],
+  "limitations": [
+    "No universal native host event delivery, arbitrary same-user/OS sandbox gate, independent private custody or R10 projection proof.",
+    "No arbitrary descendant containment or power-loss storage qualification.",
+    "HashEmbeddingProvider in synthetic class fixtures; actual CLI cases used copied qualified production cache."
+  ],
+  "evidence": {
+    "core.log": "c1766b5d1b12821fa8fe3bfc08125422efc85b92295f2d27654f1c8b2ea7247b",
+    "process.log": "d906e6d5b915fc12e9fbe618c8c3c74941502ace1f36ce695d05de3af339f160",
+    "close.log": "27ea431de7f21a412e756215e10d6aa28107869278810387f43c4dca5307d87f",
+    "config.log": "7c8ddfc94afc11ffb157441fe8e9a76eba20706200c02b60b8cf0ad8b290f010"
+  },
+  "wrong_control_receipt_sha256": "53ce0cae3dfa7b74994e95b5cee2661807a2806e64862a893478281bf8277705"
+}

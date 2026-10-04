@@ -1,0 +1,10 @@
+{
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-environment-20261004\\acceptance\\test_managed_environment.py"
+  ],
+  "cwd": "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\ct-r1004",
+  "seconds": 1.234,
+  "returncode": 0,
+  "result": "PASS"
+}

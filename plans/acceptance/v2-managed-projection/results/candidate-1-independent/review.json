@@ -1,0 +1,79 @@
+{
+  "status": "REPAIR_REQUIRED",
+  "source_sha256": "5e0e5a6380203d4e81253addda281fadd3e0b44b2e37430690ae15750443ad89",
+  "original_frozen": {
+    "cases": 11,
+    "passed": 10,
+    "skipped": 1,
+    "skip_reason": "Windows denied symlink fixture creation"
+  },
+  "supplement": {
+    "cases": 5,
+    "passed": 2,
+    "failed": 3,
+    "frozen_before_execution": true
+  },
+  "wrong_controls": [
+    {
+      "control": "brief-write",
+      "caught": true,
+      "specific_witness": "projection cannot write brief",
+      "log_sha256": "45489d2078494f0d4e88f538960927a60b63060385d32ff1a6a0cc49fbfab04b"
+    },
+    {
+      "control": "lost-human-suffix",
+      "caught": true,
+      "specific_witness": "Human trailing note",
+      "log_sha256": "a098e3c50db670e098e94cd5e9e49b3a79a509c36d054ee9227f5f87efc04c0c"
+    },
+    {
+      "control": "false-complete",
+      "caught": true,
+      "specific_witness": "True is not False",
+      "log_sha256": "ecede166822cfd6a3a8ee274056f13b29a38207b60a9fa528930419ac449ce96"
+    }
+  ],
+  "findings": [
+    {
+      "id": "R10-01",
+      "test": "test_checkpoint_metadata_disagreement_does_not_certify_completion",
+      "actual": "complete",
+      "expected": "error preserving prior view",
+      "issue": "Raw current checkpoint task_checkpoint metadata disagrees with committed registry completed state but projection certifies it."
+    },
+    {
+      "id": "R10-02",
+      "test": "test_close_result_disagreement_cannot_certify_unknown_tail",
+      "actual": "complete; unknown_tail=false; capture_complete=true",
+      "expected": "error preserving prior view",
+      "issue": "Mutated close public result overrides its bound request watermark/completeness."
+    },
+    {
+      "id": "R10-03",
+      "test": "test_outcome_public_action_id_cannot_hide_different_uncertain_intent",
+      "actual": "complete; wrong uncertain action membership",
+      "expected": "error preserving prior view",
+      "issue": "Mutated outcome public action ID hides different committed intent and falsely reopens the completed one."
+    }
+  ],
+  "repair_scope": "Projection evidence-read boundary only; no TaskBook or generic registry change required",
+  "scope": "Public independently authored checks; no hidden custody/native UI claim",
+  "artifacts": {
+    "brief-write.log": "45489d2078494f0d4e88f538960927a60b63060385d32ff1a6a0cc49fbfab04b",
+    "false-complete.log": "ecede166822cfd6a3a8ee274056f13b29a38207b60a9fa528930419ac449ce96",
+    "lost-human-suffix.log": "a098e3c50db670e098e94cd5e9e49b3a79a509c36d054ee9227f5f87efc04c0c",
+    "managed_projection.py.original": "5e0e5a6380203d4e81253addda281fadd3e0b44b2e37430690ae15750443ad89",
+    "result.json": "eb9a6306852e194c2ca957daba8c934bba98b1b8b21b160eab2e959f08ef328e",
+    "supplement-results.json": "14d850dc2327049280d7f3c568ca971a725a4809b82a9d4ca639c252d0f85bd0",
+    "tests.log": "ca3e369b54a5ecf1aa9069781485c5d9d05c2b668656bb77a9b34bd99670c056",
+    "test_projection_corruption.py.log": "279d56ec7f0491de74fc586c9e3cab89e9ea066d182483e892934c5f94b105a8",
+    "test_projection_outcome_binding.py.log": "fe5258d82097acd73528bdad49d83272d8d418e5fe70039f67a040333fbdf82c",
+    "wrong-controls.json": "b32db08601582394ddd6bb54336b2229560f1d5a47e0b661099b55b6714a5247",
+    "wrong_controls.py.log": "d90166d7d97236f0be214aa8b2e23fb7850d76c6fdabca1db9c7f4400e14fda8"
+  },
+  "freezes": {
+    "FROZEN.json": "4a3598a201abb0b69710600bec6755dd1c50c9c51e083d4871b0d5c5bf507d07",
+    "CORRUPTION-FROZEN.json": "76ec8bdbd6a7513766e1fc28825a51fb6319c1aee9f581ef89026250a95dd597",
+    "OUTCOME-FROZEN.json": "09ebedaa9685fee1c4c6df140f4320ca3c296e050dc00e545f6ee979cdc3fb45"
+  }
+}

@@ -89,7 +89,96 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-03 (explicit question candidate)
+## Last Session - 2026-10-04 (installed proof identity follow-up)
+
+PR131 head `8f3b9b0` passed all nine source jobs (2187 cases per job,
+92.476673%-92.675042% coverage), three regression jobs, evaluation and CodeQL.
+Installed verification now reaches the proof. Linux and macOS reject a stale
+historical managed.py hash after the reviewed interpreter-environment repair.
+The follow-up keeps the historical capsule intact and separately binds the
+reviewed runtime; its installed helper and all four original cases stay exact.
+
+Windows fails earlier with SQLITE_IOERR_TRUNCATE at the question proof's final
+physical count after abrupt MCP shutdown. Its cause remains unresolved. A
+disposable diagnostic copy preserves all three exact records and passes integrity
+checks on a different SQLite version; this does not requalify the failed run.
+No retry, assertion removal, shutdown change or Windows runtime fix is proposed.
+Fresh installed qualification and the unexplained Windows failure remain gates.
+
+## Previous Session - 2026-10-04 (installed evidence boundary)
+
+PR131 head `34bc2cfa` passed all nine source matrix jobs (2184 cases per job,
+92.476673%-92.675042% coverage), regression, evaluation and CodeQL. Installed
+qualification failed before tool execution because its evidence destination was
+inside the source checkout. The isolated repair changes only the verifier's
+temporary-directory placement and canonicalization; all 44 proof assertions,
+the restoration guard, runtime and workflow remain unchanged.
+
+Ten independently frozen controls pass, including actual verifier routing stopped
+by an inert first-tool sentinel. The original six-pass/four-failure reproduction
+and a nine-pass/one-fixture-oracle amendment remain preserved. Full hosted
+installed qualification remains pending; no local installation or model ran.
+This finite repair does not complete the broader planned commitment ledger.
+
+## Previous Session - 2026-10-04 (managed platform qualification follow-up)
+
+PR131 head `ca96e787` passed strict lint/type/docs and regression jobs but failed
+macOS collection, Ubuntu's before-spawn witness and several coverage jobs.
+The follow-up canonicalizes four owned temporary parents without changing the
+restoration guard. Managed configuration now preserves the exact executable
+invocation path and separately binds its canonical target and bytes, retaining
+virtual-environment behavior and changed-target rejection.
+
+New independently frozen controls pass 42 cases with one explicit POSIX-only
+environment skip on Windows. The unchanged original before-spawn control passes;
+50 retained hosted-repair cases and nine subtests pass with the inherited Windows
+symlink privilege skip. Deliberate wrong routing and missing canonical identity
+are rejected by the unchanged independent oracles. Initial local launcher timeouts
+remain inconclusive; the protocol fixture's reserved-name collection error and
+assertion-preserving amendment are retained. Full exact-head hosted coverage,
+actual POSIX environment behavior and installed gates remain pending.
+
+No original frozen test, coverage floor, workflow, dependency or schema changed.
+This is existing PR131 hardening only, with no PALADIN implementation, main merge,
+release or live installation. Historical scope inventories are not release authority.
+
+## Previous Session - 2026-10-03 (managed hosted qualification repair)
+
+PR131 head `22a291c` failed its strict documentation link and separate CodeQL
+security check, despite successful analysis execution. The isolated repair fixes
+the link and transports eight frozen historical sources without changing their
+bytes or manifests. Tests reconstruct disposable capsules before unchanged
+verification; corrected active fixtures retain the original behavioral oracles.
+All 254 original capsule files and 44 installed-verifier assertions are preserved.
+New bounded controls pass 50 cases with one inherited Windows symlink privilege
+skip and nine subtests. Historical routed controls pass 43 cases with that same
+privilege gate skipped; 28 runtime cases collect with unchanged bindings.
+Coverage, security workflows, root fixtures and production source are unchanged.
+Full exact repaired-tree hosted/installed qualification and independent review
+remain pending. No merge, release, native activation or live-store change.
+
+## Previous Session - 2026-10-03 (managed-session isolated port)
+
+Port the already planned explicit foreground managed runtime and Last Session
+projection onto qualified/reviewed R08 PR129 `c71abb6`. R18 is excluded while its
+scoped-visibility repair undergoes separate review. Preserve historical runtime,
+process, outcome and projection controls. Fresh independent controls reproduce
+caller-transaction false acknowledgements, consumed startup retry state,
+uncommitted projection and a hidden-required-event false complete close. Two
+bounded repairs address those contracts. Fresh independent controls pass 25 cases;
+56 historical cases and nine subtests pass, with two model CLI prerequisite skips
+and one Windows symlink privilege skip. Both deliberate fault controls are detected,
+and the independent pre-action oracle passes. A separately disclosed one-line CLI
+import restoration passes 48 retained R08 cases and 51 subtests. Original failures,
+fixture-only amendments and that integration correction remain preserved.
+
+No source-version/release change yet: the integration parent owns release order.
+Full exact-candidate hosted/installed checks, native host delivery, graphical and
+human acceptance remain pending. No publication, live store, settings, access or
+installation changes. See [managed usage](docs/managed-sessions.md). The historical
+35-commitment inventory is not promoted by this finite explicit-workflow port.
+
+## Previous Session - 2026-10-03 (explicit question candidate)
 
 Port only the previously planned R08 open/list/resolve lifecycle onto qualified
 PR128 `9e65c37`, whose all 18 hosted CI jobs and CodeQL passed. Preserve exact

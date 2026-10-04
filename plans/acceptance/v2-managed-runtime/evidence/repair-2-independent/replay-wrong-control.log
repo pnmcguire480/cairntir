@@ -1,0 +1,16 @@
+test_kill_after_external_effect_preserves_prediction_and_never_relaunches (test_managed_process.ManagedProcessAcceptance.test_kill_after_external_effect_preserves_prediction_and_never_relaunches) ... FAIL
+
+======================================================================
+FAIL: test_kill_after_external_effect_preserves_prediction_and_never_relaunches (test_managed_process.ManagedProcessAcceptance.test_kill_after_external_effect_preserves_prediction_and_never_relaunches)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\test_managed_process.py", line 240, in test_kill_after_external_effect_preserves_prediction_and_never_relaunches
+    self.assert_uncertain_recovery(1)
+  File "C:\Dev\Cairntir\.cairntir\v2-managed-runtime-20260920\test_managed_process.py", line 191, in assert_uncertain_recovery
+    self.assertEqual(len(self.markers()), expected_markers)
+AssertionError: 2 != 1
+
+----------------------------------------------------------------------
+Ran 1 test in 2.158s
+
+FAILED (failures=1)

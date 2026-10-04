@@ -1,0 +1,13 @@
+{
+  "status": "PASS_WRONG_CONTROL_REJECTED",
+  "mutation": "Remove only the required-source current-projectability refusal",
+  "test_cases": 1,
+  "expected_assertion_failures": 3,
+  "unexpected_errors": 0,
+  "source_sha256": "53fa5cc28d256a434d181a96d82b3a87534acc5eb6710236b6bcf6b44bad4df8",
+  "mutated_text_sha256": "5c3a8e5c4a43a7849d6ea49b53345f3be1445475f46b7914747329c95aec87ec",
+  "test_sha256": "8c27103e55ffa2eecb3e5cff3f171afc707c3ce5e46f829460ae7120474c7793",
+  "control_script_sha256": "45c108240adf4734c00a94d82b5824d28e5f91def84df14fea0371f8c0cb2a0d",
+  "log_sha256": "a27eabbbeca866bf129b2bb1619098ec5a82b5ff4fd01b192bb588c5611c7dba",
+  "product_unchanged": true
+}

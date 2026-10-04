@@ -1,0 +1,9 @@
+{
+  "prior_cli_sha256": "62daa492fb5671221d9962e823fa2041bb2f6963e4f558c5b5233a6630e55ebf",
+  "final_cli_sha256": "d67879b62d9655ed160b9ddc1095f4c229585daa93134a7f343e4bc59dd10a81",
+  "independent_byte_proof": "Removing only Annotated from the typing import reproduces exact prior CLI hash",
+  "prior_source_evidence_unchanged": "candidate-repair2-source.json",
+  "scope": "mechanical port omission restored after two managed behavioral repairs",
+  "runtime_projection_files_unchanged": true,
+  "existing_cli_oracle": "root-reports/importR08.log:48PASS51subtests"
+}

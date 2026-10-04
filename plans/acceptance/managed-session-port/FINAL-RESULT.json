@@ -1,0 +1,51 @@
+{
+  "status": "PASS bounded source qualification; hosted/installed qualification pending",
+  "fresh_normal_router": {
+    "passed": 25,
+    "failed": 0,
+    "seconds": 2.33,
+    "version": 4,
+    "receipt": "router-v4-final25.xml"
+  },
+  "historical_repair2": {
+    "passed": 56,
+    "skipped": 3,
+    "subtests_passed": 9,
+    "receipt": "candidate-repair2-final.xml"
+  },
+  "distinct_passed_cases": 81,
+  "retained_combined_repair2_run": {
+    "passed": 80,
+    "skipped": 3,
+    "fixture_failure": "visibility-v1 sqlite3.Row compared directly to tuple",
+    "subtests_passed": 9,
+    "seconds": 16.35
+  },
+  "fixture_amendments": [
+    "v2 correct generated markers",
+    "v3 raw caller transaction fixture avoids nested public checkpoint BEGIN",
+    "visibility-v2 tuple normalization preserves exact raw content oracle"
+  ],
+  "product_repairs_used": 2,
+  "separate_mechanical_port_correction": "CLI Annotated import restored; exact prior bytes reconstructed independently; unchanged retained R08 route48PASS51subtests",
+  "negative_controls": {
+    "ambient_guard_bypass": "unchanged DID NOT RAISE assertion: 1 failure,0 errors,1.04s",
+    "pre_action_oracle": "uncommitted child denied exit23/no marker; committed child exit0/one marker",
+    "replay_bypass": "unchanged uncertain-status assertion: 1 failure,0 errors,2.202s; two external markers"
+  },
+  "skips": [
+    "two historical CLI production-model prerequisites explicitly deferred",
+    "Windows symlink privilege fixture unavailable"
+  ],
+  "limits": [
+    "synthetic disposable stores/processes only",
+    "no native automatic activation or user-host custody claim",
+    "no live hooks/auth/installs/models/API inference/full local suite or coverage",
+    "fresh hosted and installed/model qualification remains pending"
+  ],
+  "warnings": [
+    "pytest asyncio_mode unknown because plugin autoload disabled; all selected controls ran"
+  ],
+  "source_binding": "FINAL-SOURCE-BINDINGS.json",
+  "native_gui_or_operator_acceptance": "unverified"
+}
