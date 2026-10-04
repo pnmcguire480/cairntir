@@ -1,0 +1,143 @@
+......F..F.............F                                                 [100%]
+================================== FAILURES ===================================
+___ test_only_four_caller_expressions_change_all_integrity_bodies_retained ____
+
+    def test_only_four_caller_expressions_change_all_integrity_bodies_retained():
+        for relative in ROUTERS:
+            original = (ROOT / "originals" / relative).read_bytes()
+            assert original.count(b"Path(_EVIDENCE_TEMP.name)") == 1
+            expected = original.replace(
+                b"Path(_EVIDENCE_TEMP.name)", b"Path(_EVIDENCE_TEMP.name).resolve()"
+            )
+            assert (CANDIDATE / relative).read_bytes() == expected, relative
+        for relative, expected in BASELINE["unchanged"].items():
+            if relative == "scripts/verify_package.py":
+                original = (ROOT / "originals" / relative).read_bytes()
+                original = _SUPPORT.expected_verifier(original)
+                expected = hashlib.sha256(original).hexdigest()
+>           assert digest(CANDIDATE / relative) == expected, relative
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: scripts/verify_package.py
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-installed-followup-20261004\acceptance\test_portability_v4.py:136: AssertionError
+_ test_only_owned_temp_location_and_canonicalization_change_all_44_assertions_remain _
+
+    def test_only_owned_temp_location_and_canonicalization_change_all_44_assertions_remain():
+        original = historical_verifier().read_bytes()
+        expected = _SUPPORT.expected_verifier(original)
+        current = (CANDIDATE / "scripts/verify_package.py").read_bytes()
+>       assert current == expected
+               ^^^^^^^^^^^^^^^^^^^
+E       AssertionError
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-installed-followup-20261004\acceptance\test_installed_boundary_v4.py:160: AssertionError
+___ test_actual_verifier_copies_fixed_capsule_before_inert_installed_probe ____
+
+synthetic_checkout = (WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-52/test_actual_verifier_copies_fi0/checkout'), ...WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-52/test_actual_verifier_copies_fi0/inert_uv.py'))
+tmp_path = WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/pytest-of-pnmcg/pytest-52/test_actual_verifier_copies_fi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E0FF9794D0>
+
+    def test_actual_verifier_copies_fixed_capsule_before_inert_installed_probe(
+        synthetic_checkout, tmp_path, monkeypatch
+    ):
+        source, helper, shim = synthetic_checkout
+        question = source / "plans/acceptance/questions-installed-ci-1.16-v2"
+        question.mkdir(parents=True)
+        for relative in ["FROZEN.json", "verify_installed_questions_v2.py"]:
+            shutil.copyfile(CANDIDATE / question.relative_to(source) / relative, question / relative)
+        followup = source / "plans/acceptance/managed-installed-followup"
+        followup.mkdir(parents=True)
+        frozen = json.loads((ROOT / "FROZEN.json").read_bytes())
+        for relative in ["FROZEN.json", *frozen["files_sha256"]]:
+            target = followup / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(ROOT / relative, target)
+        module = load(CANDIDATE / "scripts/verify_package.py", "full_inert_followup_routing")
+        module.ROOT = source
+        monkeypatch.setattr(module.shutil, "which", lambda name: str(shim) if name == "uv" else None)
+        stages = []
+        owned = []
+    
+        def inert_execute(arguments, cwd, environment, timeout=180):
+            if len(stages) == 0:
+                assert arguments[:2] == [str(shim), "export"]
+                assert cwd == source
+                requirements = Path(arguments[arguments.index("--output-file") + 1])
+                owned.append(requirements.parent)
+                assert not owned[0].is_relative_to(source)
+                requirements.write_text("# inert requirements; no package installation\n")
+                stages.append("export")
+            elif len(stages) == 1:
+                assert arguments[:2] == [str(shim), "venv"]
+                assert cwd == owned[0]
+                stages.append("venv")
+            elif len(stages) == 2:
+                assert arguments[:3] == [str(shim), "pip", "install"]
+                assert cwd == owned[0]
+                stages.append("install")
+            else:
+                assert "--probe" in arguments and timeout == 300
+                assert cwd == owned[0] and environment["CAIRNTIR_HOME"] == str(owned[0] / "home")
+                proof = Path(arguments[arguments.index("--managed-proof") + 1])
+                assert proof == owned[0] / "managed_proof"
+                assert proof == (owned[0] / "managed-source").parent / "managed_proof"
+                assert arguments[arguments.index("--managed-proof-sha256") + 1] == NEW_FREEZE
+                assert (proof / "FROZEN.json").read_bytes() == (ROOT / "FROZEN.json").read_bytes()
+                for relative, expected_sha in frozen["files_sha256"].items():
+                    assert hashlib.sha256((proof / relative).read_bytes()).hexdigest() == expected_sha
+                assert hashlib.sha256((proof / "FROZEN.json").read_bytes()).hexdigest() == NEW_FREEZE
+                stages.append("probe")
+                raise ProbeBoundary("No interpreter, installation or model executes")
+            return ""
+    
+        monkeypatch.setattr(module, "execute", inert_execute)
+        output = source / "build-verification"
+        with pytest.raises(ProbeBoundary):
+>           module.install_and_verify(tmp_path / "not-installed.whl", output)
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-installed-followup-20261004\acceptance\test_installed_followup.py:258: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\ct-j1004\scripts\verify_package.py:523: in install_and_verify
+    result = execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+arguments = ['C:\\Users\\pnmcg\\AppData\\Local\\Temp\\installed-_9h8cemf\\venv\\Scripts\\python.exe', 'C:\\Users\\pnmcg\\AppData\\...AppData\\Local\\Temp\\pytest-of-pnmcg\\pytest-52\\test_actual_verifier_copies_fi0\\not-installed.whl', '--output', ...]
+cwd = WindowsPath('C:/Users/pnmcg/AppData/Local/Temp/installed-_9h8cemf')
+environment = <inherited environment local removed for publication>
+timeout = 300
+
+    def inert_execute(arguments, cwd, environment, timeout=180):
+        if len(stages) == 0:
+            assert arguments[:2] == [str(shim), "export"]
+            assert cwd == source
+            requirements = Path(arguments[arguments.index("--output-file") + 1])
+            owned.append(requirements.parent)
+            assert not owned[0].is_relative_to(source)
+            requirements.write_text("# inert requirements; no package installation\n")
+            stages.append("export")
+        elif len(stages) == 1:
+            assert arguments[:2] == [str(shim), "venv"]
+            assert cwd == owned[0]
+            stages.append("venv")
+        elif len(stages) == 2:
+            assert arguments[:3] == [str(shim), "pip", "install"]
+            assert cwd == owned[0]
+            stages.append("install")
+        else:
+            assert "--probe" in arguments and timeout == 300
+            assert cwd == owned[0] and environment["CAIRNTIR_HOME"] == str(owned[0] / "home")
+            proof = Path(arguments[arguments.index("--managed-proof") + 1])
+            assert proof == owned[0] / "managed_proof"
+            assert proof == (owned[0] / "managed-source").parent / "managed_proof"
+>           assert arguments[arguments.index("--managed-proof-sha256") + 1] == NEW_FREEZE
+E           AssertionError: assert '53a59ffa4e0d...1b1f4c612e0ad' == '4553f721df2f...4b700c4ccd71b'
+E             
+E             - 4553f721df2f9beebbe68ae72df75c47f587655e77bd4923fb94b700c4ccd71b
+E             + 53a59ffa4e0dbfded002cc505ad335062074321faf8f70d4a841b1f4c612e0ad
+
+..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-installed-followup-20261004\acceptance\test_installed_followup.py:246: AssertionError
+=========================== short test summary info ===========================
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-installed-followup-20261004\acceptance\test_installed_followup.py::test_only_four_caller_expressions_change_all_integrity_bodies_retained
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-installed-followup-20261004\acceptance\test_installed_followup.py::test_only_owned_temp_location_and_canonicalization_change_all_44_assertions_remain
+FAILED ..\..\..\..\Documents\Codex\2026-09-30\task\cairntir-managed-installed-followup-20261004\acceptance\test_installed_followup.py::test_actual_verifier_copies_fixed_capsule_before_inert_installed_probe
+3 failed, 21 passed in 4.87s

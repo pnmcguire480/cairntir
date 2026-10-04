@@ -35,13 +35,14 @@ def _load(packet: str, freeze: str, pin: str, filename: str):
 
 with patch.dict(os.environ, {"MANAGED_PORTABILITY_CANDIDATE": str(_SOURCE)}):
     _PORTABILITY = _load(
-        "managed-installed-boundary",
-        "FROZEN-v3.json",
-        "f663c514a6d83f180a831737bf1030ff30ad78f568a8ad5ab4fc92fccf50b620",
-        "test_installed_boundary_v3.py",
+        "managed-installed-followup",
+        "ACCEPTANCE-FROZEN-v4.json",
+        "9832601191b71a7897332bba7afb7ddc3a23f4bcdd1614f0a024a32189d67b22",
+        "test_installed_followup.py",
     )
 
 synthetic_checkout = _PORTABILITY.synthetic_checkout
+installed_identity = _PORTABILITY.installed_identity
 for _name, _value in vars(_PORTABILITY).items():
     if _name.startswith("test_"):
         globals()[_name] = _value

@@ -443,8 +443,8 @@ def install_and_verify(wheel: Path, output: Path) -> dict:
     uv = shutil.which("uv")
     if uv is None:
         raise RuntimeError("uv is required to install the package under verification")
-    with tempfile.TemporaryDirectory(prefix="installed-") as temporary:
-        directory = Path(temporary).resolve()
+    with tempfile.TemporaryDirectory(prefix="installed-", dir=output) as temporary:
+        directory = Path(temporary)
         restore_spec = importlib.util.spec_from_file_location(
             "managed_evidence_restore", ROOT / "scripts/restore_managed_evidence.py"
         )
@@ -506,11 +506,11 @@ def install_and_verify(wheel: Path, output: Path) -> dict:
         assert hashlib.sha256(proof_source.read_bytes()).hexdigest() == proof_hash
         proof_copy = directory / "question_proof.py"
         shutil.copyfile(proof_source, proof_copy)
-        managed_source = ROOT / "plans/acceptance/managed-installed-followup"
-        managed_hash = "4553f721df2f9beebbe68ae72df75c47f587655e77bd4923fb94b700c4ccd71b"
+        managed_source = restored / "plans/acceptance/managed-installed-qualification"
+        managed_hash = "53a59ffa4e0dbfded002cc505ad335062074321faf8f70d4a841b1f4c612e0ad"
         managed_manifest = (managed_source / "FROZEN.json").read_bytes()
         assert hashlib.sha256(managed_manifest).hexdigest() == managed_hash
-        managed_copy = restored.parent / "managed_proof"
+        managed_copy = directory / "managed_proof"
         managed_copy.mkdir()
         (managed_copy / "FROZEN.json").write_bytes(managed_manifest)
         for relative, digest in json.loads(managed_manifest)["files_sha256"].items():

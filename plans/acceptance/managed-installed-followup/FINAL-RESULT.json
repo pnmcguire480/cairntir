@@ -1,0 +1,38 @@
+{
+  "result": "PASS",
+  "scope": "additive fixed-source installed fixture binding and exact verifier routing",
+  "acceptance_freeze_sha256": "9832601191b71a7897332bba7afb7ddc3a23f4bcdd1614f0a024a32189d67b22",
+  "installed_manifest_sha256": "4553f721df2f9beebbe68ae72df75c47f587655e77bd4923fb94b700c4ccd71b",
+  "baseline": {
+    "passed": 21,
+    "failed": 3,
+    "skipped": 0,
+    "seconds": 5.219
+  },
+  "final": {
+    "passed": 24,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 5.187
+  },
+  "original_helper_case_bytes_and_four_ids_preserved": true,
+  "all_44_verifier_assertion_asts_preserved": true,
+  "inherited_boundary_function_assertion_asts_preserved": true,
+  "deliberate_wrong_control": "baseline actual routing rejected old manifest; stale pin/source/origin negatives reject before case import",
+  "privacy": [
+    {
+      "file": "baseline.log",
+      "rendered_inherited_environment_absent": true
+    },
+    {
+      "file": "final.log",
+      "rendered_inherited_environment_absent": true
+    }
+  ],
+  "baseline_log_redaction": "original digest retained; one inherited environment local discarded before publication",
+  "local_installs_models_or_api_calls": false,
+  "remaining": [
+    "exact-head hosted installed four-case proof",
+    "separate Windows SQLite diagnostic qualification"
+  ]
+}

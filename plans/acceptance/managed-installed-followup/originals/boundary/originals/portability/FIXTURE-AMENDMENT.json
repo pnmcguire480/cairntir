@@ -1,0 +1,9 @@
+{
+  "fixture_issue": "Windows case-insensitive baseline.json collided with BASELINE.json after valid baseline test execution",
+  "preserved_receipt_sha256": "df109c3acad1735f1565abf6506bf4faf2eb5d08e20ad7a458d859d179cf5200",
+  "restored_baseline_sha256": "da79923389ff95893c59965fc46b44bb166567c6311e7cf9ce8535d6f02e6ab2",
+  "original_freeze_unchanged": true,
+  "old_runner_sha256": "b0b2725bf152ae004d01f2aa8748c6f931d6590d43738d7d3b1b6c0fa63b165e",
+  "new_runner_sha256": "20735d6d44626a57b4de7b3ea896c5b9d635ddf9bb7d7b7e4a8daf1346d61cb2",
+  "amendment": "Only receipt filename adds -execution; test bytes and assertions unchanged"
+}

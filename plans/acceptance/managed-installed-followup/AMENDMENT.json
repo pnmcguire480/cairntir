@@ -1,0 +1,21 @@
+{
+  "historical_installed_freeze_sha256": "53a59ffa4e0dbfded002cc505ad335062074321faf8f70d4a841b1f4c612e0ad",
+  "installed_freeze_sha256": "4553f721df2f9beebbe68ae72df75c47f587655e77bd4923fb94b700c4ccd71b",
+  "historical_boundary_seal_sha256": "48ef2fd354504a401fa95a19888aef908c5a537a8c153c6c6b2bf28f4fc2289e",
+  "reviewed_runtime_change": {
+    "managed.py": {
+      "before": "31452b541883edae15687dc8587234ff38ef97d5b9500ab5f985dbcc94c2866b",
+      "after": "7d1c1bfb8ebee9ee3eff89b5bdd5b87c9108830a98091c02d54cdd4dff652a93"
+    }
+  },
+  "helper_and_original_case_bytes_changed": false,
+  "authorized_verifier_changes": [
+    "TemporaryDirectory(prefix=\"installed-\", dir=output) -> TemporaryDirectory(prefix=\"installed-\")",
+    "directory = Path(temporary) -> directory = Path(temporary).resolve()",
+    "managed_source -> ROOT / plans/acceptance/managed-installed-followup",
+    "managed_hash -> 4553f721df2f9beebbe68ae72df75c47f587655e77bd4923fb94b700c4ccd71b",
+    "managed_copy = directory / managed_proof -> restored.parent / managed_proof"
+  ],
+  "local_install_or_model_execution": false,
+  "windows_sqlite_diagnostics": "separate lane; no cause claim"
+}

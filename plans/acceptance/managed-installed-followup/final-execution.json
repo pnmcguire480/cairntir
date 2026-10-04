@@ -1,0 +1,15 @@
+{
+  "phase": "final",
+  "returncode": 0,
+  "timed_out": false,
+  "seconds": 5.187,
+  "acceptance_freeze_sha256": "9832601191b71a7897332bba7afb7ddc3a23f4bcdd1614f0a024a32189d67b22",
+  "candidate": "C:\\Users\\pnmcg\\AppData\\Local\\Temp\\ct-j1004",
+  "source_sha256": {
+    "scripts/verify_package.py": "d4cfd7860919609b86b7c91d73d7e5e498a20fcf103f34d763ee236c026ffd59",
+    "scripts/restore_managed_evidence.py": "7efbb6c49f36c8a5944d3354963776b18dbe072ace51a2d1729759262f96f11b",
+    "src/cairntir/managed.py": "7d1c1bfb8ebee9ee3eff89b5bdd5b87c9108830a98091c02d54cdd4dff652a93"
+  },
+  "log_sha256": "0b7f26e253ecef35f9a863ff4915d4c91352dca18933dbedb14ab626f466d017",
+  "local_model_install_or_api": false
+}

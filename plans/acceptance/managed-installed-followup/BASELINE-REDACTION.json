@@ -1,0 +1,10 @@
+{
+  "original_log_sha256": "7b2a606fe8264eae7975463742cba205d3b029ec863771d77aa312a5fd2147f6",
+  "sanitized_log_sha256": "14ea2e731a9f6f4ec2c0a5bc7389dce33e94adca15fbccc94fc254cb3fbefb2f",
+  "removed_environment_local_lines": 1,
+  "reason": "pytest failure rendered abbreviated inherited environment; discarded before publication",
+  "original_bytes_retained": false,
+  "raw_environment_or_credential_values_retained": false,
+  "assertions_fixtures_and_test_result_changed": false,
+  "baseline_execution_receipt_log_sha256_refers_to": "original discarded log digest"
+}

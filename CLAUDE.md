@@ -89,7 +89,23 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-04 (installed evidence boundary)
+## Last Session - 2026-10-04 (installed proof identity follow-up)
+
+PR131 head `8f3b9b0` passed all nine source jobs (2187 cases per job,
+92.476673%-92.675042% coverage), three regression jobs, evaluation and CodeQL.
+Installed verification now reaches the proof. Linux and macOS reject a stale
+historical managed.py hash after the reviewed interpreter-environment repair.
+The follow-up keeps the historical capsule intact and separately binds the
+reviewed runtime; its installed helper and all four original cases stay exact.
+
+Windows fails earlier with SQLITE_IOERR_TRUNCATE at the question proof's final
+physical count after abrupt MCP shutdown. Its cause remains unresolved. A
+disposable diagnostic copy preserves all three exact records and passes integrity
+checks on a different SQLite version; this does not requalify the failed run.
+No retry, assertion removal, shutdown change or Windows runtime fix is proposed.
+Fresh installed qualification and the unexplained Windows failure remain gates.
+
+## Previous Session - 2026-10-04 (installed evidence boundary)
 
 PR131 head `34bc2cfa` passed all nine source matrix jobs (2184 cases per job,
 92.476673%-92.675042% coverage), regression, evaluation and CodeQL. Installed

@@ -47,6 +47,14 @@ its 44 proof assertions and strict restoration guard remain unchanged. Ten
 independent boundary controls pass without running tools or installations. Fresh
 exact-candidate installed qualification remains pending.
 
+The next hosted run passes every source platform but reaches a historical
+installed-source hash predating the interpreter repair. A separate frozen
+manifest binds the reviewed runtime while retaining the original installed
+helper, its four cases and all historical evidence. Windows also reports an
+unresolved SQLite truncate error after abrupt shutdown in the question proof;
+no retry or weakened crash-recovery assertion is introduced. This remains an
+unqualified candidate until fresh installed checks and failure review complete.
+
 ## [1.16.0] - Unreleased
 
 ### Added

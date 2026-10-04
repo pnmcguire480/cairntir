@@ -1,0 +1,18 @@
+{
+  "files_sha256": {
+    "src/cairntir/managed.py": "7d1c1bfb8ebee9ee3eff89b5bdd5b87c9108830a98091c02d54cdd4dff652a93",
+    "src/cairntir/managed_projection.py": "c1aae484087dbf681350ef20a47c4578f211dd42be77ddd22a17ea586f0725d9",
+    "src/cairntir/memory/store.py": "26aa05d780b9763be039a3bd9adca4812affcbea4d7430d481e36d32c0527067",
+    "src/cairntir/access.py": "5553a29df68c6e77701654fb5f75c943f95a7decc01d24da4526082ff29d81ad",
+    "src/cairntir/cli.py": "d67879b62d9655ed160b9ddc1095f4c229585daa93134a7f343e4bc59dd10a81",
+    "src/cairntir/tasks.py": "420b4b0fbb99625d3cecf4fe6c381d23a71ff6b60c1dfb31daed42c7197fcad8",
+    "src/cairntir/obsidian.py": "bd60792e3a3c139a4e2627e11f04f744097180f5eaf891a51d167e33332d0a9c",
+    "scripts/restore_managed_evidence.py": "7efbb6c49f36c8a5944d3354963776b18dbe072ace51a2d1729759262f96f11b",
+    ".github/workflows/ci.yml": "51d363757759932cf1df278c0c7497584a54a11613fcd2c80ed98149f2d114bd",
+    ".github/workflows/codeql.yml": "30d348461c94958ddd09d87ce65a77cdb1235cb915a78f0d4f6e951d79237247",
+    "scripts/verify_package.py": "d4cfd7860919609b86b7c91d73d7e5e498a20fcf103f34d763ee236c026ffd59"
+  },
+  "runtime_and_security_workflows_unchanged": true,
+  "all_44_verifier_assertion_asts_identical": true,
+  "historical_installed_packet_unchanged": true
+}

@@ -1,0 +1,13 @@
+{
+  "routers": [
+    "tests/unit/test_managed_runtime.py",
+    "tests/unit/test_last_session_projection.py",
+    "tests/unit/test_managed_port_acceptance.py",
+    "tests/unit/test_managed_installed_qualification.py"
+  ],
+  "unchanged": {
+    "scripts/restore_managed_evidence.py": "7efbb6c49f36c8a5944d3354963776b18dbe072ace51a2d1729759262f96f11b",
+    "scripts/verify_package.py": "2b89228d3a89298842e8e5cda4c9e05a2203d660ba7e35975179ac5246f5af4e"
+  },
+  "input_head": "ca96e787"
+}
