@@ -1,0 +1,10 @@
+{
+  "issue": "v2 omitted inherited expected canonical assignment string update",
+  "change": "Only directory = Path(temporary) expected AST string gains .resolve(); primary module only updates its v3 import filename/name",
+  "old_freeze_sha256": "e51d583bb4f6b562b136f04227d95d0c74e3988b8b2713767c57f8bb566b1eb1",
+  "old_portability_v2_sha256": "c64d06431371a57893260ec2730873af254c7222c745388c07785e412b209753",
+  "portability_v3_sha256": "4a92924f277b438bfafa07735fd88d22cacd7aac197f2d0238702b047d30d6ce",
+  "primary_assertions_identical": 23,
+  "preserved_failure": "candidate.log:9pass1fixturefailure; product probes and44assertions pass",
+  "no_runtime_change": true
+}

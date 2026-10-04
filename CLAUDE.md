@@ -89,7 +89,22 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-04 (managed platform qualification follow-up)
+## Last Session - 2026-10-04 (installed evidence boundary)
+
+PR131 head `34bc2cfa` passed all nine source matrix jobs (2184 cases per job,
+92.476673%-92.675042% coverage), regression, evaluation and CodeQL. Installed
+qualification failed before tool execution because its evidence destination was
+inside the source checkout. The isolated repair changes only the verifier's
+temporary-directory placement and canonicalization; all 44 proof assertions,
+the restoration guard, runtime and workflow remain unchanged.
+
+Ten independently frozen controls pass, including actual verifier routing stopped
+by an inert first-tool sentinel. The original six-pass/four-failure reproduction
+and a nine-pass/one-fixture-oracle amendment remain preserved. Full hosted
+installed qualification remains pending; no local installation or model ran.
+This finite repair does not complete the broader planned commitment ledger.
+
+## Previous Session - 2026-10-04 (managed platform qualification follow-up)
 
 PR131 head `ca96e787` passed strict lint/type/docs and regression jobs but failed
 macOS collection, Ubuntu's before-spawn witness and several coverage jobs.

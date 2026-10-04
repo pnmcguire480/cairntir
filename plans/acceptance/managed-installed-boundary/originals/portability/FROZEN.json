@@ -1,0 +1,16 @@
+{
+  "files_sha256": {
+    "BASELINE.json": "da79923389ff95893c59965fc46b44bb166567c6311e7cf9ce8535d6f02e6ab2",
+    "originals/scripts/restore_managed_evidence.py": "7efbb6c49f36c8a5944d3354963776b18dbe072ace51a2d1729759262f96f11b",
+    "originals/scripts/verify_package.py": "2b89228d3a89298842e8e5cda4c9e05a2203d660ba7e35975179ac5246f5af4e",
+    "originals/tests/unit/test_last_session_projection.py": "4efa9437e6ab10f348a3cbaf54677e2acb8b9f63120a54b9723c2ec77972264a",
+    "originals/tests/unit/test_managed_installed_qualification.py": "38bbfe81157b72b9112595006a4c3c42551c9578c121f9f7e14ad0c688e32f9e",
+    "originals/tests/unit/test_managed_port_acceptance.py": "9702176c0ce8706f1aade6f6a76183aa24d87a7044ec9d14705556ffbacf980a",
+    "originals/tests/unit/test_managed_runtime.py": "08e6697b857abf3f12822f96224707eed02043786b8382fbd847467d1095f234",
+    "prepare.py": "640ceffcafb8795f90da70d8fca076b506c94e781193b90e141623e4030aeb18",
+    "test_portability.py": "a857ec56e4b11498ac28ee6d893aea9ec36c343dfbecb0ff2ad67b3a52a8396a"
+  },
+  "cases": 7,
+  "contract": "Only four caller expressions canonicalize their owned TemporaryDirectory parent; security helper, verifier and all original integrity bodies remain unchanged",
+  "evidence_limits": "Mocked filesystem alias; actual macOS collection validated by future hosted CI; no privileged symlinks, model loads or installs"
+}

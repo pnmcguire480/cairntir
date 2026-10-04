@@ -443,8 +443,8 @@ def install_and_verify(wheel: Path, output: Path) -> dict:
     uv = shutil.which("uv")
     if uv is None:
         raise RuntimeError("uv is required to install the package under verification")
-    with tempfile.TemporaryDirectory(prefix="installed-") as temporary:
-        directory = Path(temporary).resolve()
+    with tempfile.TemporaryDirectory(prefix="installed-", dir=output) as temporary:
+        directory = Path(temporary)
         restore_spec = importlib.util.spec_from_file_location(
             "managed_evidence_restore", ROOT / "scripts/restore_managed_evidence.py"
         )

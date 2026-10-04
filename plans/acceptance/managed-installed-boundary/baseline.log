@@ -1,0 +1,177 @@
+......FFFF                                                               [100%]
+================================== FAILURES ===================================
+___ test_only_four_caller_expressions_change_all_integrity_bodies_retained ____
+
+    def test_only_four_caller_expressions_change_all_integrity_bodies_retained():
+        for relative in ROUTERS:
+            original = (ROOT / "originals" / relative).read_bytes()
+            assert original.count(b"Path(_EVIDENCE_TEMP.name)") == 1
+            expected = original.replace(
+                b"Path(_EVIDENCE_TEMP.name)", b"Path(_EVIDENCE_TEMP.name).resolve()"
+            )
+            assert (CANDIDATE / relative).read_bytes() == expected, relative
+        for relative, expected in BASELINE["unchanged"].items():
+            if relative == "scripts/verify_package.py":
+                original = (ROOT / "originals" / relative).read_bytes()
+                original = original.replace(
+                    b'TemporaryDirectory(prefix="installed-", dir=output)',
+                    b'TemporaryDirectory(prefix="installed-")',
+                )
+                original = original.replace(
+                    b"directory = Path(temporary)\n", b"directory = Path(temporary).resolve()\n"
+                )
+                expected = hashlib.sha256(original).hexdigest()
+>           assert digest(CANDIDATE / relative) == expected, relative
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: scripts/verify_package.py
+
+..\..\acceptance\test_portability_v2.py:129: AssertionError
+_ test_output_inside_checkout_keeps_owned_execution_temp_outside_before_tool __
+
+synthetic_checkout = (WindowsPath('C:/Users/pnmcg/Documents/Codex/2026-09-30/task/cairntir-managed-installed-boundary-20261004/runtime/base...stalled-boundary-20261004/runtime/baseline/temp/pytest-of-pnmcg/pytest-0/test_output_inside_checkout_ke0/inert_uv.py'))
+tmp_path = WindowsPath('C:/Users/pnmcg/Documents/Codex/2026-09-30/task/cairntir-managed-installed-boundary-20261004/runtime/baseline/temp/pytest-of-pnmcg/pytest-0/test_output_inside_checkout_ke0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000227F5C26D10>
+
+    def test_output_inside_checkout_keeps_owned_execution_temp_outside_before_tool(
+        synthetic_checkout, tmp_path, monkeypatch
+    ):
+        source, helper, shim = synthetic_checkout
+        output = source / "build-verification"
+        old = load(historical_verifier(), "historical_output_routing")
+        old_calls = wire(old, source, helper, shim, monkeypatch)
+        with pytest.raises(ValueError, match="outside the source"):
+            old.install_and_verify(tmp_path / "never-installed.whl", output)
+        assert old_calls == []
+        assert list(output.iterdir()) == [], "Old refusal left tool/install artifacts"
+        current = load(CANDIDATE / "scripts/verify_package.py", "candidate_output_routing")
+        current_calls = wire(current, source, helper, shim, monkeypatch)
+        with pytest.raises(FirstToolBoundary):
+>           current.install_and_verify(tmp_path / "never-installed.whl", output)
+
+..\..\acceptance\test_installed_boundary.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Temp\ct-i1004\scripts\verify_package.py:455: in install_and_verify
+    restored = restore_module.restore(ROOT, directory / "managed-source")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+source_root = WindowsPath('C:/Users/pnmcg/Documents/Codex/2026-09-30/task/cairntir-managed-installed-boundary-20261004/runtime/baseline/temp/pytest-of-pnmcg/pytest-0/test_output_inside_checkout_ke0/checkout')
+destination_root = WindowsPath('C:/Users/pnmcg/Documents/Codex/2026-09-30/task/cairntir-managed-installed-boundary-20261004/runtime/basel...ytest-of-pnmcg/pytest-0/test_output_inside_checkout_ke0/checkout/build-verification/installed-chl8ny0q/managed-source')
+
+    def restore(source_root: Path, destination_root: Path) -> Path:
+        """Copy four exact capsules and archived resources into a new destination.
+    
+        Validate everything before the first write. Refuse existing destinations,
+        unsafe filesystem entries, and altered duplicate resource files. The caller
+        owns the disposable output's lifetime; a failed write stays visible.
+        """
+        source = Path(source_root).absolute()
+        destination = Path(destination_root).absolute()
+        _parents(source)
+        _regular(source, directory=True)
+        _parents(destination.parent)
+        source = source.resolve(strict=True)
+        destination = destination.resolve(strict=False)
+        if destination.exists() or destination.is_symlink():
+            raise ValueError("managed evidence destination must be new")
+        if destination.is_relative_to(source) or source.is_relative_to(destination):
+>           raise ValueError("managed evidence destination must be outside the source")
+E           ValueError: managed evidence destination must be outside the source
+
+temp\pytest-of-pnmcg\pytest-0\test_output_inside_checkout_ke0\checkout\scripts\restore_managed_evidence.py:136: ValueError
+_______ test_installed_caller_canonicalizes_modeled_platform_temp_alias _______
+
+synthetic_checkout = (WindowsPath('C:/Users/pnmcg/Documents/Codex/2026-09-30/task/cairntir-managed-installed-boundary-20261004/runtime/base...stalled-boundary-20261004/runtime/baseline/temp/pytest-of-pnmcg/pytest-0/test_installed_caller_canonica0/inert_uv.py'))
+tmp_path = WindowsPath('C:/Users/pnmcg/Documents/Codex/2026-09-30/task/cairntir-managed-installed-boundary-20261004/runtime/baseline/temp/pytest-of-pnmcg/pytest-0/test_installed_caller_canonica0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000227F6754890>
+
+    def test_installed_caller_canonicalizes_modeled_platform_temp_alias(
+        synthetic_checkout, tmp_path, monkeypatch
+    ):
+        source, helper, shim = synthetic_checkout
+        output = tmp_path / "requested-reports"
+        alias, physical = tmp_path / "platform-temp-alias", tmp_path / "physical-owned-temp"
+        alias.mkdir()
+        physical.mkdir()
+        original_lstat, original_resolve = Path.lstat, Path.resolve
+        exits = []
+    
+        def modeled_lstat(path, *args, **kwargs):
+            if path == alias:
+                return SimpleNamespace(st_mode=stat.S_IFLNK | 0o777, st_file_attributes=0)
+            return original_lstat(path, *args, **kwargs)
+    
+        def modeled_resolve(path, *args, **kwargs):
+            if path == alias:
+                return physical
+            return original_resolve(path, *args, **kwargs)
+    
+        @contextmanager
+        def owned_temporary(*, prefix, dir=None):
+            assert prefix == "installed-"
+            assert dir is None or dir == output
+            try:
+                yield str(alias)
+            finally:
+                exits.append("closed")
+    
+        monkeypatch.setattr(Path, "lstat", modeled_lstat)
+        monkeypatch.setattr(Path, "resolve", modeled_resolve)
+        old = load(historical_verifier(), "historical_alias_routing")
+        monkeypatch.setattr(old.tempfile, "TemporaryDirectory", owned_temporary)
+        old_calls = wire(old, source, helper, shim, monkeypatch)
+        with pytest.raises(ValueError, match="link or reparse point"):
+            old.install_and_verify(tmp_path / "never-installed.whl", output)
+        assert old_calls == []
+        assert not (physical / "managed-source").exists()
+        current = load(CANDIDATE / "scripts/verify_package.py", "candidate_alias_routing")
+        current_calls = wire(current, source, helper, shim, monkeypatch)
+        with pytest.raises(FirstToolBoundary):
+>           current.install_and_verify(tmp_path / "never-installed.whl", output)
+
+..\..\acceptance\test_installed_boundary.py:149: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\pnmcg\AppData\Local\Temp\ct-i1004\scripts\verify_package.py:455: in install_and_verify
+    restored = restore_module.restore(ROOT, directory / "managed-source")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+temp\pytest-of-pnmcg\pytest-0\test_installed_caller_canonica0\checkout\scripts\restore_managed_evidence.py:130: in restore
+    _parents(destination.parent)
+temp\pytest-of-pnmcg\pytest-0\test_installed_caller_canonica0\checkout\scripts\restore_managed_evidence.py:84: in _parents
+    _regular(parent, directory=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/pnmcg/Documents/Codex/2026-09-30/task/cairntir-managed-installed-boundary-20261004/runtime/baseline/temp/pytest-of-pnmcg/pytest-0/test_installed_caller_canonica0/platform-temp-alias')
+
+    def _regular(path: Path, *, directory: bool = False) -> None:
+        """Reject links, Windows reparse points and unexpected filesystem objects."""
+        info = path.lstat()
+        if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
+>           raise ValueError(f"frozen evidence path is a link or reparse point: {path}")
+E           ValueError: frozen evidence path is a link or reparse point: C:\Users\pnmcg\Documents\Codex\2026-09-30\task\cairntir-managed-installed-boundary-20261004\runtime\baseline\temp\pytest-of-pnmcg\pytest-0\test_installed_caller_canonica0\platform-temp-alias
+
+temp\pytest-of-pnmcg\pytest-0\test_installed_caller_canonica0\checkout\scripts\restore_managed_evidence.py:74: ValueError
+_ test_only_owned_temp_location_and_canonicalization_change_all_44_assertions_remain _
+
+    def test_only_owned_temp_location_and_canonicalization_change_all_44_assertions_remain():
+        original = historical_verifier().read_bytes()
+        expected = original.replace(
+            b'TemporaryDirectory(prefix="installed-", dir=output)',
+            b'TemporaryDirectory(prefix="installed-")',
+        )
+        expected = expected.replace(
+            b"directory = Path(temporary)\n", b"directory = Path(temporary).resolve()\n"
+        )
+        current = (CANDIDATE / "scripts/verify_package.py").read_bytes()
+>       assert current == expected
+E       assert b'"""Install ... indent=2))\n' == b'"""Install ... indent=2))\n'
+E         
+E         At index 18724 diff: b',' != b')'
+E         Use -v to get more diff
+
+..\..\acceptance\test_installed_boundary.py:165: AssertionError
+=========================== short test summary info ===========================
+FAILED ..\..\acceptance\test_installed_boundary.py::test_only_four_caller_expressions_change_all_integrity_bodies_retained
+FAILED ..\..\acceptance\test_installed_boundary.py::test_output_inside_checkout_keeps_owned_execution_temp_outside_before_tool
+FAILED ..\..\acceptance\test_installed_boundary.py::test_installed_caller_canonicalizes_modeled_platform_temp_alias
+FAILED ..\..\acceptance\test_installed_boundary.py::test_only_owned_temp_location_and_canonicalization_change_all_44_assertions_remain
+4 failed, 6 passed in 2.07s

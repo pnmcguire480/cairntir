@@ -40,6 +40,13 @@ on systems with aliased temp roots. New frozen checks cover invocation identity,
 strict JSONL routing, surfaced input failures and truthful close receipts. Original
 tests and the 92% coverage floor remain unchanged; hosted qualification is pending.
 
+All nine hosted source matrix jobs then passed above 92% coverage, but installed
+qualification exposed an evidence directory inside the source checkout. The
+verifier now uses canonical platform temporary storage outside that checkout;
+its 44 proof assertions and strict restoration guard remain unchanged. Ten
+independent boundary controls pass without running tools or installations. Fresh
+exact-candidate installed qualification remains pending.
+
 ## [1.16.0] - Unreleased
 
 ### Added

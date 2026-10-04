@@ -126,3 +126,4 @@ plans/acceptance/managed-hosted-repair/** -text whitespace=-blank-at-eol,-blank-
 plans/acceptance/managed-portability/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 plans/acceptance/managed-environment/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 plans/acceptance/managed-protocol/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+plans/acceptance/managed-installed-boundary/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
