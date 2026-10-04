@@ -1,0 +1,32 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_rejected_envelope_cannot_call_runtime_or_dispatch[supplied5] ______
+
+supplied = {'operation': 'start', 'request': {}, 'schema': 'cairntir.managed-command.v1'}
+
+    @pytest.mark.parametrize(
+        "supplied",
+        [
+            [],
+            {"schema": "cairntir.managed-command.v1", "operation": "brief"},
+            {**command("brief", {}), "executable": "arbitrary caller executable"},
+            {**command("brief", {}), "schema": "foreign.schema"},
+            command("capture", []),
+            command("start", {}),
+            command("__getattribute__", {"name": "_store"}),
+            command("status", {}),
+            command("status", {"action_id": "identity", "argv": ["untrusted"]}),
+            command("brief", {"replace_configuration": True}),
+            command("close", {}),
+            command("close", {"last_sequence": 1, "approve": True}),
+        ],
+    )
+    def test_rejected_envelope_cannot_call_runtime_or_dispatch(supplied):
+        runtime = RecordingRuntime()
+>       with pytest.raises(managed.ManagedRuntimeError):
+E       Failed: DID NOT RAISE <class 'cairntir.managed.ManagedRuntimeError'>
+
+..\..\acceptance\test_managed_protocol_v2.py:104: Failed
+=========================== short test summary info ===========================
+FAILED ..\..\acceptance\test_managed_protocol_v2.py::test_rejected_envelope_cannot_call_runtime_or_dispatch[supplied5]
+1 failed in 0.38s

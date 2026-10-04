@@ -20,7 +20,7 @@ if _RESTORE_SPEC is None or _RESTORE_SPEC.loader is None:
 _RESTORE = importlib.util.module_from_spec(_RESTORE_SPEC)
 _RESTORE_SPEC.loader.exec_module(_RESTORE)
 _EVIDENCE_TEMP = tempfile.TemporaryDirectory(prefix="cairntir-managed-evidence-")
-_EVIDENCE_ROOT = _RESTORE.restore(_SOURCE, Path(_EVIDENCE_TEMP.name).resolve() / "snapshot")
+_EVIDENCE_ROOT = _RESTORE.restore(_SOURCE, Path(_EVIDENCE_TEMP.name) / "snapshot")
 ROOT = _EVIDENCE_ROOT / "plans/acceptance/managed-installed-qualification"
 FROZEN_SHA256 = "53a59ffa4e0dbfded002cc505ad335062074321faf8f70d4a841b1f4c612e0ad"
 

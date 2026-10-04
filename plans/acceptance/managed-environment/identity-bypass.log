@@ -1,0 +1,40 @@
+test_exact_invocation_and_input_preserved_but_canonical_target_is_bound (test_managed_environment.ManagedEnvironmentAcceptance.test_exact_invocation_and_input_preserved_but_canonical_target_is_bound) ... FAIL
+test_same_byte_target_retarget_after_ack_refuses_dispatch_without_writes (test_managed_environment.ManagedEnvironmentAcceptance.test_same_byte_target_retarget_after_ack_refuses_dispatch_without_writes) ... FAIL
+
+======================================================================
+FAIL: test_exact_invocation_and_input_preserved_but_canonical_target_is_bound (test_managed_environment.ManagedEnvironmentAcceptance.test_exact_invocation_and_input_preserved_but_canonical_target_is_bound)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\pnmcg\Documents\Codex\2026-09-30\task\cairntir-managed-environment-20261004\acceptance\test_managed_environment.py", line 98, in test_exact_invocation_and_input_preserved_but_canonical_target_is_bound
+    self.assertNotEqual(canonical(first), canonical(second), "same-byte target retargeting lost its identity binding")
+AssertionError: '{"brief_budget_chars":16384,"profiles":{"check":{"argv":["C:\\\\Users\\\\pnmcg\\\\AppData\\\\Local\\\\Temp\\\\managed-environment-n3x7wkg0\\\\configured-interpreter.bin","-c","print(\'exact argument tail\')","space arg"],"cwd":"C:\\\\Users\\\\pnmcg\\\\AppData\\\\Local\\\\Temp\\\\managed-environment-n3x7wkg0","executable_sha256":"012131eae5df2338520e6647e2eb436714d1a44854ecaa3bbc5c64d57b7c0d36","output_limit_bytes":8192,"timeout_seconds":10}},"project_root":"C:\\\\Users\\\\pnmcg\\\\AppData\\\\Local\\\\Temp\\\\managed-environment-n3x7wkg0","room":"synthetic","schema":"cairntir.managed-config.v1","wing":"environment"}' == '{"brief_budget_chars":16384,"profiles":{"check":{"argv":["C:\\\\Users\\\\pnmcg\\\\AppData\\\\Local\\\\Temp\\\\managed-environment-n3x7wkg0\\\\configured-interpreter.bin","-c","print(\'exact argument tail\')","space arg"],"cwd":"C:\\\\Users\\\\pnmcg\\\\AppData\\\\Local\\\\Temp\\\\managed-environment-n3x7wkg0","executable_sha256":"012131eae5df2338520e6647e2eb436714d1a44854ecaa3bbc5c64d57b7c0d36","output_limit_bytes":8192,"timeout_seconds":10}},"project_root":"C:\\\\Users\\\\pnmcg\\\\AppData\\\\Local\\\\Temp\\\\managed-environment-n3x7wkg0","room":"synthetic","schema":"cairntir.managed-config.v1","wing":"environment"}' : same-byte target retargeting lost its identity binding
+
+======================================================================
+FAIL: test_same_byte_target_retarget_after_ack_refuses_dispatch_without_writes (test_managed_environment.ManagedEnvironmentAcceptance.test_same_byte_target_retarget_after_ack_refuses_dispatch_without_writes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\pnmcg\Documents\Codex\2026-09-30\task\cairntir-managed-environment-20261004\acceptance\test_managed_environment.py", line 110, in test_same_byte_target_retarget_after_ack_refuses_dispatch_without_writes
+    runtime.dispatch(action)
+  File "C:\Users\pnmcg\AppData\Local\Temp\ct-r1004\src\cairntir\managed.py", line 38, in call
+    return function(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pnmcg\AppData\Local\Temp\ct-r1004\src\cairntir\managed.py", line 754, in dispatch
+    actual = self._run(profile)
+             ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pnmcg\AppData\Local\Temp\ct-r1004\src\cairntir\managed.py", line 613, in _run
+    process = subprocess.Popen(  # noqa: S603 - immutable trusted profile, shell disabled
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\unittest\mock.py", line 1124, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\unittest\mock.py", line 1128, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pnmcg\AppData\Local\Programs\Python\Python311\Lib\unittest\mock.py", line 1183, in _execute_mock_call
+    raise effect
+AssertionError: forbidden dispatch
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.070s
+
+FAILED (failures=2)

@@ -1,0 +1,10 @@
+{
+  "schema": "cairntir.managed-environment-acceptance.v1",
+  "frozen_at": "2026-10-04T00:30:28.2720434Z",
+  "implementation_started": false,
+  "test_count": 3,
+  "files_sha256": {
+    "CONTRACT.md": "2e92c0032268f37b60222817826af698eca93e59cce8dc1567ccea401a5e483d",
+    "test_managed_environment.py": "da903fb6ef2c8d06a09fbf796d7a380266ebc6b3909c306ea18f8249906cf7c0"
+  }
+}

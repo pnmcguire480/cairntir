@@ -89,7 +89,29 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-03 (managed hosted qualification repair)
+## Last Session - 2026-10-04 (managed platform qualification follow-up)
+
+PR131 head `ca96e787` passed strict lint/type/docs and regression jobs but failed
+macOS collection, Ubuntu's before-spawn witness and several coverage jobs.
+The follow-up canonicalizes four owned temporary parents without changing the
+restoration guard. Managed configuration now preserves the exact executable
+invocation path and separately binds its canonical target and bytes, retaining
+virtual-environment behavior and changed-target rejection.
+
+New independently frozen controls pass 42 cases with one explicit POSIX-only
+environment skip on Windows. The unchanged original before-spawn control passes;
+50 retained hosted-repair cases and nine subtests pass with the inherited Windows
+symlink privilege skip. Deliberate wrong routing and missing canonical identity
+are rejected by the unchanged independent oracles. Initial local launcher timeouts
+remain inconclusive; the protocol fixture's reserved-name collection error and
+assertion-preserving amendment are retained. Full exact-head hosted coverage,
+actual POSIX environment behavior and installed gates remain pending.
+
+No original frozen test, coverage floor, workflow, dependency or schema changed.
+This is existing PR131 hardening only, with no PALADIN implementation, main merge,
+release or live installation. Historical scope inventories are not release authority.
+
+## Previous Session - 2026-10-03 (managed hosted qualification repair)
 
 PR131 head `22a291c` failed its strict documentation link and separate CodeQL
 security check, despite successful analysis execution. The isolated repair fixes

@@ -1,0 +1,24 @@
+{
+  "result": "PASS finite caller-only portability amendment; actual macOS hosted collection pending",
+  "authoritative_baseline": {
+    "passed": 6,
+    "expected_failed": 1,
+    "pytest_seconds": 1.13,
+    "wall_seconds": 1.453
+  },
+  "candidate": {
+    "passed": 7,
+    "skipped": 0,
+    "pytest_seconds": 1.18,
+    "wall_seconds": 1.563
+  },
+  "initial_receipt": "Invalidated as preservation-harness history after case-insensitive receipt filename collision; original frozen baseline restored exactly; authoritative replay uses distinct receipt name",
+  "review": "Only four module-level caller Path(...).resolve() additions; every other router byte, helper/verifier byte and all source files unchanged. Unsafe source/archive link rejection remains demonstrated",
+  "installed_paths": "CLI output.resolve() canonicalizes TemporaryDirectory(dir=output); no installed routing change needed",
+  "limits": [
+    "Mocked filesystem alias with no privileged symlink creation",
+    "No local full suite, models, installs or API use",
+    "Fresh hosted macOS collection, CI and CodeQL required; no hosted pass claimed"
+  ],
+  "preservation_sha256": "16d0b7a5b4b3edef62252e05405e78c65a518553713dc6e2852eef7ef7b60685"
+}

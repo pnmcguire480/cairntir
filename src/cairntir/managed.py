@@ -129,7 +129,9 @@ def _configuration(value: object) -> dict[str, Any]:
             or not cwd.resolve().is_relative_to(root.resolve())
         ):
             raise ManagedRuntimeError("cwd must be an existing directory within project_root")
-        argv[0] = str(executable.resolve())
+        # Preserve invocation semantics (notably Python virtual environments)
+        # while binding the resolved target independently for change detection.
+        profile["executable_path"] = str(executable.resolve())
         profile["cwd"] = str(cwd.resolve())
         _integer(profile["timeout_seconds"], "timeout_seconds", 1, 300)
         _integer(profile["output_limit_bytes"], "output_limit_bytes", 1, 1048576)

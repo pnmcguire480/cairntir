@@ -1,0 +1,27 @@
+{
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "--confcutdir",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-portability-20261004\\acceptance",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-portability-20261004\\acceptance\\test_portability.py"
+  ],
+  "returncode": 0,
+  "seconds": 1.563,
+  "files_sha256": {
+    "tests/unit/test_managed_runtime.py": "682d57f74847be35c2cb86422669e1340ad8883d6677d84dc268dbeadc72d0aa",
+    "tests/unit/test_last_session_projection.py": "016fbfc579507be76fca114f369a66a425fc9bc2e78089e6d5a52b6c883ca8fe",
+    "tests/unit/test_managed_port_acceptance.py": "4e5d54b389ff2645e37a113b40661562e8b3d59e801608b992decc928146f4ae",
+    "tests/unit/test_managed_installed_qualification.py": "4970690de5d4f5f32011cefac40e6b45b5480ac660b3c81d135461b4b1fc6829",
+    "scripts/restore_managed_evidence.py": "7efbb6c49f36c8a5944d3354963776b18dbe072ace51a2d1729759262f96f11b",
+    "scripts/verify_package.py": "2b89228d3a89298842e8e5cda4c9e05a2203d660ba7e35975179ac5246f5af4e"
+  },
+  "runner_sha256": "20735d6d44626a57b4de7b3ea896c5b9d635ddf9bb7d7b7e4a8daf1346d61cb2",
+  "frozen_sha256": "5e4c59ffce6d9187ff3e814ba0f7a89aed3b47baf7536a7c1c4d3222280665ae"
+}

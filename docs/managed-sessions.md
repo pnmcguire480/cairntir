@@ -24,6 +24,10 @@ and output limits from 1 to 1048576 bytes. Choose the exact fixed arguments and
 review the executable before starting. Profile configuration is operator input,
 not instructions recovered from memory. Requests cannot substitute arguments.
 
+The worker invokes the configured executable path, preserving environments such
+as a Python virtual environment. It separately binds the resolved executable
+target and its bytes; changing either requires a restart and fresh acknowledgement.
+
 Run `cairntir managed --config managed.json --session-id SESSION_UUID`, optionally
 adding `--task-id TASK_UUID` when selecting an existing task. Session and task IDs
 use canonical UUID strings. The first stdout line is a fresh startup brief.

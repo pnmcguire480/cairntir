@@ -1,0 +1,20 @@
+......F                                                                  [100%]
+================================== FAILURES ===================================
+___ test_only_four_caller_expressions_change_all_integrity_bodies_retained ____
+
+    def test_only_four_caller_expressions_change_all_integrity_bodies_retained():
+        for relative in ROUTERS:
+            original = (ROOT / "originals" / relative).read_bytes()
+            assert original.count(b"Path(_EVIDENCE_TEMP.name)") == 1
+            expected = original.replace(b"Path(_EVIDENCE_TEMP.name)", b"Path(_EVIDENCE_TEMP.name).resolve()")
+>           assert (CANDIDATE / relative).read_bytes() == expected, relative
+E           AssertionError: tests/unit/test_managed_runtime.py
+E           assert b'"""Run inde...stsRun == 1\n' == b'"""Run inde...stsRun == 1\n'
+E             
+E             At index 860 diff: b' ' != b'.'
+E             Use -v to get more diff
+
+..\..\acceptance\test_portability.py:107: AssertionError
+=========================== short test summary info ===========================
+FAILED ..\..\acceptance\test_portability.py::test_only_four_caller_expressions_change_all_integrity_bodies_retained
+1 failed, 6 passed in 1.38s

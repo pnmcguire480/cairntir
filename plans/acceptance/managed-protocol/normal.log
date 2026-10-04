@@ -1,0 +1,8 @@
+
+=================================== ERRORS ====================================
+____________ ERROR collecting acceptance/test_managed_protocol.py _____________
+acceptance/test_managed_protocol.py::test_allowed_envelope_routes_exactly_one_public_operation: 'request' is a reserved name and cannot be used in @pytest.mark.parametrize
+=========================== short test summary info ===========================
+ERROR ..\..\acceptance\test_managed_protocol.py - Failed: acceptance/test_man...
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 1.35s

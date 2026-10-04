@@ -1,0 +1,27 @@
+{
+  "command": [
+    "C:\\Users\\pnmcg\\.codex\\worktrees\\v2-foundation\\Cairntir\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "--confcutdir",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-protocol-20261004\\acceptance",
+    "C:\\Users\\pnmcg\\Documents\\Codex\\2026-09-30\\task\\cairntir-managed-protocol-20261004\\acceptance\\test_managed_protocol_v2.py"
+  ],
+  "returncode": 0,
+  "seconds": 1.844,
+  "files_sha256": {
+    "src/cairntir/managed.py": "7d1c1bfb8ebee9ee3eff89b5bdd5b87c9108830a98091c02d54cdd4dff652a93",
+    "src/cairntir/cli.py": "d67879b62d9655ed160b9ddc1095f4c229585daa93134a7f343e4bc59dd10a81",
+    "src/cairntir/tasks.py": "420b4b0fbb99625d3cecf4fe6c381d23a71ff6b60c1dfb31daed42c7197fcad8",
+    "src/cairntir/memory/store.py": "26aa05d780b9763be039a3bd9adca4812affcbea4d7430d481e36d32c0527067",
+    "src/cairntir/access.py": "5553a29df68c6e77701654fb5f75c943f95a7decc01d24da4526082ff29d81ad"
+  },
+  "freeze_sha256": "0a50afb4b4b820c95335655dde6537f0af4829bec068b84861f635adf27bae25",
+  "runner_sha256": "7520b88682904786be40f5ed74e0d03878e7f1d9bc8a7518bc3aa4c8bafe59b3",
+  "expected_wrong_control_failure": false
+}

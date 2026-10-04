@@ -33,6 +33,13 @@ original capsules for unchanged gates. Maintained fixture amendments retain ever
 behavioral oracle. No runtime code, coverage threshold or security query changed;
 fresh hosted qualification is still required.
 
+The subsequent platform repair preserves configured executable invocation paths
+(including Python virtual environments) while independently binding the resolved
+target and its bytes. It also canonicalizes owned evidence temporary directories
+on systems with aliased temp roots. New frozen checks cover invocation identity,
+strict JSONL routing, surfaced input failures and truthful close receipts. Original
+tests and the 92% coverage floor remain unchanged; hosted qualification is pending.
+
 ## [1.16.0] - Unreleased
 
 ### Added

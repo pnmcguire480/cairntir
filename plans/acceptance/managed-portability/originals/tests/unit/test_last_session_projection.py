@@ -16,7 +16,7 @@ if _RESTORE_SPEC is None or _RESTORE_SPEC.loader is None:
 _RESTORE = importlib.util.module_from_spec(_RESTORE_SPEC)
 _RESTORE_SPEC.loader.exec_module(_RESTORE)
 _EVIDENCE_TEMP = tempfile.TemporaryDirectory(prefix="cairntir-managed-evidence-")
-_EVIDENCE_ROOT = _RESTORE.restore(_SOURCE, Path(_EVIDENCE_TEMP.name).resolve() / "snapshot")
+_EVIDENCE_ROOT = _RESTORE.restore(_SOURCE, Path(_EVIDENCE_TEMP.name) / "snapshot")
 ACCEPTANCE = _EVIDENCE_ROOT / "plans/acceptance/v2-managed-projection"
 
 

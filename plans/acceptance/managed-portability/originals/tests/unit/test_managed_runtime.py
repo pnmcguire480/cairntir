@@ -23,7 +23,7 @@ if _RESTORE_SPEC is None or _RESTORE_SPEC.loader is None:
 _RESTORE = importlib.util.module_from_spec(_RESTORE_SPEC)
 _RESTORE_SPEC.loader.exec_module(_RESTORE)
 _EVIDENCE_TEMP = tempfile.TemporaryDirectory(prefix="cairntir-managed-evidence-")
-_EVIDENCE_ROOT = _RESTORE.restore(_SOURCE, Path(_EVIDENCE_TEMP.name).resolve() / "snapshot")
+_EVIDENCE_ROOT = _RESTORE.restore(_SOURCE, Path(_EVIDENCE_TEMP.name) / "snapshot")
 PACKET = _EVIDENCE_ROOT / "plans/acceptance/v2-managed-runtime"
 PACKAGE_SHA256 = "5ddb331d10e66649c18c3f18d4e67d0d6d33769f0cb8452ee8b625e21422936e"
 FOLLOWUP_SHA256 = "53e32d6df660e315868de4ee5b41eea924607f315091d0c7429266c35f34afdd"

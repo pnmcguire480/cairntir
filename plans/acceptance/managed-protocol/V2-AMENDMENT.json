@@ -1,0 +1,9 @@
+{
+  "issue": "pytest reserves request as a parametrized fixture name",
+  "change": "Only first routing test parameter/local name request becomes payload; import sorting and line100 formatting",
+  "assertions_unchanged_after_identifier_normalization": 56,
+  "old_sha256": "674ec5d36d6b57346a1e0cb5632413f42a8a608a1ed235bf23316e794e0e389a",
+  "amended_sha256": "df8e97c5ecc82d41006646cd9213dab31cd457e8715b8455218c9810c0a9117a",
+  "v1_freeze_sha256": "dc2ba602e71599f142f0515d2efd7fad14972a981819167cccdf1dd5b9060a2a",
+  "preserved_collection_failure": "normal.log / normal-execution.json (no tests ran)"
+}

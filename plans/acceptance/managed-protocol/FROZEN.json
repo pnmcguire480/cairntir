@@ -1,0 +1,11 @@
+{
+  "files_sha256": {
+    "CONTRACT.md": "f6604fbc002d6248179a53848c488d5b49bbc2cc7a94a384f34350b172c1d213",
+    "freeze.py": "112b60be571ff50f9a36b445d1d80b8e7760dd84152618595203bec001903368",
+    "test_managed_protocol.py": "674ec5d36d6b57346a1e0cb5632413f42a8a608a1ed235bf23316e794e0e389a",
+    "wrong_control.py": "3d8ca5d08ade8690cbc88f931ac987e4f056724e35027d94ca59b9ea4f028eaa"
+  },
+  "normal_cases": 33,
+  "wrong_control_cases": 1,
+  "scope": "Existing foreground managed JSONL routing, errors and close semantics; no feature expansion"
+}
