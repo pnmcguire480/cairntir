@@ -13,6 +13,11 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Security
+
+- Update the locked transitive `fsspec` from 2026.3.0 to 2026.6.0, the
+  [advisory-patched release](https://github.com/advisories/GHSA-27vj-qcqg-25rc).
+
 ### Planned managed-session port (qualification pending)
 
 - Explicit foreground request capture, current-brief acknowledgement, configured
