@@ -24,3 +24,10 @@ added in `1c62896` must be reviewed against this full two-file runtime diff.
 The additive note itself does not qualify the final installed artifact or
 authorize integration, merge, release or live adoption. Preserve every frozen
 assertion and original result while recording any new exact-head receipts.
+
+Fresh CI on the documentation head found the locked `fsspec==2026.3.0`
+advisory. A subsequent security-only lock update pins 2026.6.0 with the same
+registry hashes already validated on PR132. This expands the original lane's
+dependency exclusion only for that transitive advisory repair; it changes no
+runtime source, test or frozen acceptance bytes. The exact new head still
+requires its own hosted qualification and parent review.
