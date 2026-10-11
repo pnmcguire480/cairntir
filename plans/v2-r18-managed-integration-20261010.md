@@ -33,6 +33,14 @@ Local verification with Python 3.11.9 and the repository development environment
   (`WinError 10013`). The remaining failure is the installed-proof source pin
   below. These are unqualified gates, not passes or observed product behavior.
 
+Draft PR132's first hosted head `d78eba5` reached lint, type and docs checks,
+then the unchanged dependency advisory gate reported one finding:
+`fsspec==2026.3.0` / `GHSA-27vj-qcqg-25rc`; downstream jobs were skipped.
+The lock now changes only `fsspec` to advisory-patched `2026.6.0`. Offline lock
+consistency passed, and the unchanged advisory script checked 134 locked
+registry packages with zero findings. Hosted checks on the refreshed head are
+still required; the first run is preserved as a failed result.
+
 The sole adjacent failure is
 `test_installed_identity_rejects_wrong_binding_before_case_import[none]`.
 Its historical installed-proof capsule pins `src/cairntir/access.py` to SHA256
