@@ -22,6 +22,14 @@ Local verification with Python 3.11.9 and the repository development environment
 - `ruff check` and `ruff format --check` on the six changed Python files: pass.
 - `mypy --strict src`: pass for 65 source files.
 - `git diff --check HEAD`: pass.
+- Full local `pytest -m 'not slow' -q --no-cov`: 2,356 passed, 9 skipped,
+  8 deselected, 11 failed, 150 subtests passed in 480 seconds. Six doctor
+  failures stop at a `PermissionError` while probing host configuration in
+  this restricted Windows process. Three verification failures stop when
+  `taskkill /T /F` receives `Access denied` for fixture-owned child processes.
+  The release-tag check fails closed because this process cannot reach PyPI
+  (`WinError 10013`). The remaining failure is the installed-proof source pin
+  below. These are unqualified gates, not passes or observed product behavior.
 
 The sole adjacent failure is
 `test_installed_identity_rejects_wrong_binding_before_case_import[none]`.
@@ -36,9 +44,18 @@ separately authored and frozen combined-head installed qualification is needed.
 PR130's README names `f3797a36...` as its final procedures source digest,
 while the fetched PR130 head and this candidate contain SHA256
 `e20d3dfcbffa56fae4eaeccf922c982ef50ff37011c38b37f74c1b8938855fd7`
-after its later `1c62896` repair. The historical receipt must not be silently
-relabeled as qualification of the later bytes. Parent review should reconcile
-the exact-head source binding before promotion.
+after its later `1c62896` repair. The earlier digest matches `011aa6f`.
+That repair also adds 22 lines to `src/cairntir/access.py`, outside the README's
+stated procedures-only runtime ownership. All 20 hosted PR130 checks, including
+its source matrix, package builds, mutation evidence and CodeQL, completed
+successfully at the exact `1c62896` head. Those checks do not amend the older
+ownership statement or independently qualify the combined head. Parent review
+should reconcile the scope and source binding before promotion.
+
+The installed Obsidian app has a `obsidian-1.13.7.asar` and the registered
+`Cairntir Coding Brain` vault contains the older `cairntir-vault-refresh`
+plugin, not the draft `cairntir-workspace` plugin. No v2 plugin was installed
+or activated in that real vault during this review.
 
 Open gates: independent combined-head acceptance, native installed-host proof,
 Ubuntu protected evaluator custody, and an explicit maintainer merge/release
