@@ -8,7 +8,9 @@ review artifact, not a release or installed-host qualification.
 The only merge conflicts were the two pull-request target lists in
 `.github/workflows/ci.yml` and `.github/workflows/codeql.yml`. The PR131 lists
 already contained every PR130 target plus the later question branch, so the
-superset was retained. `src/cairntir/access.py` merged automatically; its
+superset was retained. The later draft integration PR adds its PR131 base branch
+to both trigger lists so that hosted CI and CodeQL can run on this stacked
+candidate. `src/cairntir/access.py` merged automatically; its
 complete-wing authorization addition coexists with the managed and question
 visibility methods. PR130's `src/cairntir/procedures.py` bytes were retained
 unchanged in this candidate (SHA256
