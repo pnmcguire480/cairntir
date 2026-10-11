@@ -276,6 +276,28 @@ class ScopedStore:
         ):
             raise AccessDenied(_DENIED)
 
+    def _authorize_complete_wing(self, wing: str) -> None:
+        """Require complete existing read authority without exposing withheld rows."""
+        grant = self._grant()
+        if "read" not in grant["capabilities"] or not any(
+            scope["wing"] == wing and "rooms" not in scope and "drawer_ids" not in scope
+            for scope in grant["scopes"]
+        ):
+            raise AccessDenied(_DENIED)
+        try:
+            expected = {
+                int(row["id"])
+                for row in self._owner._conn.execute(
+                    "SELECT id FROM drawers WHERE wing=?", (wing,)
+                ).fetchall()
+            }
+            if not expected <= self._rows().keys():
+                raise AccessDenied(_DENIED)
+        except sqlite3.Error as exc:
+            raise AccessDenied(_DENIED) from exc
+        if self._grant() != grant:
+            raise AccessDenied(_DENIED)
+
     def _creation(self, drawer: Drawer) -> None:
         grant = self._grant()
         if "write" not in grant["capabilities"] or not any(
