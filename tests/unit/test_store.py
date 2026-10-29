@@ -842,14 +842,23 @@ def test_reindex_discards_stale_write_ahead_sidecars(tmp_path: Path) -> None:
         assert reopened.list_by()[0].content == "sidecar hygiene"
 
 
-def test_reindex_refuses_drawers_wider_than_the_embedder_window(tmp_path: Path) -> None:
-    """A rebuild must not silently re-truncate what it cannot embed whole."""
+def test_reindex_embeds_drawers_wider_than_the_embedder_window(tmp_path: Path) -> None:
     path = tmp_path / "oversized.db"
+    content = "x" * PRODUCTION_CHAR_WINDOW + " distinct tail"
     with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as store:
-        store.add(_drawer("x" * (PRODUCTION_CHAR_WINDOW + 1)))
+        saved = store.add(_drawer(content))
 
-    with pytest.raises(EmbeddingSpaceError, match="exceed the embedder"):
-        reindex_database(path, HashEmbeddingProvider(dimension=64), batch_size=1)
+    receipt = reindex_database(path, HashEmbeddingProvider(dimension=64), batch_size=1)
+    assert receipt.dimension == 64
+    with DrawerStore(path, HashEmbeddingProvider(dimension=64)) as store:
+        assert store.get(saved.id).content == content
+        assert store.embedding_status().verified
+        spans = store._conn.execute(
+            "SELECT start_char, end_char FROM embedding_chunks WHERE drawer_id=? ORDER BY chunk_id",
+            (saved.id,),
+        ).fetchall()
+        assert store.embedding_status().vector_count == len(spans) > 1
+        assert "".join(content[start:end] for start, end in spans) == content
 
 
 class _FailingReindexProvider:

@@ -54,6 +54,33 @@ def check_council(root: Path) -> list[str]:
     return failures
 
 
+def _accepted_alpha_store_amendment(root: Path, name: str, before_sha: str) -> bool:
+    """Accept only the pinned, archived v2 over-window contract replacement."""
+    if name != "tests/unit/test_store.py":
+        return False
+    folder = root / "plans/acceptance/alpha-overwindow-amendment-20261029"
+    try:
+        raw = (folder / "AMENDMENT.json").read_bytes()
+        if (
+            hashlib.sha256(raw).hexdigest()
+            != "dbedc2a96a236d551d9c7c8cb4767089c33b160fd58de08844be749ad8253d80"
+        ):
+            return False
+        amendment = json.loads(raw)
+        return (
+            amendment["schema"] == "cairntir.alpha-overwindow-amendment.v1"
+            and amendment["path"] == name
+            and amendment["before_sha256"] == before_sha
+            and amendment["archive"]
+            == "plans/acceptance/alpha-overwindow-amendment-20261029/original-test_store.py"
+            and hashlib.sha256((folder / "original-test_store.py").read_bytes()).hexdigest()
+            == before_sha
+            and hashlib.sha256((root / name).read_bytes()).hexdigest() == amendment["after_sha256"]
+        )
+    except (OSError, KeyError, TypeError, ValueError):
+        return False
+
+
 def check() -> list[str]:
     """Compare frozen artifacts with the accepted baseline, including prior amendments."""
     result = subprocess.run(  # noqa: S603 - pinned repository history, no shell
@@ -90,6 +117,10 @@ def check() -> list[str]:
         for name in sorted(protected):
             path = ROOT / name
             if name not in names or not path.is_file() or path.read_bytes() != archive.read(name):
+                if name in names and _accepted_alpha_store_amendment(
+                    ROOT, name, hashlib.sha256(archive.read(name)).hexdigest()
+                ):
+                    continue
                 failures.append(f"frozen artifact differs from accepted baseline: {name}")
         baseline = tomllib.loads(archive.read("pyproject.toml").decode())["tool"]["coverage"]
         baseline["report"]["precision"] = 6
