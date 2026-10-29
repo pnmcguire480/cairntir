@@ -11,6 +11,7 @@ swallowing of SQLite exceptions is explicitly banned.
 from __future__ import annotations
 
 import errno
+import hashlib
 import json
 import math
 import os
@@ -29,7 +30,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING, Any
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import sqlite_vec
 
@@ -51,7 +52,7 @@ from cairntir.errors import (
     WorkflowError,
 )
 from cairntir.memory.belief import rerank_results
-from cairntir.memory.embeddings import PRODUCTION_CHAR_WINDOW, embedding_space_id
+from cairntir.memory.embeddings import embedding_space_id
 from cairntir.memory.taxonomy import Drawer, Layer
 from cairntir.provenance import TrustLevel, WriteProvenance, legacy_provenance
 
@@ -78,7 +79,49 @@ def _embed_one(embedder: EmbeddingProvider, text: str) -> list[float]:
     return vectors[0]
 
 
-SCHEMA_VERSION = 7
+_DEFAULT_CHUNK_CHARS = 6000
+
+
+def _chunk_window(embedder: EmbeddingProvider) -> int:
+    advertised = getattr(embedder, "max_input_chars", _DEFAULT_CHUNK_CHARS)
+    if not isinstance(advertised, int) or advertised <= 0:
+        raise EmbeddingSpaceError("embedder has an invalid input window")
+    return min(advertised, _DEFAULT_CHUNK_CHARS)
+
+
+def _chunk_spans(content: str, window: int) -> list[tuple[int, int]]:
+    if not content:
+        return [(0, 0)]
+    return [(start, min(start + window, len(content))) for start in range(0, len(content), window)]
+
+
+def _chunked_space_id(embedder: EmbeddingProvider) -> str:
+    policy = f"codepoints-v2/window={_chunk_window(embedder)}/aggregation=best"
+    return f"cairntir/chunks/{policy}/{embedding_space_id(embedder)}"
+
+
+def _embedded_chunks(
+    embedder: EmbeddingProvider, content: str, dimension: int
+) -> list[tuple[int, int, bytes]]:
+    spans = _chunk_spans(content, _chunk_window(embedder))
+    result: list[tuple[int, int, bytes]] = []
+    for offset in range(0, len(spans), 32):
+        batch = spans[offset : offset + 32]
+        vectors = embedder.embed([content[start:end] for start, end in batch])
+        if len(vectors) != len(batch):
+            raise EmbeddingSpaceError(
+                f"embedder returned {len(vectors)} vectors for {len(batch)} chunks"
+            )
+        for (start, end), vector in zip(batch, vectors, strict=True):
+            if len(vector) != dimension:
+                raise EmbeddingSpaceError(
+                    f"embedder declared dimension {dimension} but produced {len(vector)} values"
+                )
+            result.append((start, end, _pack(vector)))
+    return result
+
+
+SCHEMA_VERSION = 8
 """Current drawer schema version.
 
 v1 — initial: wing, room, content, layer, metadata, created_at.
@@ -100,6 +143,8 @@ v6 — trust and durability: immutable write provenance on every drawer,
      crash-safe multi-drawer workflows.
 v7 — portable identities and immutable original records, independent of local
      retrieval state and numeric drawer ids.
+v8 — bounded semantic-index spans and embedding identity are incompatible with
+     schema-7 clients; a nonempty v7 index advances only after explicit reindex.
 """
 
 _V2_COLUMNS: tuple[str, ...] = (
@@ -208,9 +253,24 @@ def _vector_columns(conn: sqlite3.Connection) -> set[str]:
 def _create_vector_table(conn: sqlite3.Connection, dimension: int) -> None:
     conn.execute(
         "CREATE VIRTUAL TABLE vec_drawers USING vec0("
-        "drawer_id INTEGER PRIMARY KEY, "
+        "chunk_id INTEGER PRIMARY KEY, "
         f"embedding FLOAT[{dimension}], "
-        "wing TEXT, room TEXT, layer TEXT, trust TEXT, valid_until TEXT)"
+        "drawer_id INTEGER, wing TEXT, room TEXT, layer TEXT, trust TEXT, valid_until TEXT)"
+    )
+
+
+def _create_chunk_table(conn: sqlite3.Connection) -> None:
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS embedding_chunks ("
+        "chunk_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "drawer_id INTEGER NOT NULL REFERENCES drawers(id), "
+        "generation TEXT NOT NULL, "
+        "start_char INTEGER NOT NULL, end_char INTEGER NOT NULL, "
+        "CHECK (start_char >= 0 AND end_char >= start_char))"
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_embedding_chunks_drawer "
+        "ON embedding_chunks(drawer_id, generation, start_char)"
     )
 
 
@@ -221,11 +281,18 @@ def _metadata(conn: sqlite3.Connection) -> dict[str, str]:
     return {str(row[0]): str(row[1]) for row in rows}
 
 
+def _current_embedding_identity(embedder: EmbeddingProvider) -> tuple[str, str | None]:
+    try:
+        return _chunked_space_id(embedder), None
+    except (EmbeddingError, EmbeddingSpaceError) as exc:
+        return "unavailable", str(exc)
+
+
 def _embedding_status(
     conn: sqlite3.Connection,
     embedder: EmbeddingProvider,
 ) -> EmbeddingSpaceStatus:
-    current_space = embedding_space_id(embedder)
+    current_space, identity_error = _current_embedding_identity(embedder)
     if not _table_exists(conn, "drawers"):
         return EmbeddingSpaceStatus(
             state="corrupt",
@@ -268,6 +335,16 @@ def _embedding_status(
             detail=detail,
         )
 
+    if stored_space is not None and stored_space.startswith("fastembed/text-embedding-v1/"):
+        return _status(
+            "unverified",
+            "legacy FastEmbed index has no artifact provenance; raw drawers remain "
+            "readable, but an explicit backed-up reindex is required",
+        )
+    if identity_error is not None:
+        return _status(
+            "unverified", f"active embedding artifacts are unavailable: {identity_error}"
+        )
     if stored_space is None:
         return _status(
             "unverified",
@@ -294,7 +371,9 @@ def _embedding_status(
             "corrupt",
             "vec_drawers is missing or its dimension cannot be read",
         )
-    missing_filter_columns = _VECTOR_FILTER_COLUMNS - _vector_columns(conn)
+    missing_filter_columns = (_VECTOR_FILTER_COLUMNS | {"chunk_id", "drawer_id"}) - _vector_columns(
+        conn
+    )
     if missing_filter_columns:
         return _status(
             "corrupt",
@@ -309,11 +388,46 @@ def _embedding_status(
                 f"recorded dimension {stored_dimension}"
             ),
         )
-    if vector_count != drawer_count:
+    if not _table_exists(conn, "embedding_chunks"):
+        return _status("corrupt", "embedding chunk spans are missing")
+    span_count, indexed_drawers = conn.execute(
+        "SELECT COUNT(*), COUNT(DISTINCT drawer_id) FROM embedding_chunks WHERE generation=?",
+        (generation,),
+    ).fetchone()
+    total_spans = int(conn.execute("SELECT COUNT(*) FROM embedding_chunks").fetchone()[0])
+    if vector_count != int(span_count) or total_spans != int(span_count):
         return _status(
             "corrupt",
-            f"semantic index contains {vector_count} vectors for {drawer_count} drawers",
+            f"semantic index contains {vector_count} vectors for {span_count} active spans",
         )
+    if int(indexed_drawers) != drawer_count:
+        return _status("corrupt", "semantic index does not cover every drawer")
+    conn.create_function("cairntir_char_length", 1, len, deterministic=True)
+    damaged_span = conn.execute(
+        "WITH lengths AS ("
+        "SELECT id, cairntir_char_length(content) AS content_length "
+        "FROM drawers GROUP BY id), spans AS ("
+        "SELECT c.drawer_id, c.start_char, c.end_char, "
+        "lengths.content_length, "
+        "LAG(c.start_char) OVER (PARTITION BY c.drawer_id ORDER BY c.chunk_id) "
+        "AS previous_start, "
+        "COALESCE(MAX(c.end_char) OVER (PARTITION BY c.drawer_id ORDER BY c.chunk_id "
+        "ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING), 0) AS covered_before, "
+        "MAX(c.end_char) OVER (PARTITION BY c.drawer_id) AS covered_end, "
+        "COUNT(*) OVER (PARTITION BY c.drawer_id) AS span_total "
+        "FROM embedding_chunks AS c JOIN lengths ON lengths.id = c.drawer_id "
+        "WHERE c.generation = ?) "
+        "SELECT drawer_id FROM spans WHERE "
+        "start_char < COALESCE(previous_start, 0) OR "
+        "start_char > covered_before OR end_char > content_length OR "
+        "(content_length > 0 AND start_char = end_char) OR "
+        "covered_end != content_length OR "
+        "(content_length = 0 AND (start_char != 0 OR end_char != 0 OR span_total != 1)) "
+        "LIMIT 1",
+        (generation,),
+    ).fetchone()
+    if damaged_span is not None:
+        return _status("corrupt", f"drawer {damaged_span[0]} has incomplete embedding spans")
     return _status(
         "verified",
         "embedding space, dimension, generation, and row counts agree",
@@ -325,7 +439,7 @@ def inspect_embedding_space(
     embedder: EmbeddingProvider,
 ) -> EmbeddingSpaceStatus:
     """Inspect semantic-index health without migrating or modifying ``path``."""
-    current_space = embedding_space_id(embedder)
+    current_space, _ = _current_embedding_identity(embedder)
     if not path.exists():
         return EmbeddingSpaceStatus(
             state="missing",
@@ -440,22 +554,6 @@ def _checkpoint_database(path: Path) -> None:
         )
 
 
-def _drawers_over_window(rows: Sequence[sqlite3.Row]) -> list[tuple[int, int]]:
-    """Return ``(drawer_id, chars)`` for rows too long to embed whole.
-
-    Sorted worst-first. ``cost.py`` has reported this ratio since 1.3.0, but
-    nothing on the *write* path ever checked it, so a rebuild would re-embed
-    an over-window drawer into a vector that ignores its own tail — exactly
-    the defect the 1.5.0 model swap existed to remove — and report success.
-    """
-    over = [
-        (int(row["id"]), len(str(row["content"])))
-        for row in rows
-        if len(str(row["content"])) > PRODUCTION_CHAR_WINDOW
-    ]
-    return sorted(over, key=lambda item: item[1], reverse=True)
-
-
 def _sidecar_paths(path: Path) -> tuple[Path, Path]:
     """Return the ``-wal`` and ``-shm`` companions of ``path``."""
     return path.with_name(f"{path.name}-wal"), path.with_name(f"{path.name}-shm")
@@ -515,10 +613,13 @@ def reindex_database(
         try:
             before = sentinel.execute("PRAGMA data_version").fetchone()[0]
             backup_database(path, temporary)
+            with closing(sqlite3.connect(temporary)) as sidecar:
+                if int(sidecar.execute("PRAGMA user_version").fetchone()[0]) == 7:
+                    sidecar.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
+                    sidecar.commit()
             with DrawerStore(temporary, embedder, backup_migrations=False) as store:
                 result = store.reindex_embeddings(
-                    batch_size=batch_size,
-                    _allow_dimension_change=True,
+                    batch_size=batch_size, _allow_dimension_change=True
                 )
                 store.checkpoint()
             after = sentinel.execute("PRAGMA data_version").fetchone()[0]
@@ -684,6 +785,13 @@ def inspect_wing_counts(path: Path) -> dict[str, int]:
 class DrawerStore:
     """Persistent verbatim drawer store with semantic search."""
 
+    @contextmanager
+    def _managed_foreground(self, wing: str, room: str, action_id: str) -> Iterator[None]:
+        from cairntir.dream_controller import foreground
+
+        with foreground(self._path, action_id):
+            yield
+
     def __init__(
         self,
         db_path: Path,
@@ -840,12 +948,20 @@ class DrawerStore:
                     # dimension, so the embedder loads here. Existing DBs skip
                     # this branch entirely — see __init__ docstring.
                     self._dim = self._embedder.dimension
+                    _create_chunk_table(self._conn)
                     _create_vector_table(self._conn, self._dim)
+                elif _vector_columns(self._conn) >= {"chunk_id", "drawer_id"}:
+                    _create_chunk_table(self._conn)
                 self._migrate()
                 self._initialize_portable_records()
                 self._initialize_procedures()
                 self._initialize_embedding_metadata_if_safe()
-                if existing_version != SCHEMA_VERSION:
+                if existing_version != SCHEMA_VERSION and not (
+                    existing_version == 7
+                    and self._conn.execute(
+                        "SELECT EXISTS(SELECT 1 FROM drawers) OR EXISTS(SELECT 1 FROM vec_drawers)"
+                    ).fetchone()[0]
+                ):
                     self._conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"failed to initialize schema: {exc}") from exc
@@ -871,6 +987,42 @@ class DrawerStore:
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"procedure registry read failed: {exc}") from exc
         return {**json.loads(row["payload"]), "root_id": int(row["root_id"])} if row else None
+
+    def _verify_practice_record_inventory(self, wing: str) -> None:
+        """Verify the original practice inventory without touching retrieval state."""
+        try:
+            rows = self._conn.execute(
+                "SELECT p.identity,p.drawer_id,p.record,d.id,d.wing,d.room "
+                "FROM portable_records p LEFT JOIN drawers d ON d.id=p.drawer_id"
+            ).fetchall()
+            for row in rows:
+                try:
+                    record = json.loads(row["record"])
+                    original = record["drawer"]
+                    original_wing, original_room = original["wing"], original["room"]
+                except (ValueError, TypeError, KeyError):
+                    if row["id"] is not None and row["wing"] != wing:
+                        continue
+                    raise
+                relevant = (original_wing == wing and original_room == "practice-reviews") or (
+                    row["wing"] == wing and row["room"] == "practice-reviews"
+                )
+                if relevant and (
+                    row["id"] is None
+                    or record["identity"] != row["identity"]
+                    or original["wing"] != row["wing"]
+                    or original["room"] != row["room"]
+                ):
+                    raise MemoryStoreError("practice record inventory is incomplete")
+            missing = self._conn.execute(
+                "SELECT 1 FROM drawers d LEFT JOIN portable_records p ON p.drawer_id=d.id "
+                "WHERE d.wing=? AND d.room='practice-reviews' AND p.drawer_id IS NULL LIMIT 1",
+                (wing,),
+            ).fetchone()
+            if missing is not None:
+                raise MemoryStoreError("practice record inventory is incomplete")
+        except (sqlite3.Error, ValueError, TypeError, KeyError) as exc:
+            raise MemoryStoreError("practice record inventory is malformed") from exc
 
     def _procedure_records(self, wing: str | None = None) -> list[dict[str, Any]]:
         try:
@@ -933,15 +1085,20 @@ class DrawerStore:
         if drawer_count != 0 or vector_count != 0:
             return
 
+        desired_space = _chunked_space_id(self._embedder)
         desired_dimension = self._embedder.dimension
         actual_dimension = _vector_dimension(self._conn)
         has_filter_columns = _vector_columns(self._conn) >= _VECTOR_FILTER_COLUMNS
-        requires_rebuild = actual_dimension != desired_dimension or not has_filter_columns
-        if not requires_rebuild and _META_EMBEDDING_SPACE in metadata:
+        has_chunk_columns = _vector_columns(self._conn) >= {"chunk_id", "drawer_id"}
+        requires_rebuild = (
+            actual_dimension != desired_dimension or not has_filter_columns or not has_chunk_columns
+        )
+        if not requires_rebuild and metadata.get(_META_EMBEDDING_SPACE) == desired_space:
             return
         if requires_rebuild:
             self._conn.execute("DROP TABLE vec_drawers")
             _create_vector_table(self._conn, desired_dimension)
+        _create_chunk_table(self._conn)
         self._dim = desired_dimension
         self._stamp_embedding_metadata(
             dimension=desired_dimension,
@@ -950,7 +1107,7 @@ class DrawerStore:
 
     def _stamp_embedding_metadata(self, *, dimension: int, generation: str) -> None:
         values = {
-            _META_EMBEDDING_SPACE: embedding_space_id(self._embedder),
+            _META_EMBEDDING_SPACE: _chunked_space_id(self._embedder),
             _META_EMBEDDING_DIMENSION: str(dimension),
             _META_EMBEDDING_GENERATION: generation,
             _META_EMBEDDING_VERIFIED_AT: datetime.now(UTC).isoformat(),
@@ -1030,6 +1187,45 @@ class DrawerStore:
             "UPDATE portable_records SET record=? WHERE drawer_id=?",
             (json.dumps(record, ensure_ascii=False, sort_keys=True), drawer_id),
         )
+
+    def has_export_successor(self, drawer_id: int) -> bool:
+        """Conservatively report a successor without exposing its identity."""
+        try:
+            return (
+                self._conn.execute(
+                    "SELECT 1 FROM drawers WHERE supersedes_id=? LIMIT 1", (drawer_id,)
+                ).fetchone()
+                is not None
+            )
+        except sqlite3.Error as exc:
+            raise MemoryStoreError("failed to check export source currentness") from exc
+
+    def portable_store_identity(self) -> str:
+        """Read this physical store's existing UUID without changing retrieval state."""
+        try:
+            row = self._conn.execute(
+                "SELECT value FROM store_metadata WHERE key='portable_store_id'"
+            ).fetchone()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError("physical store identity read failed") from exc
+        if row is None:
+            raise MemoryStoreError("physical store identity is unavailable")
+        return str(row[0])
+
+    def reference_drawer(self, drawer_id: int) -> Drawer | None:
+        """Read one drawer without recording a retrieval."""
+        return self._read_drawer(drawer_id)
+
+    def reference_family(self, drawer_id: int) -> list[tuple[Drawer, WriteProvenance]]:
+        """Read a source and every direct successor across wings, without retrieval touches."""
+        try:
+            rows = self._conn.execute(
+                "SELECT * FROM drawers WHERE id=? OR supersedes_id=? ORDER BY id",
+                (drawer_id, drawer_id),
+            ).fetchall()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError("reference family read failed") from exc
+        return [_context_record(row) for row in rows]
 
     def portable_identity(self, drawer_id: int) -> str:
         """Return the immutable UUID assigned when this evidence entered its origin store."""
@@ -1123,21 +1319,44 @@ class DrawerStore:
         """Close on context exit."""
         self.close()
 
+    @property
+    def transaction_active(self) -> bool:
+        """Whether a caller still owns an uncommitted outer transaction."""
+        try:
+            return self._conn.in_transaction
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"cannot inspect transaction state: {exc}") from exc
+
     @contextmanager
-    def transaction(self) -> Iterator[None]:
+    def transaction(self, *, _reindex_schema7: bool = False) -> Iterator[None]:
         """Run writes atomically, using savepoints when workflows nest."""
+        if _reindex_schema7:
+            raise EmbeddingSpaceError("schema-7 reindex bypass is reserved for offline reindex")
+        with self._transaction():
+            yield
+
+    @contextmanager
+    def _transaction(self) -> Iterator[None]:
         savepoint: str | None = None
         try:
             if self._transaction_depth == 0:
                 self._backup_if_due()
                 self._bulk_embedding = None
                 self._conn.execute("BEGIN IMMEDIATE")
+                try:
+                    self._require_schema7_write()
+                except (EmbeddingSpaceError, MemoryStoreError):
+                    self._conn.rollback()
+                    raise
             else:
+                self._require_schema7_write()
                 self._savepoint_counter += 1
                 savepoint = f"cairntir_sp_{self._savepoint_counter}"
                 self._conn.execute(f"SAVEPOINT {savepoint}")
             self._transaction_depth += 1
         except sqlite3.Error as exc:
+            if savepoint is None and self._conn.in_transaction:
+                self._conn.rollback()
             raise MemoryStoreError(f"failed to begin transaction: {exc}") from exc
 
         try:
@@ -1169,10 +1388,22 @@ class DrawerStore:
                     self._conn.rollback()
                 raise MemoryStoreError(f"failed to commit transaction: {exc}") from exc
 
+    def _require_schema7_write(self) -> None:
+        try:
+            if int(
+                self._conn.execute("PRAGMA user_version").fetchone()[0]
+            ) == 7 and _vector_columns(self._conn) >= {"chunk_id", "drawer_id"}:
+                raise EmbeddingSpaceError(
+                    "schema-7 chunk index requires `cairntir reindex` before writing"
+                )
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"failed to inspect schema-7 write boundary: {exc}") from exc
+
     @contextmanager
     def _write_scope(self) -> Iterator[None]:
         """Join the active unit of work or create a new transaction."""
         if self._transaction_depth:
+            self._require_schema7_write()
             yield
             return
         with self.transaction():
@@ -1188,6 +1419,333 @@ class DrawerStore:
         except sqlite3.Error as exc:
             raise WorkflowError(f"failed to read workflow receipt: {exc}") from exc
         return _row_to_workflow_receipt(row) if row is not None else None
+
+    def paladin_human_drawers(self, *, wing: str) -> list[Drawer]:
+        """Read the full wing for Q06 replay reconstruction."""
+        return self.list_by(wing=wing, limit=None)
+
+    @staticmethod
+    def _q06_request(key: str, operation: str, request: dict[str, Any]) -> None:
+        fields = {
+            "paladin.human.map.v1": {"run_id", "plan_sha256", "map_sha256", "capability_map"},
+            "paladin.human.assign.v1": {
+                "run_id",
+                "attempt_id",
+                "plan_sha256",
+                "map_sha256",
+                "item_id",
+                "assignee",
+                "prior_assignment_id",
+            },
+            "paladin.human.submit.v1": {
+                "run_id",
+                "attempt_id",
+                "plan_sha256",
+                "map_sha256",
+                "item_id",
+                "submission_id",
+                "evidence_path",
+                "evidence_sha256",
+                "operator_claim",
+            },
+        }
+        if (
+            operation not in fields
+            or not isinstance(request, dict)
+            or request.keys() != fields[operation]
+        ):
+            raise WorkflowError("invalid Q06 request binding")
+        if any(
+            not isinstance(value, str) or not value.strip()
+            for name, value in request.items()
+            if name not in {"capability_map", "prior_assignment_id"}
+        ):
+            raise WorkflowError("invalid Q06 request binding")
+        if operation == "paladin.human.map.v1":
+            if (
+                not isinstance(request["capability_map"], dict)
+                or request_hash(request["capability_map"]) != request["map_sha256"]
+            ):
+                raise WorkflowError("invalid Q06 capability map")
+            expected = f"paladin.human.map:{request['run_id']}"
+        elif operation == "paladin.human.assign.v1":
+            prior = request["prior_assignment_id"]
+            if type(prior) is not int or prior < 0:
+                raise WorkflowError("invalid Q06 assignment predecessor")
+            identity = {name: request[name] for name in ("run_id", "attempt_id", "item_id")}
+            expected = f"paladin.human.assignment:{request_hash(identity)}:{prior}"
+        else:
+            try:
+                submission_id = str(UUID(request["submission_id"]))
+            except ValueError as exc:
+                raise WorkflowError("invalid Q06 submission ID") from exc
+            expected = f"paladin.human.submission:{submission_id}"
+        if key != expected:
+            raise WorkflowError("invalid Q06 idempotency key")
+
+    @staticmethod
+    def _q06_wing_tag(wing: str) -> str:
+        return hashlib.sha256(wing.encode("utf-8")).hexdigest()[:32]
+
+    def _q06_mark(self, key: str, record: dict[str, Any]) -> None:
+        now = datetime.now(UTC).isoformat()
+        self._conn.execute(
+            """
+            INSERT INTO workflow_runs(
+                idempotency_key, operation, request_hash, state,
+                attempt_count, started_at, updated_at, result, error
+            ) VALUES (?, ?, ?, ?, 1, ?, ?, ?, NULL)
+            """,
+            (
+                key,
+                "paladin.human.owner.v1",
+                request_hash(record),
+                WorkflowState.COMMITTED.value,
+                now,
+                now,
+                json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
+            ),
+        )
+
+    def _q06_storage_key(self, key: str, wing: str, *, create: bool) -> str | None:
+        """Resolve one wing's private storage slot for a public Q06 key.
+
+        Wings own Q06 keys independently. The first wing to use a key stores
+        it under the public name, so single-wing receipts stay readable there;
+        every other wing gets its own slot. Callers always see the public name,
+        so neither path reveals whether another wing used the key. Ownership
+        is written in one action-free transaction, leaving nothing that an
+        interrupted call could strand.
+        """
+        marker = f"paladin.human.owner:{self._q06_wing_tag(wing)}:{key}"
+        owned = self.workflow_receipt(marker)
+        if owned is None and create:
+            try:
+                with self.transaction():
+                    owned = self.workflow_receipt(marker)
+                    if owned is None:
+                        raw = f"paladin.human.raw:{key}"
+                        if self.workflow_receipt(raw) is None and (
+                            self.workflow_receipt(key) is None
+                        ):
+                            storage = key
+                            self._q06_mark(raw, {"public_key": key, "wing": wing})
+                        else:
+                            storage = f"paladin.human.slot:{self._q06_wing_tag(wing)}:{key}"
+                        self._q06_mark(
+                            marker, {"public_key": key, "wing": wing, "storage_key": storage}
+                        )
+                        owned = self.workflow_receipt(marker)
+            except sqlite3.Error as exc:
+                raise WorkflowError(f"failed to resolve Q06 key ownership: {exc}") from exc
+        if owned is None:
+            return None
+        slot = owned.result.get("storage_key") if isinstance(owned.result, dict) else None
+        expected = {"public_key": key, "wing": wing, "storage_key": slot}
+        if (
+            owned.state is not WorkflowState.COMMITTED
+            or owned.operation != "paladin.human.owner.v1"
+            or not isinstance(slot, str)
+            or owned.result != expected
+            or owned.request_hash != request_hash(expected)
+        ):
+            raise WorkflowError("invalid Q06 key ownership")
+        return slot
+
+    def _q06_evidence(
+        self,
+        key: str,
+        operation: str,
+        request: dict[str, Any],
+        record: dict[str, Any],
+        wing: str,
+        room: str | None = None,
+    ) -> None:
+        if not isinstance(record, dict) or record.keys() != {"request", "result", "evidence"}:
+            raise WorkflowError("invalid Q06 committed receipt")
+        result, reference = record["result"], record["evidence"]
+        if (
+            record["request"] != request
+            or not isinstance(result, dict)
+            or not isinstance(reference, dict)
+        ):
+            raise WorkflowError("invalid Q06 committed receipt")
+        if reference.keys() != {"drawer_id", "source_identity", "content_sha256"}:
+            raise WorkflowError("invalid Q06 evidence reference")
+        drawer_id = reference["drawer_id"]
+        if type(drawer_id) is not int or drawer_id <= 0:
+            raise WorkflowError("invalid Q06 evidence identity")
+        drawer = self.get(drawer_id)
+        if drawer is None or drawer.wing != wing or (room is not None and drawer.room != room):
+            raise WorkflowError("Q06 evidence is unavailable in the bound wing or room")
+        body = json.dumps(
+            {"operation": operation, "request_sha256": request_hash(request), "result": result},
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+        metadata = {
+            "kind": "paladin.human",
+            "operation": operation,
+            "key": key,
+            "run_id": request["run_id"],
+            "attempt_id": request.get("attempt_id"),
+            "plan_sha256": request["plan_sha256"],
+            "map_sha256": request["map_sha256"],
+            "item_id": request.get("item_id"),
+        }
+        if (
+            drawer.content != body
+            or drawer.metadata != metadata
+            or reference["source_identity"] != self.portable_identity(drawer_id)
+            or reference["content_sha256"] != hashlib.sha256(body.encode()).hexdigest()
+            or (
+                operation != "paladin.human.map.v1"
+                and result.get("authority_verified") is not False
+            )
+        ):
+            raise WorkflowError("Q06 evidence differs from its committed receipt")
+
+    def paladin_human_receipt(self, idempotency_key: str, *, wing: str) -> WorkflowReceipt | None:
+        """Return only a committed receipt owned by the requested wing."""
+        if not idempotency_key.startswith(
+            ("paladin.human.map:", "paladin.human.assignment:", "paladin.human.submission:")
+        ):
+            raise WorkflowError("invalid Q06 idempotency key")
+        storage = self._q06_storage_key(idempotency_key, wing, create=False)
+        if storage is None:
+            return None
+        receipt = self.workflow_receipt(storage)
+        if receipt is None:
+            return None
+        if receipt.state is not WorkflowState.COMMITTED:
+            raise WorkflowError("Q06 receipt is not committed")
+        record = receipt.result
+        if not isinstance(record, dict) or not isinstance(record.get("request"), dict):
+            raise WorkflowError("invalid Q06 committed receipt")
+        request = record["request"]
+        self._q06_request(idempotency_key, receipt.operation, request)
+        if receipt.request_hash != request_hash(request):
+            raise WorkflowError("Q06 request hash differs from committed receipt")
+        self._q06_evidence(idempotency_key, receipt.operation, request, record, wing)
+        return replace(receipt, idempotency_key=idempotency_key)
+
+    def paladin_human_pending_map(
+        self, idempotency_key: str, *, wing: str, request: dict[str, Any]
+    ) -> bool:
+        """Check exact interrupted map work owned by one wing."""
+        self._q06_request(idempotency_key, "paladin.human.map.v1", request)
+        storage = self._q06_storage_key(idempotency_key, wing, create=False)
+        if storage is None:
+            return False
+        receipt = self.workflow_receipt(storage)
+        if receipt is None or receipt.state is WorkflowState.COMMITTED:
+            return False
+        if receipt.operation != "paladin.human.map.v1" or receipt.request_hash != request_hash(
+            request
+        ):
+            raise IdempotencyConflictError("Q06 map is already bound to a different request")
+        return True
+
+    def paladin_human_execute_once(
+        self,
+        *,
+        wing: str,
+        room: str,
+        idempotency_key: str,
+        operation: str,
+        request: dict[str, Any],
+        action: Callable[[], dict[str, Any]],
+    ) -> WorkflowExecution:
+        """Persist one wing's Q06 action receipt under that wing's own key slot."""
+        if self.transaction_active:
+            raise WorkflowError("Q06 workflow cannot run inside a caller transaction")
+        self._q06_request(idempotency_key, operation, request)
+        storage = self._q06_storage_key(idempotency_key, wing, create=True)
+        if storage is None:  # pragma: no cover - create=True always resolves
+            raise WorkflowError("Q06 key ownership was not recorded")
+
+        def checked_action() -> dict[str, Any]:
+            record = action()
+            self._q06_evidence(idempotency_key, operation, request, record, wing, room)
+            return record
+
+        try:
+            execution = self.execute_once(
+                idempotency_key=storage,
+                operation=operation,
+                request=request,
+                action=checked_action,
+            )
+        except WorkflowError as exc:
+            # Workflow messages name the internal slot; report the public key.
+            if storage == idempotency_key or repr(storage) not in str(exc):
+                raise
+            message = str(exc).replace(repr(storage), repr(idempotency_key))
+            raise type(exc)(message) from None
+        if self.paladin_human_receipt(idempotency_key, wing=wing) is None:
+            raise WorkflowError("Q06 workflow committed without bound evidence")
+        return WorkflowExecution(
+            receipt=replace(execution.receipt, idempotency_key=idempotency_key),
+            replayed=execution.replayed,
+        )
+
+    def _managed_records(
+        self,
+        *,
+        wing: str | None,
+        key_prefix: str = "",
+        include_events: bool = False,
+        include_reconciliations: bool = False,
+        include_closes: bool = False,
+    ) -> list[dict[str, Any]]:
+        try:
+            rows = self._conn.execute(
+                "SELECT idempotency_key, operation, request_hash, result FROM workflow_runs "
+                "WHERE operation LIKE 'managed.%' AND state = 'committed'"
+            ).fetchall()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"managed registry read failed: {exc}") from exc
+        records = []
+        for row in rows:
+            shared = (
+                (include_events and row["operation"] == "managed.event.v1")
+                or (include_reconciliations and row["operation"] == "managed.reconcile.v1")
+                or (include_closes and row["operation"] == "managed.close.v1")
+            )
+            if not row["idempotency_key"].startswith(key_prefix + "managed:") and not shared:
+                continue
+            try:
+                record = json.loads(row["result"])
+                binding = record["_managed"]
+                valid = (
+                    binding["operation"] == row["operation"]
+                    and request_hash(binding["request"]) == row["request_hash"]
+                    and isinstance(binding["evidence_ids"], list)
+                    and all(type(key) is int and key > 0 for key in binding["evidence_ids"])
+                )
+            except (ValueError, TypeError, KeyError) as exc:
+                raise MemoryStoreError("invalid committed managed registry record") from exc
+            if not valid:
+                raise MemoryStoreError("invalid committed managed registry record")
+            if wing is None or binding["request"]["wing"] == wing:
+                records.append(record)
+        return records
+
+    def _managed_event_identity_occupied(
+        self, *, wing: str, room: str, session_id: str, sequence: int, event_id: str
+    ) -> bool:
+        return any(
+            record["event_id"] == event_id
+            or (
+                record["_managed"]["request"]["wing"] == wing
+                and record["session_id"] == session_id
+                and record["sequence"] == sequence
+            )
+            for record in self._managed_records(wing=None, include_events=True)
+            if record["_managed"]["operation"] == "managed.event.v1"
+        )
 
     def _task_records(self, *, wing: str) -> list[dict[str, Any]]:
         try:
@@ -1225,6 +1783,54 @@ class DrawerStore:
             if state["wing"] == wing:
                 records.append(record)
         return records
+
+    def _question_records(self, *, wing: str) -> tuple[list[dict[str, Any]], set[int]]:
+        try:
+            rows = self._conn.execute(
+                "SELECT operation, request_hash, result FROM workflow_runs "
+                "WHERE operation IN ('cairntir.question-open.v1', "
+                "'cairntir.question-resolve.v1') AND state = 'committed'"
+            ).fetchall()
+        except sqlite3.Error as exc:
+            raise MemoryStoreError(f"question registry read failed: {exc}") from exc
+        records = []
+        for row in rows:
+            try:
+                record = json.loads(row["result"])
+                payload = record["_question"].copy()
+                payload.pop("resolution_sha256", None)
+                valid = (
+                    record["schema"] == "cairntir.question-receipt.v1"
+                    and record["status"] == "committed"
+                    and record["operation"] in {"open", "resolve"}
+                    and row["operation"] == f"cairntir.question-{record['operation']}.v1"
+                    and payload["schema"] == row["operation"]
+                    and request_hash(payload) == row["request_hash"]
+                    and isinstance(record["question_id"], str)
+                    and type(record["question_drawer_id"]) is int
+                    and record["question_drawer_id"] > 0
+                    and (
+                        record["resolution_drawer_id"] is None
+                        if record["operation"] == "open"
+                        else type(record["resolution_drawer_id"]) is int
+                        and record["resolution_drawer_id"] > 0
+                    )
+                    and isinstance(payload["wing"], str)
+                    and isinstance(payload["evidence"], list)
+                    and all(
+                        isinstance(ref, dict)
+                        and type(ref.get("drawer_id")) is int
+                        and ref["drawer_id"] > 0
+                        for ref in payload["evidence"]
+                    )
+                )
+            except (ValueError, TypeError, KeyError, AttributeError) as exc:
+                raise MemoryStoreError("invalid committed question registry record") from exc
+            if not valid:
+                raise MemoryStoreError("invalid committed question registry record")
+            if payload["wing"] == wing:
+                records.append(record)
+        return records, set()
 
     def _task_drawers(self, drawer_ids: Sequence[int]) -> dict[int, tuple[Drawer, WriteProvenance]]:
         records: dict[int, tuple[Drawer, WriteProvenance]] = {}
@@ -1396,10 +2002,10 @@ class DrawerStore:
             self._conn.total_changes,
             int(self._conn.execute("PRAGMA schema_version").fetchone()[0]),
             int(self._conn.execute("PRAGMA temp.schema_version").fetchone()[0]),
-            embedding_space_id(self._embedder),
+            _chunked_space_id(self._embedder),
         )
 
-    def _cache_verified_append(self, status: EmbeddingSpaceStatus) -> None:
+    def _cache_verified_append(self, status: EmbeddingSpaceStatus, chunks: int) -> None:
         # BEGIN IMMEDIATE excludes other writers; the key detects intervening
         # local writes/DDL. Triggers make insert side effects unknown.
         if (
@@ -1415,7 +2021,7 @@ class DrawerStore:
                 replace(
                     status,
                     drawer_count=status.drawer_count + 1,
-                    vector_count=status.vector_count + 1,
+                    vector_count=status.vector_count + chunks,
                 ),
             )
         else:
@@ -1428,17 +2034,39 @@ class DrawerStore:
         _allow_dimension_change: bool = False,
     ) -> EmbeddingReindexResult:
         """Rebuild every vector, then atomically replace and identify the index."""
+        return self._reindex_embeddings(
+            batch_size=batch_size,
+            allow_dimension_change=_allow_dimension_change,
+            offline_schema7=False,
+        )
+
+    def _reindex_embeddings(
+        self,
+        *,
+        batch_size: int,
+        allow_dimension_change: bool,
+        offline_schema7: bool,
+    ) -> EmbeddingReindexResult:
         if batch_size <= 0:
             raise ValueError(f"batch_size must be positive, got {batch_size}")
+        schema7 = int(self._conn.execute("PRAGMA user_version").fetchone()[0]) == 7
+        if schema7 or offline_schema7:
+            raise EmbeddingSpaceError("schema-7 store requires offline `cairntir reindex`")
+        scope = self._write_scope
         declared_dimension = self._embedder.dimension
         existing_dimension = _vector_dimension(self._conn)
         existing_filters = _vector_columns(self._conn) >= _VECTOR_FILTER_COLUMNS
-        requires_schema_rebuild = existing_dimension != declared_dimension or not existing_filters
-        if requires_schema_rebuild and not _allow_dimension_change:
+        existing_chunks = _vector_columns(self._conn) >= {"chunk_id", "drawer_id"}
+        requires_schema_rebuild = (
+            existing_dimension != declared_dimension or not existing_filters or not existing_chunks
+        )
+        if requires_schema_rebuild and not allow_dimension_change:
             raise EmbeddingSpaceError(
                 "reindex must rebuild the sqlite-vec table for a dimension or "
                 "prefilter-schema change; use the offline `cairntir reindex` command"
             )
+        if allow_dimension_change:
+            _create_chunk_table(self._conn)
         try:
             rows = self._conn.execute(
                 "SELECT id, content, wing, room, layer, trust, valid_until, provenance "
@@ -1447,67 +2075,78 @@ class DrawerStore:
             self._conn.execute("DROP TABLE IF EXISTS temp.cairntir_reindex_stage")
             self._conn.execute(
                 "CREATE TEMP TABLE cairntir_reindex_stage ("
-                "drawer_id INTEGER PRIMARY KEY, embedding BLOB NOT NULL, "
+                "chunk_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                "drawer_id INTEGER NOT NULL, start_char INTEGER NOT NULL, "
+                "end_char INTEGER NOT NULL, embedding BLOB NOT NULL, "
                 "wing TEXT NOT NULL, room TEXT NOT NULL, layer TEXT NOT NULL, "
                 "trust TEXT NOT NULL, valid_until TEXT NOT NULL)"
             )
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"failed to prepare embedding reindex: {exc}") from exc
 
-        oversized = _drawers_over_window(rows)
-        if oversized:
-            worst_id, worst_chars = oversized[0]
-            raise EmbeddingSpaceError(
-                f"{len(oversized)} drawer(s) exceed the embedder's "
-                f"~{PRODUCTION_CHAR_WINDOW:,}-char input window and would be silently "
-                f"truncated by this rebuild — worst is drawer #{worst_id} at "
-                f"{worst_chars:,} chars. Re-embedding them would reintroduce the "
-                "partial-vector defect fixed in 1.5.0, where the tail of a drawer "
-                "is invisible to semantic recall. Split them or widen the window; "
-                "do not rebuild over them."
-            )
-
         try:
             for start in range(0, len(rows), batch_size):
                 batch = rows[start : start + batch_size]
-                vectors = self._embedder.embed([str(row["content"]) for row in batch])
-                staged = self._validate_reindex_vectors(
-                    batch,
-                    vectors,
-                    declared_dimension,
-                )
-                with self._write_scope():
+                staged = []
+                for row in batch:
+                    self._validate_reindex_provenance(row)
+                    for chunk_start, chunk_end, vector in _embedded_chunks(
+                        self._embedder, str(row["content"]), declared_dimension
+                    ):
+                        staged.append(
+                            (
+                                int(row["id"]),
+                                chunk_start,
+                                chunk_end,
+                                vector,
+                                str(row["wing"]),
+                                str(row["room"]),
+                                str(row["layer"]),
+                                str(row["trust"]),
+                                str(row["valid_until"]),
+                            )
+                        )
+                with scope():
                     self._conn.executemany(
                         "INSERT INTO cairntir_reindex_stage("
-                        "drawer_id, embedding, wing, room, layer, trust, valid_until) "
-                        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        "drawer_id, start_char, end_char, embedding, wing, room, layer, "
+                        "trust, valid_until) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         staged,
                     )
 
             generation = str(uuid4())
-            with self._write_scope():
+            with scope():
                 if requires_schema_rebuild:
                     self._conn.execute("DROP TABLE vec_drawers")
                     _create_vector_table(self._conn, declared_dimension)
                 else:
                     self._conn.execute("DELETE FROM vec_drawers")
+                self._conn.execute("DELETE FROM embedding_chunks")
+                self._conn.execute(
+                    "INSERT INTO embedding_chunks("
+                    "chunk_id, drawer_id, generation, start_char, end_char) "
+                    "SELECT chunk_id, drawer_id, ?, start_char, end_char "
+                    "FROM cairntir_reindex_stage ORDER BY chunk_id",
+                    (generation,),
+                )
                 self._conn.execute(
                     "INSERT INTO vec_drawers("
-                    "drawer_id, embedding, wing, room, layer, trust, valid_until) "
-                    "SELECT drawer_id, embedding, wing, room, layer, trust, valid_until "
-                    "FROM cairntir_reindex_stage ORDER BY drawer_id"
+                    "chunk_id, embedding, drawer_id, wing, room, layer, trust, valid_until) "
+                    "SELECT chunk_id, embedding, drawer_id, wing, room, layer, trust, valid_until "
+                    "FROM cairntir_reindex_stage ORDER BY chunk_id"
                 )
                 self._stamp_embedding_metadata(
                     dimension=declared_dimension,
                     generation=generation,
                 )
+                self._conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
             self._dim = declared_dimension
             status = self.embedding_status()
             self._require_verified_reindex(status)
             result = EmbeddingReindexResult(
                 drawer_count=len(rows),
                 dimension=declared_dimension,
-                space_id=embedding_space_id(self._embedder),
+                space_id=_chunked_space_id(self._embedder),
                 generation=generation,
             )
         except sqlite3.Error as exc:
@@ -1526,47 +2165,18 @@ class DrawerStore:
             raise MemoryStoreError(f"failed to clean up embedding reindex stage: {exc}") from exc
 
     @staticmethod
-    def _validate_reindex_vectors(
-        rows: list[sqlite3.Row],
-        vectors: list[list[float]],
-        declared_dimension: int,
-    ) -> list[tuple[int, bytes, str, str, str, str, str]]:
-        if len(vectors) != len(rows):
-            raise EmbeddingSpaceError(
-                f"embedder returned {len(vectors)} vectors for {len(rows)} inputs"
+    def _validate_reindex_provenance(row: sqlite3.Row) -> None:
+        try:
+            provenance = WriteProvenance.from_json(str(row["provenance"]))
+        except ValueError as exc:
+            raise ProvenanceError(f"drawer {int(row['id'])} has invalid provenance: {exc}") from exc
+        if (
+            str(row["trust"]) != provenance.trust.value
+            or str(row["valid_until"]) != provenance.effective_valid_until
+        ):
+            raise ProvenanceError(
+                f"drawer {int(row['id'])} provenance does not match trust prefilters"
             )
-        staged: list[tuple[int, bytes, str, str, str, str, str]] = []
-        for row, vector in zip(rows, vectors, strict=True):
-            if len(vector) != declared_dimension:
-                raise EmbeddingSpaceError(
-                    f"embedder declared dimension {declared_dimension} "
-                    f"but produced {len(vector)} values"
-                )
-            try:
-                provenance = WriteProvenance.from_json(str(row["provenance"]))
-            except ValueError as exc:
-                raise ProvenanceError(
-                    f"drawer {int(row['id'])} has invalid provenance: {exc}"
-                ) from exc
-            if (
-                str(row["trust"]) != provenance.trust.value
-                or str(row["valid_until"]) != provenance.effective_valid_until
-            ):
-                raise ProvenanceError(
-                    f"drawer {int(row['id'])} provenance does not match trust prefilters"
-                )
-            staged.append(
-                (
-                    int(row["id"]),
-                    _pack(vector),
-                    str(row["wing"]),
-                    str(row["room"]),
-                    str(row["layer"]),
-                    str(row["trust"]),
-                    str(row["valid_until"]),
-                )
-            )
-        return staged
 
     @staticmethod
     def _require_verified_reindex(status: EmbeddingSpaceStatus) -> None:
@@ -1599,12 +2209,9 @@ class DrawerStore:
         """
         _guard_write_integrity(drawer)
         status = self._require_embedding_space()
-        vector = _embed_one(self._embedder, drawer.content)
-        if len(vector) != status.stored_dimension:
-            raise EmbeddingSpaceError(
-                f"embedding dimension mismatch: expected {status.stored_dimension}, "
-                f"got {len(vector)}"
-            )
+        if status.stored_dimension is None or status.generation is None:
+            raise EmbeddingSpaceError("verified chunk index has incomplete metadata")
+        chunks = _embedded_chunks(self._embedder, drawer.content, status.stored_dimension)
         receipt = (provenance or self._write_provenance).for_write(model=model)
         try:
             with self._write_scope():
@@ -1638,26 +2245,36 @@ class DrawerStore:
                     ),
                 )
                 drawer_id = int(cur.lastrowid or 0)
-                self._conn.execute(
-                    "INSERT INTO vec_drawers("
-                    "drawer_id, embedding, wing, room, layer, trust, valid_until) "
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    (
-                        drawer_id,
-                        _pack(vector),
-                        drawer.wing,
-                        drawer.room,
-                        drawer.layer.value,
-                        receipt.trust.value,
-                        receipt.effective_valid_until,
-                    ),
-                )
+                for start, end, vector in chunks:
+                    chunk_id = int(
+                        self._conn.execute(
+                            "INSERT INTO embedding_chunks("
+                            "drawer_id, generation, start_char, end_char) VALUES (?, ?, ?, ?)",
+                            (drawer_id, status.generation, start, end),
+                        ).lastrowid
+                        or 0
+                    )
+                    self._conn.execute(
+                        "INSERT INTO vec_drawers("
+                        "chunk_id, embedding, drawer_id, wing, room, layer, trust, valid_until) "
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                        (
+                            chunk_id,
+                            vector,
+                            drawer_id,
+                            drawer.wing,
+                            drawer.room,
+                            drawer.layer.value,
+                            receipt.trust.value,
+                            receipt.effective_valid_until,
+                        ),
+                    )
                 self._conn.execute(
                     "INSERT INTO portable_records(identity, drawer_id) VALUES (?, ?)",
                     (str(uuid4()), drawer_id),
                 )
                 self._capture_portable_record(drawer_id)
-                self._cache_verified_append(status)
+                self._cache_verified_append(status, len(chunks))
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"failed to add drawer: {exc}") from exc
         return drawer.model_copy(update={"id": drawer_id})
@@ -1681,6 +2298,30 @@ class DrawerStore:
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"failed to fetch drawer {drawer_id}: {exc}") from exc
         return _row_to_drawer(row) if row is not None else None
+
+    def _iteration_artifact_attach(
+        self, iteration_id: int, kind: str, label: str, data: bytes
+    ) -> dict[str, Any]:
+        from cairntir.iteration_artifacts import _store_operation
+
+        result: dict[str, Any] = _store_operation(self, "attach", iteration_id, kind, label, data)
+        return result
+
+    def _iteration_artifact_refs(self, iteration_id: int) -> list[dict[str, Any]]:
+        from cairntir.iteration_artifacts import _store_operation
+
+        result: list[dict[str, Any]] = _store_operation(self, "refs", iteration_id)
+        return result
+
+    def _iteration_artifact_blob(
+        self, iteration_id: int, artifact_id: int
+    ) -> tuple[dict[str, Any], bytes | None] | None:
+        from cairntir.iteration_artifacts import _store_operation
+
+        result: tuple[dict[str, Any], bytes | None] | None = _store_operation(
+            self, "blob", iteration_id, artifact_id
+        )
+        return result
 
     def get_provenance(self, drawer_id: int) -> WriteProvenance | None:
         """Return the immutable write receipt for one drawer."""
@@ -1750,6 +2391,8 @@ class DrawerStore:
         if not drawer_ids:
             return {}
         status = self._require_embedding_space()
+        if len(query) > _chunk_window(self._embedder):
+            raise EmbeddingSpaceError("task query exceeds the bounded embedding window")
         from cairntir.memory.embeddings import embed_query_readonly
 
         vector = embed_query_readonly(self._embedder, query)
@@ -1771,7 +2414,8 @@ class DrawerStore:
                     score = 1.0 - float(row["distance"])
                     if not math.isfinite(score):
                         raise EmbeddingSpaceError("task candidate embedding has invalid values")
-                    scores[int(row["drawer_id"])] = score
+                    drawer_id = int(row["drawer_id"])
+                    scores[drawer_id] = max(score, scores.get(drawer_id, -math.inf))
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"context vector read failed: {exc}") from exc
         if len(scores) != len(set(drawer_ids)):
@@ -2229,6 +2873,10 @@ class DrawerStore:
         ``rerank_by_belief=False`` to get pure vector order.
         """
         status = self._require_embedding_space()
+        if limit <= 0 or status.vector_count == 0:
+            return []
+        if len(query) > _chunk_window(self._embedder):
+            raise EmbeddingSpaceError("query exceeds the bounded embedding window")
         vector = _embed_one(self._embedder, query)
         if len(vector) != status.stored_dimension:
             raise EmbeddingSpaceError(
@@ -2236,7 +2884,7 @@ class DrawerStore:
                 f"got {len(vector)}"
             )
         clauses = ["v.embedding MATCH ?", "k = ?"]
-        search_params: list[Any] = [_pack(vector), limit * 4]
+        search_params: list[Any] = [_pack(vector), status.vector_count]
         if not include_expired:
             clauses.append("v.valid_until > ?")
             search_params.append(datetime.now(UTC).isoformat())
@@ -2268,7 +2916,12 @@ class DrawerStore:
             raise MemoryStoreError(f"search failed: {exc}") from exc
 
         results: list[tuple[Drawer, float]] = []
+        seen: set[int] = set()
         for row in rows:
+            drawer_id = int(row["id"])
+            if drawer_id in seen:
+                continue
+            seen.add(drawer_id)
             results.append((_row_to_drawer(row), float(row["distance"])))
             if len(results) >= limit:
                 break

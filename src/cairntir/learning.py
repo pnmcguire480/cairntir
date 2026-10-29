@@ -387,6 +387,23 @@ def list_discoveries(
         leaves = [item for item in leaves if item.state == state]
     if active_only:
         leaves = [item for item in leaves if item.state in _ACTIVE_STATES]
+        if callable(getattr(store, "_procedure_records", None)):
+            from cairntir.memory.store import DrawerStore
+            from cairntir.procedures import ProcedureBook, practice_read_view
+
+            book = ProcedureBook(practice_read_view(cast(DrawerStore, store)), {})
+            wings = {wing} if wing is not None else {item.wing for item in leaves}
+            selected_wings = getattr(store, "_discovery_practice_wings", None)
+            if callable(selected_wings):
+                wings = set(selected_wings(wing))
+            active_ids = {target.drawer_id for scope in wings for target in book.list(wing=scope)}
+            leaves = [
+                item
+                for item in leaves
+                if not _registered_procedure(store, item.drawer_id)
+                or book.get_lifecycle(item.drawer_id) is None
+                or item.drawer_id in active_ids
+            ]
     leaves.sort(key=lambda item: item.created_at, reverse=True)
     return leaves[:limit]
 

@@ -8,8 +8,8 @@ from collections.abc import Sequence
 from datetime import UTC, datetime
 from typing import Any
 
-from mcp import types
-
+from cairntir.decision_currentness import currentness_index
+from cairntir.derivation import derivation_status, evidence_fields, is_withheld
 from cairntir.errors import AnchorError, RetrievalError
 from cairntir.memory.anchors import parse_anchors, paths_intersect
 from cairntir.memory.store import DrawerStore
@@ -80,6 +80,8 @@ def _render(payload: dict[str, Any]) -> str:
 
 
 def _fits(payload: dict[str, Any], limit: int) -> bool:
+    from mcp import types
+
     raw = _render(payload)
     envelope = types.CallToolResult(
         content=[types.TextContent(type="text", text=raw)], isError=False
@@ -175,8 +177,21 @@ def compose_task_context(
 
     candidates, total = store.context_candidates(wing=wing, limit=candidate_limit)
     payload["scan"].update(scanned=len(candidates), complete=len(candidates) == total)
+    index = currentness_index(store, wing=wing, allow_current=payload["scan"]["complete"])
+    if not index.scan_complete:
+        payload["scan"]["currentness"] = index.reason or "incomplete_currentness_scan"
     now = datetime.now(UTC)
-    excluded = {_identifier(record): _exclusions(record, now) for record in candidates}
+    derivations: dict[int, dict[str, Any]] = {}
+
+    def exclusions(record: _Record) -> list[str]:
+        key = _identifier(record)
+        state = derivation_status(store, key)
+        derivations[key] = state
+        return _exclusions(record, now) + (
+            ["derivation_" + state["status"]] if is_withheld(state) else []
+        )
+
+    excluded = {_identifier(record): exclusions(record) for record in candidates}
     eligible = [record for record in candidates if not excluded[_identifier(record)]]
     scores = store.context_similarities(task, [_identifier(record) for record in eligible])
     matched: dict[int, list[str]] = {}
@@ -195,7 +210,7 @@ def compose_task_context(
         for record in store.context_relatives(wing=wing, drawer_ids=sorted(matched))
     }
     for key, record in records.items():
-        excluded[key] = _exclusions(record, now)
+        excluded[key] = exclusions(record)
     current = {
         key for key in records if not {"expired", "future_valid"}.intersection(excluded[key])
     }
@@ -236,6 +251,8 @@ def compose_task_context(
                 "provenance": records[key][1].to_dict(),
                 "instruction_authority": "none",
                 "reasons": matched.get(key, ["successor"]),
+                **index.fields(records[key][0]),
+                **evidence_fields(store, records[key][0]),
             }
             for key in available
         ]
@@ -267,7 +284,10 @@ def compose_task_context(
         ("omitted", [(key, ["budget"]) for key in omitted]),
     ):
         for key, reasons in receipts:
-            payload[field].append({"drawer_id": key, "reasons": reasons})
+            entry: dict[str, Any] = {"drawer_id": key, "reasons": reasons}
+            if key in derivations and is_withheld(derivations[key]):
+                entry["derivation"] = derivations[key]
+            payload[field].append(entry)
             if not _fits(payload, budget_chars):
                 payload[field].pop()
     return _render(payload)

@@ -17,9 +17,13 @@ import shutil
 import subprocess
 import sys
 import tomllib
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Final, Literal
+from typing import TYPE_CHECKING, Any, Final, Literal, cast
+
+if TYPE_CHECKING:
+    from cairntir.access import ScopedStore
 
 HostName = Literal[
     "claude",
@@ -580,12 +584,16 @@ def _entry_matches(actual: object, expected: dict[str, object]) -> bool:
 
 
 def _json_status(path: Path, *, host: HostName) -> tuple[bool, str]:
-    if not path.exists():
-        return False, f"missing {path}"
     try:
+        if not path.exists():
+            return False, f"missing {path}"
         config = load_json_object(path)
     except HostConfigurationError as exc:
+        if isinstance(exc.__cause__, OSError):
+            return False, f"{type(exc.__cause__).__name__}: {exc}"
         return False, str(exc)
+    except OSError as exc:
+        return False, f"could not inspect {path}: {type(exc).__name__}: {exc}"
     servers = config.get(mcp_container_key(host), {})
     if not isinstance(servers, dict) or not _entry_matches(
         servers.get(MCP_SERVER_NAME), mcp_entry(host)
@@ -595,12 +603,12 @@ def _json_status(path: Path, *, host: HostName) -> tuple[bool, str]:
 
 
 def _codex_status(path: Path) -> tuple[bool, str]:
-    if not path.exists():
-        return False, f"missing {path}"
     try:
+        if not path.exists():
+            return False, f"missing {path}"
         parsed = tomllib.loads(path.read_text(encoding="utf-8"))
     except (OSError, tomllib.TOMLDecodeError) as exc:
-        return False, f"{path} is not valid readable TOML: {exc}"
+        return False, f"{path} is not valid readable TOML: {type(exc).__name__}: {exc}"
     servers = parsed.get("mcp_servers", {})
     spec = servers.get(MCP_SERVER_NAME) if isinstance(servers, dict) else None
     if not _entry_matches(spec, mcp_spec("codex")):
@@ -640,22 +648,24 @@ def inspect_host(
         policy_detail = _MANUAL_POLICY_STATUS.get(
             host, f"{host} exposes no file-backed policy surface at {scope} scope"
         )
-    elif not policy_path.exists():
-        policy_configured = False
-        policy_detail = f"missing {policy_path}"
     else:
         try:
-            contents = policy_path.read_text(encoding="utf-8")
+            if not policy_path.exists():
+                policy_configured = False
+                policy_detail = f"missing {policy_path}"
+            else:
+                contents = policy_path.read_text(encoding="utf-8")
+                policy_configured = (
+                    POLICY_BEGIN_MARKER in contents and POLICY_END_MARKER in contents
+                )
+                policy_detail = (
+                    str(policy_path)
+                    if policy_configured
+                    else f"{policy_path} has no complete Cairntir policy block"
+                )
         except OSError as exc:
             policy_configured = False
-            policy_detail = f"could not read {policy_path}: {exc}"
-        else:
-            policy_configured = POLICY_BEGIN_MARKER in contents and POLICY_END_MARKER in contents
-            policy_detail = (
-                str(policy_path)
-                if policy_configured
-                else f"{policy_path} has no complete Cairntir policy block"
-            )
+            policy_detail = f"could not inspect {policy_path}: {type(exc).__name__}: {exc}"
 
     return HostStatus(
         host=host,
@@ -665,3 +675,133 @@ def inspect_host(
         policy_configured=policy_configured,
         policy_detail=policy_detail,
     )
+
+
+@dataclass(frozen=True, slots=True)
+class _ClaudeSessionBinding:
+    store_path: Path
+    project_root: Path
+    wing: str
+    task_id: str | None
+    task_budget_chars: int
+    project_budget_chars: int
+
+
+def _claude_session_binding(binding: Mapping[str, object]) -> _ClaudeSessionBinding:
+    from cairntir.memory.taxonomy import _validate_ident
+
+    if binding.get("schema") != "cairntir.claude-session-binding.v1":
+        raise ValueError("unsupported Claude session binding")
+    paths = []
+    for key in ("store_path", "project_root"):
+        value = binding.get(key)
+        if not isinstance(value, str) or not Path(value).is_absolute():
+            raise ValueError(f"{key} must be an absolute existing path")
+        paths.append(Path(value).resolve(strict=True))
+    if not paths[0].is_file() or not paths[1].is_dir():
+        raise ValueError("binding requires a store file and project directory")
+    wing = binding.get("wing")
+    if not isinstance(wing, str):
+        raise TypeError("binding requires a wing")
+    _validate_ident(wing, "wing")
+    task_id = binding.get("task_id")
+    if task_id is not None and (not isinstance(task_id, str) or not task_id.strip()):
+        raise ValueError("task_id must be a nonempty identifier or null")
+    budgets = []
+    for key, minimum in (("task_budget_chars", 1024), ("project_budget_chars", 1)):
+        budget = binding.get(key)
+        if type(budget) is not int or budget < minimum:
+            raise ValueError(f"{key} must be an integer of at least {minimum}")
+        budgets.append(budget)
+    return _ClaudeSessionBinding(paths[0], paths[1], wing, task_id, *budgets)
+
+
+def compose_claude_session_start(
+    store: ScopedStore, *, binding: Mapping[str, object], event: Mapping[str, object]
+) -> dict[str, object]:
+    """Compose whole startup evidence under a fixed project and read grant."""
+    from cairntir.access import AccessDenied, ScopedStore
+    from cairntir.mcp.backend import CairntirBackend
+    from cairntir.memory.store import DrawerStore
+
+    fixed = _claude_session_binding(binding)
+    cwd, session_id = event.get("cwd"), event.get("session_id")
+    if (
+        event.get("hook_event_name") != "SessionStart"
+        or event.get("source") not in {"startup", "resume"}
+        or not isinstance(session_id, str)
+        or not session_id.strip()
+        or len(session_id) > 256
+        or not isinstance(cwd, str)
+        or not Path(cwd).is_absolute()
+        or not Path(cwd).resolve(strict=True).is_relative_to(fixed.project_root)
+    ):
+        raise ValueError("invalid Claude SessionStart event for this project")
+    if not isinstance(store, ScopedStore) or store._owner._read_snapshot is None:
+        raise AccessDenied("startup brief requires a scoped read-only store")
+    if store._owner._path.resolve() != fixed.store_path:
+        raise AccessDenied("startup brief store does not match binding")
+    backend = CairntirBackend(cast(DrawerStore, store))
+    if set(store._grant()["capabilities"]) != {"read"}:
+        raise AccessDenied("startup brief requires a read-only grant")
+    try:
+        store._authorize_complete_wing(fixed.wing)
+        task = json.loads(
+            backend.handoff(
+                wing=fixed.wing,
+                resume=True,
+                task_id=fixed.task_id,
+                budget_chars=fixed.task_budget_chars,
+            )
+        )
+        project: object = {"status": "withheld", "reason": "task_not_ready"}
+        if task["status"] == "ready":
+            project = backend.handoff(wing=fixed.wing, budget_chars=fixed.project_budget_chars)
+        store._authorize_complete_wing(fixed.wing)
+    except AccessDenied:
+        task = {
+            "schema": "cairntir.task-resume.v1",
+            "status": "unavailable",
+            "task_id": None,
+            "revision": None,
+            "checkpoint": None,
+            "instruction_authority": "none",
+        }
+        project = {"status": "withheld", "reason": "scope_unavailable"}
+    context = {
+        "schema": "cairntir.claude-startup-context.v1",
+        "wing": fixed.wing,
+        "project_root": str(fixed.project_root),
+        "host_source": event["source"],
+        "session_id": session_id,
+        "task": task,
+        "project_brief": project,
+        "instruction_authority": "none",
+    }
+
+    def render() -> str:
+        return json.dumps(context, ensure_ascii=False, separators=(",", ":"))
+
+    if len(render().encode("utf-8")) > 10_000:
+        context["project_brief"] = {"status": "omitted", "reason": "host_byte_limit"}
+    if len(render().encode("utf-8")) > 10_000:
+        context["task"] = {
+            "schema": "cairntir.task-resume.v1",
+            "status": "omitted",
+            "task_id": task["task_id"],
+            "revision": task["revision"],
+            "checkpoint": None,
+            "reason": "host_byte_limit",
+            "instruction_authority": "none",
+        }
+    raw = render()
+    if len(raw.encode("utf-8")) > 10_000:
+        raise ValueError("startup receipt exceeds host byte limit")
+    result: dict[str, object] = {
+        "hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": raw}
+    }
+    if task["status"] != "ready" or isinstance(context["project_brief"], dict):
+        result["systemMessage"] = (
+            "Cairntir startup evidence is incomplete; inspect its status before work."
+        )
+    return result
