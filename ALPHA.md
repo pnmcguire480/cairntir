@@ -40,7 +40,7 @@ Audience/angle/channel/outline pipelines, HumanFlow teaching, UI/visual verifica
 
 ## Known verification limits
 
-- The second hosted matrix passed 1,941–1,942 tests per job, with two backup fixture setup errors and 44.32–44.41% coverage against 90%. Those failures remain visible in the [CI record](docs/release/v2-alpha-ci.md); no passing global result is claimed.
+- Restored tests raised measured coverage from about 44% to 59.22% on Linux/macOS and 62.41% on Windows (2,088 passing tests per Windows job); the unchanged 90% gate still fails. Those jobs exposed a shared PALADIN fixture path mismatch, corrected locally with 68 affected cases passing. Full fresh CI remains required. Every earlier result remains visible in the [CI record](docs/release/v2-alpha-ci.md).
 - The local admission harness currently loses its Guard profiler during an expected Git refusal: 21 selected checks produced 18 complete passes and 5 stage errors across 3 checks. The observer repair remains deferred; its failure has not been relabelled.
 - Native Windows version reporting is independently verified in five framework cases, including real values, restoration and retained shell refusal. This is a test-harness improvement, not an extra product feature.
 - Independent protected evaluator custody, second supported-machine readiness and complete installed upgrade/restore/rollback qualification remain open.
