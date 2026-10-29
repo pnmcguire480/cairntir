@@ -7,17 +7,17 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-FOLDER = Path("plans/acceptance/alpha-overwindow-amendment-20261029")
+FOLDER = Path("plans/acceptance/alpha-ci-contracts-20261029")
 TARGET = "tests/unit/test_store.py"
 BEFORE = "eecf66a7db47a02dc54f24bc0633840f45a1289d7f48c69b075383e9be23f053"
 CHECK = runpy.run_path(str(ROOT / "scripts/check_verification_preservation.py"))[
-    "_accepted_alpha_store_amendment"
+    "_accepted_alpha_test_amendment"
 ]
 
 
 @pytest.fixture
 def amended_copy(tmp_path: Path) -> Path:
-    for relative in (FOLDER / "AMENDMENT.json", FOLDER / "original-test_store.py", Path(TARGET)):
+    for relative in (FOLDER / "AMENDMENT.json", FOLDER / "original" / TARGET, Path(TARGET)):
         destination = tmp_path / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT / relative, destination)
@@ -43,10 +43,10 @@ def test_amendment_rejects_missing_evidence_and_unrelated_drift(
     amended_copy: Path, mutation: str
 ) -> None:
     if mutation == "archive_missing":
-        (amended_copy / FOLDER / "original-test_store.py").unlink()
+        (amended_copy / FOLDER / "original" / TARGET).unlink()
     elif mutation in {"archive_changed", "live_changed", "manifest_changed"}:
         relative = {
-            "archive_changed": FOLDER / "original-test_store.py",
+            "archive_changed": FOLDER / "original" / TARGET,
             "live_changed": Path(TARGET),
             "manifest_changed": FOLDER / "AMENDMENT.json",
         }[mutation]

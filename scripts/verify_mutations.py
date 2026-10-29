@@ -140,7 +140,11 @@ MUTATIONS = (
         "before": '        connection.execute("PRAGMA journal_mode=DELETE")',
         "after": '        connection.execute("PRAGMA journal_mode=DELETE")\n'
         '        connection.execute("DELETE FROM portable_records WHERE drawer_id=1")\n'
-        '        connection.execute("DELETE FROM vec_drawers WHERE drawer_id=1")\n'
+        "        connection.execute(\n"
+        '            "DELETE FROM vec_drawers WHERE chunk_id IN "\n'
+        '            "(SELECT chunk_id FROM embedding_chunks WHERE drawer_id=1)"\n'
+        "        )\n"
+        '        connection.execute("DELETE FROM embedding_chunks WHERE drawer_id=1")\n'
         '        connection.execute("DELETE FROM drawers WHERE id=1")\n'
         "        connection.commit()",
         "test": RESTORE,

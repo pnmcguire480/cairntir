@@ -31,17 +31,19 @@ def test_release_versions_agree() -> None:
 
 def test_plugin_manifest_lists_three_commands() -> None:
     data = json.loads(PLUGIN_MANIFEST.read_text(encoding="utf-8"))
-    names = {c["name"] for c in data["commands"]}
-    assert names == {"remember", "recall", "reason"}
+    assert data["commands"] == "./commands"
+    assert {path.stem for path in COMMANDS_DIR.glob("*.md")} == {"remember", "recall", "reason"}
 
 
 def test_plugin_command_files_exist() -> None:
     data = json.loads(PLUGIN_MANIFEST.read_text(encoding="utf-8"))
-    for entry in data["commands"]:
-        path = REPO_ROOT / entry["file"]
-        assert path.is_file(), f"missing command file {entry['file']}"
-        body = path.read_text(encoding="utf-8")
-        assert body.startswith("---"), f"{entry['file']} missing frontmatter"
+    assert data["commands"] == "./commands"
+    for name in ("remember", "recall", "reason"):
+        path = COMMANDS_DIR / f"{name}.md"
+        assert path.is_file(), f"missing command file {path.name}"
+        assert path.read_text(encoding="utf-8").startswith("---"), (
+            f"{path.name} missing frontmatter"
+        )
 
 
 def test_plugin_declares_mcp_server() -> None:

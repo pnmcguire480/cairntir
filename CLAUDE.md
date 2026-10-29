@@ -83,24 +83,15 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-29 (experimental alpha preparation)
+## Last Session - 2026-10-29 (draft alpha CI corrections)
 
-The alpha starts from public 1.12.4 history and selects runtime, integrations and
-portable guides without importing the earlier local integration commit history,
-private stores, vaults or qualification archives. Work remains local pending
-approval of the concrete publication bundle. No tag, public release or production
-upgrade is authorized by this preparation.
+[Draft PR140](https://github.com/pnmcguire480/cairntir/pull/140) is published for feedback. Merging, tagging, PyPI publication and production adoption remain unauthorized. The original local integration history and private qualification evidence are excluded.
 
-The wheel builds and installs in an isolated target. A model-free smoke check
-passes version/CLI, memory write/read/reopen, MCP server construction and tool
-metadata, and bundled resource checks. Obsidian JavaScript syntax checks pass.
-No full-suite, coverage, model efficacy or graphical host adoption result follows.
+The initial CI run failed17 platform type errors; the next run passed lint and CodeQL but exposed27 stale test contracts, a stale missing-memory mutation, two scoped-CLI timeouts and roughly38% coverage. Those failures retain their original criteria and results. The27 corrected cases now pass locally. The real timeout was traced to repeated authority subprocess startup; a reusable isolated helper still reads a fresh snapshot per lookup. Seven independent security/lifecycle cases and the two unchanged-deadline CLI cases pass. Linux/Windows strict types pass for90 source files.
 
-The local admission harness retains 18 complete passes and 5 stage errors across
-21 selected checks. Observer repair is deferred. Keep these failures visible and
-do not expand the harness while preparing the preview. The original 35-item
-register and dated follow-ups remain in [the roadmap](docs/alpha-roadmap.json).
+The [explicit test-contract amendment](plans/acceptance/alpha-ci-contracts-20261029/AMENDMENT.json) retains five original frozen files verbatim and pins only their reviewed successors. Council checks, memory/access guards and coverage scope remain enforced. The CI override now matches the already-approved90% policy; the old92% results are not relabelled.
 
+Eleven existing portable v2 behavior-test files are included. Their first local run had157 passes, one setup-transaction failure and three unsupported-host symlink skips; the setup was corrected and its targeted rerun passed. No private plan loader or archived controls were imported. This does not establish global coverage or host efficacy. Full CI, coverage and remaining stable release gates stay open. The original35-item register and dated follow-ups remain in [the roadmap](docs/alpha-roadmap.json).
 ## Previous Session - 2026-10-02 (1.12.4 maintenance candidate)
 
 This release combines PR122's three dependency repairs and safe contributor

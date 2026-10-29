@@ -46,7 +46,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 CHANGELOG = REPO_ROOT / "CHANGELOG.md"
 PYPROJECT = REPO_ROOT / "pyproject.toml"
 
-CHANGELOG_VERSION = re.compile(r"^## \[(\d+\.\d+\.\d+)\]", re.MULTILINE)
+CHANGELOG_VERSION = re.compile(r"^## \[(\d+\.\d+\.\d+(?:(?:a|b|rc)\d+)?)\]", re.MULTILINE)
 
 # Versions changelogged before this check existed that were never tagged or
 # published. Documented, not swept away. Do not add to this set to silence a

@@ -110,7 +110,7 @@ restriction. See [data handling](docs/concept.md) for backup and trust boundarie
 
 ## Build and integrate
 
-The MCP server exposes **21 tools** over stdio. Stable Python protocols support
+The MCP server exposes **22 tools** over stdio. Stable Python protocols support
 custom backends; see the [integration guide](docs/integration-guide.md).
 
 ```text

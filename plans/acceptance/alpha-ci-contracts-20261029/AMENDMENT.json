@@ -1,0 +1,45 @@
+{
+  "schema": "cairntir.alpha-ci-contract-amendment.v1",
+  "baseline_commit": "dc2607f2146b931e4fa9243fc847583d6bf99ebb",
+  "prior_head": "2427101b983e5423dba491265c32f3d54f9990ab",
+  "files": {
+    "tests/acceptance/test_automatic_backups.py": {
+      "before_sha256": "8339755f367d8e9a91013651b28f69b53b6e95662da465b4cfffb6801b4a6da5",
+      "after_sha256": "d4a3f15e08c4b708dd82bb7949a99951b5bf15af8b99d88d8ba5b58c3ee55d6a",
+      "archive": "plans/acceptance/alpha-ci-contracts-20261029/original/tests/acceptance/test_automatic_backups.py",
+      "reason": "22-tool v2 transport; the already-approved writable owner get(1) probe is explicit instead of a fixture wrapper. Backup contents, cadence, scope and no-write assertions remain."
+    },
+    "tests/unit/test_context_acceptance.py": {
+      "before_sha256": "1a14baa44ac0b5b9d3e2702796ced0b9e13adbe660055aa1eb3895f9e6c709d2",
+      "after_sha256": "a7391f7beac435c0b8e6f07f9b616577148fc90edd11032e0d9ddb13dc8265e6",
+      "archive": "plans/acceptance/alpha-ci-contracts-20261029/original/tests/unit/test_context_acceptance.py",
+      "reason": "Additive currentness diagnostics and origin references are verified against actual SQLite evidence. Random cross-store identities are validated before only UUID normalization; repeated same-store transport output remains byte-exact. The tool set includes cairntir_correct."
+    },
+    "tests/unit/test_context_concurrency_acceptance.py": {
+      "before_sha256": "1bdfc47f69ff34840705589dc22864df228bc20462fe6e13deec87a3b072e007",
+      "after_sha256": "58dc2d09a14fc09a33d4a0328f0d088d85eaf6e41eb955c968c7ad6a14100142",
+      "archive": "plans/acceptance/alpha-ci-contracts-20261029/original/tests/unit/test_context_concurrency_acceptance.py",
+      "reason": "Keep generation text constant-width so the fixture does not corrupt its own embedding spans; preserve the WAL/snapshot/cleanup assertions and production corruption guard."
+    },
+    "tests/unit/test_store.py": {
+      "before_sha256": "eecf66a7db47a02dc54f24bc0633840f45a1289d7f48c69b075383e9be23f053",
+      "after_sha256": "c8d4cc9635d73b6989488db09c2cf8c8f380c51d8d19425f3b2bca2a86c1cc01",
+      "archive": "plans/acceptance/alpha-ci-contracts-20261029/original/tests/unit/test_store.py",
+      "reason": "Complete bounded reindexing, chunk-policy embedding identities, migration mismatch refusal, and synthetic pinned-asset identity setup replace obsolete pre-chunk/pre-artifact assumptions."
+    },
+    "tests/unit/test_task_resume_acceptance.py": {
+      "before_sha256": "30dce372e94deb111a62d199f72b4510aada8dea8dff1daa9a0ee439232ebea0",
+      "after_sha256": "0a821ed5720b805b2ef865b15a0e87a0c19b248e08b6e81a9941f0ab786e3045",
+      "archive": "plans/acceptance/alpha-ci-contracts-20261029/original/tests/unit/test_task_resume_acceptance.py",
+      "reason": "The v2 MCP surface contains 22 object-root tool schemas; preserve all schema, resume and connection checks."
+    }
+  },
+  "historical_result": "Original CI40828934684 outcomes remain FAIL under their original criteria; old tests are archived verbatim, not relabelled as passing.",
+  "replacement_result": "Requires fresh focused and hosted execution; no pass is inferred from this amendment.",
+  "unchanged": [
+    "all other frozen artifacts",
+    "council manifests and checks",
+    "coverage source/branch surface and exclusions",
+    "production integrity and access guards"
+  ]
+}
