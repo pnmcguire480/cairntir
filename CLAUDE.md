@@ -85,13 +85,14 @@ the production installation as an incidental build step.
 
 ## Last Session - 2026-10-29 (draft alpha CI corrections)
 
-[Draft PR140](https://github.com/pnmcguire480/cairntir/pull/140) is published for feedback. Merging, tagging, PyPI publication and production adoption remain unauthorized. The original local integration history and private qualification evidence are excluded.
+[Draft PR140](https://github.com/pnmcguire480/cairntir/pull/140) is published for feedback. No merge, tag, PyPI publication or production adoption is authorized. Earlier local integration history and private qualification evidence remain excluded.
 
-The initial CI run failed17 platform type errors; the next run passed lint and CodeQL but exposed27 stale test contracts, a stale missing-memory mutation, two scoped-CLI timeouts and roughly38% coverage. Those failures retain their original criteria and results. The27 corrected cases now pass locally. The real timeout was traced to repeated authority subprocess startup; a reusable isolated helper still reads a fresh snapshot per lookup. Seven independent security/lifecycle cases and the two unchanged-deadline CLI cases pass. Linux/Windows strict types pass for90 source files.
+The [CI record](docs/release/v2-alpha-ci.md) preserves all three actual runs. Initial platform type failures were corrected. The first full matrix exposed stale contracts, a malformed mutation, a real scoped-handoff timeout and about 38% coverage. The second full matrix passed lint, CodeQL and every OS mutation/regression job. Its nine test jobs passed 1,941–1,942 cases each, with two stale backup fixture setup errors and 44.32–44.41% coverage. The approved 90% gate still fails.
 
-The [explicit test-contract amendment](plans/acceptance/alpha-ci-contracts-20261029/AMENDMENT.json) retains five original frozen files verbatim and pins only their reviewed successors. Council checks, memory/access guards and coverage scope remain enforced. The CI override now matches the already-approved90% policy; the old92% results are not relabelled.
+The isolated authority helper observes fresh grants on every lookup. Seven independent security/lifecycle cases and both original CLI deadline cases pass; the hosted regression/mutation matrix also passes. Five original public test files remain archived and their exact successors pinned. The separate backup control collector now validates that amendment before loading current helpers, preserving both independent control functions. Focused backup/practice checks pass 25 cases; controlled Python/synthetic UI checks pass 35 cases and 12 subtests. These do not qualify real tools, live browser behavior or the complete release.
 
-Eleven existing portable v2 behavior-test files are included. Their first local run had157 passes, one setup-transaction failure and three unsupported-host symlink skips; the setup was corrected and its targeted rerun passed. No private plan loader or archived controls were imported. This does not establish global coverage or host efficacy. Full CI, coverage and remaining stable release gates stay open. The original35-item register and dated follow-ups remain in [the roadmap](docs/alpha-roadmap.json).
+Existing portable feature tests are being restored to normal collection without private packet loaders or historical project records. Coverage scope and historical failures remain intact. The original 35-item register and dated follow-ups remain in [the roadmap](docs/alpha-roadmap.json); stable release gates stay open.
+
 ## Previous Session - 2026-10-02 (1.12.4 maintenance candidate)
 
 This release combines PR122's three dependency repairs and safe contributor
