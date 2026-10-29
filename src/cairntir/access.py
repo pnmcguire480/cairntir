@@ -4,24 +4,30 @@ from __future__ import annotations
 
 import hashlib
 import json
+import multiprocessing
 import os
 import re
 import secrets
 import sqlite3
-import subprocess
-import sys
 from collections import Counter
 from collections.abc import Callable, Iterator, Sequence
 from contextlib import closing, contextmanager
 from datetime import UTC, datetime
+from multiprocessing.connection import Connection
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from threading import Lock
 from typing import Any, NoReturn
 
 from cairntir.durability import WorkflowExecution, WorkflowReceipt
 from cairntir.errors import CairntirError
 from cairntir.memory.belief import rerank_results
-from cairntir.memory.store import DrawerStore, _context_record, _row_to_drawer
+from cairntir.memory.store import (
+    DrawerStore,
+    _context_record,
+    _copy_locked_database,
+    _row_to_drawer,
+)
 from cairntir.memory.taxonomy import Drawer, Layer
 from cairntir.provenance import TrustLevel, WriteProvenance
 
@@ -56,36 +62,117 @@ def validate_startup(path: Path, token: str) -> None:
     _active(_authoritative_grant(path, _digest(token)))
 
 
-def _authoritative_grant(path: Path, token_hash: str) -> sqlite3.Row | None:
+def _grant_worker(path: Path, token_hash: str, connection: Connection) -> None:
+    with connection:
+        while True:
+            try:
+                request = connection.recv()
+            except EOFError:
+                return
+            if request is not None:
+                return
+            try:
+                with TemporaryDirectory(prefix="cairntir-grant-") as directory:
+                    copied = Path(directory) / "grant.db"
+                    _copy_locked_database(path, copied)
+                    with closing(sqlite3.connect(copied)) as conn:
+                        conn.row_factory = sqlite3.Row
+                        row = conn.execute(
+                            "SELECT * FROM access_grants WHERE token_hash=?", (token_hash,)
+                        ).fetchone()
+                        grant = dict(row) if row is not None else None
+                response = (True, grant)
+            except (OSError, sqlite3.Error, CairntirError):
+                response = (False, None)
+            try:
+                connection.send(response)
+            except (OSError, EOFError):
+                return
+
+
+class _GrantReader:
+    def __init__(self, path: Path, token_hash: str) -> None:
+        self._lock = Lock()
+        self._closed = False
+        self._token_hash = token_hash
+        context = multiprocessing.get_context("spawn")
+        self._connection, child = context.Pipe()
+        self._process = context.Process(
+            target=_grant_worker, args=(path.resolve(), token_hash, child), daemon=True
+        )
+        try:
+            self._process.start()
+        except (OSError, RuntimeError, AssertionError) as exc:
+            self._connection.close()
+            self._process.close()
+            raise AccessDenied(_DENIED) from exc
+        finally:
+            child.close()
+
+    def read(self) -> dict[str, Any] | None:
+        """Read a fresh authority snapshot through this reader's isolated helper."""
+        with self._lock:
+            if self._closed:
+                raise AccessDenied(_DENIED)
+            response: object = None
+            try:
+                if self._process.is_alive():
+                    self._connection.send(None)
+                    if self._connection.poll(12):
+                        response = self._connection.recv()
+            except (OSError, EOFError, ValueError) as exc:
+                self._close()
+                raise AccessDenied(_DENIED) from exc
+            if not isinstance(response, tuple) or len(response) != 2 or response[0] is not True:
+                self._close()
+                raise AccessDenied(_DENIED)
+            row = response[1]
+            if row is None:
+                return None
+            if (
+                not isinstance(row, dict)
+                or row.get("token_hash") != self._token_hash
+                or not isinstance(row.get("scopes"), str)
+                or not isinstance(row.get("capabilities"), str)
+                or type(row.get("revoked")) is not int
+                or "expires_at" not in row
+                or (row["expires_at"] is not None and not isinstance(row["expires_at"], str))
+            ):
+                self._close()
+                raise AccessDenied(_DENIED)
+            return row
+
+    def _close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        self._connection.close()
+        self._process.join(timeout=1)
+        if self._process.is_alive():
+            self._process.terminate()
+            self._process.join(timeout=1)
+        if self._process.is_alive():
+            self._process.kill()
+            self._process.join(timeout=1)
+        if self._process.is_alive():
+            raise AccessDenied(_DENIED)
+        self._process.close()
+
+    def close(self) -> None:
+        """Close the pipe and reap only this reader's owned process."""
+        with self._lock:
+            self._close()
+
+
+def _authoritative_grant(path: Path, token_hash: str) -> dict[str, Any] | None:
+    reader = _GrantReader(path, token_hash)
     try:
-        with TemporaryDirectory(prefix="cairntir-grant-") as directory:
-            copied = Path(directory) / "grant.db"
-            subprocess.run(  # noqa: S603 - fixed interpreter/code and explicit path arguments
-                [
-                    sys.executable,
-                    "-c",
-                    "from pathlib import Path; import sys; "
-                    "from cairntir.memory.store import _copy_locked_database; "
-                    "_copy_locked_database(Path(sys.argv[1]), Path(sys.argv[2]))",
-                    str(path.resolve()),
-                    str(copied),
-                ],
-                capture_output=True,
-                check=True,
-                timeout=12,
-                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
-            )
-            with closing(sqlite3.connect(copied)) as conn:
-                conn.row_factory = sqlite3.Row
-                row: sqlite3.Row | None = conn.execute(
-                    "SELECT * FROM access_grants WHERE token_hash=?", (token_hash,)
-                ).fetchone()
-                return row
-    except (OSError, sqlite3.Error, subprocess.SubprocessError) as exc:
-        raise AccessDenied(_DENIED) from exc
+        return reader.read()
+    finally:
+        reader.close()
 
 
-def _active(row: sqlite3.Row | None) -> sqlite3.Row:
+def _active(row: sqlite3.Row | dict[str, Any] | None) -> sqlite3.Row | dict[str, Any]:
     if (
         row is None
         or row["revoked"]
@@ -172,7 +259,13 @@ def bind_grant(store: DrawerStore, token: str) -> ScopedStore:
     if isinstance(store, ScopedStore) or not isinstance(token, str) or not token.strip():
         raise AccessDenied(_DENIED)
     scoped = ScopedStore(store, _digest(token))
-    scoped._grant()
+    bound = False
+    try:
+        scoped._grant()
+        bound = True
+    finally:
+        if not bound:
+            scoped._close_grant_reader()
     return scoped
 
 
@@ -829,6 +922,7 @@ class ScopedStore:
         """Bind an owner store and a token digest without opening another store."""
         self._owner = owner
         self._token_hash = token_hash
+        self._grant_reader: _GrantReader | None = None
         self._export_depth = 0
         self._import_depth = 0
 
@@ -844,6 +938,15 @@ class ScopedStore:
         """Close the owner store on context exit."""
         self.close()
 
+    def _authority_row(self) -> dict[str, Any] | None:
+        if self._grant_reader is None:
+            self._grant_reader = _GrantReader(self._owner._path, self._token_hash)
+        return self._grant_reader.read()
+
+    def _close_grant_reader(self) -> None:
+        if self._grant_reader is not None:
+            self._grant_reader.close()
+
     def _grant(self) -> dict[str, Any]:
         try:
             if self._owner._read_snapshot is None:
@@ -852,7 +955,7 @@ class ScopedStore:
                 ).fetchone()
             else:
                 # A private task snapshot is not the authority for live revocation.
-                row = _authoritative_grant(self._owner._path, self._token_hash)
+                row = self._authority_row()
         except sqlite3.Error as exc:
             raise AccessDenied(_DENIED) from exc
         row = _active(row)
@@ -996,8 +1099,11 @@ class ScopedStore:
                 raise AccessDenied(_DENIED)
 
     def close(self) -> None:
-        """Close the owned connection and any private snapshot."""
-        self._owner.close()
+        """Close the authority helper, owned connection and any private snapshot."""
+        try:
+            self._close_grant_reader()
+        finally:
+            self._owner.close()
 
     @property
     def transaction_active(self) -> bool:
@@ -1444,7 +1550,7 @@ class ScopedStore:
                     "SELECT * FROM access_grants WHERE token_hash=?", (self._token_hash,)
                 ).fetchone()
                 if self._owner._read_snapshot is None
-                else _authoritative_grant(self._owner._path, self._token_hash)
+                else self._authority_row()
             )
             return dict(_active(row))
 
@@ -1473,7 +1579,7 @@ class ScopedStore:
                     "SELECT * FROM access_grants WHERE token_hash=?", (self._token_hash,)
                 ).fetchone()
                 if self._owner._read_snapshot is None
-                else _authoritative_grant(self._owner._path, self._token_hash)
+                else self._authority_row()
             )
             return dict(_active(row))
 
