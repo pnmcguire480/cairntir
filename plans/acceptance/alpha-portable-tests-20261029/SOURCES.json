@@ -390,5 +390,505 @@
       "sha256": "ac68bf83d29a0d2d7b73ed303c8628314a01975f96b4151f269d2878eb35878d",
       "unchanged_bytes": false
     }
+  ],
+  "synthetic_ports": [
+    {
+      "id": "I03",
+      "test_cases": 11,
+      "fixture_kind": "new explicitly synthetic corpus",
+      "review": "independent source/assertion/hash/anchor/privacy review before first execution",
+      "adaptations": [
+        "Ordinary package imports and lint/formatting replace private packet loaders.",
+        "Source/history/provider identities, text and exact byte ranges/hashes are translated coherently.",
+        "Behavioral assertions, statuses, refusal controls and deadlines remain.",
+        "Canonical generic channel profiles retain the original bytes and fixed policy."
+      ],
+      "code_sources": [
+        {
+          "original_source": "plans/acceptance/v2-ideation-i03-acceptance-r1/test_i03.py",
+          "original_sha256": "d49f4a0b047d0d029447f0644de2752665c9a0a80222d2ee729dfcb5a84b7d45",
+          "path": "tests/acceptance/ideation_channels_unit/test_i03.py",
+          "sha256": "8433233e6e284ad54c8684e051de75851bdc61e231f61fd36a6201e590bb20e7"
+        },
+        {
+          "original_source": "plans/acceptance/v2-ideation-i03-acceptance-r1/i03_support.py",
+          "original_sha256": "ae7550cb9921eba159a4f82da9401da03011813b29bac4ab9494f9aeb1a45584",
+          "path": "tests/acceptance/ideation_channels_unit/i03_support.py",
+          "sha256": "bfab0c52c83bdf8f347b8bd05a0844ecaf9f85ed0afcbb4371f4c6282586b7df"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/ideation_channels_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/ideation_channels_unit/BAD-CONTRASTS.md",
+          "sha256": "53bc2fac0607f39df6f74e4c916774a58753ac3ff627e16383ccc65053e313d4",
+          "bytes": 1683
+        },
+        {
+          "path": "tests/acceptance/ideation_channels_unit/fixtures/profiles.json",
+          "sha256": "f276d535a2679028492ab4c460f01f85b5913527c657f7d295718802035e0a59",
+          "bytes": 1077
+        },
+        {
+          "path": "tests/acceptance/ideation_channels_unit/fixtures/selection.json",
+          "sha256": "5a99362fdca806605251fd1c4ae4e487322dbf908bc4bfcf5dc3edf8888f448d",
+          "bytes": 1508
+        },
+        {
+          "path": "tests/acceptance/ideation_channels_unit/fixtures/sources/synthetic-concept.md",
+          "sha256": "b4085e6732551bb07cfc1931cece71f3b3c2f01bc123a1f0b20ac7d65926bc4d",
+          "bytes": 400
+        },
+        {
+          "path": "tests/acceptance/ideation_channels_unit/fixtures/sources/synthetic-review.md",
+          "sha256": "4e0b661f7270743f707161706114bbe77d312f78b04e64f5a0560bea1a9c97ab",
+          "bytes": 285
+        },
+        {
+          "path": "tests/acceptance/ideation_channels_unit/fixtures/valid-output.json",
+          "sha256": "c45de356a55f03b7881975505ccfe3c65ac33aeb31ceb0bd358aef34b4932203",
+          "bytes": 2649
+        },
+        {
+          "path": "tests/acceptance/ideation_channels_unit/i03_support.py",
+          "sha256": "bfab0c52c83bdf8f347b8bd05a0844ecaf9f85ed0afcbb4371f4c6282586b7df",
+          "bytes": 13157
+        },
+        {
+          "path": "tests/acceptance/ideation_channels_unit/SEMANTIC-RUBRIC.md",
+          "sha256": "2a39e5b842628f4955b21f7ac7b6cc1c40e1fa81e62d66bd8eaab82ca48044a5",
+          "bytes": 2072
+        },
+        {
+          "path": "tests/acceptance/ideation_channels_unit/test_i03.py",
+          "sha256": "8433233e6e284ad54c8684e051de75851bdc61e231f61fd36a6201e590bb20e7",
+          "bytes": 27170
+        }
+      ]
+    },
+    {
+      "id": "I04",
+      "test_cases": 14,
+      "fixture_kind": "new explicitly synthetic corpus",
+      "review": "independent source/assertion/hash/anchor/privacy review before first execution",
+      "adaptations": [
+        "Ordinary package imports and lint/formatting replace private packet loaders.",
+        "Source/history/provider identities, text and exact byte ranges/hashes are translated coherently.",
+        "Behavioral assertions, statuses, refusal controls and deadlines remain.",
+        "Canonical generic channel profiles retain the original bytes and fixed policy."
+      ],
+      "code_sources": [
+        {
+          "original_source": "plans/acceptance/v2-ideation-i04-acceptance-r1/test_i04_draft.py",
+          "original_sha256": "750f4887260a9b454beb3f343883c90f7b85b9a4bdbc150d8b2b25a9a8b15da4",
+          "path": "tests/acceptance/ideation_calendar_unit/test_i04.py",
+          "sha256": "96708b0c4ebb2d2fff57a6a620c4d7251bc19963cdac99c6c16591e6f7a21265"
+        },
+        {
+          "original_source": "plans/acceptance/v2-ideation-i04-acceptance-r1/oracles_draft.py",
+          "original_sha256": "31054b4bc31dee89ea4aaef29d4fa94f7e4dbee447f08177e9ce81c72536acbb",
+          "path": "tests/acceptance/ideation_calendar_unit/oracles.py",
+          "sha256": "21d4c7ca592ad65c6097ba6913dfc046571802fe19c1ce860117ba824ad589ed"
+        },
+        {
+          "original_source": "plans/acceptance/v2-ideation-i04-acceptance-r1/i03_factory.py",
+          "original_sha256": "8383dd9d222c4dd8211a17fdb4e71521a14f2ab4acbead0a8b3e191ea8915174",
+          "path": "tests/acceptance/ideation_calendar_unit/i03_factory.py",
+          "sha256": "1b3bbec33c8f09ba169d78bc5db551ce5fc9ff2c138dce244efd5a35c0da115d"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/i03_factory.py",
+          "sha256": "1b3bbec33c8f09ba169d78bc5db551ce5fc9ff2c138dce244efd5a35c0da115d",
+          "bytes": 2696
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/i03_fixture/profiles.json",
+          "sha256": "f276d535a2679028492ab4c460f01f85b5913527c657f7d295718802035e0a59",
+          "bytes": 1077
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/i03_fixture/selection.json",
+          "sha256": "6ad2258f9c2c66716b8bd45d635e6cbf03ff14d8939b18c366dc5593dc2cf262",
+          "bytes": 1367
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/i03_fixture/sources/synthetic-concept.md",
+          "sha256": "01a9c3de9d6b367818e681bdb443f4a1ab0716c3b348b92120d2764a647c4f59",
+          "bytes": 200
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/i03_fixture/sources/synthetic-outline.md",
+          "sha256": "273dfc39c713024ab85985f6769d4ce2f9d260440a9f1ad1216db425162af874",
+          "bytes": 247
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/i03_fixture/valid-output.json",
+          "sha256": "3223ef0fdc6632706be281288beb9d0be496515172f523c5a791de6226bcca73",
+          "bytes": 2657
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/oracles.py",
+          "sha256": "21d4c7ca592ad65c6097ba6913dfc046571802fe19c1ce860117ba824ad589ed",
+          "bytes": 6013
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/policy.json",
+          "sha256": "12dafcb76de74bddbe7675498d9ab67fa426e1c01bb748dab99b108a8792b20a",
+          "bytes": 2668
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/README.md",
+          "sha256": "1c5142888099a22851d49b13f83c3e7cca606db3152ea0a6530a79a090475e7d",
+          "bytes": 676
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/sources/synthetic-hooks.md",
+          "sha256": "1f2c9bdd82a0ad042c95a2495976f906d0e131536ad81d0a97baed213fecf922",
+          "bytes": 673
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/sources/synthetic-ideas.md",
+          "sha256": "2e509309c00ce491c4bd62296ebcf7161512366e13acff698319cb0cf42d015d",
+          "bytes": 601
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/sources/synthetic-schedule.md",
+          "sha256": "1f03d095298c7876664ba12bab1549dbf0168f04a3418695034e5cc089126ef2",
+          "bytes": 544
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/synthetic-context.json",
+          "sha256": "a869d1c435416d22ea12c839b76341eacef79f8e78dba15cb6e34e7d3eb4fcb2",
+          "bytes": 9197
+        },
+        {
+          "path": "tests/acceptance/ideation_calendar_unit/test_i04.py",
+          "sha256": "96708b0c4ebb2d2fff57a6a620c4d7251bc19963cdac99c6c16591e6f7a21265",
+          "bytes": 25465
+        }
+      ]
+    },
+    {
+      "id": "I05",
+      "test_cases": 14,
+      "fixture_kind": "new explicitly synthetic corpus",
+      "review": "independent source/assertion/hash/anchor/privacy review before first execution",
+      "adaptations": [
+        "Ordinary package imports and lint/formatting replace private packet loaders.",
+        "Source/history/provider identities, text and exact byte ranges/hashes are translated coherently.",
+        "Behavioral assertions, statuses, refusal controls and deadlines remain.",
+        "Canonical generic channel profiles retain the original bytes and fixed policy."
+      ],
+      "code_sources": [
+        {
+          "original_source": "plans/acceptance/v2-ideation-i05-acceptance-r1/test_i05.py",
+          "original_sha256": "f8561202d6d549013a0b63e1bc15a017928cf6cd5269a5d13c34489bfc03a6e5",
+          "path": "tests/acceptance/ideation_outlines_unit/test_i05.py",
+          "sha256": "83d3f714b5a3f799598742d3a46fda7e45dd83c10af24d8f3b27dcbc8dbff4b3"
+        },
+        {
+          "original_source": "plans/acceptance/v2-ideation-i05-acceptance-r1/provider_fixture.py",
+          "original_sha256": "32a2b0888d7a6ddada3faafef82be83ce9f4bc7050a953d71f20fb023d2555b8",
+          "path": "tests/acceptance/ideation_outlines_unit/provider_fixture.py",
+          "sha256": "2e6e373a23492b763b3f74a6e035f226eff4742521cd49d2a33baa71c39a3568"
+        },
+        {
+          "original_source": "plans/acceptance/v2-ideation-i05-acceptance-r1/oracles.py",
+          "original_sha256": "6605c44617d51f4f778bf7ece69d4828f50ca982d662971aaafc9a402d6acff2",
+          "path": "tests/acceptance/ideation_outlines_unit/oracles.py",
+          "sha256": "2b40fab688cd8301f09553925ed3dbb01559d2b1c381624c81cca8d896138149"
+        },
+        {
+          "original_source": "plans/acceptance/v2-ideation-i05-acceptance-r1/i03_factory.py",
+          "original_sha256": "8383dd9d222c4dd8211a17fdb4e71521a14f2ab4acbead0a8b3e191ea8915174",
+          "path": "tests/acceptance/ideation_outlines_unit/i03_factory.py",
+          "sha256": "a4e57d558227df551b276a294f333c58e84a57aabc2756b3c8cc594de61586de"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/__init__.py",
+          "sha256": "ac998bbc0ee3b6fb097c328bb0e22730d4e121105de40ff0d9068b7496ebf0ea",
+          "bytes": 66
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/historical-context.json",
+          "sha256": "5597caf4c698ccbf644bfb5f53185a40f6de353fb0ee88f89911b6dd2b42d68a",
+          "bytes": 8910
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/i03-fixture/profiles.json",
+          "sha256": "f276d535a2679028492ab4c460f01f85b5913527c657f7d295718802035e0a59",
+          "bytes": 1077
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/i03-fixture/selection.json",
+          "sha256": "f3cee5ed192eb842d4ecb4f866db66d8f21e44b83dce44e46f91748b67a091f3",
+          "bytes": 1503
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/i03-fixture/sources/catalog-detail.md",
+          "sha256": "54cd831a2ca24718291f302a6f2cdd55c8e29fcae5109f2567c1aa10410b7ce9",
+          "bytes": 233
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/i03-fixture/sources/catalog-selection.md",
+          "sha256": "02765823d2f7fda8561f3b45333ec4483be39d179585de199cc9bb4531178e86",
+          "bytes": 238
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/i03-fixture/valid-output.json",
+          "sha256": "e0d8a71e33ff1ad515d95a102ba624fc1ac5226183c485bcaa531a2b2fd6e567",
+          "bytes": 2340
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/i03_factory.py",
+          "sha256": "a4e57d558227df551b276a294f333c58e84a57aabc2756b3c8cc594de61586de",
+          "bytes": 2790
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/oracles.py",
+          "sha256": "2b40fab688cd8301f09553925ed3dbb01559d2b1c381624c81cca8d896138149",
+          "bytes": 14784
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/provider_fixture.py",
+          "sha256": "2e6e373a23492b763b3f74a6e035f226eff4742521cd49d2a33baa71c39a3568",
+          "bytes": 10039
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/README.md",
+          "sha256": "88c95915cf4db338dc601e43e456858afe8082aec07d8a976cfa4e53a95c6321",
+          "bytes": 578
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/requests.protocol-draft.json",
+          "sha256": "2cb5d3cdd3cd45defeaa553abc4def621cb5c26230ecb942c787e714ef59e4a9",
+          "bytes": 3153
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/sources/angles.md",
+          "sha256": "20d55c59059ac9101cc86677d4859df7f802d3dda8f412694eae975e3cddbcd9",
+          "bytes": 657
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/sources/hooks.md",
+          "sha256": "b7b4e1138eedf65a131f8b9c128a6a83a0eae1ddf5c0de9b29d438abbc5ed6a4",
+          "bytes": 664
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/sources/policy.md",
+          "sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "bytes": 550
+        },
+        {
+          "path": "tests/acceptance/ideation_outlines_unit/test_i05.py",
+          "sha256": "83d3f714b5a3f799598742d3a46fda7e45dd83c10af24d8f3b27dcbc8dbff4b3",
+          "bytes": 29690
+        }
+      ]
+    },
+    {
+      "id": "I05_STAGED",
+      "test_cases": 12,
+      "fixture_kind": "new explicitly synthetic corpus",
+      "review": "independent source/assertion/hash/anchor/privacy review before first execution",
+      "adaptations": [
+        "Ordinary package imports and lint/formatting replace private packet loaders.",
+        "Source/history/provider identities, text and exact byte ranges/hashes are translated coherently.",
+        "Behavioral assertions, statuses, refusal controls and deadlines remain.",
+        "Canonical generic channel profiles retain the original bytes and fixed policy."
+      ],
+      "code_sources": [
+        {
+          "original_source": "plans/acceptance/v2-ideation-i05-staged-r1/acceptance/test_i05_staged.py",
+          "original_sha256": "a177184c4941df7b4b8379ed246b51ba92faeaea2d2132249314a6b5ee291718",
+          "path": "tests/acceptance/ideation_assembler_unit/test_i05_staged.py",
+          "sha256": "71528cc1e894640b1fb39837b0bc15c55438abda82764d0762f7db09c2a30736"
+        },
+        {
+          "original_source": "plans/acceptance/v2-ideation-i05-staged-r1/acceptance/fixtures.py",
+          "original_sha256": "d96b230f98904d49fdf8667f88e80e8cd971ab270af51e5b04d563b851444fec",
+          "path": "tests/acceptance/ideation_assembler_unit/fixtures.py",
+          "sha256": "9aaaaa496858fe1f602642d1e48a2f2b82e6c4a2db3e1e9c515fb5cd08bcb713"
+        },
+        {
+          "original_source": "plans/acceptance/v2-ideation-i05-staged-r1/acceptance/oracles.py",
+          "original_sha256": "d33db29680d448608a3e8e83455ee5428b5d7eb89cf8c3e51d794214c45092ed",
+          "path": "tests/acceptance/ideation_assembler_unit/oracles.py",
+          "sha256": "1a9f97eaddc8b368d1da63bf0a70767a5aa8953d88747daba05c6196dce9e3f1"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/ideation_assembler_unit/__init__.py",
+          "sha256": "1b7017a7ea71c0cd332017192640ce4ff04e0a382b85932601c83d1bf265ef44",
+          "bytes": 59
+        },
+        {
+          "path": "tests/acceptance/ideation_assembler_unit/assembly-plan.json",
+          "sha256": "2ee4182aa20c4483fecdfd027ad90a5e4373d1f4288a05b449564161af314651",
+          "bytes": 14201
+        },
+        {
+          "path": "tests/acceptance/ideation_assembler_unit/fixtures.py",
+          "sha256": "9aaaaa496858fe1f602642d1e48a2f2b82e6c4a2db3e1e9c515fb5cd08bcb713",
+          "bytes": 13653
+        },
+        {
+          "path": "tests/acceptance/ideation_assembler_unit/historical-context.json",
+          "sha256": "a059c3c430cffef63a580eaacbbfbcf730bfdbf4fe4b03ada392b3f36985549e",
+          "bytes": 8937
+        },
+        {
+          "path": "tests/acceptance/ideation_assembler_unit/oracles.py",
+          "sha256": "1a9f97eaddc8b368d1da63bf0a70767a5aa8953d88747daba05c6196dce9e3f1",
+          "bytes": 21311
+        },
+        {
+          "path": "tests/acceptance/ideation_assembler_unit/README.md",
+          "sha256": "71515b32f6640131d0d4a5ea74bfdfda5e6fe4684b29afa5cfab724f68ebc832",
+          "bytes": 743
+        },
+        {
+          "path": "tests/acceptance/ideation_assembler_unit/sources/angles.md",
+          "sha256": "98dc0f53df2ca8360f564a10c184fb323a2296925b1441c3a8f4b68c7bd7b8b2",
+          "bytes": 684
+        },
+        {
+          "path": "tests/acceptance/ideation_assembler_unit/sources/hooks.md",
+          "sha256": "b7b4e1138eedf65a131f8b9c128a6a83a0eae1ddf5c0de9b29d438abbc5ed6a4",
+          "bytes": 664
+        },
+        {
+          "path": "tests/acceptance/ideation_assembler_unit/sources/policy.md",
+          "sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "bytes": 550
+        },
+        {
+          "path": "tests/acceptance/ideation_assembler_unit/test-plan.json",
+          "sha256": "d697d338b33b10541509c01bea4ea08bc80c89397d6e7e03fb5a725f914f5013",
+          "bytes": 65928
+        },
+        {
+          "path": "tests/acceptance/ideation_assembler_unit/test_i05_staged.py",
+          "sha256": "71528cc1e894640b1fb39837b0bc15c55438abda82764d0762f7db09c2a30736",
+          "bytes": 29438
+        },
+        {
+          "path": "tests/acceptance/ideation_assembler_unit/V1-CONTRACT.json",
+          "sha256": "88a10c5b5d76d898263efdd3712072d4c378d5c34b9c2cd1bbe08703ef830a45",
+          "bytes": 93564
+        }
+      ]
+    }
+  ],
+  "synthetic_port_limits": {
+    "historical_evidence": "Original private corpora, receipts and qualifications remain local and are not transferred to these fixtures.",
+    "semantic_efficacy": "Not executed or established by the mechanical tests.",
+    "runtime_change": "None.",
+    "staged_contract": "All nine original published v1 protected AST snapshots, constants, process/network guards and deadlines remain exact. New synthetic UTF-8 source data preserves the effective malformed-span control. Private execution-baseline and worktree metadata are omitted; no accepted output goldens are invented.",
+    "preserved_failure": "I04 first run:13 passed/1 failed after synthetic fixture incorrectly changed fixed profile policy. Original generic policy restored; only failed scenario rerun and passed. I05 same issue caught in review before first execution."
+  },
+  "supplemental_ports": [
+    {
+      "package": "managed_outcomes_unit",
+      "test_cases": 15,
+      "original_sources": [
+        {
+          "path": "plans/acceptance/v2-managed-runtime/supplement/test_managed_outcomes.py",
+          "sha256": "ced839e467f51517eb912ccd11b66a2b767ae50130861a36e0c482a0efb33bb5"
+        },
+        {
+          "path": "plans/acceptance/v2-managed-runtime/supplement/projection-subpacket/test_projection_supplement.py",
+          "sha256": "8c27103e55ffa2eecb3e5cff3f171afc707c3ce5e46f829460ae7120474c7793"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/managed_outcomes_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/managed_outcomes_unit/README.md",
+          "sha256": "dfbf4703518f9bc428892ee63cdad9d18aedac6c7b7d6d2cfdfe35d96f8c54e0",
+          "bytes": 634
+        },
+        {
+          "path": "tests/acceptance/managed_outcomes_unit/test_managed_outcomes.py",
+          "sha256": "25480de6e689495b5ed2ee5f91669339437126e5850db7c2cc87795fe3399761",
+          "bytes": 14119
+        },
+        {
+          "path": "tests/acceptance/managed_outcomes_unit/test_projection_supplement.py",
+          "sha256": "305a2470e32cf04455a0d8fb60f3e415a8966cd6d9c02c67b49ff957bd0ac65b",
+          "bytes": 9642
+        }
+      ],
+      "adaptations": [
+        "Ordinary module imports/formatting and present-fixture descriptions replace historical execution labels and standalone runners.",
+        "Immediate synchronous callback bindings preserve values; fixed-column corruption-control SQL retains its original bytes.",
+        "All 15 scenario names, 75 assertions, deadlines, output bounds, replay/revocation and checkpoint integrity controls remain."
+      ],
+      "independent_review": "PASS before first execution",
+      "runtime_verification": "15 passed in isolated local source run; no live model/native-host qualification"
+    },
+    {
+      "package": "practice_scheduler_unit",
+      "test_cases": 6,
+      "original_sources": [
+        {
+          "path": "plans/acceptance/r18-connected-review-r1/amendment-r1/test_connected.py",
+          "sha256": "1185caf484fc5e0161d93aaaf04e9bc61aea93365285fceecce1b6c8dabec575",
+          "bytes": 18817
+        },
+        {
+          "path": "plans/acceptance/v2-paladin-python/acceptance/fixtures.py",
+          "sha256": "d00ad07374063568deb49d1ee77ee9b8e33d477753611f231479274fac9e0863",
+          "bytes": 16547
+        },
+        {
+          "path": "plans/acceptance/v2-paladin-python/acceptance/controlled_stage.py",
+          "sha256": "221824b5edd339e4f56111c88d97a2ce45a3153d327ea4bad58ac6c2b2ae12e2",
+          "bytes": 3325
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/practice_scheduler_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/practice_scheduler_unit/README.md",
+          "sha256": "04ba0ef962a77a8bd00b76cfb00b7c9e660735d5c1d1175f981079a838bddb25",
+          "bytes": 872
+        },
+        {
+          "path": "tests/acceptance/practice_scheduler_unit/test_connected.py",
+          "sha256": "f748ec272534925f28d4e59c9959ad1cb7763e028ba1caa831e9783376f424ac",
+          "bytes": 18483
+        }
+      ],
+      "adaptations": [
+        "Ordinary shared PreparedFixture import replaces the obsolete private path loader and only its loader-presence assertion.",
+        "All six scenarios, 62 behavioral assertions, nine refusal contexts and the two-second controlled-stage deadline remain.",
+        "Existing reviewed controlled PALADIN fixture is reused unchanged; no actual tool efficacy is asserted."
+      ],
+      "independent_review": "PASS before first execution",
+      "runtime_verification": "6 passed in isolated local source run; no live model/native-host qualification"
+    }
   ]
 }

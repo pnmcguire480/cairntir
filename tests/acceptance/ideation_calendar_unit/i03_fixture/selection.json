@@ -1,0 +1,27 @@
+{
+  "kind": "historical_provisional",
+  "idea_id": "synthetic-i03-notebook-idea",
+  "title": "Synthetic Notebook Observation Review",
+  "selected_text": "Compare imaginary notebook observations and keep every interpretation provisional.",
+  "selection_reason": "Provisional reuse of an invented notebook concept; this synthetic history authenticates no human selection.",
+  "attribution": "historical_record_unverified",
+  "human_confirmation": false,
+  "sources": [
+    {
+      "source_id": "synthetic-i03-concept",
+      "path": "synthetic-concept.md",
+      "sha256": "01a9c3de9d6b367818e681bdb443f4a1ab0716c3b348b92120d2764a647c4f59",
+      "anchor": "## Synthetic Notebook Concept",
+      "excerpt": "Compare imaginary notebook observations and keep every interpretation provisional.",
+      "excerpt_sha256": "a935168e2e5b253013257e537df0620447c68e8fe8d03b20a3f118a98c362968"
+    },
+    {
+      "source_id": "synthetic-i03-outline",
+      "path": "synthetic-outline.md",
+      "sha256": "273dfc39c713024ab85985f6769d4ce2f9d260440a9f1ad1216db425162af874",
+      "anchor": "## Synthetic Notebook Review Outline",
+      "excerpt": "1. Read two invented observations.\r\n2. List uncertainties.\r\n3. Ask a reviewer before accepting a fictional interpretation.",
+      "excerpt_sha256": "d0f9c48e4dbee52db10a09aeea16e9178d4a9333660bdaa7d6c3276a6d452461"
+    }
+  ]
+}

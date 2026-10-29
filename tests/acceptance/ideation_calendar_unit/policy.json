@@ -1,0 +1,83 @@
+{
+  "schema": "cairntir.i04.policy.v1",
+  "assumption_origin": "prospective_operator_fixture",
+  "human_confirmation": false,
+  "start_date": "2026-11-01",
+  "days": 30,
+  "timezone": "UTC",
+  "daily_capacity": 1,
+  "collision_policy": "retain_and_report",
+  "flex_weekdays": [
+    6
+  ],
+  "blackouts": [
+    {
+      "date": "2026-11-26",
+      "reason": "Explicit prospective synthetic no-production day"
+    }
+  ],
+  "existing_commitments": [
+    {
+      "id": "existing-nov04-review",
+      "date": "2026-11-04",
+      "units": 1,
+      "title": "Synthetic reserved review slot; retain the fixture conflict"
+    }
+  ],
+  "weekly_slots": [
+    {
+      "id": "monday-original",
+      "weekday": 0,
+      "hook_cycle": [
+        "comparison-short",
+        "journal-short"
+      ],
+      "title_by_hook": {
+        "comparison-short": "Plan a comparison of two imaginary notebook observations",
+        "journal-short": "Plan a mock lab journal entry with one uncertainty"
+      },
+      "cta_by_hook": {
+        "comparison-short": "Reply with one imaginary observation to compare in the notebook.",
+        "journal-short": "Share one uncertainty an invented journal entry should record."
+      }
+    },
+    {
+      "id": "wednesday-repurpose",
+      "weekday": 2,
+      "repurpose_from_slot": "monday-original",
+      "source_offset_days": -2,
+      "hook_map": {
+        "comparison-short": "comparison-discussion",
+        "journal-short": "journal-professional"
+      },
+      "title_by_hook": {
+        "comparison-discussion": "Adapt Monday’s pretend comparison into a classroom discussion",
+        "journal-professional": "Adapt Monday’s mock journal into a short lab reflection"
+      },
+      "cta_by_hook": {
+        "comparison-discussion": "Suggest a counterexample to the imaginary sample comparison.",
+        "journal-professional": "Describe one limitation the next mock journal should examine."
+      }
+    },
+    {
+      "id": "friday-video",
+      "weekday": 4,
+      "hook_cycle": [
+        "sample-panel-video"
+      ],
+      "title_by_hook": {
+        "sample-panel-video": "Plan a short explanation of disagreement among pretend sensors"
+      },
+      "cta_by_hook": {
+        "sample-panel-video": "Name one question to ask independently of several pretend sensors."
+      }
+    }
+  ],
+  "repurposing_policy": {
+    "require_same_idea": true,
+    "require_different_channel": true,
+    "require_source_before_target": true
+  },
+  "publication_policy": "planning_only_no_external_publish",
+  "historical_claims_policy": "Preserve unverified synthetic attribution; no real lesson date, numeric claim or asserted present availability."
+}

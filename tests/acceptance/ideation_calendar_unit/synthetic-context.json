@@ -1,0 +1,234 @@
+{
+  "schema": "cairntir.i04.historical-context.v1",
+  "kind": "historical_provisional",
+  "project": "Synthetic Notebook Fixture",
+  "attribution": "historical_record_unverified",
+  "human_confirmation": false,
+  "sources": [
+    {
+      "source_id": "synthetic-i04-ideas",
+      "path": "sources/synthetic-ideas.md",
+      "original_path": "synthetic-history/synthetic-ideas.md",
+      "bytes": 601,
+      "sha256": "2e509309c00ce491c4bd62296ebcf7161512366e13acff698319cb0cf42d015d",
+      "anchors": [
+        {
+          "id": "angle-comparison",
+          "anchor": "### Compare Two Mock Observations",
+          "anchor_occurrences": 1,
+          "excerpt": "### Compare Two Mock Observations\r\nCompare Two Mock Observations is a synthetic classroom exercise. Two invented observations remain provisional until reviewed.\r\n",
+          "excerpt_sha256": "ae734c293286b46cba929bcf307a372f961bb8fbd23f47f9ad3f89c0e984b9d3",
+          "byte_start": 116,
+          "byte_length": 162
+        },
+        {
+          "id": "angle-panel",
+          "anchor": "### Review a Mock Sensor Panel",
+          "anchor_occurrences": 1,
+          "excerpt": "### Review a Mock Sensor Panel\r\nReview a Mock Sensor Panel is a fictional comparison exercise. Pretend sensors can disagree; the fixture asserts no real measurements.\r\n",
+          "excerpt_sha256": "178d548582eb32a4b36c1e9b6fb98253734b70806e737befb3a68ec3cda2c8b0",
+          "byte_start": 280,
+          "byte_length": 168
+        },
+        {
+          "id": "angle-journal",
+          "anchor": "### Keep a Mock Lab Journal",
+          "anchor_occurrences": 1,
+          "excerpt": "### Keep a Mock Lab Journal\r\nKeep a Mock Lab Journal records imaginary observations and explicitly unverified interpretations for a pretend lesson.\r\n",
+          "excerpt_sha256": "bf8f321e846c4853ac724835a572ae66827be37145e82e02d5f1276cce49764a",
+          "byte_start": 450,
+          "byte_length": 149
+        }
+      ]
+    },
+    {
+      "source_id": "synthetic-i04-hooks",
+      "path": "sources/synthetic-hooks.md",
+      "original_path": "synthetic-history/synthetic-hooks.md",
+      "bytes": 673,
+      "sha256": "1f2c9bdd82a0ad042c95a2495976f906d0e131536ad81d0a97baed213fecf922",
+      "anchors": [
+        {
+          "id": "hook-journal",
+          "anchor": "### Synthetic Journal Prompt",
+          "anchor_occurrences": 1,
+          "excerpt": "### Synthetic Journal Prompt\r\nRecord one imaginary observation and one uncertainty in a mock journal.\r\n",
+          "excerpt_sha256": "d0314a84e6471d233ba8ecdea1689d315a492f24ea079d7d0437b4e19d5307df",
+          "byte_start": 116,
+          "byte_length": 103
+        },
+        {
+          "id": "hook-short",
+          "anchor": "### Synthetic Short Update",
+          "anchor_occurrences": 1,
+          "excerpt": "### Synthetic Short Update\r\nCompare two pretend observations in [[SyntheticNotebook/dashboard|Synthetic Notebook]].\r\n",
+          "excerpt_sha256": "010eb00b240d79c1d54163577a48bf150646675873018dd98fa145f78c99bbba",
+          "byte_start": 221,
+          "byte_length": 117
+        },
+        {
+          "id": "hook-discussion",
+          "anchor": "### Synthetic Discussion Prompt",
+          "anchor_occurrences": 1,
+          "excerpt": "### Synthetic Discussion Prompt\r\nWhich invented observation would you check before comparing mock samples?\r\n",
+          "excerpt_sha256": "5666577437388c518a281ca1b4a083d6022905c3f266591a439cc7b382f58b84",
+          "byte_start": 340,
+          "byte_length": 108
+        },
+        {
+          "id": "hook-professional",
+          "anchor": "### Synthetic Reflection Prompt",
+          "anchor_occurrences": 1,
+          "excerpt": "### Synthetic Reflection Prompt\r\nDescribe one limitation of an imaginary observation in a pretend lab notebook.\r\n",
+          "excerpt_sha256": "d0f8d3b35d6152a41b6ffdf24914763b3da87a286486c4069a2763339d35604c",
+          "byte_start": 450,
+          "byte_length": 113
+        },
+        {
+          "id": "hook-video",
+          "anchor": "### Synthetic Spoken Prompt",
+          "anchor_occurrences": 1,
+          "excerpt": "### Synthetic Spoken Prompt\r\nHow could several pretend sensors disagree about the same imaginary sample?\r\n",
+          "excerpt_sha256": "d4e4f6785657d47067cd9e7b9cf8bb987960a67539d5f138c0f7a947d5853024",
+          "byte_start": 565,
+          "byte_length": 106
+        }
+      ]
+    },
+    {
+      "source_id": "synthetic-i04-schedule",
+      "path": "sources/synthetic-schedule.md",
+      "original_path": "synthetic-history/synthetic-schedule.md",
+      "bytes": 544,
+      "sha256": "1f03d095298c7876664ba12bab1549dbf0168f04a3418695034e5cc089126ef2",
+      "anchors": [
+        {
+          "id": "withdrawn-session",
+          "anchor": "> SYNTHETIC WITHDRAWN DATE:",
+          "anchor_occurrences": 1,
+          "excerpt": "> SYNTHETIC WITHDRAWN DATE:\r\nAn invented earlier lesson date was withdrawn. It supplies no current schedule or permission.\r\n",
+          "excerpt_sha256": "a30f9e2c7229aa900becb9bad3a03ebc4d6dec8f754736521bbda6463a94eec5",
+          "byte_start": 116,
+          "byte_length": 124
+        },
+        {
+          "id": "cadence-practice",
+          "anchor": "## Synthetic Practice Cadence",
+          "anchor_occurrences": 1,
+          "excerpt": "## Synthetic Practice Cadence\r\nThis fictional planning record suggests short updates during a pretend classroom preparation period.\r\n",
+          "excerpt_sha256": "b7e05f7948afcc17e17032213c994146385c839573cb1e509232c9b5e4d2020b",
+          "byte_start": 242,
+          "byte_length": 133
+        },
+        {
+          "id": "cadence-recurring-synthetic",
+          "anchor": "## Synthetic Recurring Cadence",
+          "anchor_occurrences": 1,
+          "excerpt": "## Synthetic Recurring Cadence\r\nThis fictional cadence uses Monday original notes, Wednesday adaptations and Friday spoken sketches. Dates are fixture assumptions.\r\n",
+          "excerpt_sha256": "0c4ff0ad059b85cd5a5b771fe30da860902da74672d83a7d34cbcae851900454",
+          "byte_start": 377,
+          "byte_length": 165
+        }
+      ]
+    }
+  ],
+  "ideas": [
+    {
+      "id": "sample-comparison",
+      "title": "Compare Two Mock Observations",
+      "source_ref": {
+        "source_id": "synthetic-i04-ideas",
+        "anchor_id": "angle-comparison"
+      },
+      "hooks": [
+        {
+          "id": "comparison-short",
+          "channel": "Mock short updates",
+          "format": "short_post",
+          "source_ref": {
+            "source_id": "synthetic-i04-hooks",
+            "anchor_id": "hook-short"
+          },
+          "text": "Compare two pretend observations in [[SyntheticNotebook/dashboard|Synthetic Notebook]]."
+        },
+        {
+          "id": "comparison-discussion",
+          "channel": "Mock discussion board",
+          "format": "discussion",
+          "source_ref": {
+            "source_id": "synthetic-i04-hooks",
+            "anchor_id": "hook-discussion"
+          },
+          "text": "Which invented observation would you check before comparing mock samples?"
+        }
+      ]
+    },
+    {
+      "id": "sample-panel",
+      "title": "Review a Mock Sensor Panel",
+      "source_ref": {
+        "source_id": "synthetic-i04-ideas",
+        "anchor_id": "angle-panel"
+      },
+      "hooks": [
+        {
+          "id": "sample-panel-video",
+          "channel": "Mock video board",
+          "format": "spoken_video",
+          "source_ref": {
+            "source_id": "synthetic-i04-hooks",
+            "anchor_id": "hook-video"
+          },
+          "text": "How could several pretend sensors disagree about the same imaginary sample?"
+        }
+      ]
+    },
+    {
+      "id": "sample-journal",
+      "title": "Keep a Mock Lab Journal",
+      "source_ref": {
+        "source_id": "synthetic-i04-ideas",
+        "anchor_id": "angle-journal"
+      },
+      "hooks": [
+        {
+          "id": "journal-short",
+          "channel": "Mock short updates",
+          "format": "build_log",
+          "source_ref": {
+            "source_id": "synthetic-i04-hooks",
+            "anchor_id": "hook-journal"
+          },
+          "text": "Record one imaginary observation and one uncertainty in a mock journal."
+        },
+        {
+          "id": "journal-professional",
+          "channel": "Mock professional notes",
+          "format": "professional_post",
+          "source_ref": {
+            "source_id": "synthetic-i04-hooks",
+            "anchor_id": "hook-professional"
+          },
+          "text": "Describe one limitation of an imaginary observation in a pretend lab notebook."
+        }
+      ]
+    }
+  ],
+  "constraints_refs": [
+    {
+      "source_id": "synthetic-i04-schedule",
+      "anchor_id": "cadence-practice"
+    },
+    {
+      "source_id": "synthetic-i04-schedule",
+      "anchor_id": "cadence-recurring-synthetic"
+    }
+  ],
+  "withdrawn_date_refs": [
+    {
+      "source_id": "synthetic-i04-schedule",
+      "anchor_id": "withdrawn-session"
+    }
+  ],
+  "claims_policy": "Invented history is unverified fixture context. It provides no real measurements, feature claims, present availability or permission to publish."
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "cairntir.channel-output.v1",
+  "adaptations": [
+    {
+      "channel_id": "community-discussion",
+      "format_id": "question-post",
+      "hook": "Which invented catalog detail needs a fresh shelf check?",
+      "content": {
+        "title": "A provisional catalog rehearsal",
+        "body": "This synthetic workshop compares two invented shelf notes. Their matching count could share an old worksheet; current operation and human selection remain unverified.",
+        "closing_question": "Which fresh shelf observation would you request?"
+      },
+      "source_ids": [
+        "SYN-SELECT",
+        "SYN-DETAIL"
+      ],
+      "assumption_ids": [
+        "A1"
+      ]
+    },
+    {
+      "channel_id": "newsletter",
+      "format_id": "short-note",
+      "hook": "Two invented shelf notes leave one evidence gap.",
+      "content": {
+        "subject": "Synthetic catalog workshop note",
+        "preview": "A provisional exercise using invented library records.",
+        "body": "The proposed rehearsal compares invented catalog cards and records their common dependencies. No real library operation or confirmed selection follows from this fixture.",
+        "call_to_action": "Reply with one missing catalog observation to check."
+      },
+      "source_ids": [
+        "SYN-SELECT",
+        "SYN-DETAIL"
+      ],
+      "assumption_ids": [
+        "A1"
+      ]
+    },
+    {
+      "channel_id": "short-video",
+      "format_id": "thirty-second-concept",
+      "hook": "These mock catalog cards need one more observation.",
+      "content": {
+        "spoken_opening": "Imagine two invented cards describing the same library shelf.",
+        "screen_text": "Synthetic catalog rehearsal",
+        "visual_concept": "Show labelled mock cards with shelf names and dates, then a blank card for the missing current observation.",
+        "call_to_action": "Name the observation that would clarify this invented comparison."
+      },
+      "source_ids": [
+        "SYN-SELECT",
+        "SYN-DETAIL"
+      ],
+      "assumption_ids": [
+        "A1"
+      ]
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "A1",
+      "claim": "Current library implementation and human selection are unverified.",
+      "reason": "All catalog records and workshop participants in this fixture are invented.",
+      "source_ids": []
+    }
+  ]
+}
