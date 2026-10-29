@@ -1,0 +1,111 @@
+[
+  {
+    "id": "doc.language",
+    "kind": "document-equals",
+    "family": "accessibility",
+    "property": "language",
+    "expected": "en"
+  },
+  {
+    "id": "doc.title",
+    "kind": "document-equals",
+    "family": "accessibility",
+    "property": "title",
+    "expected": "Printer notes"
+  },
+  {
+    "id": "ax.email-name",
+    "kind": "ax-role-name",
+    "family": "accessibility",
+    "selector": "#email",
+    "role": "textbox",
+    "name": "Email address"
+  },
+  {
+    "id": "ax.save-name",
+    "kind": "ax-role-name",
+    "family": "accessibility",
+    "selector": "#submit",
+    "role": "button",
+    "name": "Save note"
+  },
+  {
+    "id": "ax.disclosure-name",
+    "kind": "ax-role-name",
+    "family": "accessibility",
+    "selector": "#details-toggle",
+    "role": "button",
+    "name": "Show details"
+  },
+  {
+    "id": "kbd.tab-order",
+    "kind": "keyboard-tab-order",
+    "family": "accessibility",
+    "start_selector": "body",
+    "expected_focus": [
+      "#email",
+      "#submit",
+      "#details-toggle"
+    ]
+  },
+  {
+    "id": "kbd.enter-open",
+    "kind": "keyboard-key-state",
+    "family": "accessibility",
+    "key": "Enter",
+    "control": "#details-toggle",
+    "panel": "#details",
+    "expanded": true,
+    "visible": true
+  },
+  {
+    "id": "kbd.space-close",
+    "kind": "keyboard-key-state",
+    "family": "accessibility",
+    "key": "Space",
+    "control": "#details-toggle",
+    "panel": "#details",
+    "expanded": false,
+    "visible": false
+  },
+  {
+    "id": "layout.required-visible",
+    "kind": "required-visible",
+    "family": "responsive",
+    "selectors": [
+      "#heading",
+      "#email",
+      "#submit",
+      "#details-toggle"
+    ],
+    "tolerance_css_pixels": 1
+  },
+  {
+    "id": "layout.no-x-overflow",
+    "kind": "horizontal-overflow",
+    "family": "responsive",
+    "maximum_css_pixels": 1
+  },
+  {
+    "id": "visual.rgba-diff",
+    "kind": "rgba-diff",
+    "family": "visual",
+    "threshold": 0.1,
+    "includeAA": true,
+    "allowed_diff_ratio": 0.001,
+    "alpha": 0.1,
+    "aaColor": [
+      255,
+      255,
+      0
+    ],
+    "diffColor": [
+      255,
+      0,
+      0
+    ],
+    "diffColorAlt": null,
+    "diffMask": false,
+    "checkerboard": true
+  }
+]

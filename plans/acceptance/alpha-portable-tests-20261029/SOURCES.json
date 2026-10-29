@@ -1,0 +1,291 @@
+{
+  "schema": "cairntir.portable-test-source.v1",
+  "purpose": "Ordinary alpha CI test source; not a protected evaluator or historical qualification result.",
+  "adaptations": [
+    "Package-relative imports and current fixture paths replace historical packet loaders.",
+    "Normal lint/formatting, equivalent dictionary/list syntax, strict equal-length zip and bound immediate loop callbacks.",
+    "Recall transport retains a 5600-character no-hit query under a 1024-character response budget; the original 105000-character query separately verifies the existing 6000-character input-window refusal.",
+    "Assertion diagnostics expose the actual recall error receipt.",
+    "The two angle supplement loader-existence assertions are replaced by ordinary package imports; behavioral assertions remain."
+  ],
+  "scope": "Synthetic stores, controlled reports and images. Real tools, live browser efficacy and native host readiness are separate gates.",
+  "excluded": [
+    "Private historical project/source records and machine paths bound into channel/outline/calendar test packets.",
+    "Prepared real-tool wheelhouses, machine inventories, private packet loaders, raw local receipts and archived controls."
+  ],
+  "files": [
+    {
+      "path": "tests/acceptance/ideation_angles_unit/test_coherent_envelopes.py",
+      "source": "plans/acceptance/v2-ideation-i02-acceptance-r1/amendment-r1/test_coherent_envelopes.py",
+      "source_sha256": "1f155a8cbe26dce7ed2add8c2dcb70106962a479de5fa7bb72fa1c6731d99d44",
+      "sha256": "11eac294bb2f18e9a4544bc2b685b1f37dac02e7b09d7a2dfa8754927a5658ef",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/ideation_angles_unit/test_i02.py",
+      "source": "plans/acceptance/v2-ideation-i02-acceptance-r1/test_i02.py",
+      "source_sha256": "271d678611d38b7c76d6904f62a08a85debda2aad64bac51f8cc3935ce8abd74",
+      "sha256": "03fd11f5d64a90481d587c967a8dad5fb381bfd33eaf903d5e5ce495b206fa68",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/ideation_angles_unit/test_provenance.py",
+      "source": "plans/acceptance/v2-ideation-i02-acceptance-r1/amendment-r2/test_provenance.py",
+      "source_sha256": "7a2fe8b99991571ce0183caf9da908246ae74bd51d5785546eb822e56f52bedf",
+      "sha256": "9bdf9f1e1bd95b1a559cde8ae78230a4f34a0c2560f4ec495438dc8e19400365",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_python_unit/controlled_stage.py",
+      "source": "plans/acceptance/v2-paladin-python/acceptance/controlled_stage.py",
+      "source_sha256": "221824b5edd339e4f56111c88d97a2ce45a3153d327ea4bad58ac6c2b2ae12e2",
+      "sha256": "5fa32da4fffb954265600d70fdf11436f4381b0a77389c3eb9a9f6f4ebfd1d1a",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_python_unit/fixtures.py",
+      "source": "plans/acceptance/v2-paladin-python/acceptance/fixtures.py",
+      "source_sha256": "d00ad07374063568deb49d1ee77ee9b8e33d477753611f231479274fac9e0863",
+      "sha256": "4867588ae30c260d3d6f873db9ca64877d06b1ad83fdecd19c45f886e6b3bb58",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_python_unit/test_event_binding.py",
+      "source": "plans/acceptance/v2-paladin-python/event-binding-v2/test_event_binding.py",
+      "source_sha256": "a084f8d7799cd59f540e8764e8863104cb8a9dd19ee35694a90f2e9db1b5a73d",
+      "sha256": "a676bd2a3c8c23bd889dcdadd664fb3f5137e4120951de05984b645259bc2fd1",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_python_unit/test_paladin_public.py",
+      "source": "plans/acceptance/v2-paladin-python/acceptance/test_paladin_public.py",
+      "source_sha256": "9fe9fabd726ea19894125b19b51e50e919e8e783790d6477fe6fa534da3f8724",
+      "sha256": "13ca45fb456eba0badbc268fec130065d0dec1a200b77875926aae72753a3872",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_python_unit/test_pending_repair.py",
+      "source": "plans/acceptance/v2-paladin-python/candidate-1/additive/test_pending_repair.py",
+      "source_sha256": "3c14130929a180dfcf6a280babdfeb1a6f360f9134c5f9bd55f56eb6dc740e5e",
+      "sha256": "1938b761a5fa295879ada5cd2020ff95dae2006c4394e4a05d1fdca8cdecc3b1",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/CHECKS.json",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/CHECKS.json",
+      "source_sha256": "ce1cefe89e178b2089e9674f0bfbf0a0714a63e3fc44c29c86512fbccbe668df",
+      "sha256": "ce1cefe89e178b2089e9674f0bfbf0a0714a63e3fc44c29c86512fbccbe668df",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/RENDER-POLICY.json",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/RENDER-POLICY.json",
+      "source_sha256": "7181a490ebff95d8aaca187a964b1379e9575fb116594aff4078ef5792a98098",
+      "sha256": "7181a490ebff95d8aaca187a964b1379e9575fb116594aff4078ef5792a98098",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/__init__.py",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/__init__.py",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/contract/PRODUCER-SCHEMAS.json",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/contract/PRODUCER-SCHEMAS.json",
+      "source_sha256": "fd2296066136d1a11badbf630c7edca2a0fdfcdb5f8da815a66f40ca7a394051",
+      "sha256": "fd2296066136d1a11badbf630c7edca2a0fdfcdb5f8da815a66f40ca7a394051",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/fixture.py",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/fixture.py",
+      "source_sha256": "877a10742b93bb29973bc2637d5e748ea741ed2e2d48c674d7e55db8a795f59a",
+      "sha256": "abbbeb98ae8a0a2d9610823f21e91d4fa35758ec7aaf6234e32ec3c21c0c37e3",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/fixtures/assets/Vera.ttf",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/fixtures/assets/Vera.ttf",
+      "source_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+      "sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/fixtures/assets/bitstream-vera-license.txt",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/fixtures/assets/bitstream-vera-license.txt",
+      "source_sha256": "3361d054759a2fc686a2c058be82deaf9c2e6fe549be9004d7935a6c1736315d",
+      "sha256": "3361d054759a2fc686a2c058be82deaf9c2e6fe549be9004d7935a6c1736315d",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/fixtures/assets/icon.svg",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/fixtures/assets/icon.svg",
+      "source_sha256": "d203a99860f4ddab5ec1bcc76da757a1f958266ee6b427d66fb54fe873bd634e",
+      "sha256": "d203a99860f4ddab5ec1bcc76da757a1f958266ee6b427d66fb54fe873bd634e",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/fixtures/clean.html",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/fixtures/clean.html",
+      "source_sha256": "69f3095646698ed9b381db2050f910a7ee747697cade5fbe0a253a82293fe18d",
+      "sha256": "69f3095646698ed9b381db2050f910a7ee747697cade5fbe0a253a82293fe18d",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/fixtures/keyboard-fault.html",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/fixtures/keyboard-fault.html",
+      "source_sha256": "20a6157d25c46f914b46fa482fb3a77a125af0fe0d2c6bba75995b306a4ba7e5",
+      "sha256": "20a6157d25c46f914b46fa482fb3a77a125af0fe0d2c6bba75995b306a4ba7e5",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/fixtures/name-fault.html",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/fixtures/name-fault.html",
+      "source_sha256": "26eefe2911e3c69bc0a435f7880c9c5f103d04d8863dd4a313d29e3348116139",
+      "sha256": "26eefe2911e3c69bc0a435f7880c9c5f103d04d8863dd4a313d29e3348116139",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/fixtures/overflow-fault.html",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/fixtures/overflow-fault.html",
+      "source_sha256": "b7233eb14aa49ca0f91a6d83f02bc415b2025195ccaa7dddba736eb2d78e36ab",
+      "sha256": "b7233eb14aa49ca0f91a6d83f02bc415b2025195ccaa7dddba736eb2d78e36ab",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/fixtures/visual-fault.html",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/fixtures/visual-fault.html",
+      "source_sha256": "c01820637df8f74fe9d697135f9cea492785684c6d0b7bdd8ba3cdc9cdab062a",
+      "sha256": "c01820637df8f74fe9d697135f9cea492785684c6d0b7bdd8ba3cdc9cdab062a",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/oracle.py",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/oracle.py",
+      "source_sha256": "5c73b68ee1a608195876d7a064e027df05a4893d3383e5d207e2e979d2301c69",
+      "sha256": "08b2164d59fad0c3f27676913a57a1d2cd6e7eb1628ad0afe241392a2a4afeff",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/review_helpers.py",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/review_helpers.py",
+      "source_sha256": "13fb8460a3c90cf0dbc86a24bc02562eeab0f9ee984a00eed398d2e585a6a4db",
+      "sha256": "cedb9a026b04184691470200371a2686e1aa35fb281071db9b820f5d08dc7f71",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/synthetic.py",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/synthetic.py",
+      "source_sha256": "14289e641c090235922529b7838047fc4d1dbd71593b0f981de728bea437c2ee",
+      "sha256": "9cf9962f383140f50751f4d6b0cf3b3ecd9c652bf7d6868b3564a8e7e5a9b04f",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/test_ui.py",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/test_ui.py",
+      "source_sha256": "f5ae727ae2edf8da1a41fac3f2e4d93fcc6e54f15efc0ca15b72cec1829c7d59",
+      "sha256": "e7ef1968a03393e8d7e316f462a9327752d04f39f5964b0c8ec59a13ccd108a5",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_ui_unit/unit_png.py",
+      "source": "plans/acceptance/v2-ui-q04-acceptance-r2/unit_png.py",
+      "source_sha256": "b3d75c7056ae2409f075ef978508d446b6371666422ecca1b61a1653597bba2b",
+      "sha256": "3b603249c5ae0a39814326dbe2abb94ee57f24ffa836b7e8561e54ae4a5ee393",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/questions_unit/test_questions_core.py",
+      "source": "plans/acceptance/v2-questions/test_questions_core.py",
+      "source_sha256": "cd47a737b518bea8ee4abaec399803d0a18b6b1f493c6da1c28ec6471cf822c0",
+      "sha256": "7d8c0ca01a426aa396cebb8db6ee6e0fc5380e9434f8420d8c44092477b9f4a1",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/questions_unit/test_questions_expiry.py",
+      "source": "plans/acceptance/v2-questions/test_questions_expiry.py",
+      "source_sha256": "6e817e370fac15856f87ef4e8b50ad59d0ea3d5cc795a55b6d979d076401013a",
+      "sha256": "6e817e370fac15856f87ef4e8b50ad59d0ea3d5cc795a55b6d979d076401013a",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/questions_unit/test_questions_expiry_replay.py",
+      "source": "plans/acceptance/v2-questions/test_questions_expiry_replay.py",
+      "source_sha256": "6b985aaf088f8510f890bae338be6f725d5bcb3a99981b129f9bfbaac67331e3",
+      "sha256": "6b985aaf088f8510f890bae338be6f725d5bcb3a99981b129f9bfbaac67331e3",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/questions_unit/test_questions_scoped.py",
+      "source": "plans/acceptance/v2-questions/test_questions_scoped.py",
+      "source_sha256": "eed3bc5ee281b2f1025e3a396b5523e9a7f57672067209cecb5018f5adfe4f0b",
+      "sha256": "0fe9087cbbde0d57025020344bbb76b460e253ef5155baba96fc9f37ff57431f",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/questions_unit/test_questions_supplement.py",
+      "source": "plans/acceptance/v2-questions/supplement/test_questions_supplement.py",
+      "source_sha256": "f77c9512516ae566002a7a72f0db6ee5bb85ffc7ab4f589ac58dd6e055da1205",
+      "sha256": "ea9dee35af4b2be06a46df093faa055d8ede0a17d38b49421ea792f9b69857e1",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/questions_unit/test_questions_surfaces_v2.py",
+      "source": "plans/acceptance/v2-questions/test_questions_surfaces_v2.py",
+      "source_sha256": "10e4e6f81ade7cbf09ff87ec92bd1e6c3949b922d4a7b40620be5a63a27c4def",
+      "sha256": "06584841e02fda822e661c35625fa6b6340a8c38f63f7ee70632fc87e12948a5",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/recall_budget_unit/stdio_fixture.py",
+      "source": "plans/acceptance/recall-budget-1.13/stdio_fixture.py",
+      "source_sha256": "f91087db474b04b314b75760a33f4e29ecc6b0149c9a4b37bb10b2fc157c565f",
+      "sha256": "f91087db474b04b314b75760a33f4e29ecc6b0149c9a4b37bb10b2fc157c565f",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/recall_budget_unit/test_recall_adversaries.py",
+      "source": "plans/acceptance/recall-budget-1.13/test_recall_adversaries.py",
+      "source_sha256": "218a6fcf2b3d1697f6197a9d75cc7a0921dcc89bcaf492df03ee7b2fd55d8dbe",
+      "sha256": "0f69eac5e573c1a2c72efc0751aa59a1d240d5795ec8f202e436cd649f781897",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/recall_budget_unit/test_recall_budget.py",
+      "source": "plans/acceptance/recall-budget-1.13/test_recall_budget.py",
+      "source_sha256": "b660f939e338a4045b2e4efbeeba3d2da57f55caa4c5f3a5379e8dfac3279ace",
+      "sha256": "b97a3194d6b71ba657bfbb52a3666d758352dac59a36b7265a9bc3d6ea739335",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/recall_budget_unit/test_recall_budget_supplement.py",
+      "source": "plans/acceptance/recall-budget-1.13/test_recall_budget_supplement.py",
+      "source_sha256": "453d077171dab7b6069f0000d494f6c59f60cfd83161df72099cff0eedaf7c7c",
+      "sha256": "453d077171dab7b6069f0000d494f6c59f60cfd83161df72099cff0eedaf7c7c",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/test_managed_projection.py",
+      "source": "plans/acceptance/managed-hosted-repair/active/test_managed_projection_v2.py",
+      "source_sha256": "55507d0d563f6c0c922a91d76df5bc7cf0eabb148842068f596ce091977bab5b",
+      "sha256": "9d2a77a4096a6b02999dba1e6600fd220eb0fb05d8d5e6041ca5eda9470541ee",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/test_practice_conflicts.py",
+      "source": "plans/acceptance/rule-conflicts-r19-r1/amendment-r2/test_r19_conflicts.py",
+      "source_sha256": "a643c14b45901f847284c6064334192c4c55f8e3ccc36791f8e3a88bb39d3290",
+      "sha256": "26a9d5762de28451da85169b4158f3b9e4d65f08ce76a23fdb58b7165caeaf78",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/test_practice_lifecycle.py",
+      "source": "plans/acceptance/practice-lifecycle-r20-r1/effective-r4/test_r20_lifecycle.py",
+      "source_sha256": "a5b3ef4232450a5229d300637f386592e76aca05314d186a045c51cfc441e01d",
+      "sha256": "ac68bf83d29a0d2d7b73ed303c8628314a01975f96b4151f269d2878eb35878d",
+      "unchanged_bytes": false
+    }
+  ]
+}
