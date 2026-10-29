@@ -889,6 +889,67 @@
       ],
       "independent_review": "PASS before first execution",
       "runtime_verification": "6 passed in isolated local source run; no live model/native-host qualification"
+    },
+    {
+      "package": "obsidian_corrections_unit",
+      "test_cases": 27,
+      "original_sources": [
+        {
+          "path": "plans/acceptance/obsidian-correction-1.15/originals/v2-obsidian/test_correction_core.py",
+          "sha256": "b6fd7a0c314444e5aab74b10062abcb3b029892d780c7c63c1290a219dab9a14"
+        },
+        {
+          "path": "plans/acceptance/obsidian-correction-1.15/originals/v2-obsidian/test_correction_source_state_v2.py",
+          "sha256": "f655c71e714a81f02fdd94d0cb35ca3f4250ac54067760386554637d561e68bf"
+        },
+        {
+          "path": "plans/acceptance/obsidian-correction-1.15/originals/v2-obsidian/test_source_lifetime.py",
+          "sha256": "c32b78652699cbde7137e4db5156cb99fb2c1007031a59ac3aed8afa229d96ea"
+        },
+        {
+          "path": "plans/acceptance/obsidian-correction-1.15/originals/v2-obsidian/test_workspace_flow_v2.py",
+          "sha256": "d9d1797cb0f930e51c203a4d7dd3a4a08a41dbef9c204d10d502e7f1a4d470c5"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/obsidian_corrections_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/obsidian_corrections_unit/README.md",
+          "sha256": "4ce73dd523374a0fa7301f4d5f51e2c3ca84b4c237837ef79224299713219c71",
+          "bytes": 588
+        },
+        {
+          "path": "tests/acceptance/obsidian_corrections_unit/test_correction_core.py",
+          "sha256": "fcc8f7999f0a0859625664c0857b09916614500a627e3bd9c4005ee24f0c8b70",
+          "bytes": 9819
+        },
+        {
+          "path": "tests/acceptance/obsidian_corrections_unit/test_correction_source_state_v2.py",
+          "sha256": "3c624e725d1d7f9b5e9c6b7479049a55f0d48b29282ef9e44036840a0345a7d2",
+          "bytes": 2766
+        },
+        {
+          "path": "tests/acceptance/obsidian_corrections_unit/test_source_lifetime.py",
+          "sha256": "f517077e466ad2b2c2720531136ed9383c38652ce92e56f12b1e3445f441283e",
+          "bytes": 3626
+        },
+        {
+          "path": "tests/acceptance/obsidian_corrections_unit/test_workspace_flow_v2.py",
+          "sha256": "0e1ff9fbe9e625f0c336855952bdb328af964f83bbd01205844ddc2d42ea8bf7",
+          "bytes": 13295
+        }
+      ],
+      "adaptations": [
+        "Ordinary imports replace dynamic imports of the same bridge module; historical descriptions and standalone runners are removed.",
+        "Equivalent keyword dictionaries and formatting retain all 27 cases, 126 assertions, Unicode/CRLF text, append-only/cross-store/lifetime/acknowledgement/projection behavior.",
+        "The original unsupported-host symlink capability skip remains unchanged."
+      ],
+      "independent_review": "PASS before first execution",
+      "runtime_verification": "26 passed; one original Windows symlink capability skip. Synthetic temporary vault/store checks; no plugin/native qualification."
     }
   ]
 }

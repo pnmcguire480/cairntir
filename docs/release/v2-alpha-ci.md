@@ -38,6 +38,8 @@ Four further ordinary test packages retain **51 passing scenarios** using newly 
 
 Another 21 existing behavioral scenarios pass after independent source review: 15 managed-outcome/projection cases and six connected practice-scheduler cases. They retain timeout/output-cap uncertainty, observation failures, no redispatch, invalid acknowledgements, access revocation, durable due queues, schedule supersession, tampered-source refusal and unattended replay. Only an obsolete private fixture loader and standalone runners were removed; the controlled two-second stage deadline remains.
 
+The restored Obsidian correction group passes 26 cases, with one unchanged symlink-capability skip on the local Windows host. All 27 cases and 126 assertions retain exact text, append-only corrections, cross-store refusal, source expiry, acknowledgement repair and human-note preservation. These synthetic store/vault checks do not qualify the actual plugin.
+
 The patched dependency lock passed the unchanged advisory checker: zero findings across 134 registry packages, down from the preserved 82 findings. Default-branch alerts remain separate until reviewed changes land.
 
 Full coverage, installed upgrade/restore/rollback, protected evaluator custody and second supported-machine readiness remain open. The [35-item roadmap](../alpha-roadmap.json) and dated follow-ups remain assigned. No merge, tag, PyPI release or production installation has occurred.
