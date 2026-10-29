@@ -13,6 +13,7 @@ import os
 import re
 import socket
 import stat
+import sys
 import tempfile
 import time
 import unicodedata
@@ -1342,7 +1343,7 @@ def _write(path: Path, content: bytes, before: bytes | None) -> None:
 def _replace_current(path: Path, content: bytes, before: bytes) -> None:
     with path.open("r+b") as handle:
         length = max(len(before), len(content), 1)
-        if os.name == "nt":
+        if sys.platform == "win32":
             import msvcrt
 
             msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, length)
@@ -1368,7 +1369,7 @@ def _replace_current(path: Path, content: bytes, before: bytes) -> None:
                 raise
         finally:
             handle.seek(0)
-            if os.name == "nt":
+            if sys.platform == "win32":
                 msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, length)
             else:
                 posix_lock.flock(handle.fileno(), posix_lock.LOCK_UN)

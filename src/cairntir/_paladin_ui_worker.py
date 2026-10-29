@@ -18,7 +18,7 @@ from collections.abc import Callable, Mapping
 from ctypes import wintypes
 from datetime import UTC, datetime
 from pathlib import Path, PurePosixPath
-from typing import Any, BinaryIO, ClassVar, cast
+from typing import Any, BinaryIO, ClassVar, NoReturn, cast
 from uuid import UUID
 
 _VERSION = "1"
@@ -567,11 +567,15 @@ class _Accounting(ctypes.Structure):
 
 def _checked(value: Any) -> Any:
     if not value:
+        if sys.platform != "win32":
+            raise OSError("Windows native calls require Windows")
         raise ctypes.WinError(ctypes.get_last_error())
     return value
 
 
 def _kernel() -> Any:
+    if sys.platform != "win32":
+        raise OSError("Windows native calls require Windows")
     kernel = ctypes.WinDLL("kernel32", use_last_error=True)
     for name, arguments, result in (
         ("CreateJobObjectW", [ctypes.c_void_p, wintypes.LPCWSTR], wintypes.HANDLE),
@@ -593,6 +597,10 @@ def _kernel() -> Any:
         function.argtypes = arguments
         function.restype = result
     return kernel
+
+
+def _unsupported_windows() -> NoReturn:
+    raise ValueError("Owned UI processes require Windows")
 
 
 class OwnedProcessError(RuntimeError):
@@ -747,7 +755,8 @@ class OwnedProcess:
         self._state["started_at"] = datetime.now(UTC).isoformat()
         stage = "create"
         try:
-            _require(os.name == "nt", "Owned UI processes require Windows")
+            if sys.platform != "win32":
+                _unsupported_windows()
             self._output.mkdir(parents=True, exist_ok=True)
             self._kernel = _kernel()
             self._job = _checked(self._kernel.CreateJobObjectW(None, None))

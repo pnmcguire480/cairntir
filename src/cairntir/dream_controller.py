@@ -231,7 +231,7 @@ def receipts(path: Path, limit: int = 100) -> dict[str, Any]:
 
 
 def _process_identity(pid: int) -> str | None:
-    if os.name == "nt":
+    if sys.platform == "win32":
         import ctypes
         from ctypes import wintypes
 

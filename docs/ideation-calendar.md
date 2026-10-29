@@ -6,7 +6,7 @@ SQLite holds the authoritative context and immutable revisions. An optional Obsi
 
 ## Inputs
 
-`generate_calendar` accepts either a validated [experimental ideation status](../ALPHA.md#experimental-and-unfinished-work) reference, `{ "kind": "i03", "ref": ... }`, or a separately labelled historical context using `cairntir.i04.historical-context.v1`.
+`generate_calendar` accepts either a validated [experimental ideation status](https://github.com/pnmcguire480/cairntir/blob/codex/v2-alpha-preview/ALPHA.md#experimental-and-unfinished-work) reference, `{ "kind": "i03", "ref": ... }`, or a separately labelled historical context using `cairntir.i04.historical-context.v1`.
 
 Historical context contains project and attribution, source files with original IDs, safe relative paths, full hashes and byte lengths, uniquely anchored exact excerpts and excerpt hashes, and ideas with source-linked hooks, channels and formats. Source files are read only beneath the supplied root. Original absolute paths are retained as inert provenance. A source mismatch refuses generation; it does not repair or reinterpret the evidence.
 
