@@ -5,22 +5,20 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **1.12.4** (maintenance candidate; not yet published). The [1.12.3 release record](docs/release/v1.12.3.md)
-identifies the verified integration repairs and publication/installation evidence.
-Before this release, PyPI served 1.12.2 and the production MCP installation was
-1.12.1. Consult the versioned GitHub release receipt and current MCP handshake
-for post-publication installation state. Pending changes belong under
-[Unreleased](CHANGELOG.md#unreleased).
+Source version: **2.0.0a1**, an experimental preview. The stable release is
+**1.12.4**. Read [ALPHA.md](ALPHA.md) before installing or claiming feature
+readiness; it defines the supported preview and every remaining release gate.
+Use a separate virtual environment, disposable store and pilot vault.
 
-The core has verbatim SQLite drawers, explicit provenance, task-aware budgeted
-handoff, semantic and anchored recall, portable evidence, evaluated procedures,
-scoped local sharing, prediction settlements, discovery review, three skills,
-recipes, and 21 MCP tools. Transcript recovery supports Claude Code, Codex, and
-Qwen Code; Cursor returns an unsupported receipt.
+The preview has 22 MCP tools and database schema 8. It includes new memory
+origin/currentness, Obsidian corrections, managed continuity, practices,
+calendar and Blender workflows. Dream and the unfinished ideation/UI/learning
+surfaces remain experimental. Existing memory tools and bundled recipes are
+foundations, not new capabilities. Transcript recovery remains opt-in.
 
-The [continuity delivery](plans/continuity-delivery.md) is **COMPLETE** and
-published as 1.10.0. The additive release retains the public tool surface and
-introduces schema 7 without new dependencies.
+Combined tests, the 90% overall coverage gate, independent protected evaluation,
+second supported-machine readiness and full upgrade/restore/rollback remain
+open. Component evidence and packaging smoke are not stable release approval.
 
 ## Working rules
 
@@ -85,7 +83,25 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-02 (1.12.4 maintenance candidate)
+## Last Session - 2026-10-29 (experimental alpha preparation)
+
+The alpha starts from public 1.12.4 history and selects runtime, integrations and
+portable guides without importing the earlier local integration commit history,
+private stores, vaults or qualification archives. Work remains local pending
+approval of the concrete publication bundle. No tag, public release or production
+upgrade is authorized by this preparation.
+
+The wheel builds and installs in an isolated target. A model-free smoke check
+passes version/CLI, memory write/read/reopen, MCP server construction and tool
+metadata, and bundled resource checks. Obsidian JavaScript syntax checks pass.
+No full-suite, coverage, model efficacy or graphical host adoption result follows.
+
+The local admission harness retains 18 complete passes and 5 stage errors across
+21 selected checks. Observer repair is deferred. Keep these failures visible and
+do not expand the harness while preparing the preview. The original 35-item
+register and dated follow-ups remain in [the roadmap](docs/alpha-roadmap.json).
+
+## Previous Session - 2026-10-02 (1.12.4 maintenance candidate)
 
 This release combines PR122's three dependency repairs and safe contributor
 handoff guide with the independently reviewed doctor/status/version diagnostics.

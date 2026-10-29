@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.0a1] - 2026-10-29 - experimental preview
+
+Experimental preview branch; not a stable release or PyPI publication. Includes the new memory provenance/currentness, Obsidian corrections and managed continuity, practice/evidence tools, calendar and Blender integrations. Dream and unfinished ideation/UI flows remain experimental. See [ALPHA.md](ALPHA.md) for install instructions, exact limits and follow-up dates. Full combined tests/90% coverage and upgrade/rollback qualification remain open; prior failures are preserved.
+
 All notable changes to Cairntir will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
