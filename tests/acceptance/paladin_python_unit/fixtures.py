@@ -95,12 +95,13 @@ class PreparedFixture:
             }
             toolroot = self.root / "tools"
             toolroot.mkdir()
-            observed = subprocess.run(
-                [sys.executable, "--version"], capture_output=True, text=True, check=True
+            executable = str(Path(sys.executable).resolve())
+            observed = subprocess.run(  # noqa: S603 - resolved current interpreter
+                [executable, "--version"], capture_output=True, text=True, check=True
             )
             version_record = {
                 "schema": "cairntir.tool-version.v1",
-                "argv": [sys.executable, "--version"],
+                "argv": [executable, "--version"],
                 "exit_code": observed.returncode,
                 "stdout": observed.stdout,
                 "stderr": observed.stderr,
@@ -110,8 +111,8 @@ class PreparedFixture:
             self.tools = [
                 {
                     "id": "python",
-                    "executable": str(Path(sys.executable).resolve()),
-                    "sha256": digest(Path(sys.executable).read_bytes()),
+                    "executable": executable,
+                    "sha256": digest(Path(executable).read_bytes()),
                     "version": sys.version.split()[0],
                     "version_evidence": bound(toolroot / "version.json", "version.json"),
                     "payload_root": str(toolroot),
