@@ -103,7 +103,13 @@ def _source(source: Path, kind: str, label: str | None, limit: int) -> tuple[str
         return info
 
     def identity(info: os.stat_result) -> tuple[int, int, int, int, int]:
-        return info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns
+        return (
+            info.st_dev,
+            info.st_ino,
+            info.st_size,
+            info.st_mtime_ns,
+            getattr(info, "st_birthtime_ns", info.st_ctime_ns),
+        )
 
     try:
         before = safe_path()
@@ -114,9 +120,13 @@ def _source(source: Path, kind: str, label: str | None, limit: int) -> tuple[str
                 raise IterationArtifactError("UNSAFE_SOURCE", "Artifact changed while opening")
             data = handle.read(limit + 1)
             after = os.fstat(handle.fileno())
+        final_path = safe_path()
+        # Windows ctime differs across APIs; retain each API's change-clock check.
         if (
             identity(before) != identity(after)
-            or identity(before) != identity(safe_path())
+            or identity(before) != identity(final_path)
+            or before.st_ctime_ns != final_path.st_ctime_ns
+            or opened.st_ctime_ns != after.st_ctime_ns
             or len(data) != before.st_size
         ):
             raise IterationArtifactError("UNSAFE_SOURCE", "Artifact changed while reading")
