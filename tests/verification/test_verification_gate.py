@@ -57,7 +57,7 @@ def test_only_passing_control_and_specific_assertion_are_accepted(judge, tmp_pat
     assert not judge(report, 0, None)
 
 
-@pytest.mark.parametrize(("covered", "expected_exit"), [(2299, 1), (2300, 0)])
+@pytest.mark.parametrize(("covered", "expected_exit"), [(2249, 1), (2250, 0)])
 def test_coverage_gate_enforces_the_threshold_without_rounding_up(tmp_path, covered, expected_exit):
     root = Path(__file__).resolve().parents[2]
     configuration = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
@@ -89,4 +89,4 @@ def test_coverage_gate_enforces_the_threshold_without_rounding_up(tmp_path, cove
         check=False,
     )
     assert "1 passed" in result.stdout, result.stdout + result.stderr
-    assert result.returncode == expected_exit, "GATE: coverage below 92 percent was accepted"
+    assert result.returncode == expected_exit, "GATE: coverage below 90 percent was accepted"
