@@ -6,7 +6,12 @@
     "Normal lint/formatting, equivalent dictionary/list syntax, strict equal-length zip and bound immediate loop callbacks.",
     "Recall transport retains a 5600-character no-hit query under a 1024-character response budget; the original 105000-character query separately verifies the existing 6000-character input-window refusal.",
     "Assertion diagnostics expose the actual recall error receipt.",
-    "The two angle supplement loader-existence assertions are replaced by ordinary package imports; behavioral assertions remain."
+    "The two angle supplement loader-existence assertions are replaced by ordinary package imports; behavioral assertions remain.",
+    "Synthetic print assets retain original bytes; the surrogate test reads the copied sibling fixture.",
+    "Human-review controls use the same controlled PALADIN fixture through an ordinary import.",
+    "Two exact XML-parser lint annotations cover only locally generated synthetic artifact payloads.",
+    "Controlled Codex wire tests retain exact original helper bytes and SHA guards; only the test and non-model peer are formatted.",
+    "The controlled Python version observation, recorded argv, executable binding and bytes hash use one resolved path, preserving strict identity checks across virtual-environment symlinks."
   ],
   "scope": "Synthetic stores, controlled reports and images. Real tools, live browser efficacy and native host readiness are separate gates.",
   "excluded": [
@@ -14,6 +19,34 @@
     "Prepared real-tool wheelhouses, machine inventories, private packet loaders, raw local receipts and archived controls."
   ],
   "files": [
+    {
+      "path": "tests/acceptance/codex_wire_unit/fixed_effect.py",
+      "source": "plans/acceptance/r06-notification-correlation-20261028/fixed_effect.py",
+      "source_sha256": "111f7c32e2aa26da15fb6a961e8a37fda95f522dbb106394249be33aec1a90d2",
+      "sha256": "111f7c32e2aa26da15fb6a961e8a37fda95f522dbb106394249be33aec1a90d2",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/codex_wire_unit/peer.py",
+      "source": "plans/acceptance/r06-notification-correlation-20261028/peer.py",
+      "source_sha256": "d1bb7e0005c1e5ffe267d01f15b1a65c928a2325894f41109c851090301946c3",
+      "sha256": "f7818806d5f1da8f686483803b4180eb49bd022d6d2eb5316926d0c640771887",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/codex_wire_unit/support.py",
+      "source": "plans/acceptance/r06-notification-correlation-20261028/support.py",
+      "source_sha256": "e09a8b85299de44423811663daf7368167b5c0e2aa006e370a64ed29bc780900",
+      "sha256": "e09a8b85299de44423811663daf7368167b5c0e2aa006e370a64ed29bc780900",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/codex_wire_unit/test_native_wire_correlation.py",
+      "source": "plans/acceptance/r06-notification-correlation-20261028/test_native_wire_correlation.py",
+      "source_sha256": "ad934ac9fb056b1345896e56b91b468c7a371552cf2a8146c3495f54d3be7ef7",
+      "sha256": "8befd6e0293ffd7ea436a3d9637fa6b97ee0011ec5b79028facdd7fdb8f3b943",
+      "unchanged_bytes": false
+    },
     {
       "path": "tests/acceptance/ideation_angles_unit/test_coherent_envelopes.py",
       "source": "plans/acceptance/v2-ideation-i02-acceptance-r1/amendment-r1/test_coherent_envelopes.py",
@@ -36,6 +69,48 @@
       "unchanged_bytes": false
     },
     {
+      "path": "tests/acceptance/iteration_artifacts_unit/fixtures/bracket.gcode",
+      "source": "plans/acceptance/v2-iteration-artifacts-c49-acceptance-r1/fixtures/bracket.gcode",
+      "source_sha256": "77699e905b406529dfbed2386a9c131630880ef18712a60c0f224f374870de46",
+      "sha256": "77699e905b406529dfbed2386a9c131630880ef18712a60c0f224f374870de46",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/iteration_artifacts_unit/fixtures/bracket.stl",
+      "source": "plans/acceptance/v2-iteration-artifacts-c49-acceptance-r1/fixtures/bracket.stl",
+      "source_sha256": "76b744ebf8339a56c8cd4527c382d0aa4b378b8b4c51ff5fd9fb18236c262025",
+      "sha256": "76b744ebf8339a56c8cd4527c382d0aa4b378b8b4c51ff5fd9fb18236c262025",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/iteration_artifacts_unit/test_c49_boundaries.py",
+      "source": "plans/acceptance/v2-iteration-artifacts-c49-acceptance-r1/test_c49_boundaries.py",
+      "source_sha256": "98e134f16748f51b41edabf8903fdfe363f2b23eb1b8937fd1ffbf865646a910",
+      "sha256": "e52264144b3e699e3005dfa3189590cc9eb63002d0ef3ffe5eb64c993891acf5",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/iteration_artifacts_unit/test_c49_connected.py",
+      "source": "plans/acceptance/v2-iteration-artifacts-c49-acceptance-r1/test_c49_connected.py",
+      "source_sha256": "87f110117b2a3c9d559b4ea05ffd7964f9dcc854c7240357912d8f4efe01c578",
+      "sha256": "5dcb0ea309b3146fe0ba8777510233a71354c7124c7db80c8c174f4b4e0440e5",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/iteration_artifacts_unit/test_c49_surrogate_boundary.py",
+      "source": "plans/acceptance/v2-iteration-artifacts-c49-review-r1/test_c49_surrogate_boundary.py",
+      "source_sha256": "d46b61da406d9ca74a5905f07330714110d808a7c3d4d80da7954aa58cfc50c3",
+      "sha256": "192fb1fe5a467659c433dad65d2712835cb33fbc5ae3cf8007418c1fe777a448",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_python_unit/artifact_child.py",
+      "source": "plans/acceptance/v2-paladin-python/supplement/artifacts/artifact_child.py",
+      "source_sha256": "0dac398744799dac596e6c4dc251e6e63f154caf6af89c45d4baf477e02d6af5",
+      "sha256": "96f340e43b0cc1361043746aefebcdaf2db33323b0c5a0ee99c071077ee84575",
+      "unchanged_bytes": false
+    },
+    {
       "path": "tests/acceptance/paladin_python_unit/controlled_stage.py",
       "source": "plans/acceptance/v2-paladin-python/acceptance/controlled_stage.py",
       "source_sha256": "221824b5edd339e4f56111c88d97a2ce45a3153d327ea4bad58ac6c2b2ae12e2",
@@ -46,7 +121,21 @@
       "path": "tests/acceptance/paladin_python_unit/fixtures.py",
       "source": "plans/acceptance/v2-paladin-python/acceptance/fixtures.py",
       "source_sha256": "d00ad07374063568deb49d1ee77ee9b8e33d477753611f231479274fac9e0863",
-      "sha256": "4867588ae30c260d3d6f873db9ca64877d06b1ad83fdecd19c45f886e6b3bb58",
+      "sha256": "f8f03f6651ceb9b9864f2bfb385fe4d56b7a912b508b948c7f02daf2bdfb95fa",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_python_unit/test_artifact_outcomes.py",
+      "source": "plans/acceptance/v2-paladin-python/supplement/artifacts/test_artifact_outcomes.py",
+      "source_sha256": "55f6d01cd63adc8112ac0fdb140e4846728548792b2170d68f2903ecde2ccd84",
+      "sha256": "da89c665a31bc52d946e498536b6232f05495db45af90dd4c1467a770a09925e",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_python_unit/test_contract_outcomes.py",
+      "source": "plans/acceptance/v2-paladin-python/supplement/contracts/test_contract_outcomes.py",
+      "source_sha256": "1e4044951a712816ee5120e7b3a58f0dc651c56b3ef762cce4831c4bf2040639",
+      "sha256": "b547463b63c433556ac6c6bcce0a2e4f8dcd9b03321633d4364b468ed68e02a8",
       "unchanged_bytes": false
     },
     {
@@ -54,6 +143,20 @@
       "source": "plans/acceptance/v2-paladin-python/event-binding-v2/test_event_binding.py",
       "source_sha256": "a084f8d7799cd59f540e8764e8863104cb8a9dd19ee35694a90f2e9db1b5a73d",
       "sha256": "a676bd2a3c8c23bd889dcdadd664fb3f5137e4120951de05984b645259bc2fd1",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_python_unit/test_human_wall.py",
+      "source": "plans/acceptance/v2-paladin-q06-human-wall/test_q06_human_wall.py",
+      "source_sha256": "b603d9a84b326b8b17b83c4a8f2092e13402551931e78d7d129f9283ac44135c",
+      "sha256": "bcec1f45687a889a75971a0b1b2d414dda5a66c56308c8b8751aabbb3d4cb183",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_python_unit/test_lifecycle_outcomes.py",
+      "source": "plans/acceptance/v2-paladin-python/platform/lifecycle-outcomes-v1/test_lifecycle_outcomes.py",
+      "source_sha256": "15cbea681d6c504db27cc20bcfaf38f9af99a869c8578f6a012412af96033164",
+      "sha256": "a0c1401fd7fcf33ea9cf8e00e859e493679a0e119bcd9545f3168823383e529b",
       "unchanged_bytes": false
     },
     {
