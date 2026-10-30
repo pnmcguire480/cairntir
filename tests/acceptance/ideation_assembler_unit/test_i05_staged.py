@@ -22,6 +22,7 @@ from cairntir import ideation_outline_assembler as assembler
 from cairntir import ideation_outlines as outlines
 
 from . import fixtures, oracles
+from .ast_contract import dump_contract
 
 HERE = Path(__file__).resolve().parent
 V1_HERE = HERE.parent / "ideation_outlines_unit"
@@ -554,7 +555,7 @@ def test_s09_v1_exact_wire_read_replay_projection(case):
     baseline = json.loads((HERE / "V1-CONTRACT.json").read_bytes())
     tree = ast.parse(Path(api().__file__).read_bytes())
     definitions = {
-        node.name: ast.dump(node, include_attributes=False)
+        node.name: dump_contract(node)
         for node in tree.body
         if isinstance(node, (ast.FunctionDef, ast.ClassDef))
     }

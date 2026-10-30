@@ -708,14 +708,15 @@
         "Ordinary package imports and lint/formatting replace private packet loaders.",
         "Source/history/provider identities, text and exact byte ranges/hashes are translated coherently.",
         "Behavioral assertions, statuses, refusal controls and deadlines remain.",
-        "Canonical generic channel profiles retain the original bytes and fixed policy."
+        "Canonical generic channel profiles retain the original bytes and fixed policy.",
+        "S09 compares the original nine AST goldens using a copied tree that omits only empty version-added type_params on definition nodes. Nonempty generics and every other field remain exact; no golden or runtime source is changed."
       ],
       "code_sources": [
         {
           "original_source": "plans/acceptance/v2-ideation-i05-staged-r1/acceptance/test_i05_staged.py",
           "original_sha256": "a177184c4941df7b4b8379ed246b51ba92faeaea2d2132249314a6b5ee291718",
           "path": "tests/acceptance/ideation_assembler_unit/test_i05_staged.py",
-          "sha256": "71528cc1e894640b1fb39837b0bc15c55438abda82764d0762f7db09c2a30736"
+          "sha256": "3661c49ce9eb7fc617ef1821fa609210c02c734be8a26865f1cbaa01f87966df"
         },
         {
           "original_source": "plans/acceptance/v2-ideation-i05-staged-r1/acceptance/fixtures.py",
@@ -783,13 +784,18 @@
         },
         {
           "path": "tests/acceptance/ideation_assembler_unit/test_i05_staged.py",
-          "sha256": "71528cc1e894640b1fb39837b0bc15c55438abda82764d0762f7db09c2a30736",
-          "bytes": 29438
+          "sha256": "3661c49ce9eb7fc617ef1821fa609210c02c734be8a26865f1cbaa01f87966df",
+          "bytes": 29457
         },
         {
           "path": "tests/acceptance/ideation_assembler_unit/V1-CONTRACT.json",
           "sha256": "88a10c5b5d76d898263efdd3712072d4c378d5c34b9c2cd1bbe08703ef830a45",
           "bytes": 93564
+        },
+        {
+          "path": "tests/acceptance/ideation_assembler_unit/ast_contract.py",
+          "sha256": "8e086c6eaa3ebeb05ed381eee63bb8f9f984415d9bd88be1f88cbce4d6c73006",
+          "bytes": 519
         }
       ]
     }
@@ -951,5 +957,28 @@
       "independent_review": "PASS before first execution",
       "runtime_verification": "26 passed; one original Windows symlink capability skip. Synthetic temporary vault/store checks; no plugin/native qualification."
     }
-  ]
+  ],
+  "ast_contract_compatibility": {
+    "helper": {
+      "path": "tests/acceptance/ideation_assembler_unit/ast_contract.py",
+      "sha256": "8e086c6eaa3ebeb05ed381eee63bb8f9f984415d9bd88be1f88cbce4d6c73006",
+      "bytes": 519
+    },
+    "independent_controls": {
+      "path": "tests/unit/test_ast_contract_compatibility.py",
+      "sha256": "b5dea3a01f1900738503c12e180b42f0c46dd8dbd9dcc67213a359b3ebd61e0c",
+      "bytes": 7164
+    },
+    "original_golden_sha256": "88a10c5b5d76d898263efdd3712072d4c378d5c34b9c2cd1bbe08703ef830a45",
+    "original_staged_test_sha256": "71528cc1e894640b1fb39837b0bc15c55438abda82764d0762f7db09c2a30736",
+    "frozen_control_r1_sha256": "5996d8bb9e381933faba8fb9c98f60608bdcc73aef6667089add0f7af8fe6924",
+    "frozen_control_r2_sha256": "b5dea3a01f1900738503c12e180b42f0c46dd8dbd9dcc67213a359b3ebd61e0c",
+    "methods": 11,
+    "native_python": [
+      "3.11.9",
+      "3.12.14"
+    ],
+    "results": "R1 old comparison:19 failure events; candidate312:11 methods pass. R1 candidate311:three fallback-TypeVar fixture failures, retained. R2 only supplies an explicit Base bound and exact oracle;11 methods pass on both interpreters. Mutant deleting nonempty parameters causes three caught failures.",
+    "limits": "Test-only compatibility for the known empty Python3.12 definition field. Original golden bytes/constants and runtime AST source remain unchanged; no arbitrary future schema normalization or hosted313 success is inferred."
+  }
 }

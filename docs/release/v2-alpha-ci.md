@@ -40,6 +40,8 @@ Another 21 existing behavioral scenarios pass after independent source review: 1
 
 The restored Obsidian correction group passes 26 cases, with one unchanged symlink-capability skip on the local Windows host. All 27 cases and 126 assertions retain exact text, append-only corrections, cross-store refusal, source expiry, acknowledgement repair and human-note preservation. These synthetic store/vault checks do not qualify the actual plugin.
 
+The next matrix exposed a Python-version-dependent S09 AST comparison: Python 3.12 adds empty `type_params` fields to definitions whose Python 3.11 snapshots remain exact. A test-only serializer removes only those empty fields from a copy. All nine original golden strings, constants and runtime source remain unchanged. Eleven independent controls pass on native Python 3.11/3.12; a mutant that removes nonempty generic parameters is detected. The original baseline has 19 failed case/subtest events. A Python 3.11 fallback-TypeVar fixture initially caused three failures; its independently reviewed explicit-bound amendment preserves the other ten methods and all goldens. Those failures remain retained. Full hosted compatibility remains pending.
+
 The patched dependency lock passed the unchanged advisory checker: zero findings across 134 registry packages, down from the preserved 82 findings. Default-branch alerts remain separate until reviewed changes land.
 
 Full coverage, installed upgrade/restore/rollback, protected evaluator custody and second supported-machine readiness remain open. The [35-item roadmap](../alpha-roadmap.json) and dated follow-ups remain assigned. No merge, tag, PyPI release or production installation has occurred.
