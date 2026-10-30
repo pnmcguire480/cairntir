@@ -160,7 +160,7 @@ addopts = [
     "-ra",
     "--strict-markers",
     "--strict-config",
-    "--cov=cairntir",
+    "--cov=src/cairntir",
     "--cov-report=term-missing",
     "--cov-report=html",
     "--cov-fail-under=90",
