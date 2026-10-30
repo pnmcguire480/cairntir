@@ -80,3 +80,4 @@ tests/acceptance/practice_scope_unit/** -text whitespace=cr-at-eol
 tests/acceptance/practice_review_unit/** -text whitespace=cr-at-eol
 tests/acceptance/practice_register_unit/** -text whitespace=cr-at-eol
 tests/acceptance/practice_governance_unit/** -text whitespace=cr-at-eol
+tests/acceptance/practice_review_edges_unit/** -text whitespace=cr-at-eol
