@@ -360,6 +360,13 @@ def _tool_sha(path: Path) -> str:
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def _remove_venv_lib64_alias(venv: Path) -> None:
+    alias = venv / "lib64"
+    if alias.is_symlink() and alias.readlink() == Path("lib"):
+        _require(_plain(venv / "lib").is_dir(), "UNSAFE_INPUT", "Invalid venv lib directory")
+        alias.unlink()
+
+
 def _command(python: Path, snapshot: Path, version: Path) -> dict[str, Any]:
     junit = version / "result.xml"
     return {
@@ -439,6 +446,7 @@ def _prepare(
             [
                 str(python),
                 "-I",
+                "-B",
                 "-S",
                 "-c",
                 "import json,sys; print(json.dumps(list(sys.version_info[:3])))",
@@ -529,10 +537,11 @@ def _prepare(
     (version / "approved.lock").write_bytes(lock)
     env = command["env"]
     _run(
-        [str(python), "-I", "-m", "venv", "--without-pip", "--copies", str(venv)],
+        [str(python), "-I", "-B", "-m", "venv", "--without-pip", "--copies", str(venv)],
         env=env,
         cwd=version,
     )
+    _remove_venv_lib64_alias(venv)
     _run(
         [
             str(uv),
@@ -564,6 +573,7 @@ def _prepare(
             [
                 str(venv_python),
                 "-I",
+                "-B",
                 "-c",
                 "import importlib.metadata as m,json,sys,pytest; "
                 "print(json.dumps({'packages':"

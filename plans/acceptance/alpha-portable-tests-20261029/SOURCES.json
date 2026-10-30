@@ -1455,6 +1455,21 @@
         "New package README explicitly states injected grant seam qualifies scope, completeness and transaction composition rather than persisted-grant authentication."
       ],
       "limits": "Synthetic local inputs; no real-model, native observer/process custody, protected evaluator or historical qualification transfer. Injected _grant seam qualifies scope and transaction behavior only, not persisted-grant authentication."
+    },
+    {
+      "component": "bootstrap-generated-alias-boundaries",
+      "cases": 5,
+      "files": [
+        {
+          "path": "tests/unit/test_bootstrap_lib64.py",
+          "sha256": "ff66aa37be3bd6c3d2c93bb47866709315b659471e09d0e4893c20e8e5c8fef3",
+          "bytes": 5205
+        }
+      ],
+      "original_frozen_control": "test_bootstrap_lib64_r1.py",
+      "independent_review": "Frozen before helper implementation; root reviewed actual filesystem assertions before execution.",
+      "runtime_verification": "Local Windows:2regular-entry casesPASS,3real-symlink capabilitySKIP. An in-memory always-unlink mutant is detected by the unchanged regular-file snapshot control; source bytes unchanged. Fresh POSIX CI remains required.",
+      "limits": "Actual target/link/sibling bytes and modes must be preserved; capability skips are not POSIX qualification. No general symbolic-link permission added."
     }
   ],
   "ast_contract_compatibility": {
@@ -1883,5 +1898,31 @@
       "verification": "First local source run:9 passed in71.47s. Six exact wheel archives independently verified against official metadata; first real CI-prefetch helper invocationPASS. Independent source/helper reviewPASS before execution; hosted matrix pending.",
       "limits": "No wheel binaries, prepared environments or private receipts published. No historical result or protected custody transferred."
     }
-  ]
+  ],
+  "bootstrap_platform_repair": {
+    "source": "src/cairntir/paladin_bootstrap.py",
+    "before_sha256": "6c66fdab82d783edb65a1e283ebfb9a1334c0d0a35498fd0bc0dc30c29fce8b0",
+    "after_sha256": "8a3b920fd30b8c4da1e99ae9c374ea3f275fd523fdf176befeffe4edb842eb2f",
+    "changes": [
+      "Add explicit -B to all three internal isolated Python calls; preserve the original returned pytest command.",
+      "Remove only the standard relative lib64-to-lib alias after creating a fresh owned venv and verifying its plain lib directory; original generic link/reparse and replay guards remain."
+    ],
+    "independent_cold_runtime_control": {
+      "sha256": "c4d7f5d4ea3ea6c4ffcff70f92beca3456dfe38c777a73a531eca962779bfad1",
+      "frozen_before_repair": true,
+      "baseline": "One failure after real prepare/import checks and all three subject tests succeeded:139new cache file/directory entries in the fresh copied base, zero removed/changed.",
+      "candidate": "Same unchanged control on a separate fresh copied base:1PASS, zero base runtime changes.",
+      "limits": "Private Windows-owned fresh Python3.13 runtime witness; no original installed runtime or cache was cleaned. Hosted exact changed filenames were not logged; fresh CI must confirm the combined repair."
+    },
+    "regression": {
+      "scope": "LOCAL Windows working-tree repair only; not hosted CI",
+      "passed": 9,
+      "failures": 0,
+      "errors": 0,
+      "source_sha256": "8a3b920fd30b8c4da1e99ae9c374ea3f275fd523fdf176befeffe4edb842eb2f",
+      "junit_sha256": "535e90e8b59dceab3cfbba7a4eb2fe6a2a9d5dd3396d62029b6c08a75e714cc5",
+      "hosted_baseline_preserved": "Remote460e4223 Ubuntu jobs still have5bootstrap failures and53resource setup errors; fresh hosted repair qualification pending."
+    },
+    "preserved": "Q05 complete runtime/cache comparison, resource budgets, all original bootstrap assertions, public schema, package pins, source identity and returned pytest argv remain."
+  }
 }
