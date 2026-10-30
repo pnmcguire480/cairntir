@@ -956,6 +956,322 @@
       ],
       "independent_review": "PASS before first execution",
       "runtime_verification": "26 passed; one original Windows symlink capability skip. Synthetic temporary vault/store checks; no plugin/native qualification."
+    },
+    {
+      "package": "origin_derivation_unit",
+      "test_cases": 12,
+      "original_sources": [
+        {
+          "path": "plans/acceptance/origin-derivation-20261022/test_origin_derivation.py",
+          "sha256": "d8a0d113410cbc71fc6912a84e1222a2effcab2b6f67564bd5c9b5f8040a76f5",
+          "bytes": 17377,
+          "public_path": "tests/acceptance/origin_derivation_unit/test_origin_derivation.py"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/origin_derivation_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/origin_derivation_unit/README.md",
+          "sha256": "d1be35609cdf2d3e9fd719648c2eb16e00c9d07e207fd4835cca2f7df9254405",
+          "bytes": 446
+        },
+        {
+          "path": "tests/acceptance/origin_derivation_unit/test_origin_derivation.py",
+          "sha256": "3801c2edcde379e4f114673ced7e7f54660623fc10f4ef34930bcbff02b51c32",
+          "bytes": 17392
+        }
+      ],
+      "adaptations": [
+        "Ordinary imports, present-fixture descriptions and formatting only; all original scenario bodies and inline values remain.",
+        "Reversal/currentness/privacy/refusal assertions and parameter expansions remain unchanged."
+      ],
+      "independent_review": "PASS before first execution",
+      "runtime_verification": "12 passed in isolated temporary Hash stores; no live-model or host qualification"
+    },
+    {
+      "package": "scoped_startup_unit",
+      "test_cases": 4,
+      "original_sources": [
+        {
+          "path": "plans/acceptance/v2-scoped-startup-isolation-r1/test_scoped_startup.py",
+          "sha256": "0547a0d62862fa3d6a3c0b20c5d600ab4fdc8f2c1d26d961f63b67c82453f033",
+          "bytes": 4814,
+          "public_path": "tests/acceptance/scoped_startup_unit/test_scoped_startup.py"
+        },
+        {
+          "path": "plans/acceptance/v2-scoped-startup-isolation-access-amendment-r1/test_selector_boundary.py",
+          "sha256": "1d0633500ff03ef29e0dd7a2c50c0ac956b48ec3dd2205c8989c91b8e48353e2",
+          "bytes": 2722,
+          "public_path": "tests/acceptance/scoped_startup_unit/test_selector_boundary.py"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/scoped_startup_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/scoped_startup_unit/README.md",
+          "sha256": "9a00ee4dac785cbd13e051d66651b95eda3f9ff33657921555f16181ee90df5b",
+          "bytes": 347
+        },
+        {
+          "path": "tests/acceptance/scoped_startup_unit/test_scoped_startup.py",
+          "sha256": "14a2d3fddd35d47b0d7f9c4204b0d3152540df2c003711ec67d72fbebd1165c0",
+          "bytes": 4798
+        },
+        {
+          "path": "tests/acceptance/scoped_startup_unit/test_selector_boundary.py",
+          "sha256": "80167567a3eac20ce047b74dab0334ffd683af7d0792b000cacc1baae29906da",
+          "bytes": 2680
+        }
+      ],
+      "adaptations": [
+        "Ordinary imports, present-fixture descriptions and formatting only; all original scenario bodies and inline values remain.",
+        "Reversal/currentness/privacy/refusal assertions and parameter expansions remain unchanged."
+      ],
+      "independent_review": "PASS before first execution",
+      "runtime_verification": "4 passed in isolated temporary Hash stores; no live-model or host qualification"
+    },
+    {
+      "package": "reference_integrity_unit",
+      "test_cases": 61,
+      "original_sources": [
+        {
+          "path": "plans/acceptance/r20-reference-integrity-r1/test_reference_integrity.py",
+          "sha256": "83c9688f39529cd8c45254749211f6d527758f9ca3be86512231fdee203050e5"
+        },
+        {
+          "path": "plans/acceptance/r20-reference-integrity-r1/scoped-references-r1/test_scoped_references.py",
+          "sha256": "55ab82441d6a819d2faaf564edc44c61aa91627f1db995e181b6211b5e6397a2"
+        },
+        {
+          "path": "plans/acceptance/r20-reference-integrity-r1/scoped-closure-r2/test_scoped_closure.py",
+          "sha256": "1b72303255f1c50a55aacaa5a4f6b68952fbeacb842ecf2e1b7f6ebcdcb5e9f8"
+        },
+        {
+          "path": "plans/acceptance/r20-reference-integrity-r1/fixture_core.py",
+          "sha256": "c20a66512bd29a21330b5c26f7c86681088884d1ab12f03b3249d284f8838865"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/reference_integrity_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/reference_integrity_unit/fixture_core.py",
+          "sha256": "5e11f0cbb140bd2f9fb02de63d38910102fc98f9a311e9fbcf11814f0d88311c",
+          "bytes": 10690
+        },
+        {
+          "path": "tests/acceptance/reference_integrity_unit/README.md",
+          "sha256": "86cec203cb63c73f4ccf489ae5fb6683a3d2376f29564f3bff76e70976143f4a",
+          "bytes": 1034
+        },
+        {
+          "path": "tests/acceptance/reference_integrity_unit/test_reference_integrity.py",
+          "sha256": "1979a2514d8bfecfcc3a2b7cd76ece9bca9ac726ee1cc6e0f85e7d0490fc63b6",
+          "bytes": 18616
+        },
+        {
+          "path": "tests/acceptance/reference_integrity_unit/test_scoped_closure.py",
+          "sha256": "898f44056daba360c04d486c29683717228d264099659980241bd7d33f471575",
+          "bytes": 9468
+        },
+        {
+          "path": "tests/acceptance/reference_integrity_unit/test_scoped_references.py",
+          "sha256": "ef30b424761a58d53594ef3135d8b1b5970e2a8e7387917d911ce330ae91f074",
+          "bytes": 8799
+        }
+      ],
+      "adaptations": [
+        "Both scoped modules use the same existing synthetic fixture_core through ordinary imports; only two obsolete private hash-loader assertions are removed.",
+        "All 114 behavioral/helper assertions, nine refusal contexts, exact SQL, bounds, deadlines and owner/scoped modes remain. Three fixed/escaped-column SQL expressions retain their exact logic with scoped lint annotations.",
+        "Seven main functions expand to 30 owner/scoped cases, with 12 scoped-reference and 19 closure cases."
+      ],
+      "independent_review": "PASS before first execution",
+      "runtime_verification": "61 passed on temporary SQLite stores; no historical qualification or private corpus transferred"
+    },
+    {
+      "package": "dream_status_unit",
+      "test_cases": 18,
+      "original_sources": [
+        {
+          "path": "plans/acceptance/dream-status-r1/acceptance/test_status.py",
+          "sha256": "5898c7bd20b484bdcd115ab81c328ae0abf9aa5f8ab201526021370310cc6326",
+          "bytes": 13367
+        },
+        {
+          "path": "plans/acceptance/dream-status-r1/acceptance/EXPECTED-DISABLED.json",
+          "sha256": "bdca132e574aecda2e15744e28f170b1f07d8eb83aec663e52ed1fbddfc8234c",
+          "bytes": 701
+        },
+        {
+          "path": "plans/acceptance/dream-status-r1/acceptance/provider/sitecustomize.py",
+          "sha256": "baf61f06615f7dd6935a677eacbb1b5de6aa3b0e7b46537b9efc22b4067e0214",
+          "bytes": 1283
+        },
+        {
+          "path": "plans/acceptance/dream-cleanup-integration-r1/acceptance/test_boundaries.py",
+          "sha256": "fb25d46cf4248652b7f5edfd0dc69472315d2af541a50c82e81711f4ee8c5976",
+          "bytes": 4895
+        },
+        {
+          "path": "plans/acceptance/dream-cleanup-integration-r1/acceptance/inherited/boundary_probe.py",
+          "sha256": "174b7401ea7e2795a79f757bc0ac9e507226ee0d47cb350165b39153e74afcd6",
+          "bytes": 15465
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/dream_status_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/dream_status_unit/EXPECTED-DISABLED.json",
+          "sha256": "bdca132e574aecda2e15744e28f170b1f07d8eb83aec663e52ed1fbddfc8234c",
+          "bytes": 701
+        },
+        {
+          "path": "tests/acceptance/dream_status_unit/provider/sitecustomize.py",
+          "sha256": "84ad51cc7d7f1e27efefadfbd0619c0399fac1d464066fb15201b49c78b7e53f",
+          "bytes": 1349
+        },
+        {
+          "path": "tests/acceptance/dream_status_unit/README.md",
+          "sha256": "b690aa4301675e2bc3fadb9ed536a29515c9f6676e3d9f0450f2899849ad773f",
+          "bytes": 663
+        },
+        {
+          "path": "tests/acceptance/dream_status_unit/test_status.py",
+          "sha256": "17fb422f2fe36a657f3cb8351c7d7d369a25dd2433ad16e67dbb9aeb29c50abe",
+          "bytes": 13369
+        }
+      ],
+      "selected_source_segments": [],
+      "adaptations": [
+        "Only existing synthetic status cases or the existing 12 invalid-policy cases and their original pure SQLite/JSON helpers are included.",
+        "Status keeps independent child source-identity hashing/receipts, Hash injection, exact expected report and 20-second bound; only obsolete historical source-map binding becomes the current source map.",
+        "Policy retains atomic no-write/no-child/no-model-call controls; unused historical routing metadata is removed.",
+        "No native observer, controller-processing or cancellation qualification is copied or inferred."
+      ],
+      "independent_review": "PASS before first execution",
+      "runtime_verification": "18 passed in the isolated local source run"
+    },
+    {
+      "package": "dream_policy_unit",
+      "test_cases": 12,
+      "original_sources": [
+        {
+          "path": "plans/acceptance/dream-status-r1/acceptance/test_status.py",
+          "sha256": "5898c7bd20b484bdcd115ab81c328ae0abf9aa5f8ab201526021370310cc6326",
+          "bytes": 13367
+        },
+        {
+          "path": "plans/acceptance/dream-status-r1/acceptance/EXPECTED-DISABLED.json",
+          "sha256": "bdca132e574aecda2e15744e28f170b1f07d8eb83aec663e52ed1fbddfc8234c",
+          "bytes": 701
+        },
+        {
+          "path": "plans/acceptance/dream-status-r1/acceptance/provider/sitecustomize.py",
+          "sha256": "baf61f06615f7dd6935a677eacbb1b5de6aa3b0e7b46537b9efc22b4067e0214",
+          "bytes": 1283
+        },
+        {
+          "path": "plans/acceptance/dream-cleanup-integration-r1/acceptance/test_boundaries.py",
+          "sha256": "fb25d46cf4248652b7f5edfd0dc69472315d2af541a50c82e81711f4ee8c5976",
+          "bytes": 4895
+        },
+        {
+          "path": "plans/acceptance/dream-cleanup-integration-r1/acceptance/inherited/boundary_probe.py",
+          "sha256": "174b7401ea7e2795a79f757bc0ac9e507226ee0d47cb350165b39153e74afcd6",
+          "bytes": 15465
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/dream_policy_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/dream_policy_unit/observations.py",
+          "sha256": "70edf7f15132bb92535e23c1b83ec5d9b06d72b0cfecdd1096007f924ea2f388",
+          "bytes": 595
+        },
+        {
+          "path": "tests/acceptance/dream_policy_unit/README.md",
+          "sha256": "51c401249cce7c29291ea0113f2b883f87f11ad9cde4668d789317f6f606ecf7",
+          "bytes": 537
+        },
+        {
+          "path": "tests/acceptance/dream_policy_unit/test_policy.py",
+          "sha256": "1d889727ef5ca41206877c3fa8d030fbea120477b2be1079b75b1ce95fb398c3",
+          "bytes": 4151
+        }
+      ],
+      "selected_source_segments": [
+        {
+          "source": "plans/acceptance/dream-cleanup-integration-r1/acceptance/test_boundaries.py",
+          "name": "POLICIES",
+          "sha256_lf_normalized_extraction": "9615cda86b399bf1301d6868e8bf5fdc302b5eec5abdf7c821da64d780d83559",
+          "bytes_lf_normalized_extraction": 509,
+          "sha256": "9615cda86b399bf1301d6868e8bf5fdc302b5eec5abdf7c821da64d780d83559",
+          "bytes": 509,
+          "source_line_start": 50,
+          "source_line_end": 50,
+          "hash_definition": "Exact original raw source lines including original line endings and final line ending; selected extraction also records LF-normalized text hash separately."
+        },
+        {
+          "source": "plans/acceptance/dream-cleanup-integration-r1/acceptance/test_boundaries.py",
+          "name": "test_invalid_policy_is_atomic_and_launches_nothing",
+          "sha256_lf_normalized_extraction": "9671d6d9d06061bd967838adf73ad63594cb6865a7f923f0684ff8eef700d3c0",
+          "bytes_lf_normalized_extraction": 2410,
+          "sha256": "9671d6d9d06061bd967838adf73ad63594cb6865a7f923f0684ff8eef700d3c0",
+          "bytes": 2410,
+          "source_line_start": 53,
+          "source_line_end": 92,
+          "hash_definition": "Exact original raw source lines including original line endings and final line ending; selected extraction also records LF-normalized text hash separately."
+        },
+        {
+          "source": "plans/acceptance/dream-cleanup-integration-r1/acceptance/inherited/boundary_probe.py",
+          "name": "save",
+          "sha256_lf_normalized_extraction": "f8f80c471ece8bb7d160e1e783040895342f8a63ade8a27588dc9afca9b9f3bc",
+          "bytes_lf_normalized_extraction": 96,
+          "sha256": "f8f80c471ece8bb7d160e1e783040895342f8a63ade8a27588dc9afca9b9f3bc",
+          "bytes": 96,
+          "source_line_start": 29,
+          "source_line_end": 30,
+          "hash_definition": "Exact original raw source lines including original line endings and final line ending; selected extraction also records LF-normalized text hash separately."
+        },
+        {
+          "source": "plans/acceptance/dream-cleanup-integration-r1/acceptance/inherited/boundary_probe.py",
+          "name": "rows",
+          "sha256_lf_normalized_extraction": "7ab8522b64ca110f445861086ada930f1e3107516de3d926e53dc094ce8e66b7",
+          "bytes_lf_normalized_extraction": 297,
+          "sha256": "7ab8522b64ca110f445861086ada930f1e3107516de3d926e53dc094ce8e66b7",
+          "bytes": 297,
+          "source_line_start": 81,
+          "source_line_end": 85,
+          "hash_definition": "Exact original raw source lines including original line endings and final line ending; selected extraction also records LF-normalized text hash separately."
+        }
+      ],
+      "adaptations": [
+        "Only existing synthetic status cases or the existing 12 invalid-policy cases and their original pure SQLite/JSON helpers are included.",
+        "Status keeps independent child source-identity hashing/receipts, Hash injection, exact expected report and 20-second bound; only obsolete historical source-map binding becomes the current source map.",
+        "Policy retains atomic no-write/no-child/no-model-call controls; unused historical routing metadata is removed.",
+        "No native observer, controller-processing or cancellation qualification is copied or inferred."
+      ],
+      "independent_review": "PASS before first execution",
+      "runtime_verification": "12 passed in the isolated local source run"
     }
   ],
   "ast_contract_compatibility": {

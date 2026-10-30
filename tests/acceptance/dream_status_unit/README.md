@@ -1,0 +1,3 @@
+These 18 expanded cases retain the original cold CLI status, queue eligibility, exact report, privacy, incompatible embedding-space refusal and live-WAL visibility checks. Stores are disposable and the original child sitecustomize seam injects HashEmbeddingProvider. The 20-second subprocess bound and cold inventory equality remain intact.
+
+Historical BUILD-FREEZE/module-count routing is replaced by a fresh temporary current-source identity map. Every child still records and verifies its source package/module identity. This is source transport verification, not installed-package, model, controller-processing, cancellation or native-observer qualification.

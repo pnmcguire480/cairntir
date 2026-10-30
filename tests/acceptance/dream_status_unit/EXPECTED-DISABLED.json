@@ -1,0 +1,31 @@
+{
+  "schema": "cairntir.dream-status.v1",
+  "enabled": false,
+  "last_tick": null,
+  "pending_candidates": 0,
+  "queued_wings": 0,
+  "controller": {
+    "running": false,
+    "controller_id": null,
+    "pid": null,
+    "state": "stopped",
+    "config": {
+      "poll_seconds": 30,
+      "review_seconds": 86400,
+      "retry_seconds": 60,
+      "inference_seconds": 30,
+      "max_calls": 4,
+      "window_seconds": 3600,
+      "max_pending": 128,
+      "exclude_wings": []
+    },
+    "last_run": null,
+    "next_run_at": null,
+    "queued_jobs": 0,
+    "deferred_wings": 0,
+    "foreground_active": false,
+    "requests_in_window": 0,
+    "budget_resets_at": null,
+    "active_inference": null
+  }
+}
