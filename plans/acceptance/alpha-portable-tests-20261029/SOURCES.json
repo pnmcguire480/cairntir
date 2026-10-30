@@ -1652,6 +1652,123 @@
         "hosted_contribution": "Pending fresh full matrix"
       },
       "limits": "Real local issued/bound grant visibility in two cases; three injected-grant rechecks qualify freshness/completeness, not persisted-token authentication. Real temporary SQLite threads/inert runner/Hash32, fixture-time guards only. No sealed collection/startup, live model/native observer or protected custody qualification. Other53 cases remain planned; no roadmap ID retired."
+    },
+    {
+      "component": "practice-review-original-remaining",
+      "cases": 53,
+      "original_collectors": [
+        {
+          "path": "tests/unit/test_practice_review_redteam_archive.py",
+          "sha256": "75146229cf20031a08650dc2d286de82db3f8400b764614ab42b910bde492285",
+          "bytes": 3211
+        },
+        {
+          "path": "tests/unit/test_practice_review_redteam_round2_archive.py",
+          "sha256": "b5a6a4b12800854fc455813bdf8d622dd508ac23723e1d21a86ab5a430792324",
+          "bytes": 3385
+        }
+      ],
+      "original_sources": [
+        {
+          "path_and_entry": "plans/acceptance/evidence-practice-review-r18/redteam-controls.zip::probes_v2.py",
+          "sha256": "5d6d9ea5592c121a0b51834e7726def2ce315f155bbf08a2634fc4b8f35d94ae",
+          "selection": "BaselineControls2 and R18Probes21 only; original Harness/Runner comes from unchanged public edges fixture"
+        },
+        {
+          "path_and_entry": "plans/acceptance/evidence-practice-review-r18/redteam-controls.zip::additional_probes_v2.py",
+          "sha256": "78814df5f735be933663c5c4ed73a40ae3f85c9b7fc222333b77b67bc9ad111e",
+          "selection": "ApprovalIsolation1 and InterleavedAndAdditionalR18 six cases"
+        },
+        {
+          "path_and_entry": "plans/acceptance/evidence-practice-review-r18/redteam-controls.zip::sequence_probes.py",
+          "sha256": "65107bbea59a1cd364149d639f67a198770b5e2be408ff4830daa2d8ee055d75",
+          "selection": "ReceiptSequences1"
+        },
+        {
+          "path_and_entry": "plans/acceptance/evidence-practice-review-r18/redteam-round2-controls.zip::completeness_probes.py",
+          "sha256": "b36bf721679fbe4ebab8b25eec95abc851419b2617bd7aabab9caec23aee034a",
+          "selection": "CompletenessBoundary16 and all original helpers/decorators"
+        },
+        {
+          "path_and_entry": "plans/acceptance/evidence-practice-review-r18/redteam-round2-controls.zip::closure_probes.py",
+          "sha256": "174a595e73bc77f8ac9492f97fec530e3707f32d65e3aa81ad02bc719e8aaf55",
+          "selection": "Only RecursiveClosure.test_foreign_ancestor_cannot_hide_newer_transition_under_broad_requested_wing; inherited16 not recollected"
+        },
+        {
+          "path_and_entry": "plans/acceptance/evidence-practice-review-r18/redteam-round2-controls.zip::closure_additional.py",
+          "sha256": "79bda09fd54d738db65d8c4c0c8846fc7013737d7b4b8dcc3bccc5b7fccae679",
+          "selection": "ClosureAdditional5 and all original helpers"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/practice_review_remaining_unit/__init__.py",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "tests/acceptance/practice_review_remaining_unit/cases_additional.py",
+          "bytes": 6581,
+          "sha256": "e0d394540729b4e591a0c06b218d75cde51413c080e6c929a07bd50747fd8166"
+        },
+        {
+          "path": "tests/acceptance/practice_review_remaining_unit/cases_closure_additional.py",
+          "bytes": 4276,
+          "sha256": "0fca01e393196ee5e4697e7d6f3bb37890325f45601e153202446ffae20f0ca8"
+        },
+        {
+          "path": "tests/acceptance/practice_review_remaining_unit/cases_closure.py",
+          "bytes": 1253,
+          "sha256": "5de4d395d345490211072fb5de32c2c5dc57aa1b336049320235d53a0cd05344"
+        },
+        {
+          "path": "tests/acceptance/practice_review_remaining_unit/cases_completeness.py",
+          "bytes": 10097,
+          "sha256": "c7343c7680cf70e0a097294ea69f2e08c0e6743ef5b4fa5b158064ad85e03422"
+        },
+        {
+          "path": "tests/acceptance/practice_review_remaining_unit/cases_core.py",
+          "bytes": 24405,
+          "sha256": "23fa850a367f932da2ab511d83f825948059ced9768e8886d4ed6155f8565559"
+        },
+        {
+          "path": "tests/acceptance/practice_review_remaining_unit/cases_sequences.py",
+          "bytes": 736,
+          "sha256": "bc49ffe3bbe4d54f23c0932a3984e1f56bbfe32f9d9e90206e9aea008fd4007e"
+        },
+        {
+          "path": "tests/acceptance/practice_review_remaining_unit/README.md",
+          "bytes": 1646,
+          "sha256": "094efd2bf50e75d5220a182189208b9b9c5ad044cfae09304767361c88c521fa"
+        },
+        {
+          "path": "tests/acceptance/practice_review_remaining_unit/test_remaining.py",
+          "bytes": 1374,
+          "sha256": "d68d269046494a8e0a843b5462888d994e5d8da9e182058ded7b173958f939ab"
+        }
+      ],
+      "reuses": {
+        "path": "tests/acceptance/practice_review_edges_unit/fixtures_v2.py",
+        "sha256": "67312804232cd5c20d3d650e0102089f22e2f3aa49b82e1f44d6281be18dd4c1",
+        "unchanged": true
+      },
+      "adaptations": [
+        "Exact original collector selection23+7+1+16+5+1; modules-only imports and53 unique IDs exclude prior8 and inherited duplicate16.",
+        "All53 original method bodies/130assertions/11subTest sites and helper class ASTs independently equal without formatter normalization.",
+        "The new collector finally performs registered cleanups after debug failure and raises typed RuntimeError on failed cleanup; original test oracles remain unchanged."
+      ],
+      "independent_review": "PASS before first execution: both original collectors/archives, six raw members, nine public files and unchanged shared fixture verified.",
+      "runtime_verification": {
+        "scope": "LOCAL Windows source run only; current published1da does not include these cases",
+        "passed": 53,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 16.89,
+        "junit_sha256": "4d2fad2d648a16fe447088e744e5dc61f3f48322c2b4cff0ee1dd867bc326614",
+        "hosted_contribution": "Pending later fresh matrix"
+      },
+      "limits": "Temporary Hash32 SQLite/inert runner and fixture-time guards. Selected scoped checks include injected grant seams; no blanket authentication, guarded collection/startup, sealed historical qualification, live-model/native observer or protected-host custody transfer. Eleven subTest sites are source structure, not measured extra passes. All61 original R18 cases are now restored locally; no roadmap ID retired."
     }
   ],
   "ast_contract_compatibility": {
