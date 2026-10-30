@@ -79,6 +79,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       UV_PYTHON: ${{ matrix.python }}
+      PYTHONDONTWRITEBYTECODE: "1"
     strategy:
       fail-fast: false
       matrix:
@@ -96,8 +97,15 @@ jobs:
         run: uv python install ${{ matrix.python }}
       - name: Install dependencies
         run: uv sync --locked --all-extras
+      - name: Fetch exact Q07 inputs before offline tests
+        run: uv run --no-sync python -B scripts/fetch_ci_wheels.py --output "${{ runner.temp }}/q07-wheels"
+      - name: Prepare actual Q05 tools and offline build
+        run: uv run --no-sync python -B -X pycache_prefix="${{ runner.temp }}/q05-prep-bytecache" scripts/provision_q05.py --output "${{ runner.temp }}/q05-tools"
       - name: Run tests
-        run: uv run pytest -m "not slow" --cov-fail-under=90
+        env:
+          CAIRNTIR_Q05_PLATFORM: ${{ runner.temp }}/q05-tools/platform.json
+          CAIRNTIR_Q07_WHEELHOUSE: ${{ runner.temp }}/q07-wheels
+        run: uv run --no-sync python -B -X pycache_prefix="${{ runner.temp }}/q05-test-bytecache" -m pytest -m "not slow" --cov-fail-under=90
 
   eval:
     name: LongMemEval R@5 Gate

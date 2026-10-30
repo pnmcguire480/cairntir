@@ -13,7 +13,7 @@
     "Controlled Codex wire tests retain exact original helper bytes and SHA guards; only the test and non-model peer are formatted.",
     "The controlled Python version observation, recorded argv, executable binding and bytes hash use one resolved path, preserving strict identity checks across virtual-environment symlinks."
   ],
-  "scope": "Synthetic stores, controlled reports and images. Real tools, live browser efficacy and native host readiness are separate gates.",
+  "scope": "Synthetic stores and controlled reports/images, plus explicitly identified actual Q05 resource and Q07 offline-bootstrap tools. Live browser efficacy, native host readiness and protected custody remain separate gates.",
   "excluded": [
     "Private historical project/source records and machine paths bound into channel/outline/calendar test packets.",
     "Prepared real-tool wheelhouses, machine inventories, private packet loaders, raw local receipts and archived controls."
@@ -1272,6 +1272,189 @@
       ],
       "independent_review": "PASS before first execution",
       "runtime_verification": "12 passed in the isolated local source run"
+    },
+    {
+      "component": "dream-response-boundaries",
+      "cases": 4,
+      "original_sources": [
+        {
+          "path": "tests/acceptance/test_dream_latency_r1.py",
+          "bytes": 13407,
+          "sha256": "1c9b672a1f1de2776103aa555dddc4b532d17e3f774da15677a09af080282dd3"
+        },
+        {
+          "path": "plans/acceptance/dream-latency-r1/helpers.py",
+          "bytes": 18627,
+          "sha256": "12cca2e177ca38cba1f06bbf17af4f661cf159a4a3a36b135e6d617155a37dae"
+        },
+        {
+          "path": "plans/acceptance/dream-latency-r1/fixture.py",
+          "bytes": 5113,
+          "sha256": "710df37dc3b7c8c324628b264c136f4490a485186deb4195936eddab6719b3ce"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/dream_response_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/dream_response_unit/fixture.py",
+          "sha256": "88f8c1c9b2020e13e5c4d695e93c8a74ef88257b7e2ac72b2f12461548514a15",
+          "bytes": 7523
+        },
+        {
+          "path": "tests/acceptance/dream_response_unit/README.md",
+          "sha256": "8ab7dab3476e1e37ef2f17cf07108557d99e4835fa69091016f3cb3b41352821",
+          "bytes": 1385
+        },
+        {
+          "path": "tests/acceptance/dream_response_unit/test_response.py",
+          "sha256": "58c8af234191e0769c19ffb713c2268735b1032964651d7df28200051c126494",
+          "bytes": 1369
+        }
+      ],
+      "adaptations": [
+        "Original test body, four-mode decorator, five behavioral assertions, portable HTTP Model and 2.5s inference/3s tick/15s CLI/2s thread bounds remain.",
+        "Narrow ordinary fixture reuses the existing public CLI and Hash store; generic seed provenance labels are translated explicitly.",
+        "Existing reviewed startup provider binds observed actual child package and complete module hashes; complete memory/provenance/identity snapshots, admission charge and no redirected request remain."
+      ],
+      "independent_review": "PASS before first execution; all nine original/dependency/public source hash rows verified.",
+      "runtime_verification": "First local source run:4 passed in34.38s; hosted matrix pending.",
+      "limits": "Actual local HTTP model and worker behavior only; no live-model efficacy, native observer/process custody, installed-package or historical qualification claim."
+    },
+    {
+      "component": "dream-configured-budget",
+      "cases": 1,
+      "original_sources": [
+        {
+          "path": "plans/acceptance/dream-controller-source-r1/frozen/verify.py",
+          "bytes": 34903,
+          "sha256": "a111819973a5054ade1f8dc0b717f936f0e72d8330fbd45011f311c3d38441ad"
+        },
+        {
+          "path": "plans/acceptance/dream-controller-source-r1/frozen/oracles.py",
+          "bytes": 5217,
+          "sha256": "be57510dcc298c424931dbaf5cb51923ec1020524b295d85ede3c56e1ddf9116"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/dream_budget_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/dream_budget_unit/fixture.py",
+          "sha256": "488976f9deb1537e42a865163ea5e135130ecc2f3a2c406f41af5c18bb1763a9",
+          "bytes": 5461
+        },
+        {
+          "path": "tests/acceptance/dream_budget_unit/oracles.py",
+          "sha256": "f484aab6aec7606ee36956daca8cefabdce1eb7c7ff37777e6db72de148a42b4",
+          "bytes": 3940
+        },
+        {
+          "path": "tests/acceptance/dream_budget_unit/README.md",
+          "sha256": "da0e6ec3bb01d05179fd42ef4c60f8b641be16223a494f1ddfb1ac1787f73435",
+          "bytes": 979
+        },
+        {
+          "path": "tests/acceptance/dream_budget_unit/test_budget.py",
+          "sha256": "31533bf6260930759e2e1ab8276d928232f7947f1cc66e9e3cde45b0829ef1a1",
+          "bytes": 1827
+        }
+      ],
+      "source_review": "PASS independently before first execution; original body/decorator/helper AST or whole-module bytes compared directly.",
+      "runtime_verification": "Legacy-to-configured actual HTTP/CLI admission and source binding; five original assertions and all timing limits retained. First local run:1 passed in10.11s.",
+      "adaptations": [
+        "Historical @case(D16) registry decoration only replaced with an ordinary pytest wrapper calling the unchanged original function body. No original assertions, literal deadlines or budget values changed.",
+        "Thin sibling Harness subclass reuses reviewed response Harness actual source-bound public CLI launcher and cleanup. It strips the original leading dream command only before delegating to the base which adds that prefix.",
+        "Multi-item source seeding reuses existing public pilot._seed and returns actual saved IDs. Only generic host dream-test/capture_path fixture/room notes replace old unattended-acceptance/declared-fixture/observations labels; original text/wing/USER_ASSERTED/NORMAL data remain.",
+        "Original configure/status methods retained exact AST, including original status schema validation; original timestamp/status/receipts/source_bindings pure oracle bodies retained exact AST.",
+        "Original portable Model class retained exact AST, including complete valid model/done/response envelope, invented evidence_ids999999, original candidate marker/proposal text, loopback binding and2second join. The simpler response-test Model was deliberately not substituted because omission of adversarial IDs would weaken source-binding evidence.",
+        "Original utc/save helpers retained exact AST. Only original native observer/Run lifecycle/routing/history and unused cases omitted; no detached controller or native process-custody claim.",
+        "Normal scoped Ruff import/format edits only. One long original proposal string split into adjacent literals, with identical parsed constant and Model AST. No ignores/assertion removals or runtime changes."
+      ],
+      "limits": "Synthetic local inputs; no real-model, native observer/process custody, protected evaluator or historical qualification transfer."
+    },
+    {
+      "component": "practice-readonly-startup",
+      "cases": 1,
+      "original_sources": [
+        {
+          "path": "plans/acceptance/r17-connected-register-r1/amendment-r3/test_cli_startup.py",
+          "sha256": "94f02d2f91815025347593db394d70964d5465ae62b76c79fe3fe14bda48021f"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/practice_startup_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/practice_startup_unit/test_cli_startup.py",
+          "sha256": "94f02d2f91815025347593db394d70964d5465ae62b76c79fe3fe14bda48021f",
+          "bytes": 4302
+        }
+      ],
+      "source_review": "PASS independently before first execution; original body/decorator/helper AST or whole-module bytes compared directly.",
+      "runtime_verification": "Entire original4302-byte test module retained; real owner/full-scope/incomplete-scope CLI publication, three read-only opens and byte-identical store. First local run:1 passed in5.16s.",
+      "adaptations": [],
+      "limits": "Synthetic local inputs; no real-model, native observer/process custody, protected evaluator or historical qualification transfer."
+    },
+    {
+      "component": "practice-scope-transactions",
+      "cases": 32,
+      "original_sources": [
+        {
+          "archive": "plans/acceptance/evidence-practice-review-r18/repair-controls.zip",
+          "archive_sha256": "9cb0b3594047d86f56e74cfda7f422d9f609509ffdd2c52b34ae593a26b64fca",
+          "entry": "repair-round2/test_r18_scope_repair.py",
+          "bytes": 11098,
+          "sha256": "94738fae1dd2533cfad1925f66ebb58488bd6ce8f6f0500220f30fbf0ad80ed6"
+        },
+        {
+          "archive": "plans/acceptance/evidence-practice-review-r18/controls.zip",
+          "archive_sha256": "22ad7c49055f6783e8d4783c23b93d7188dbc4c27fac58d03b6aaad73072ed9f",
+          "entry": "test_r18_controls.py",
+          "bytes": 29729,
+          "sha256": "e3d16a18750af1094dcff48dcb5169a06d605f752ea57fcc9decb26846941fa5"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/practice_scope_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/practice_scope_unit/fixtures.py",
+          "sha256": "d8fc124a419e3a254fbfb0533ed16ed40b5ff6dc925bf81de8d4924b52468db5",
+          "bytes": 5232
+        },
+        {
+          "path": "tests/acceptance/practice_scope_unit/README.md",
+          "sha256": "d08ca9c1178cc0e3386c0c93b937d16cff4a9085f73d7327738f7f402ddf43da",
+          "bytes": 1078
+        },
+        {
+          "path": "tests/acceptance/practice_scope_unit/test_scope.py",
+          "sha256": "2a7744ed89970ff3dfb65b2e554680d35bbd2952c1a113dc66f6f93678a1c70a",
+          "bytes": 10285
+        }
+      ],
+      "source_review": "PASS independently before first execution; original body/decorator/helper AST or whole-module bytes compared directly.",
+      "runtime_verification": "All8 original function/decorator ASTs and all selected fixture helper ASTs retained; hidden completeness/dependencies, atomic denial, provisional receipt and commit-failure rollback/retry. First local run:32 passed in8.63s.",
+      "adaptations": [
+        "Replace only obsolete two ZIP/seal hash assertions and ModuleType/compile/exec loader with ordinary package-relative fixtures import; original bundle/isolation aliases retained.",
+        "Select only original InertRunner, autouse isolation, bundle, obs, policy, assess, complete, WING and their actual Cairntir API imports. No extra historical tests, manifests, raw histories or runtime copies included.",
+        "Ordinary test/fixture imports, scoped Ruff import sorting and formatting; full main/helper/test/decorator body equality preserved after identical formatter normalization.",
+        "New package README explicitly states injected grant seam qualifies scope, completeness and transaction composition rather than persisted-grant authentication."
+      ],
+      "limits": "Synthetic local inputs; no real-model, native observer/process custody, protected evaluator or historical qualification transfer. Injected _grant seam qualifies scope and transaction behavior only, not persisted-grant authentication."
     }
   ],
   "ast_contract_compatibility": {
@@ -1297,5 +1480,408 @@
     ],
     "results": "R1 old comparison:19 failure events; candidate312:11 methods pass. R1 candidate311:three fallback-TypeVar fixture failures, retained. R2 only supplies an explicit Base bound and exact oracle;11 methods pass on both interpreters. Mutant deleting nonempty parameters causes three caught failures. Native313 with the first helper then produced22 failed case/subtest events because3.13 also hides empty lists by default. The second helper repair requests show_empty=True only on3.13+, retaining the old call on311/312. All same11 frozen methods pass on all three interpreters; removing only the actual helper empty-parameter predicate still produces exactly three nonempty-generic failures. Original failed receipts remain.",
     "limits": "Only known definition-field schema and empty-list display compatibility is handled. Original golden bytes/constants/runtime AST and frozenR2controls remain unchanged. Full fresh hosted candidate qualification remains required."
-  }
+  },
+  "actual_tool_ports": [
+    {
+      "package": "tests/acceptance/paladin_resources_unit",
+      "cases": 53,
+      "preserved_inputs": [
+        {
+          "source": "plans/acceptance/v2-resources-q05-acceptance-r1/acceptance/fixture.py",
+          "destination": "tests/acceptance/paladin_resources_unit/acceptance/fixture.py",
+          "sha256": "e57bd1c0221cdc1b6233361ed691a296d8476b87f3b4f35b9b1a13a6e659b002",
+          "byte_exact": true
+        },
+        {
+          "source": "plans/acceptance/v2-resources-q05-acceptance-r1/producer/measure.py",
+          "destination": "tests/acceptance/paladin_resources_unit/producer/measure.py",
+          "sha256": "f71846f55dd307b21cc06c7f9a519310272912ee3d930ac63dfe62be7e9d4a58",
+          "byte_exact": true
+        },
+        {
+          "source": "plans/acceptance/v2-resources-q05-acceptance-r1/fixture/pyproject.toml",
+          "destination": "tests/acceptance/paladin_resources_unit/fixture/pyproject.toml",
+          "sha256": "38ebeff214201d7085386248fd8b7eef58cf3150b75fa19eff6a27b4c2298156",
+          "byte_exact": true
+        },
+        {
+          "source": "plans/acceptance/v2-resources-q05-acceptance-r1/fixture/src/q05_notes/__init__.py",
+          "destination": "tests/acceptance/paladin_resources_unit/fixture/src/q05_notes/__init__.py",
+          "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "byte_exact": true
+        },
+        {
+          "source": "plans/acceptance/v2-resources-q05-acceptance-r1/fixture/src/q05_notes/notes.py",
+          "destination": "tests/acceptance/paladin_resources_unit/fixture/src/q05_notes/notes.py",
+          "sha256": "e3f09ee74062290871214afaa6468e6ce7d825b1fda1bb8809da00368bf21982",
+          "byte_exact": true
+        },
+        {
+          "source": "plans/acceptance/v2-resources-q05-acceptance-r1/POLICY.json",
+          "destination": "tests/acceptance/paladin_resources_unit/POLICY.json",
+          "sha256": "b3c9ac00dc4f81a11251d25c34d56c29aa5c0fb07132420e719020dbf8658845",
+          "byte_exact": true
+        }
+      ],
+      "behavior": {
+        "core_test_functions": 28,
+        "budget_amendment_functions": 2,
+        "metadata_amendment_functions": 1,
+        "all_original_test_function_asts_identical": true,
+        "method": "Independent read-only stdlib AST comparison of each original/public test function including decorators and parametrization; no collection or execution.",
+        "adapter_changes": "Historical collector/input-verifier loading replaced with ordinary imports and original fixture-byte guard. Formatting/import ordering and lint annotations only elsewhere."
+      },
+      "files": [
+        {
+          "path": "tests/acceptance/paladin_resources_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/acceptance/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/acceptance/fixture.py",
+          "sha256": "e57bd1c0221cdc1b6233361ed691a296d8476b87f3b4f35b9b1a13a6e659b002",
+          "bytes": 9791
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/acceptance/test_resources.py",
+          "sha256": "2aa81aed2af7b697eee31b4e34b1d00b56bf318fa4cdebf0f2c5904f9c8c3ed3",
+          "bytes": 27972
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/build-wheels.json",
+          "sha256": "a90ed429a01e51fdb8106abc4545c8ec0ed7c339ce2bec20eb117755e28ff25f",
+          "bytes": 2861
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/conftest.py",
+          "sha256": "3abbcbc082cbb42b2fa0f4fbb014029e90c3dd9d8cad54ef477bcccf0ca0282d",
+          "bytes": 466
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/fixture/pyproject.toml",
+          "sha256": "38ebeff214201d7085386248fd8b7eef58cf3150b75fa19eff6a27b4c2298156",
+          "bytes": 220
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/fixture/src/q05_notes/__init__.py",
+          "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "bytes": 1
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/fixture/src/q05_notes/notes.py",
+          "sha256": "e3f09ee74062290871214afaa6468e6ce7d825b1fda1bb8809da00368bf21982",
+          "bytes": 225
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/POLICY.json",
+          "sha256": "b3c9ac00dc4f81a11251d25c34d56c29aa5c0fb07132420e719020dbf8658845",
+          "bytes": 826
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/producer/measure.py",
+          "sha256": "f71846f55dd307b21cc06c7f9a519310272912ee3d930ac63dfe62be7e9d4a58",
+          "bytes": 5188
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/README.md",
+          "sha256": "692f93a64b9eea0a3d9003b43d97320918cc95f3576516285d0abebe677f2a66",
+          "bytes": 1048
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/ruff.toml",
+          "sha256": "9cf9d7337132fd582dfb6bdfa8236fa96fca31b5e16523524a96baa9011fddca",
+          "bytes": 113
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/test_budget_precheck.py",
+          "sha256": "4d3fb450026c6dd41e1faa1fb5f5e386c22d34642914b4e94266f6e92653acee",
+          "bytes": 5974
+        },
+        {
+          "path": "tests/acceptance/paladin_resources_unit/test_metadata_precheck.py",
+          "sha256": "b0ea7443aa807eaa7c1df87f193fcf2df864a6e8adaa5fc35948903e5e594961",
+          "bytes": 4441
+        },
+        {
+          "path": "scripts/provision_q05.py",
+          "sha256": "796bbf967b3e99af8b73bc8abf725cf2d2d663134ad13bbc214b55d78a95224c",
+          "bytes": 19506
+        }
+      ],
+      "adaptations": [
+        "Ordinary imports replace historical packet loaders; all 31 original function ASTs/decorators/parameters remain.",
+        "Current actual Python/Ruff/uv are independently prepared; six exact official upstream wheels replace historical reconstructed archives without changing version pins.",
+        "Complete owned payload and selected shared runtime/cache inventories are revalidated. Shared runtime is read-only; no ownership or whole-machine custody claim."
+      ],
+      "verification": "First local source run:53 passed in237.59s. Independent preparation controls:17 passed in14.22s. Hosted matrix pending.",
+      "independent_review": "PASS before first execution; R1 preparation control safety gap was amended independently before any mutation run.",
+      "limits": "Original budgets and broken controls unchanged; no historical qualification, live-browser/native-host or protected-custody transfer."
+    },
+    {
+      "package": "tests/acceptance/bootstrap_predispatch_unit",
+      "cases": 7,
+      "original_files": [
+        {
+          "path": "v2-bootstrap-q07-acceptance-r1/test_q07_negative.py",
+          "bytes": 7032,
+          "sha256": "1965579729b5ba3ed4e1aed41e5e8b4af5073ea6b045dc0d06071dd2b4348d28"
+        },
+        {
+          "path": "v2-bootstrap-q07-review-r1/test_q07_boundaries.py",
+          "bytes": 3657,
+          "sha256": "49747893a019fdf66389a0eb1c0e20c07e6742d0174c0768d374775dea947dea"
+        },
+        {
+          "path": "v2-bootstrap-q07-acceptance-r1/approved-pytest.lock",
+          "bytes": 568,
+          "sha256": "f5f398537450c12c66aee3bb76d2e773bcad55f421568305beeb2bdb251be99d"
+        },
+        {
+          "path": "v2-bootstrap-q07-acceptance-r1/fixtures/clean/pyproject.toml",
+          "bytes": 161,
+          "sha256": "69f8c8650aa2cf890e9ecd9e2ef7ab153862bb9a74735e365006e1aac70edbeb"
+        },
+        {
+          "path": "v2-bootstrap-q07-acceptance-r1/fixtures/clean/src/decision_log.py",
+          "bytes": 1422,
+          "sha256": "db28caa411ab8d19572dd141cbf1605b0bfd1610aaa1377923b26a80920e1935"
+        },
+        {
+          "path": "v2-bootstrap-q07-acceptance-r1/fixtures/clean/tests/test_decision_log.py",
+          "bytes": 1869,
+          "sha256": "52b7716eb6911a2c20e65734f8baf15d723da022beaa99e6ff2284b30ed8b483"
+        },
+        {
+          "path": "v2-bootstrap-q07-acceptance-r1/fixtures/mixed/package.json",
+          "bytes": 84,
+          "sha256": "cb485644049170011b75dac25256ce77d9caf3901f667be5d2e6c64ecd50afee"
+        },
+        {
+          "path": "v2-bootstrap-q07-acceptance-r1/fixtures/mixed/pyproject.toml",
+          "bytes": 94,
+          "sha256": "d064794a8dbe365e50c4baf117e903e2b7436fc14af7a733cc1f943831bdbdf3"
+        },
+        {
+          "path": "v2-bootstrap-q07-acceptance-r1/fixtures/unsupported-js/index.js",
+          "bytes": 34,
+          "sha256": "84ae68802b0abb8148bd0c78e95cdc5feff404fabff74d2a8ad8a56fe2257a3f"
+        },
+        {
+          "path": "v2-bootstrap-q07-acceptance-r1/fixtures/unsupported-js/package.json",
+          "bytes": 83,
+          "sha256": "559e4c157d7aff82586b6384507b62cec4213ede64156da504e1318fc97fa920"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/bootstrap_predispatch_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/bootstrap_predispatch_unit/approved-pytest.lock",
+          "sha256": "f5f398537450c12c66aee3bb76d2e773bcad55f421568305beeb2bdb251be99d",
+          "bytes": 568
+        },
+        {
+          "path": "tests/acceptance/bootstrap_predispatch_unit/conftest.py",
+          "sha256": "9d3f03e8b8750052726bbb04bf67769951719156adcc152802565140476161eb",
+          "bytes": 1500
+        },
+        {
+          "path": "tests/acceptance/bootstrap_predispatch_unit/fixtures/clean/pyproject.toml",
+          "sha256": "69f8c8650aa2cf890e9ecd9e2ef7ab153862bb9a74735e365006e1aac70edbeb",
+          "bytes": 161
+        },
+        {
+          "path": "tests/acceptance/bootstrap_predispatch_unit/fixtures/clean/src/decision_log.py",
+          "sha256": "0f976a4a8642b42a445a366c23f32252d256394cc95175599ea2051013c1af5c",
+          "bytes": 1400
+        },
+        {
+          "path": "tests/acceptance/bootstrap_predispatch_unit/fixtures/clean/tests/test_decision_log.py",
+          "sha256": "3b488ac427e2ee06f85bb3bf9d0fac9395e98f86bace4db4d2119f085a31aae8",
+          "bytes": 1868
+        },
+        {
+          "path": "tests/acceptance/bootstrap_predispatch_unit/fixtures/mixed/package.json",
+          "sha256": "cb485644049170011b75dac25256ce77d9caf3901f667be5d2e6c64ecd50afee",
+          "bytes": 84
+        },
+        {
+          "path": "tests/acceptance/bootstrap_predispatch_unit/fixtures/mixed/pyproject.toml",
+          "sha256": "d064794a8dbe365e50c4baf117e903e2b7436fc14af7a733cc1f943831bdbdf3",
+          "bytes": 94
+        },
+        {
+          "path": "tests/acceptance/bootstrap_predispatch_unit/fixtures/unsupported-js/index.js",
+          "sha256": "84ae68802b0abb8148bd0c78e95cdc5feff404fabff74d2a8ad8a56fe2257a3f",
+          "bytes": 34
+        },
+        {
+          "path": "tests/acceptance/bootstrap_predispatch_unit/fixtures/unsupported-js/package.json",
+          "sha256": "559e4c157d7aff82586b6384507b62cec4213ede64156da504e1318fc97fa920",
+          "bytes": 83
+        },
+        {
+          "path": "tests/acceptance/bootstrap_predispatch_unit/README.md",
+          "sha256": "0ca114e41b858306ae53d10043f144bb9008e8c67796001f99f725dac5c6e33b",
+          "bytes": 746
+        },
+        {
+          "path": "tests/acceptance/bootstrap_predispatch_unit/test_metadata.py",
+          "sha256": "01d1f34133c11189cb3a723d2a11f9ed17c7ab4fd898d1eb2a57379070debf3c",
+          "bytes": 2539
+        },
+        {
+          "path": "tests/acceptance/bootstrap_predispatch_unit/test_refusals.py",
+          "sha256": "81307095420e4960c95347c92796fbe310ea4b48e1036da98dc6721373d9383a",
+          "bytes": 6429
+        }
+      ],
+      "adaptations": [
+        "Four existing negative functions and one two-case metadata function selected; every test body and parameter decorator is AST-exact to its original. Other wheel/connected/patch cases are not copied or relabelled.",
+        "Metadata BASE now resolves to this ordinary package; old frozen packet loader, source inventories, host manifests and prior execution evidence are not copied.",
+        "Local autouse fixture supplies resolved current sys.executable, shutil.which(uv) resolved executable, current source root and a temporary intentionally empty wheel directory via existing Q07 environment keys.",
+        "Every subprocess and network attempt fails immediately in the local fixture; empty wheel input stays empty. Existing no-install/no-url/no-prepared-manifest/source/tree/lock/no-output assertions remain.",
+        "Package collect_ignore contains only fixtures, whose three clean DecisionLog tests are bootstrap subject data rather than Cairntir acceptance cases. All seven ported cases remain ordinary collected tests; no source coverage exclusions added.",
+        "Existing _prepare_blocked uses Path(sys.executable).resolve(); wheelhouse assertion message describes the controlled empty directory. No status code or predicate changes.",
+        "Normal Ruff import sorting/formatting only; clean DecisionLog source has AST-identical formatting and its fixture test import order changed without test-body changes. Five other fixtures and exact568-byte approved lock remain byte-identical."
+      ],
+      "verification": "First local source run:7 passed in1.24s; independent source reviewPASS before execution.",
+      "limits": "Intentionally empty wheelhouse, subprocess/network forbidden; qualifies refusal before dispatch only."
+    },
+    {
+      "package": "tests/acceptance/bootstrap_real_unit",
+      "cases": 9,
+      "original_cases": 8,
+      "new_independent_cases": 1,
+      "original_sources": [
+        {
+          "path": "plans/acceptance/v2-bootstrap-q07-acceptance-r1/test_q07_connected.py",
+          "bytes": 12576,
+          "sha256": "b1610165602c34abdcb3b66598c3c254f12aada08fd13edef4096d88241f176f"
+        },
+        {
+          "path": "plans/acceptance/v2-bootstrap-q07-acceptance-r1/test_q07_negative.py",
+          "bytes": 7032,
+          "sha256": "1965579729b5ba3ed4e1aed41e5e8b4af5073ea6b045dc0d06071dd2b4348d28"
+        },
+        {
+          "path": "plans/acceptance/v2-bootstrap-q07-review-r1/test_q07_boundaries.py",
+          "bytes": 3657,
+          "sha256": "49747893a019fdf66389a0eb1c0e20c07e6742d0174c0768d374775dea947dea"
+        },
+        {
+          "path": "plans/acceptance/v2-bootstrap-q07-patch-range-r1/test_q07_patch_python.py",
+          "bytes": 2316,
+          "sha256": "2faa27b8582a20f26e5536cb96a820d04171daa9caac5a8fa6e95f3d98265cb0"
+        }
+      ],
+      "files": [
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/approved-pytest.lock",
+          "sha256": "f5f398537450c12c66aee3bb76d2e773bcad55f421568305beeb2bdb251be99d",
+          "bytes": 568
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/conftest.py",
+          "sha256": "25cb3a38f1c8ce07e00d2ac5d2d0f1cfb83e705e3eb749e91cdaa107255dd36f",
+          "bytes": 109
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/fixtures/broken/pyproject.toml",
+          "sha256": "69f8c8650aa2cf890e9ecd9e2ef7ab153862bb9a74735e365006e1aac70edbeb",
+          "bytes": 161
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/fixtures/broken/src/decision_log.py",
+          "sha256": "584fac56b155b51ff3649d166275f4380634575f509431a5cb87d5c0f95d205b",
+          "bytes": 1364
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/fixtures/broken/tests/test_decision_log.py",
+          "sha256": "3b488ac427e2ee06f85bb3bf9d0fac9395e98f86bace4db4d2119f085a31aae8",
+          "bytes": 1868
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/fixtures/clean/pyproject.toml",
+          "sha256": "69f8c8650aa2cf890e9ecd9e2ef7ab153862bb9a74735e365006e1aac70edbeb",
+          "bytes": 161
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/fixtures/clean/src/decision_log.py",
+          "sha256": "0f976a4a8642b42a445a366c23f32252d256394cc95175599ea2051013c1af5c",
+          "bytes": 1400
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/fixtures/clean/tests/test_decision_log.py",
+          "sha256": "3b488ac427e2ee06f85bb3bf9d0fac9395e98f86bace4db4d2119f085a31aae8",
+          "bytes": 1868
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/inputs.py",
+          "sha256": "d8ccc56e71366c7e831cf661b8ae606e32fca7716560df2d1586cfd00e60c863",
+          "bytes": 2920
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/README.md",
+          "sha256": "a48024cb55c33b98cd061c69cff791f3cd57a55b6d00c3ee84a05bc67a85fa8f",
+          "bytes": 1445
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/test_connected.py",
+          "sha256": "1ceefd35e98904f442165927396522247fce7ed115a2552b5cc6a895efa851b7",
+          "bytes": 12893
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/test_current_patch.py",
+          "sha256": "02bdd628491086341f1fc433c2429dff112f16c61e7d02d5978c21ad8fbc1ab6",
+          "bytes": 2321
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/test_receipt_replay.py",
+          "sha256": "d802c260a2e465c28ddcdf137234513591c774f49848b861b653c96497635785",
+          "bytes": 1746
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/test_wheel_refusals.py",
+          "sha256": "317e343fa93cec0537e8225bd74a2fd1ba5549a53d49c9e1e4b2725f9027f6b9",
+          "bytes": 4310
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/test_wrong_patch.py",
+          "sha256": "a310727805269c18c939a40e8336c1f7f97b3f68c83deebfb4a0409ca712b6ef",
+          "bytes": 3848
+        },
+        {
+          "path": "tests/acceptance/bootstrap_real_unit/wheel-inputs.json",
+          "sha256": "bd5979d19322cae240984abc74b0fdeb3376474bfb97f094bef0db5745581913",
+          "bytes": 2880
+        },
+        {
+          "path": "scripts/fetch_ci_wheels.py",
+          "sha256": "8ab98a1f33d1ff2edb5d8e294b391326e820a7a1db55a539728d9d3e48d802c9",
+          "bytes": 1897
+        }
+      ],
+      "adaptations": [
+        "Observed current supported Python/uv versions replace historical tool-version data independently of product receipts.",
+        "Exact current-patch positive and independently authored wrong-patch negative retain exact original package lock, wheel hashes, source identity, real offline install, origins, deadlines and subject outcomes.",
+        "Original subject ASTs preserved; Ruff formatting changes bytes. R1 independent wrong-patch test had a scoped-lint failure; R2 adds only a line-specific annotation with unchanged behavior."
+      ],
+      "verification": "First local source run:9 passed in71.47s. Six exact wheel archives independently verified against official metadata; first real CI-prefetch helper invocationPASS. Independent source/helper reviewPASS before execution; hosted matrix pending.",
+      "limits": "No wheel binaries, prepared environments or private receipts published. No historical result or protected custody transferred."
+    }
+  ]
 }

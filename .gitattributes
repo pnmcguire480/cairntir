@@ -68,3 +68,12 @@ tests/acceptance/ideation_assembler_unit/** -text whitespace=cr-at-eol
 tests/acceptance/ideation_calendar_unit/sources/*.md whitespace=-blank-at-eof,cr-at-eol
 tests/acceptance/ideation_outlines_unit/sources/*.md whitespace=-blank-at-eof,cr-at-eol
 tests/acceptance/ideation_assembler_unit/sources/*.md whitespace=-blank-at-eof,cr-at-eol
+
+# Keep source-hash receipts exact for ordinary acceptance ports.
+tests/acceptance/paladin_resources_unit/** -text whitespace=cr-at-eol
+tests/acceptance/bootstrap_predispatch_unit/** -text whitespace=cr-at-eol
+tests/acceptance/bootstrap_real_unit/** -text whitespace=cr-at-eol
+tests/acceptance/dream_response_unit/** -text whitespace=cr-at-eol
+tests/acceptance/dream_budget_unit/** -text whitespace=cr-at-eol
+tests/acceptance/practice_startup_unit/** -text whitespace=cr-at-eol
+tests/acceptance/practice_scope_unit/** -text whitespace=cr-at-eol
