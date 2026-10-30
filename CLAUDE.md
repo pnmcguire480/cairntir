@@ -66,6 +66,11 @@ uv build
 release-tag, and local integrity gates. Tests use isolated stores and fixtures;
 do not experiment on the user's memory database.
 
+Combined tests also require freshly prepared actual Q05 tools and the six Q07
+wheel inputs. Follow the [resource preparation](tests/acceptance/paladin_resources_unit/README.md)
+and [bootstrap input](tests/acceptance/bootstrap_real_unit/README.md) instructions;
+CI performs these steps explicitly before testing.
+
 The maintainer's production MCP launcher currently uses the published
 site-packages installation, not this checkout (verified 2026-09-07).
 The repository's `.venv` is the development environment. Inspect actual
@@ -87,11 +92,11 @@ the production installation as an incidental build step.
 
 [Draft PR140](https://github.com/pnmcguire480/cairntir/pull/140) is published for feedback. No merge, tag, PyPI publication or production adoption is authorized. Earlier local integration history and private qualification evidence remain excluded.
 
-The [CI record](docs/release/v2-alpha-ci.md) preserves actual failures. At `8b4be5ae`, full lint, CodeQL and all three OS regression/mutation jobs passed. The three Python 3.11 jobs passed 2,237 Linux/macOS or 2,239 Windows cases without assertion failures. The six newer-interpreter jobs have only the protected-AST serialization failure. Coverage is 77.87–77.91% on POSIX and 78.81–78.83% on Windows against the unchanged 90% gate. Both Windows attachment-conflict regressions are gone; installed/evaluation checks remain blocked downstream.
+The [CI record](docs/release/v2-alpha-ci.md) preserves actual failures. At `2dd31354`, all nine OS/Python jobs have zero assertion failures: 2,382 passes plus two skips per POSIX job and 2,384 per Windows job. Full lint, CodeQL and all three OS regression/mutation jobs passed. Coverage alone fails the unchanged 90% gate: POSIX 78.697786–78.739751%, Windows 79.637162–79.653302%. Installed/evaluation checks remain blocked downstream.
 
-The test-only AST serializer retains all nine original golden strings/constants and removes only empty version-added definition fields on a copy and restores the original empty-list display on Python 3.13. Eleven frozen controls pass on native Python 3.11/3.12/3.13, the removed-generic-parameter mutant is detected, and repaired S09 passes normal local collection. Its baseline and narrow fallback-fixture amendment failures remain preserved; fresh hosted qualification is pending.
+The AST compatibility repair now passes hosted on all three supported Python versions; both original Windows attachment-conflict regressions are also cleared. Original snapshots, independently frozen controls, caught mutants and every failed baseline remain preserved.
 
-Further ordinary tests preserve origin/reversal propagation, scoped startup/privacy, composed 512-reference limits/rollback and Dream status/policy no-launch behavior. The 61 reference cases pass in 829.79 seconds. All restored groups have independent source review and explicit provenance. Focused total: 440 unique passes, two local capability skips and 178 previously measured passing subtests; reruns count once. Synthetic checks do not qualify live models, actual graphical/native hosts or observer-based controller cancellation.
+Another 107 ordinary product cases pass locally after independent review: seven bootstrap refusals, 53 actual resource controls, nine real offline-bootstrap cases, five actual Dream response/budget cases and 33 practice startup/scope/transaction cases. Seventeen independent preparation controls also pass. CI now prepares current actual tools and exact public wheels before testing. Original resource limits, package lock, source/origin checks and broken controls remain. Focused total: 547 unique product passes, two local capability skips and 178 previously measured passing subtests; hosted coverage contribution is pending. These checks do not qualify live models, actual graphical/native hosts or observer-based controller cancellation.
 
 The isolated authority helper takes a fresh grant snapshot every lookup; original controls and exact five-file preservation amendments remain intact. Coverage scope and historical failures are unchanged. The original 35-item register and dated follow-ups remain in [the roadmap](docs/alpha-roadmap.json); stable release gates stay open. No merge, tag, PyPI publication or production adoption occurred.
 
