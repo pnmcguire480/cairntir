@@ -1470,6 +1470,98 @@
       "independent_review": "Frozen before helper implementation; root reviewed actual filesystem assertions before execution.",
       "runtime_verification": "Local Windows:2regular-entry casesPASS,3real-symlink capabilitySKIP. An in-memory always-unlink mutant is detected by the unchanged regular-file snapshot control; source bytes unchanged. Fresh POSIX CI remains required.",
       "limits": "Actual target/link/sibling bytes and modes must be preserved; capability skips are not POSIX qualification. No general symbolic-link permission added."
+    },
+    {
+      "component": "practice-review-base",
+      "cases": 79,
+      "original_source": {
+        "path_and_entry": "plans/acceptance/evidence-practice-review-r18/controls.zip::test_r18_controls.py",
+        "sha256": "e3d16a18750af1094dcff48dcb5169a06d605f752ea57fcc9decb26846941fa5"
+      },
+      "files": [
+        {
+          "path": "tests/acceptance/practice_review_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/practice_review_unit/test_review.py",
+          "sha256": "1d13639b3f1b43fb6c3926fe066f49f873b5e0cb7160de3902b1a880f3756d65",
+          "bytes": 29888
+        }
+      ],
+      "adaptations": [
+        "All25 original function bodies/decorators/parameters/assertions and three pure oracle helpers retained exactly as AST.",
+        "Seven unchanged helpers/classes reused through ordinary import from the existing public practice_scope fixture."
+      ],
+      "independent_review": "PASS before first execution; governance R2 qualification-only amendment also independently reviewed before execution.",
+      "runtime_verification": "LOCAL source run:79passed; combined review/register86passed24.69s, governance21passed3.69s. Actual full hosted contribution pending.",
+      "limits": "Synthetic Hash16/inert evaluator behavior only; no real evaluator efficacy or historical qualification transfer."
+    },
+    {
+      "component": "practice-register-connected",
+      "cases": 7,
+      "original_source": {
+        "path_and_entry": "plans/acceptance/r17-connected-register-r1/amendment-r2/test_connected.py",
+        "sha256": "c511c4a079250f45c592d37835dc9576d9eb2c48fece711b3866f73787c9e35a"
+      },
+      "files": [
+        {
+          "path": "tests/acceptance/practice_register_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/practice_register_unit/test_connected.py",
+          "sha256": "c511c4a079250f45c592d37835dc9576d9eb2c48fece711b3866f73787c9e35a",
+          "bytes": 26928
+        }
+      ],
+      "adaptations": [
+        "Entire26928-byte original amended module unchanged;101module assertion nodes retained.",
+        "Original pre-amendment seven cases are historical versions, not seven additional cases."
+      ],
+      "independent_review": "PASS before first execution; governance R2 qualification-only amendment also independently reviewed before execution.",
+      "runtime_verification": "LOCAL source run:7passed; combined review/register86passed24.69s, governance21passed3.69s. Actual full hosted contribution pending.",
+      "limits": "Synthetic local source/vault and current projection/CLI behavior; no actual Obsidian app/plugin adoption claim."
+    },
+    {
+      "component": "practice-governance-base",
+      "cases": 21,
+      "original_source": {
+        "path_and_entry": "plans/acceptance/practice-governance-r17/controls.zip::controls.py",
+        "sha256": "b64fe7108f291ddf0b54f897989b028fb99ea556416c85584b610b23b333823c"
+      },
+      "files": [
+        {
+          "path": "tests/acceptance/practice_governance_unit/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "tests/acceptance/practice_governance_unit/conftest.py",
+          "sha256": "66d392687e998a8b53c15f1b496b8535fb01b45973887a9447f775ce5cab85c0",
+          "bytes": 1956
+        },
+        {
+          "path": "tests/acceptance/practice_governance_unit/README.md",
+          "sha256": "2c34c580e4dc9b30f29bc681efb1fc9b15c5e21b218059f7346eba1204fa3216",
+          "bytes": 1199
+        },
+        {
+          "path": "tests/acceptance/practice_governance_unit/test_governance.py",
+          "sha256": "9edbc1e57a47f15ada3bd1dcbe9fe83e8c4e1d7126b1a1cffef5550d95d2c743",
+          "bytes": 19412
+        }
+      ],
+      "adaptations": [
+        "All21 unittest methods/helper bodies/46self-assert calls/seven subtest sites retained as original AST.",
+        "Five runner-injected globals bind ordinary current APIs and ROOT uses each test temporary directory.",
+        "Only executable-neutral lint annotations and import bindings change; R1 qualification text is preserved and R2 independently clarifies test-time scope before first execution."
+      ],
+      "independent_review": "PASS before first execution; governance R2 qualification-only amendment also independently reviewed before execution.",
+      "runtime_verification": "LOCAL source run:21passed; combined review/register86passed24.69s, governance21passed3.69s. Actual full hosted contribution pending.",
+      "limits": "Original guarded collection/startup and sealed45-second watchdog are not transferred; guards apply during test execution only. No historical/protected-custody qualification."
     }
   ],
   "ast_contract_compatibility": {
