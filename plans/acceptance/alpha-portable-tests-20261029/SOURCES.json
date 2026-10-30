@@ -794,8 +794,8 @@
         },
         {
           "path": "tests/acceptance/ideation_assembler_unit/ast_contract.py",
-          "sha256": "8e086c6eaa3ebeb05ed381eee63bb8f9f984415d9bd88be1f88cbce4d6c73006",
-          "bytes": 519
+          "sha256": "5754d643dfe4d6bb0c9b57102560e031357da9970b9fb074078c3577842b38a1",
+          "bytes": 639
         }
       ]
     }
@@ -1277,8 +1277,8 @@
   "ast_contract_compatibility": {
     "helper": {
       "path": "tests/acceptance/ideation_assembler_unit/ast_contract.py",
-      "sha256": "8e086c6eaa3ebeb05ed381eee63bb8f9f984415d9bd88be1f88cbce4d6c73006",
-      "bytes": 519
+      "sha256": "5754d643dfe4d6bb0c9b57102560e031357da9970b9fb074078c3577842b38a1",
+      "bytes": 639
     },
     "independent_controls": {
       "path": "tests/unit/test_ast_contract_compatibility.py",
@@ -1292,9 +1292,10 @@
     "methods": 11,
     "native_python": [
       "3.11.9",
-      "3.12.14"
+      "3.12.14",
+      "3.13.12"
     ],
-    "results": "R1 old comparison:19 failure events; candidate312:11 methods pass. R1 candidate311:three fallback-TypeVar fixture failures, retained. R2 only supplies an explicit Base bound and exact oracle;11 methods pass on both interpreters. Mutant deleting nonempty parameters causes three caught failures.",
-    "limits": "Test-only compatibility for the known empty Python3.12 definition field. Original golden bytes/constants and runtime AST source remain unchanged; no arbitrary future schema normalization or hosted313 success is inferred."
+    "results": "R1 old comparison:19 failure events; candidate312:11 methods pass. R1 candidate311:three fallback-TypeVar fixture failures, retained. R2 only supplies an explicit Base bound and exact oracle;11 methods pass on both interpreters. Mutant deleting nonempty parameters causes three caught failures. Native313 with the first helper then produced22 failed case/subtest events because3.13 also hides empty lists by default. The second helper repair requests show_empty=True only on3.13+, retaining the old call on311/312. All same11 frozen methods pass on all three interpreters; removing only the actual helper empty-parameter predicate still produces exactly three nonempty-generic failures. Original failed receipts remain.",
+    "limits": "Only known definition-field schema and empty-list display compatibility is handled. Original golden bytes/constants/runtime AST and frozenR2controls remain unchanged. Full fresh hosted candidate qualification remains required."
   }
 }

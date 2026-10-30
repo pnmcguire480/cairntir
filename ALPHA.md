@@ -40,7 +40,7 @@ Audience/angle/channel/outline pipelines, HumanFlow teaching, UI/visual verifica
 
 ## Known verification limits
 
-- The latest complete matrix measured 77.87–77.91% coverage on Linux/macOS and 78.81–78.83% on Windows against the unchanged 90% floor. Python 3.11 jobs passed 2,237 POSIX or 2,239 Windows cases; newer interpreters exposed one version-dependent AST comparison. Its reviewed compatibility fix preserves all nine original snapshots and passes local cross-version controls; fresh hosted verification remains required. Every earlier result remains visible in the [CI record](docs/release/v2-alpha-ci.md).
+- The latest complete matrix measured 77.87–77.91% coverage on Linux/macOS and 78.81–78.83% on Windows against the unchanged 90% floor. Python 3.11 jobs passed 2,237 POSIX or 2,239 Windows cases; newer interpreters exposed one version-dependent AST comparison. Its reviewed compatibility fix preserves all nine original snapshots and passes local controls on all three supported Python versions; fresh hosted verification remains required. Every earlier result remains visible in the [CI record](docs/release/v2-alpha-ci.md).
 - The local admission harness currently loses its Guard profiler during an expected Git refusal: 21 selected checks produced 18 complete passes and 5 stage errors across 3 checks. The observer repair remains deferred; its failure has not been relabelled.
 - Native Windows version reporting is independently verified in five framework cases, including real values, restoration and retained shell refusal. This is a test-harness improvement, not an extra product feature.
 - Independent protected evaluator custody, second supported-machine readiness and complete installed upgrade/restore/rollback qualification remain open.

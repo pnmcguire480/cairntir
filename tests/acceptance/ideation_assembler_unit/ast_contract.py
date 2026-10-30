@@ -2,6 +2,7 @@
 
 import ast
 import copy
+import sys
 
 
 def dump_contract(node: ast.AST) -> str:
@@ -12,4 +13,6 @@ def dump_contract(node: ast.AST) -> str:
             and getattr(child, "type_params", None) == []
         ):
             child._fields = tuple(field for field in child._fields if field != "type_params")
+    if sys.version_info >= (3, 13):
+        return ast.dump(node, include_attributes=False, show_empty=True)
     return ast.dump(node, include_attributes=False)
