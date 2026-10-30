@@ -62,7 +62,8 @@ def test_coverage_gate_enforces_the_threshold_without_rounding_up(tmp_path, cove
     root = Path(__file__).resolve().parents[2]
     configuration = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
     options = configuration["tool"]["pytest"]["ini_options"]["addopts"]
-    options = [value.replace("--cov=cairntir", "--cov=subject") for value in options]
+    sources = {"--cov=cairntir": "--cov=subject", "--cov=src/cairntir": "--cov=subject"}
+    options = [sources.get(value, value) for value in options]
     (tmp_path / "pytest.ini").write_text("[pytest]\naddopts = " + " ".join(options) + "\n")
     (tmp_path / ".coveragerc").write_text("[run]\nbranch = true\n")
     exercised = covered - 2
