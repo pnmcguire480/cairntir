@@ -4,7 +4,7 @@ An experimental preview of the work toward 2.0. Stable PyPI remains 1.12.4. This
 
 ## Install from the preview branch
 
-Use Python 3.11–3.13 in a separate virtual environment. These commands become usable once the preview branch is published:
+Use Python 3.11–3.13 in a separate virtual environment. Install the published preview branch:
 
 ```sh
 python -m venv .venv-alpha
@@ -40,7 +40,7 @@ Audience/angle/channel/outline pipelines, HumanFlow teaching, UI/visual verifica
 
 ## Known verification limits
 
-- Restored tests raised measured coverage from about 44% to 59.22% on Linux/macOS and 62.41% on Windows (2,088 passing tests per Windows job); the unchanged 90% gate still fails. Those jobs exposed a shared PALADIN fixture path mismatch, corrected locally with 68 affected cases passing. Full fresh CI remains required. Every earlier result remains visible in the [CI record](docs/release/v2-alpha-ci.md).
+- The latest complete matrix measured 77.87–77.91% coverage on Linux/macOS and 78.81–78.83% on Windows against the unchanged 90% floor. Python 3.11 jobs passed 2,237 POSIX or 2,239 Windows cases; newer interpreters exposed one version-dependent AST comparison. Its reviewed compatibility fix preserves all nine original snapshots and passes local cross-version controls; fresh hosted verification remains required. Every earlier result remains visible in the [CI record](docs/release/v2-alpha-ci.md).
 - The local admission harness currently loses its Guard profiler during an expected Git refusal: 21 selected checks produced 18 complete passes and 5 stage errors across 3 checks. The observer repair remains deferred; its failure has not been relabelled.
 - Native Windows version reporting is independently verified in five framework cases, including real values, restoration and retained shell refusal. This is a test-harness improvement, not an extra product feature.
 - Independent protected evaluator custody, second supported-machine readiness and complete installed upgrade/restore/rollback qualification remain open.
