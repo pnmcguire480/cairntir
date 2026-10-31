@@ -2,6 +2,20 @@
 
 This records actual results for draft [PR140](https://github.com/pnmcguire480/cairntir/pull/140). It does not approve stable release or production adoption.
 
+## Current measured head: 81ed7897
+
+[CI 41002352488](https://github.com/pnmcguire480/cairntir/actions/runs/41002352488)
+completed with no assertion failures on all nine source jobs. Each Windows job
+passed 2,664 cases; each Linux/macOS job passed 2,662 with two skips. Calibration
+now passes. Coverage alone fails: 84.131543–84.173498% on POSIX and
+85.086813–85.109404% on Windows, against the unchanged 90% floor. Lint, types,
+documentation, preservation, advisories, CodeQL, all three OS mutation jobs and
+all nine actual input preparations pass. Installed/evaluation jobs remain
+skipped downstream; the package job rejects that missing installed evidence.
+
+The [frozen finish-line checklist](v2-finish-line.md) tracks the remaining
+release requirements. Historical results below keep their original criteria.
+
 | Run / head | Result |
 | --- | --- |
 | [Initial CI](https://github.com/pnmcguire480/cairntir/actions/runs/40827340947), `09175f6b` | FAIL: 17 Windows-only API type errors on Linux. |

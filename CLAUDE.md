@@ -88,7 +88,38 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-30 (draft alpha CI corrections)
+## Last Session - 2026-10-30 (bounded release completion)
+
+The user explicitly resumed release work after the pause. Follow the single
+[finish-line checklist](docs/release/v2-finish-line.md), preserving the agreed
+November scope and dated follow-ups. No merge, tag, PyPI or production adoption
+is authorized. The Ubuntu laptop is unavailable; continue independent local
+work without repeatedly requesting it.
+
+Published head81ed7897 CI41002352488 is complete: all nine assertion suites
+pass (Windows2,664; POSIX2,662/two skips). Coverage alone fails84.131543–85.109404%
+against90. Lint/types/docs/preservation/advisories, CodeQL, all three OS mutation
+jobs and nine tool preparations pass. Installed/evaluation jobs remain blocked
+downstream. Do not rerun those completed suites without a changed candidate.
+
+The next qualified batch restores43 existing cases: three actual Python
+scenarios with five deliberately broken-stage subtests pass in539.04s; managed
+CLI15 pass in20.54s; HumanFlow25 pass in85.64s. The actual Windows import failure
+was pytest shell-style parsing of native backslashes. Only the adapter's
+pytest source binding changes to ../src relative to its unchanged configuration.
+Original assertions, input bytes,95% subject floor,60s stage limits and1MiB
+output limits remain. Failed runs are preserved. Prepared-input checks pass.
+The portable seven-tool entry point succeeds with fresh local inputs; hosted
+execution remains unverified. Scoped lint/format, original preservation and
+strict docs checks pass. Focused outer coverage still fails and is not global
+qualification. HumanFlow feature delivery remains November12.
+
+Next: publish only the qualified source batch to the existing draft PR, measure
+the changed full matrix, and work on actual remaining coverage/workflow gaps.
+Do not expand into observer/profiler infrastructure. Existing memory task remains
+500eba27-3d27-4b50-ae45-85e7eada74bd, wing cairntir, room requests.
+
+## Previous Session - 2026-10-30 (draft alpha CI corrections)
 
 [Draft PR140](https://github.com/pnmcguire480/cairntir/pull/140) publishes the experimental preview. The [CI record](docs/release/v2-alpha-ci.md) preserves every failed baseline and its original criteria. No merge, tag, PyPI publication or production adoption is authorized; earlier181 local commits and private qualification archives remain excluded.
 

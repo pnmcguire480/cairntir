@@ -40,6 +40,13 @@ Audience/angle/channel/outline pipelines, HumanFlow teaching, UI/visual verifica
 
 ## Known verification limits
 
+Current measured head `81ed7897` passes all assertions across nine OS/Python
+jobs: 2,664 passes on Windows; 2,662 passes and two skips on Linux/macOS.
+Coverage alone remains below 90%, at 84.131543–85.109404%. Installed/evaluation
+jobs remain blocked downstream. The [finish-line checklist](docs/release/v2-finish-line.md)
+tracks the remaining release requirements. The earlier measurements below are
+historical; they do not describe the current head.
+
 - The latest complete source matrix (`2dd31354`) passes every assertion on all nine OS/Python jobs: 2,382 cases plus two skips per Linux/macOS job and 2,384 per Windows job. Coverage remains below the unchanged 90% floor: 78.70–78.74% on POSIX and 79.64–79.65% on Windows. The AST compatibility failure is cleared. Another 107 resource/bootstrap/Dream/practice cases pass locally; their hosted contribution remains unmeasured. Every earlier failure remains visible in the [CI record](docs/release/v2-alpha-ci.md).
 - The subsequent `460e4223` run exposes 53 resource setup errors from shared runtime/cache drift and five Ubuntu bootstrap failures from its generated `lib64` alias. Its completed samples measure 80.54–80.57% coverage. The bounded bootstrap repair preserves the strict integrity guard, passes a frozen cold-runtime witness and the nine local bootstrap regressions; fresh POSIX/full-matrix qualification remains pending. Local symlink capability skips do not count as POSIX verification.
 - The local admission harness currently loses its Guard profiler during an expected Git refusal: 21 selected checks produced 18 complete passes and 5 stage errors across 3 checks. The observer repair remains deferred; its failure has not been relabelled.
