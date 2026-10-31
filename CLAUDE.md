@@ -5,22 +5,20 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **1.12.4** (maintenance candidate; not yet published). The [1.12.3 release record](docs/release/v1.12.3.md)
-identifies the verified integration repairs and publication/installation evidence.
-Before this release, PyPI served 1.12.2 and the production MCP installation was
-1.12.1. Consult the versioned GitHub release receipt and current MCP handshake
-for post-publication installation state. Pending changes belong under
-[Unreleased](CHANGELOG.md#unreleased).
+Source version: **2.0.0a1**, an experimental preview. The stable release is
+**1.12.4**. Read [ALPHA.md](ALPHA.md) before installing or claiming feature
+readiness; it defines the supported preview and every remaining release gate.
+Use a separate virtual environment, disposable store and pilot vault.
 
-The core has verbatim SQLite drawers, explicit provenance, task-aware budgeted
-handoff, semantic and anchored recall, portable evidence, evaluated procedures,
-scoped local sharing, prediction settlements, discovery review, three skills,
-recipes, and 21 MCP tools. Transcript recovery supports Claude Code, Codex, and
-Qwen Code; Cursor returns an unsupported receipt.
+The preview has 22 MCP tools and database schema 8. It includes new memory
+origin/currentness, Obsidian corrections, managed continuity, practices,
+calendar and Blender workflows. Dream and the unfinished ideation/UI/learning
+surfaces remain experimental. Existing memory tools and bundled recipes are
+foundations, not new capabilities. Transcript recovery remains opt-in.
 
-The [continuity delivery](plans/continuity-delivery.md) is **COMPLETE** and
-published as 1.10.0. The additive release retains the public tool surface and
-introduces schema 7 without new dependencies.
+Combined tests, the 90% overall coverage gate, independent protected evaluation,
+second supported-machine readiness and full upgrade/restore/rollback remain
+open. Component evidence and packaging smoke are not stable release approval.
 
 ## Working rules
 
@@ -68,6 +66,11 @@ uv build
 release-tag, and local integrity gates. Tests use isolated stores and fixtures;
 do not experiment on the user's memory database.
 
+Combined tests also require freshly prepared actual Q05 tools and the six Q07
+wheel inputs. Follow the [resource preparation](tests/acceptance/paladin_resources_unit/README.md)
+and [bootstrap input](tests/acceptance/bootstrap_real_unit/README.md) instructions;
+CI performs these steps explicitly before testing.
+
 The maintainer's production MCP launcher currently uses the published
 site-packages installation, not this checkout (verified 2026-09-07).
 The repository's `.venv` is the development environment. Inspect actual
@@ -85,7 +88,87 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-02 (1.12.4 maintenance candidate)
+## Last Session - 2026-10-30 (bounded release completion)
+
+Current checkpoint: published head5fe8945a contains39 curated commits/390 paths.
+CI41155243753 has five completed POSIX jobs, each2,705 passes/two skips,
+and Windows3.12 with2,707 passes. Coverage85.528949–86.464855% still fails90.
+Three test jobs remain running. CodeQL passes.
+All nine actual Python input preparations, lint/types/docs and three OS
+mutation jobs pass. Do not restart the running matrix or repeat completed
+qualification. The older results below remain historical evidence.
+
+Local Windows current-wheel qualification passes CLI/MCP, cold resume,
+backup/restore, semantic recall and failed-write rollback/retry. Retained
+composite evidence verifies actual1.12.4 upgrade via explicit reindex to
+schema8 and restoration under1.12.4. All three failed upgrade runner reports
+remain FAIL: schema-order expectation, identity-prefix expectation and stdout
+encoding comparison. No further runner repairs: the independent read-only
+assessment completed the exercised product workflow. Exact actual seeded text
+is preserved; intended Japanese/emoji fixture text was garbled at creation.
+No historical before/after backup digest was persisted. See v2-alpha-ci.md.
+
+Qualified local changes committed as c921420e: independent Codex
+CLI10 cases PASS; installed verifier expects22 unique tools including
+cairntir_correct; package and upgrade evidence documentation. The new wheel is
+601a95a06371c373adf80a9847ef6bcf9bf1cfc88b70ad87324edfd63b4efd32.
+Laptop remains unavailable. E22 and protected custody remain external blockers.
+No merge, tag, PyPI or production adoption. Next: finish current matrix
+measurement, then address meaningful missing behavior toward90 without adding
+a verification framework. Existing UI worker acceptance cases are already
+restored; do not re-port or rerun them as new coverage.
+
+Next qualified local batch: two independently frozen Dream lifecycle cases
+PASS in27.24s, unchanged hash1c07dee29c488f7953812dbe143c781e4c386916057f408af967e10523cfccd5.
+Actual SQLite/worker subprocesses verify failed-launch recovery and stopping
+then restarting queued inference, retained interruption receipts, unchanged
+memory and closed owned processes/streams. Focused coverage6.997978% remains
+FAIL, not a full-suite result. Independent review PASS; no live-model usefulness
+or external model-server cancellation claim. No product code was changed.
+
+The user explicitly resumed release work after the pause. Follow the single
+[finish-line checklist](docs/release/v2-finish-line.md), preserving the agreed
+November scope and dated follow-ups. No merge, tag, PyPI or production adoption
+is authorized. The Ubuntu laptop is unavailable; continue independent local
+work without repeatedly requesting it.
+
+Published head81ed7897 CI41002352488 is complete: all nine assertion suites
+pass (Windows2,664; POSIX2,662/two skips). Coverage alone fails84.131543–85.109404%
+against90. Lint/types/docs/preservation/advisories, CodeQL, all three OS mutation
+jobs and nine tool preparations pass. Installed/evaluation jobs remain blocked
+downstream. Do not rerun those completed suites without a changed candidate.
+
+The next qualified batch restores43 existing cases: three actual Python
+scenarios with five deliberately broken-stage subtests pass in539.04s; managed
+CLI15 pass in20.54s; HumanFlow25 pass in85.64s. The actual Windows import failure
+was pytest shell-style parsing of native backslashes. Only the adapter's
+pytest source binding changes to ../src relative to its unchanged configuration.
+Original assertions, input bytes,95% subject floor,60s stage limits and1MiB
+output limits remain. Failed runs are preserved. Prepared-input checks pass.
+The portable seven-tool entry point succeeds with fresh local inputs; hosted
+execution remains unverified. Scoped lint/format, original preservation and
+strict docs checks pass. Focused outer coverage still fails and is not global
+qualification. HumanFlow feature delivery remains November12.
+
+Next: publish only the qualified source batch to the existing draft PR, measure
+the changed full matrix, and work on actual remaining coverage/workflow gaps.
+Do not expand into observer/profiler infrastructure. Existing memory task remains
+500eba27-3d27-4b50-ae45-85e7eada74bd, wing cairntir, room requests.
+
+## Previous Session - 2026-10-30 (draft alpha CI corrections)
+
+[Draft PR140](https://github.com/pnmcguire480/cairntir/pull/140) publishes the experimental preview. The [CI record](docs/release/v2-alpha-ci.md) preserves every failed baseline and its original criteria. No merge, tag, PyPI publication or production adoption is authorized; earlier181 local commits and private qualification archives remain excluded.
+
+The complete `1da8a79b` matrix passes lint/types/docs/preservation/advisories, CodeQL, all three OS regression/mutation jobs and all nine actual input preparations. Each POSIX job has2,608 passes/two skips; each Windows job2,610 passes. Every original Dream timing/durability/budget and actual resource case passes under unchanged limits. The only assertion failure on all nine jobs is the calibration fixture's stale source-name mapping. Coverage is84.089589–85.064223%, below90; installed/evaluation jobs remain blocked downstream. The earlier cache, lib64, AST, scope and performance failures remain preserved.
+
+The calibration repair maps both exact project source-selector aliases to its original generated subject. Frozen independent controls fail both cases before repair and pass both after it, reading actual subject-only2,500-statement data:89.96% is rejected and exact90% accepted. Assertions, parameters, inputs, timeout and project coverage configuration remain unchanged. Focused outer90 still fails0%; it is not application qualification. Scoped lint/format and unchanged24-freeze115-artifact preservation checks pass.
+
+All61 original review regressions are restored locally: eight are measured on the published head; the remaining53 pass once locally in16.89 seconds. Original class/helper ASTs,130 assertions and11 subtest sites remain; no inherited cases are duplicated. A narrow collector cleanup guard preserves failure cleanup. All230 recorded provenance blobs are byte-verified. Focused unique total is717 passes, five local capability skips and178 previously measured subtests; no global coverage gain is inferred. The extra53 and calibration repair are the qualified forward bundle; unqualified actual-Python tool-input drafts remain excluded.
+
+Coverage records actual Dream script-worker execution through the configured source-directory selector. Ordinary test caching uses one fresh inherited runner-owned prefix. Independent paired measurement preserves the same87 local file/statement/branch/exclusion universes; full hosted reports retain the same30,986 statement/branch opportunities. There is no prewarm, extra CLI invocation, worker-launch change, deadline/resource-budget relaxation, source exclusion or lower floor. Actual CI report artifacts are retained. Resource timing includes complete child-process startup/exit; older failed measurements are not reclassified by later passes.
+
+Full90 coverage, actual seven-tool Python workflow qualification, installed upgrade/restore/rollback, protected evaluator custody and second-machine readiness remain open. The original35-item register and dated follow-ups remain in [the roadmap](docs/alpha-roadmap.json). Production1.12.4 remains unchanged. Source2.0.0a1 is a preview, not stable release approval.
+## Previous Session - 2026-10-02 (1.12.4 maintenance candidate)
 
 This release combines PR122's three dependency repairs and safe contributor
 handoff guide with the independently reviewed doctor/status/version diagnostics.

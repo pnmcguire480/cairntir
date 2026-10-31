@@ -262,7 +262,8 @@ async def probe(wheel: Path, output: Path) -> dict:
     async with Peer(mcp, home, "codex") as first:
         await first.initialize(cairntir.__version__)
         tools = (await first.request("tools/list", {}))["tools"]
-        assert len(tools) == len({tool["name"] for tool in tools}) == 21
+        assert len(tools) == len({tool["name"] for tool in tools}) == 22
+        assert "cairntir_correct" in {tool["name"] for tool in tools}
         assert all(tool["inputSchema"].get("type") == "object" for tool in tools)
         created = await first.json(
             "cairntir_remember",

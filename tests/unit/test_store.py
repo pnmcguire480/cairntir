@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import sqlite3
 import struct
+import sys
 from collections.abc import Iterator, Sequence
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import sqlite_vec
@@ -584,7 +586,9 @@ def test_migration_from_v5_backfills_provenance_and_trust_filters(tmp_path: Path
         provenance = store.get_provenance(drawer_id)
         assert provenance is not None
         assert provenance.host == "legacy"
-        assert store.embedding_status().state == "corrupt"
+        assert store.embedding_status().state == "mismatch"
+        with pytest.raises(EmbeddingSpaceError, match="mismatch"):
+            store.search("v5 row")
 
     reindex_database(db_path, provider)
     with DrawerStore(db_path, provider) as store:
@@ -633,7 +637,8 @@ def test_new_store_stamps_verified_embedding_space(tmp_path: Path) -> None:
     with DrawerStore(tmp_path / "verified.db", provider) as s:
         status = s.embedding_status()
         assert status.verified
-        assert status.stored_space_id == embedding_space_id(provider)
+        assert status.stored_space_id.startswith("cairntir/chunks/codepoints-v2/")
+        assert status.stored_space_id.endswith(embedding_space_id(provider))
         assert status.stored_dimension == 32
         assert status.vector_dimension == 32
         assert status.generation
@@ -842,14 +847,23 @@ def test_reindex_discards_stale_write_ahead_sidecars(tmp_path: Path) -> None:
         assert reopened.list_by()[0].content == "sidecar hygiene"
 
 
-def test_reindex_refuses_drawers_wider_than_the_embedder_window(tmp_path: Path) -> None:
-    """A rebuild must not silently re-truncate what it cannot embed whole."""
+def test_reindex_embeds_drawers_wider_than_the_embedder_window(tmp_path: Path) -> None:
     path = tmp_path / "oversized.db"
+    content = "x" * PRODUCTION_CHAR_WINDOW + " distinct tail"
     with DrawerStore(path, HashEmbeddingProvider(dimension=32)) as store:
-        store.add(_drawer("x" * (PRODUCTION_CHAR_WINDOW + 1)))
+        saved = store.add(_drawer(content))
 
-    with pytest.raises(EmbeddingSpaceError, match="exceed the embedder"):
-        reindex_database(path, HashEmbeddingProvider(dimension=64), batch_size=1)
+    receipt = reindex_database(path, HashEmbeddingProvider(dimension=64), batch_size=1)
+    assert receipt.dimension == 64
+    with DrawerStore(path, HashEmbeddingProvider(dimension=64)) as store:
+        assert store.get(saved.id).content == content
+        assert store.embedding_status().verified
+        spans = store._conn.execute(
+            "SELECT start_char, end_char FROM embedding_chunks WHERE drawer_id=? ORDER BY chunk_id",
+            (saved.id,),
+        ).fetchall()
+        assert store.embedding_status().vector_count == len(spans) > 1
+        assert "".join(content[start:end] for start, end in spans) == content
 
 
 class _FailingReindexProvider:
@@ -967,7 +981,38 @@ def test_backup_database_creates_independent_verified_copy(tmp_path: Path) -> No
     assert report.drawer_count == report.vector_count == 1
 
 
-def test_provider_identity_distinguishes_algorithm_model_and_dimension() -> None:
+def test_provider_identity_distinguishes_algorithm_model_and_dimension(
+    tmp_cairntir_home: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    cache = tmp_cairntir_home / "models"
+    assets = cache / FastEmbedProvider.DEFAULT_MODEL.rsplit("/", 1)[-1]
+    assets.mkdir(parents=True)
+    (assets / "model.onnx").write_bytes(b"synthetic identity model")
+    for name in (
+        "config.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "special_tokens_map.json",
+    ):
+        (assets / name).write_text("{}", encoding="utf-8")
+    monkeypatch.setenv("FASTEMBED_CACHE_PATH", str(cache))
+
+    class RegistryOnly:
+        @staticmethod
+        def list_supported_models():
+            return [
+                {
+                    "model": FastEmbedProvider.DEFAULT_MODEL,
+                    "dim": 2,
+                    "model_file": "model.onnx",
+                    "sources": {},
+                }
+            ]
+
+        def __init__(self, **kwargs):
+            raise AssertionError("offline identity must never construct a model")
+
+    monkeypatch.setitem(sys.modules, "fastembed", SimpleNamespace(TextEmbedding=RegistryOnly))
     hash_32 = embedding_space_id(HashEmbeddingProvider(dimension=32))
     hash_64 = embedding_space_id(HashEmbeddingProvider(dimension=64))
     fastembed = embedding_space_id(FastEmbedProvider())

@@ -1,0 +1,2 @@
+extend = "../../../pyproject.toml"
+extend-exclude = ["acceptance/fixture.py", "producer/measure.py", "fixture"]

@@ -1,0 +1,9 @@
+{
+  "id": "cairntir-workspace",
+  "name": "Cairntir Workspace",
+  "version": "0.1.0",
+  "minAppVersion": "1.13.7",
+  "description": "Refresh a Cairntir memory workspace and submit corrections while preserving history.",
+  "author": "Cairntir contributors",
+  "isDesktopOnly": true
+}

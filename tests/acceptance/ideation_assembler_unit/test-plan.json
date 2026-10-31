@@ -1,0 +1,1917 @@
+{
+  "fixture_status": "new_synthetic_unexecuted_semantics",
+  "actual": [
+    {
+      "request": {
+        "request_id": "discussion-outline",
+        "idea_id": "catalog-comparison",
+        "hook_id": "catalog-discussion",
+        "format_id": "discussion",
+        "audience": "Participants in an invented library workshop comparing catalog notes.",
+        "finished_length": {
+          "unit": "words",
+          "minimum": 600,
+          "maximum": 900
+        },
+        "production_constraints": [
+          "Prepare a written discussion outline with a written opening, ordered developed points and examples, adjacent bridges, close, audience question, estimated finished length and useful production notes.",
+          "Use a neutral workshop frame. Ask for a catalog observation, counterexample or missing evidence without announcing availability or an event.",
+          "Label every invented comparison and mock demonstration hypothetical. Synthetic historical excerpts cannot authenticate a current real-world finding.",
+          "Keep selected idea, hook and source traceability on every component. Do not transfer the invented organizer identity to a real user or revive the withdrawn May 17 workshop date.",
+          "Provide planned production actions with observable completion checks. Remove unsupported factual wording or label it as an assumption with linked verification before use.",
+          "Do not publish, contact anyone, perform research, mark planned work complete or fabricate human confirmation.",
+          "Use exactly 3 developed key points, 4 adjacent written bridges from opening through the 3 points to close, 2 production notes and 2-3 concrete planned actions with observable completion checks."
+        ]
+      },
+      "counts": {
+        "points": 3,
+        "main_sections": 5,
+        "components": 16,
+        "bridges": 4,
+        "production_notes": 2,
+        "actions": 3
+      },
+      "component_ids": [
+        "discussion-outline.opening",
+        "discussion-outline.point1",
+        "discussion-outline.example1",
+        "discussion-outline.point2",
+        "discussion-outline.example2",
+        "discussion-outline.point3",
+        "discussion-outline.example3",
+        "discussion-outline.bridge1",
+        "discussion-outline.bridge2",
+        "discussion-outline.bridge3",
+        "discussion-outline.bridge4",
+        "discussion-outline.close",
+        "discussion-outline.cta",
+        "discussion-outline.length-basis",
+        "discussion-outline.note1",
+        "discussion-outline.note2"
+      ],
+      "sections": [
+        "discussion-outline.opening",
+        "discussion-outline.point1",
+        "discussion-outline.point2",
+        "discussion-outline.point3",
+        "discussion-outline.close"
+      ],
+      "edges": [
+        {
+          "bridge_id": "discussion-outline.bridge1",
+          "from": "discussion-outline.opening",
+          "to": "discussion-outline.point1"
+        },
+        {
+          "bridge_id": "discussion-outline.bridge2",
+          "from": "discussion-outline.point1",
+          "to": "discussion-outline.point2"
+        },
+        {
+          "bridge_id": "discussion-outline.bridge3",
+          "from": "discussion-outline.point2",
+          "to": "discussion-outline.point3"
+        },
+        {
+          "bridge_id": "discussion-outline.bridge4",
+          "from": "discussion-outline.point3",
+          "to": "discussion-outline.close"
+        }
+      ],
+      "actions": [
+        {
+          "id": "discussion-outline.verify",
+          "kind": "verification",
+          "role": "Verify intended factual claims, historical attribution and sources before use",
+          "component_ids": [
+            "discussion-outline.opening",
+            "discussion-outline.point1",
+            "discussion-outline.example1",
+            "discussion-outline.point2",
+            "discussion-outline.example2",
+            "discussion-outline.point3",
+            "discussion-outline.example3",
+            "discussion-outline.bridge1",
+            "discussion-outline.bridge2",
+            "discussion-outline.bridge3",
+            "discussion-outline.bridge4",
+            "discussion-outline.close",
+            "discussion-outline.cta",
+            "discussion-outline.length-basis",
+            "discussion-outline.note1",
+            "discussion-outline.note2"
+          ],
+          "depends_on": []
+        },
+        {
+          "id": "discussion-outline.draft",
+          "kind": "production",
+          "role": "Draft the neutral discussion post",
+          "component_ids": [
+            "discussion-outline.opening",
+            "discussion-outline.point1",
+            "discussion-outline.example1",
+            "discussion-outline.point2",
+            "discussion-outline.example2",
+            "discussion-outline.point3",
+            "discussion-outline.example3",
+            "discussion-outline.bridge1",
+            "discussion-outline.bridge2",
+            "discussion-outline.bridge3",
+            "discussion-outline.bridge4",
+            "discussion-outline.close",
+            "discussion-outline.cta",
+            "discussion-outline.length-basis",
+            "discussion-outline.note1",
+            "discussion-outline.note2"
+          ],
+          "depends_on": [
+            "discussion-outline.verify"
+          ]
+        },
+        {
+          "id": "discussion-outline.review",
+          "kind": "production",
+          "role": "Review the resulting draft against original sources, audience and finished-length target",
+          "component_ids": [
+            "discussion-outline.opening",
+            "discussion-outline.point1",
+            "discussion-outline.example1",
+            "discussion-outline.point2",
+            "discussion-outline.example2",
+            "discussion-outline.point3",
+            "discussion-outline.example3",
+            "discussion-outline.bridge1",
+            "discussion-outline.bridge2",
+            "discussion-outline.bridge3",
+            "discussion-outline.bridge4",
+            "discussion-outline.close",
+            "discussion-outline.cta",
+            "discussion-outline.length-basis",
+            "discussion-outline.note1",
+            "discussion-outline.note2"
+          ],
+          "depends_on": [
+            "discussion-outline.verify",
+            "discussion-outline.draft"
+          ]
+        }
+      ],
+      "quotes": [
+        {
+          "quote_id": "discussion-outline.quote.angle-enemies",
+          "source_id": "SYN-ANGLES",
+          "source_path": "sources/angles.md",
+          "source_sha256": "98dc0f53df2ca8360f564a10c184fb323a2296925b1441c3a8f4b68c7bd7b8b2",
+          "anchor_id": "angle-enemies",
+          "excerpt_sha256": "0a860a7c94909d1cbf4fb2a826973830ff5624fb2d6a0d96100e0e2987085fad",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 197,
+          "source_byte_start": 111,
+          "source_byte_end": 308,
+          "span_sha256": "0a860a7c94909d1cbf4fb2a826973830ff5624fb2d6a0d96100e0e2987085fad",
+          "attribution": "quoted_historical",
+          "text_origin": "host copies exact verified UTF-8 source bytes; never provider prose",
+          "key": "angle-enemies"
+        },
+        {
+          "quote_id": "discussion-outline.quote.hook-reddit",
+          "source_id": "SYN-HOOKS",
+          "source_path": "sources/hooks.md",
+          "source_sha256": "b7b4e1138eedf65a131f8b9c128a6a83a0eae1ddf5c0de9b29d438abbc5ed6a4",
+          "anchor_id": "hook-reddit",
+          "excerpt_sha256": "0d1741692ab1f713dbce5bed5b7e0ae9920cde5a84e3e0620155ad3778b3dc9b",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 107,
+          "source_byte_start": 343,
+          "source_byte_end": 450,
+          "span_sha256": "0d1741692ab1f713dbce5bed5b7e0ae9920cde5a84e3e0620155ad3778b3dc9b",
+          "attribution": "quoted_historical",
+          "text_origin": "host copies exact verified UTF-8 source bytes; never provider prose",
+          "key": "hook-reddit"
+        },
+        {
+          "quote_id": "discussion-outline.quote.withdrawn-launch",
+          "source_id": "SYN-POLICY",
+          "source_path": "sources/policy.md",
+          "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "anchor_id": "withdrawn-launch",
+          "excerpt_sha256": "9ddfecbc96de07263c8d2b38d06e6ff94aeb6cd9687925470c3094e8392339a2",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 136,
+          "source_byte_start": 111,
+          "source_byte_end": 247,
+          "span_sha256": "9ddfecbc96de07263c8d2b38d06e6ff94aeb6cd9687925470c3094e8392339a2",
+          "attribution": "quoted_historical",
+          "text_origin": "host copies exact verified UTF-8 source bytes; never provider prose",
+          "key": "withdrawn-launch"
+        },
+        {
+          "quote_id": "discussion-outline.quote.cadence-build",
+          "source_id": "SYN-POLICY",
+          "source_path": "sources/policy.md",
+          "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "anchor_id": "cadence-build",
+          "excerpt_sha256": "e2c96103198b26cb2f901c9487952efe49321e23363a2add54aa8b0214a7d0db",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 148,
+          "source_byte_start": 249,
+          "source_byte_end": 397,
+          "span_sha256": "e2c96103198b26cb2f901c9487952efe49321e23363a2add54aa8b0214a7d0db",
+          "attribution": "quoted_historical",
+          "text_origin": "host copies exact verified UTF-8 source bytes; never provider prose",
+          "key": "cadence-build"
+        },
+        {
+          "quote_id": "discussion-outline.quote.cadence-recurring",
+          "source_id": "SYN-POLICY",
+          "source_path": "sources/policy.md",
+          "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "anchor_id": "cadence-recurring",
+          "excerpt_sha256": "318b418212530cd369fbb93eca65199451ea2a6623c4018138dab607d972f31c",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 149,
+          "source_byte_start": 399,
+          "source_byte_end": 548,
+          "span_sha256": "318b418212530cd369fbb93eca65199451ea2a6623c4018138dab607d972f31c",
+          "attribution": "quoted_historical",
+          "text_origin": "host copies exact verified UTF-8 source bytes; never provider prose",
+          "key": "cadence-recurring"
+        }
+      ],
+      "component_source_binding": {
+        "default_quote_ids": [
+          "discussion-outline.quote.angle-enemies",
+          "discussion-outline.quote.hook-reddit"
+        ],
+        "notes_additional_quote_ids": [
+          "discussion-outline.quote.withdrawn-launch",
+          "discussion-outline.quote.cadence-build",
+          "discussion-outline.quote.cadence-recurring"
+        ],
+        "idea_id": "catalog-comparison",
+        "hook_id": "catalog-discussion"
+      },
+      "jobs": [
+        {
+          "node_id": "discussion-outline.opening",
+          "kind": "opening",
+          "ordinal": 0,
+          "dependencies": [],
+          "num_predict": 768,
+          "timeout_seconds": 180,
+          "output_schema": "opening",
+          "output_binding": [
+            "discussion-outline.opening"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/title",
+              "to": "outline.title"
+            },
+            {
+              "from": "/opening",
+              "to": "outline.opening.text"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "discussion-outline.opening"
+            ],
+            "verification_action_id": "discussion-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        },
+        {
+          "node_id": "discussion-outline.point1",
+          "kind": "point",
+          "ordinal": 1,
+          "dependencies": [
+            "discussion-outline.opening"
+          ],
+          "num_predict": 1536,
+          "timeout_seconds": 180,
+          "output_schema": "point",
+          "output_binding": [
+            "discussion-outline.point1",
+            "discussion-outline.example1"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/point",
+              "to": "outline.key_points[0].point.text"
+            },
+            {
+              "from": "/example",
+              "to": "outline.key_points[0].example.text"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "discussion-outline.point1",
+              "discussion-outline.example1"
+            ],
+            "verification_action_id": "discussion-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        },
+        {
+          "node_id": "discussion-outline.point2",
+          "kind": "point",
+          "ordinal": 2,
+          "dependencies": [
+            "discussion-outline.opening",
+            "discussion-outline.point1"
+          ],
+          "num_predict": 1536,
+          "timeout_seconds": 180,
+          "output_schema": "point",
+          "output_binding": [
+            "discussion-outline.point2",
+            "discussion-outline.example2"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/point",
+              "to": "outline.key_points[1].point.text"
+            },
+            {
+              "from": "/example",
+              "to": "outline.key_points[1].example.text"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "discussion-outline.point2",
+              "discussion-outline.example2"
+            ],
+            "verification_action_id": "discussion-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        },
+        {
+          "node_id": "discussion-outline.point3",
+          "kind": "point",
+          "ordinal": 3,
+          "dependencies": [
+            "discussion-outline.opening",
+            "discussion-outline.point1",
+            "discussion-outline.point2"
+          ],
+          "num_predict": 1536,
+          "timeout_seconds": 180,
+          "output_schema": "point",
+          "output_binding": [
+            "discussion-outline.point3",
+            "discussion-outline.example3"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/point",
+              "to": "outline.key_points[2].point.text"
+            },
+            {
+              "from": "/example",
+              "to": "outline.key_points[2].example.text"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "discussion-outline.point3",
+              "discussion-outline.example3"
+            ],
+            "verification_action_id": "discussion-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        },
+        {
+          "node_id": "discussion-outline.close",
+          "kind": "close",
+          "ordinal": 4,
+          "dependencies": [
+            "discussion-outline.opening",
+            "discussion-outline.point1",
+            "discussion-outline.point2",
+            "discussion-outline.point3"
+          ],
+          "num_predict": 768,
+          "timeout_seconds": 180,
+          "output_schema": "close",
+          "output_binding": [
+            "discussion-outline.close",
+            "discussion-outline.cta"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/close",
+              "to": "outline.close.text"
+            },
+            {
+              "from": "/cta",
+              "to": "outline.cta.text"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "discussion-outline.close",
+              "discussion-outline.cta"
+            ],
+            "verification_action_id": "discussion-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        },
+        {
+          "node_id": "discussion-outline.bridges",
+          "kind": "bridges",
+          "ordinal": 5,
+          "dependencies": [
+            "discussion-outline.opening",
+            "discussion-outline.point1",
+            "discussion-outline.point2",
+            "discussion-outline.point3",
+            "discussion-outline.close"
+          ],
+          "num_predict": 1024,
+          "timeout_seconds": 180,
+          "output_schema": "bridges",
+          "output_binding": [
+            "discussion-outline.bridge1",
+            "discussion-outline.bridge2",
+            "discussion-outline.bridge3",
+            "discussion-outline.bridge4"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/bridges/0",
+              "to": "outline.bridges[0].bridge.text"
+            },
+            {
+              "from": "/bridges/1",
+              "to": "outline.bridges[1].bridge.text"
+            },
+            {
+              "from": "/bridges/2",
+              "to": "outline.bridges[2].bridge.text"
+            },
+            {
+              "from": "/bridges/3",
+              "to": "outline.bridges[3].bridge.text"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "discussion-outline.bridge1",
+              "discussion-outline.bridge2",
+              "discussion-outline.bridge3",
+              "discussion-outline.bridge4"
+            ],
+            "verification_action_id": "discussion-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        },
+        {
+          "node_id": "discussion-outline.production",
+          "kind": "production",
+          "ordinal": 6,
+          "dependencies": [
+            "discussion-outline.opening",
+            "discussion-outline.point1",
+            "discussion-outline.point2",
+            "discussion-outline.point3",
+            "discussion-outline.close",
+            "discussion-outline.bridges"
+          ],
+          "num_predict": 2048,
+          "timeout_seconds": 180,
+          "output_schema": "discussion-outline.production",
+          "output_binding": [
+            "discussion-outline.length-basis",
+            "discussion-outline.note1",
+            "discussion-outline.note2"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/production_notes/0",
+              "to": "outline.production_notes[0].text"
+            },
+            {
+              "from": "/production_notes/1",
+              "to": "outline.production_notes[1].text"
+            },
+            {
+              "from": "/finished_length_estimate",
+              "to": "outline.finished_length.estimate"
+            },
+            {
+              "from": "/finished_length_basis",
+              "to": "outline.finished_length.basis.text"
+            },
+            {
+              "from": "/actions/0/text",
+              "to": "actions[0].text"
+            },
+            {
+              "from": "/actions/0/completion_checks/*",
+              "to": "actions[0].completion_checks[*]"
+            },
+            {
+              "from": "/actions/1/text",
+              "to": "actions[1].text"
+            },
+            {
+              "from": "/actions/1/completion_checks/*",
+              "to": "actions[1].completion_checks[*]"
+            },
+            {
+              "from": "/actions/2/text",
+              "to": "actions[2].text"
+            },
+            {
+              "from": "/actions/2/completion_checks/*",
+              "to": "actions[2].completion_checks[*]"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "discussion-outline.length-basis",
+              "discussion-outline.note1",
+              "discussion-outline.note2"
+            ],
+            "verification_action_id": "discussion-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        }
+      ],
+      "assembly_plan_entry": {
+        "request_id": "discussion-outline",
+        "point_count": 3,
+        "production_note_count": 2,
+        "verification_action_key": "verify",
+        "spans": [
+          {
+            "key": "angle-enemies",
+            "source_id": "SYN-ANGLES",
+            "anchor_id": "angle-enemies",
+            "source_sha256": "98dc0f53df2ca8360f564a10c184fb323a2296925b1441c3a8f4b68c7bd7b8b2",
+            "excerpt_sha256": "0a860a7c94909d1cbf4fb2a826973830ff5624fb2d6a0d96100e0e2987085fad",
+            "excerpt_byte_start": 0,
+            "excerpt_byte_end": 197,
+            "span_sha256": "0a860a7c94909d1cbf4fb2a826973830ff5624fb2d6a0d96100e0e2987085fad"
+          },
+          {
+            "key": "hook-reddit",
+            "source_id": "SYN-HOOKS",
+            "anchor_id": "hook-reddit",
+            "source_sha256": "b7b4e1138eedf65a131f8b9c128a6a83a0eae1ddf5c0de9b29d438abbc5ed6a4",
+            "excerpt_sha256": "0d1741692ab1f713dbce5bed5b7e0ae9920cde5a84e3e0620155ad3778b3dc9b",
+            "excerpt_byte_start": 0,
+            "excerpt_byte_end": 107,
+            "span_sha256": "0d1741692ab1f713dbce5bed5b7e0ae9920cde5a84e3e0620155ad3778b3dc9b"
+          },
+          {
+            "key": "withdrawn-launch",
+            "source_id": "SYN-POLICY",
+            "anchor_id": "withdrawn-launch",
+            "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+            "excerpt_sha256": "9ddfecbc96de07263c8d2b38d06e6ff94aeb6cd9687925470c3094e8392339a2",
+            "excerpt_byte_start": 0,
+            "excerpt_byte_end": 136,
+            "span_sha256": "9ddfecbc96de07263c8d2b38d06e6ff94aeb6cd9687925470c3094e8392339a2"
+          },
+          {
+            "key": "cadence-build",
+            "source_id": "SYN-POLICY",
+            "anchor_id": "cadence-build",
+            "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+            "excerpt_sha256": "e2c96103198b26cb2f901c9487952efe49321e23363a2add54aa8b0214a7d0db",
+            "excerpt_byte_start": 0,
+            "excerpt_byte_end": 148,
+            "span_sha256": "e2c96103198b26cb2f901c9487952efe49321e23363a2add54aa8b0214a7d0db"
+          },
+          {
+            "key": "cadence-recurring",
+            "source_id": "SYN-POLICY",
+            "anchor_id": "cadence-recurring",
+            "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+            "excerpt_sha256": "318b418212530cd369fbb93eca65199451ea2a6623c4018138dab607d972f31c",
+            "excerpt_byte_start": 0,
+            "excerpt_byte_end": 149,
+            "span_sha256": "318b418212530cd369fbb93eca65199451ea2a6623c4018138dab607d972f31c"
+          }
+        ],
+        "component_bindings": [
+          {
+            "slot": "opening",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "point1",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "example1",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "point2",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "example2",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "point3",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "example3",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "bridge1",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "bridge2",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "bridge3",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "bridge4",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "close",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "cta",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "length-basis",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit"
+            ]
+          },
+          {
+            "slot": "note1",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit",
+              "withdrawn-launch",
+              "cadence-build",
+              "cadence-recurring"
+            ]
+          },
+          {
+            "slot": "note2",
+            "span_keys": [
+              "angle-enemies",
+              "hook-reddit",
+              "withdrawn-launch",
+              "cadence-build",
+              "cadence-recurring"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "key": "verify",
+            "kind": "verification",
+            "purpose": "Verify intended factual claims, historical attribution and sources before use",
+            "component_slots": [
+              "opening",
+              "point1",
+              "example1",
+              "point2",
+              "example2",
+              "point3",
+              "example3",
+              "bridge1",
+              "bridge2",
+              "bridge3",
+              "bridge4",
+              "close",
+              "cta",
+              "length-basis",
+              "note1",
+              "note2"
+            ],
+            "depends_on": []
+          },
+          {
+            "key": "draft",
+            "kind": "production",
+            "purpose": "Draft the neutral discussion post",
+            "component_slots": [
+              "opening",
+              "point1",
+              "example1",
+              "point2",
+              "example2",
+              "point3",
+              "example3",
+              "bridge1",
+              "bridge2",
+              "bridge3",
+              "bridge4",
+              "close",
+              "cta",
+              "length-basis",
+              "note1",
+              "note2"
+            ],
+            "depends_on": [
+              "verify"
+            ]
+          },
+          {
+            "key": "review",
+            "kind": "production",
+            "purpose": "Review the resulting draft against original sources, audience and finished-length target",
+            "component_slots": [
+              "opening",
+              "point1",
+              "example1",
+              "point2",
+              "example2",
+              "point3",
+              "example3",
+              "bridge1",
+              "bridge2",
+              "bridge3",
+              "bridge4",
+              "close",
+              "cta",
+              "length-basis",
+              "note1",
+              "note2"
+            ],
+            "depends_on": [
+              "verify",
+              "draft"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "request_id": "spoken-video-outline",
+        "idea_id": "shelf-review",
+        "hook_id": "shelf-video",
+        "format_id": "spoken_video",
+        "audience": "Viewers of a clearly synthetic library shelf concept demonstration.",
+        "finished_length": {
+          "unit": "seconds",
+          "minimum": 60,
+          "maximum": 90
+        },
+        "production_constraints": [
+          "Prepare a speakable short-video outline with an opening, ordered developed beats and examples, adjacent spoken bridges, close, audience question, estimated duration and useful production notes.",
+          "Use a neutral workshop frame. Ask for a catalog observation, counterexample or missing evidence without announcing availability or an event.",
+          "Label every invented comparison and mock demonstration hypothetical. Synthetic historical excerpts cannot authenticate a current real-world finding.",
+          "Keep selected idea, hook and source traceability on every component. Do not transfer the invented organizer identity to a real user or revive the withdrawn May 17 workshop date.",
+          "Plan pacing, mock-card captions and storyboard preparation for a future 60-90-second synthetic concept piece. The estimate does not establish that the outline fills that duration.",
+          "Provide planned production actions with observable completion checks. Remove unsupported factual wording or label it as an assumption with linked verification before use.",
+          "Do not publish, contact anyone, perform research, mark planned work complete or fabricate human confirmation.",
+          "Use exactly 3 developed key points, 4 adjacent written bridges from opening through the 3 points to close, 2 production notes and 2-3 concrete planned actions with observable completion checks."
+        ]
+      },
+      "counts": {
+        "points": 3,
+        "main_sections": 5,
+        "components": 16,
+        "bridges": 4,
+        "production_notes": 2,
+        "actions": 3
+      },
+      "component_ids": [
+        "spoken-video-outline.opening",
+        "spoken-video-outline.point1",
+        "spoken-video-outline.example1",
+        "spoken-video-outline.point2",
+        "spoken-video-outline.example2",
+        "spoken-video-outline.point3",
+        "spoken-video-outline.example3",
+        "spoken-video-outline.bridge1",
+        "spoken-video-outline.bridge2",
+        "spoken-video-outline.bridge3",
+        "spoken-video-outline.bridge4",
+        "spoken-video-outline.close",
+        "spoken-video-outline.cta",
+        "spoken-video-outline.length-basis",
+        "spoken-video-outline.note1",
+        "spoken-video-outline.note2"
+      ],
+      "sections": [
+        "spoken-video-outline.opening",
+        "spoken-video-outline.point1",
+        "spoken-video-outline.point2",
+        "spoken-video-outline.point3",
+        "spoken-video-outline.close"
+      ],
+      "edges": [
+        {
+          "bridge_id": "spoken-video-outline.bridge1",
+          "from": "spoken-video-outline.opening",
+          "to": "spoken-video-outline.point1"
+        },
+        {
+          "bridge_id": "spoken-video-outline.bridge2",
+          "from": "spoken-video-outline.point1",
+          "to": "spoken-video-outline.point2"
+        },
+        {
+          "bridge_id": "spoken-video-outline.bridge3",
+          "from": "spoken-video-outline.point2",
+          "to": "spoken-video-outline.point3"
+        },
+        {
+          "bridge_id": "spoken-video-outline.bridge4",
+          "from": "spoken-video-outline.point3",
+          "to": "spoken-video-outline.close"
+        }
+      ],
+      "actions": [
+        {
+          "id": "spoken-video-outline.verify",
+          "kind": "verification",
+          "role": "Verify intended factual claims, historical attribution and sources before use",
+          "component_ids": [
+            "spoken-video-outline.opening",
+            "spoken-video-outline.point1",
+            "spoken-video-outline.example1",
+            "spoken-video-outline.point2",
+            "spoken-video-outline.example2",
+            "spoken-video-outline.point3",
+            "spoken-video-outline.example3",
+            "spoken-video-outline.bridge1",
+            "spoken-video-outline.bridge2",
+            "spoken-video-outline.bridge3",
+            "spoken-video-outline.bridge4",
+            "spoken-video-outline.close",
+            "spoken-video-outline.cta",
+            "spoken-video-outline.length-basis",
+            "spoken-video-outline.note1",
+            "spoken-video-outline.note2"
+          ],
+          "depends_on": []
+        },
+        {
+          "id": "spoken-video-outline.draft",
+          "kind": "production",
+          "role": "Draft and storyboard the spoken short video",
+          "component_ids": [
+            "spoken-video-outline.opening",
+            "spoken-video-outline.point1",
+            "spoken-video-outline.example1",
+            "spoken-video-outline.point2",
+            "spoken-video-outline.example2",
+            "spoken-video-outline.point3",
+            "spoken-video-outline.example3",
+            "spoken-video-outline.bridge1",
+            "spoken-video-outline.bridge2",
+            "spoken-video-outline.bridge3",
+            "spoken-video-outline.bridge4",
+            "spoken-video-outline.close",
+            "spoken-video-outline.cta",
+            "spoken-video-outline.length-basis",
+            "spoken-video-outline.note1",
+            "spoken-video-outline.note2"
+          ],
+          "depends_on": [
+            "spoken-video-outline.verify"
+          ]
+        },
+        {
+          "id": "spoken-video-outline.review",
+          "kind": "production",
+          "role": "Review the resulting draft against original sources, audience and finished-length target",
+          "component_ids": [
+            "spoken-video-outline.opening",
+            "spoken-video-outline.point1",
+            "spoken-video-outline.example1",
+            "spoken-video-outline.point2",
+            "spoken-video-outline.example2",
+            "spoken-video-outline.point3",
+            "spoken-video-outline.example3",
+            "spoken-video-outline.bridge1",
+            "spoken-video-outline.bridge2",
+            "spoken-video-outline.bridge3",
+            "spoken-video-outline.bridge4",
+            "spoken-video-outline.close",
+            "spoken-video-outline.cta",
+            "spoken-video-outline.length-basis",
+            "spoken-video-outline.note1",
+            "spoken-video-outline.note2"
+          ],
+          "depends_on": [
+            "spoken-video-outline.verify",
+            "spoken-video-outline.draft"
+          ]
+        }
+      ],
+      "quotes": [
+        {
+          "quote_id": "spoken-video-outline.quote.angle-round-table",
+          "source_id": "SYN-ANGLES",
+          "source_path": "sources/angles.md",
+          "source_sha256": "98dc0f53df2ca8360f564a10c184fb323a2296925b1441c3a8f4b68c7bd7b8b2",
+          "anchor_id": "angle-round-table",
+          "excerpt_sha256": "47dcf8a849b613797706f97e9272ac2d2bfab80e0ad0b5343a944de7afb6da3f",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 194,
+          "source_byte_start": 310,
+          "source_byte_end": 504,
+          "span_sha256": "47dcf8a849b613797706f97e9272ac2d2bfab80e0ad0b5343a944de7afb6da3f",
+          "attribution": "quoted_historical",
+          "text_origin": "host copies exact verified UTF-8 source bytes; never provider prose",
+          "key": "angle-round-table"
+        },
+        {
+          "quote_id": "spoken-video-outline.quote.hook-video",
+          "source_id": "SYN-HOOKS",
+          "source_path": "sources/hooks.md",
+          "source_sha256": "b7b4e1138eedf65a131f8b9c128a6a83a0eae1ddf5c0de9b29d438abbc5ed6a4",
+          "anchor_id": "hook-video",
+          "excerpt_sha256": "55645b8930324d7d134ac579de1a57f12e5b2063a985a741bc864923972244d9",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 98,
+          "source_byte_start": 564,
+          "source_byte_end": 662,
+          "span_sha256": "55645b8930324d7d134ac579de1a57f12e5b2063a985a741bc864923972244d9",
+          "attribution": "quoted_historical",
+          "text_origin": "host copies exact verified UTF-8 source bytes; never provider prose",
+          "key": "hook-video"
+        },
+        {
+          "quote_id": "spoken-video-outline.quote.withdrawn-launch",
+          "source_id": "SYN-POLICY",
+          "source_path": "sources/policy.md",
+          "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "anchor_id": "withdrawn-launch",
+          "excerpt_sha256": "9ddfecbc96de07263c8d2b38d06e6ff94aeb6cd9687925470c3094e8392339a2",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 136,
+          "source_byte_start": 111,
+          "source_byte_end": 247,
+          "span_sha256": "9ddfecbc96de07263c8d2b38d06e6ff94aeb6cd9687925470c3094e8392339a2",
+          "attribution": "quoted_historical",
+          "text_origin": "host copies exact verified UTF-8 source bytes; never provider prose",
+          "key": "withdrawn-launch"
+        },
+        {
+          "quote_id": "spoken-video-outline.quote.cadence-build",
+          "source_id": "SYN-POLICY",
+          "source_path": "sources/policy.md",
+          "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "anchor_id": "cadence-build",
+          "excerpt_sha256": "e2c96103198b26cb2f901c9487952efe49321e23363a2add54aa8b0214a7d0db",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 148,
+          "source_byte_start": 249,
+          "source_byte_end": 397,
+          "span_sha256": "e2c96103198b26cb2f901c9487952efe49321e23363a2add54aa8b0214a7d0db",
+          "attribution": "quoted_historical",
+          "text_origin": "host copies exact verified UTF-8 source bytes; never provider prose",
+          "key": "cadence-build"
+        },
+        {
+          "quote_id": "spoken-video-outline.quote.cadence-recurring",
+          "source_id": "SYN-POLICY",
+          "source_path": "sources/policy.md",
+          "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "anchor_id": "cadence-recurring",
+          "excerpt_sha256": "318b418212530cd369fbb93eca65199451ea2a6623c4018138dab607d972f31c",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 149,
+          "source_byte_start": 399,
+          "source_byte_end": 548,
+          "span_sha256": "318b418212530cd369fbb93eca65199451ea2a6623c4018138dab607d972f31c",
+          "attribution": "quoted_historical",
+          "text_origin": "host copies exact verified UTF-8 source bytes; never provider prose",
+          "key": "cadence-recurring"
+        }
+      ],
+      "component_source_binding": {
+        "default_quote_ids": [
+          "spoken-video-outline.quote.angle-round-table",
+          "spoken-video-outline.quote.hook-video"
+        ],
+        "notes_additional_quote_ids": [
+          "spoken-video-outline.quote.withdrawn-launch",
+          "spoken-video-outline.quote.cadence-build",
+          "spoken-video-outline.quote.cadence-recurring"
+        ],
+        "idea_id": "shelf-review",
+        "hook_id": "shelf-video"
+      },
+      "jobs": [
+        {
+          "node_id": "spoken-video-outline.opening",
+          "kind": "opening",
+          "ordinal": 7,
+          "dependencies": [],
+          "num_predict": 768,
+          "timeout_seconds": 180,
+          "output_schema": "opening",
+          "output_binding": [
+            "spoken-video-outline.opening"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/title",
+              "to": "outline.title"
+            },
+            {
+              "from": "/opening",
+              "to": "outline.opening.text"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "spoken-video-outline.opening"
+            ],
+            "verification_action_id": "spoken-video-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        },
+        {
+          "node_id": "spoken-video-outline.point1",
+          "kind": "point",
+          "ordinal": 8,
+          "dependencies": [
+            "spoken-video-outline.opening"
+          ],
+          "num_predict": 1536,
+          "timeout_seconds": 180,
+          "output_schema": "point",
+          "output_binding": [
+            "spoken-video-outline.point1",
+            "spoken-video-outline.example1"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/point",
+              "to": "outline.key_points[0].point.text"
+            },
+            {
+              "from": "/example",
+              "to": "outline.key_points[0].example.text"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "spoken-video-outline.point1",
+              "spoken-video-outline.example1"
+            ],
+            "verification_action_id": "spoken-video-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        },
+        {
+          "node_id": "spoken-video-outline.point2",
+          "kind": "point",
+          "ordinal": 9,
+          "dependencies": [
+            "spoken-video-outline.opening",
+            "spoken-video-outline.point1"
+          ],
+          "num_predict": 1536,
+          "timeout_seconds": 180,
+          "output_schema": "point",
+          "output_binding": [
+            "spoken-video-outline.point2",
+            "spoken-video-outline.example2"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/point",
+              "to": "outline.key_points[1].point.text"
+            },
+            {
+              "from": "/example",
+              "to": "outline.key_points[1].example.text"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "spoken-video-outline.point2",
+              "spoken-video-outline.example2"
+            ],
+            "verification_action_id": "spoken-video-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        },
+        {
+          "node_id": "spoken-video-outline.point3",
+          "kind": "point",
+          "ordinal": 10,
+          "dependencies": [
+            "spoken-video-outline.opening",
+            "spoken-video-outline.point1",
+            "spoken-video-outline.point2"
+          ],
+          "num_predict": 1536,
+          "timeout_seconds": 180,
+          "output_schema": "point",
+          "output_binding": [
+            "spoken-video-outline.point3",
+            "spoken-video-outline.example3"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/point",
+              "to": "outline.key_points[2].point.text"
+            },
+            {
+              "from": "/example",
+              "to": "outline.key_points[2].example.text"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "spoken-video-outline.point3",
+              "spoken-video-outline.example3"
+            ],
+            "verification_action_id": "spoken-video-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        },
+        {
+          "node_id": "spoken-video-outline.close",
+          "kind": "close",
+          "ordinal": 11,
+          "dependencies": [
+            "spoken-video-outline.opening",
+            "spoken-video-outline.point1",
+            "spoken-video-outline.point2",
+            "spoken-video-outline.point3"
+          ],
+          "num_predict": 768,
+          "timeout_seconds": 180,
+          "output_schema": "close",
+          "output_binding": [
+            "spoken-video-outline.close",
+            "spoken-video-outline.cta"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/close",
+              "to": "outline.close.text"
+            },
+            {
+              "from": "/cta",
+              "to": "outline.cta.text"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "spoken-video-outline.close",
+              "spoken-video-outline.cta"
+            ],
+            "verification_action_id": "spoken-video-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        },
+        {
+          "node_id": "spoken-video-outline.bridges",
+          "kind": "bridges",
+          "ordinal": 12,
+          "dependencies": [
+            "spoken-video-outline.opening",
+            "spoken-video-outline.point1",
+            "spoken-video-outline.point2",
+            "spoken-video-outline.point3",
+            "spoken-video-outline.close"
+          ],
+          "num_predict": 1024,
+          "timeout_seconds": 180,
+          "output_schema": "bridges",
+          "output_binding": [
+            "spoken-video-outline.bridge1",
+            "spoken-video-outline.bridge2",
+            "spoken-video-outline.bridge3",
+            "spoken-video-outline.bridge4"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/bridges/0",
+              "to": "outline.bridges[0].bridge.text"
+            },
+            {
+              "from": "/bridges/1",
+              "to": "outline.bridges[1].bridge.text"
+            },
+            {
+              "from": "/bridges/2",
+              "to": "outline.bridges[2].bridge.text"
+            },
+            {
+              "from": "/bridges/3",
+              "to": "outline.bridges[3].bridge.text"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "spoken-video-outline.bridge1",
+              "spoken-video-outline.bridge2",
+              "spoken-video-outline.bridge3",
+              "spoken-video-outline.bridge4"
+            ],
+            "verification_action_id": "spoken-video-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        },
+        {
+          "node_id": "spoken-video-outline.production",
+          "kind": "production",
+          "ordinal": 13,
+          "dependencies": [
+            "spoken-video-outline.opening",
+            "spoken-video-outline.point1",
+            "spoken-video-outline.point2",
+            "spoken-video-outline.point3",
+            "spoken-video-outline.close",
+            "spoken-video-outline.bridges"
+          ],
+          "num_predict": 2048,
+          "timeout_seconds": 180,
+          "output_schema": "spoken-video-outline.production",
+          "output_binding": [
+            "spoken-video-outline.length-basis",
+            "spoken-video-outline.note1",
+            "spoken-video-outline.note2"
+          ],
+          "allowed_dispatches": 1,
+          "prose_bindings": [
+            {
+              "from": "/production_notes/0",
+              "to": "outline.production_notes[0].text"
+            },
+            {
+              "from": "/production_notes/1",
+              "to": "outline.production_notes[1].text"
+            },
+            {
+              "from": "/finished_length_estimate",
+              "to": "outline.finished_length.estimate"
+            },
+            {
+              "from": "/finished_length_basis",
+              "to": "outline.finished_length.basis.text"
+            },
+            {
+              "from": "/actions/0/text",
+              "to": "actions[0].text"
+            },
+            {
+              "from": "/actions/0/completion_checks/*",
+              "to": "actions[0].completion_checks[*]"
+            },
+            {
+              "from": "/actions/1/text",
+              "to": "actions[1].text"
+            },
+            {
+              "from": "/actions/1/completion_checks/*",
+              "to": "actions[1].completion_checks[*]"
+            },
+            {
+              "from": "/actions/2/text",
+              "to": "actions[2].text"
+            },
+            {
+              "from": "/actions/2/completion_checks/*",
+              "to": "actions[2].completion_checks[*]"
+            }
+          ],
+          "assumption_binding": {
+            "from": "/assumptions/*",
+            "to": "outline.assumptions in fixed global node/list order; deterministic request_id.assumption1..8",
+            "component_ids": [
+              "spoken-video-outline.length-basis",
+              "spoken-video-outline.note1",
+              "spoken-video-outline.note2"
+            ],
+            "verification_action_id": "spoken-video-outline.verify"
+          },
+          "prose_preservation": "Decoded JSON string UTF-8 byte equality, no trim/normalization/rewrite/quote substitution; arrays keep exact order"
+        }
+      ],
+      "assembly_plan_entry": {
+        "request_id": "spoken-video-outline",
+        "point_count": 3,
+        "production_note_count": 2,
+        "verification_action_key": "verify",
+        "spans": [
+          {
+            "key": "angle-round-table",
+            "source_id": "SYN-ANGLES",
+            "anchor_id": "angle-round-table",
+            "source_sha256": "98dc0f53df2ca8360f564a10c184fb323a2296925b1441c3a8f4b68c7bd7b8b2",
+            "excerpt_sha256": "47dcf8a849b613797706f97e9272ac2d2bfab80e0ad0b5343a944de7afb6da3f",
+            "excerpt_byte_start": 0,
+            "excerpt_byte_end": 194,
+            "span_sha256": "47dcf8a849b613797706f97e9272ac2d2bfab80e0ad0b5343a944de7afb6da3f"
+          },
+          {
+            "key": "hook-video",
+            "source_id": "SYN-HOOKS",
+            "anchor_id": "hook-video",
+            "source_sha256": "b7b4e1138eedf65a131f8b9c128a6a83a0eae1ddf5c0de9b29d438abbc5ed6a4",
+            "excerpt_sha256": "55645b8930324d7d134ac579de1a57f12e5b2063a985a741bc864923972244d9",
+            "excerpt_byte_start": 0,
+            "excerpt_byte_end": 98,
+            "span_sha256": "55645b8930324d7d134ac579de1a57f12e5b2063a985a741bc864923972244d9"
+          },
+          {
+            "key": "withdrawn-launch",
+            "source_id": "SYN-POLICY",
+            "anchor_id": "withdrawn-launch",
+            "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+            "excerpt_sha256": "9ddfecbc96de07263c8d2b38d06e6ff94aeb6cd9687925470c3094e8392339a2",
+            "excerpt_byte_start": 0,
+            "excerpt_byte_end": 136,
+            "span_sha256": "9ddfecbc96de07263c8d2b38d06e6ff94aeb6cd9687925470c3094e8392339a2"
+          },
+          {
+            "key": "cadence-build",
+            "source_id": "SYN-POLICY",
+            "anchor_id": "cadence-build",
+            "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+            "excerpt_sha256": "e2c96103198b26cb2f901c9487952efe49321e23363a2add54aa8b0214a7d0db",
+            "excerpt_byte_start": 0,
+            "excerpt_byte_end": 148,
+            "span_sha256": "e2c96103198b26cb2f901c9487952efe49321e23363a2add54aa8b0214a7d0db"
+          },
+          {
+            "key": "cadence-recurring",
+            "source_id": "SYN-POLICY",
+            "anchor_id": "cadence-recurring",
+            "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+            "excerpt_sha256": "318b418212530cd369fbb93eca65199451ea2a6623c4018138dab607d972f31c",
+            "excerpt_byte_start": 0,
+            "excerpt_byte_end": 149,
+            "span_sha256": "318b418212530cd369fbb93eca65199451ea2a6623c4018138dab607d972f31c"
+          }
+        ],
+        "component_bindings": [
+          {
+            "slot": "opening",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "point1",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "example1",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "point2",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "example2",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "point3",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "example3",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "bridge1",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "bridge2",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "bridge3",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "bridge4",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "close",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "cta",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "length-basis",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video"
+            ]
+          },
+          {
+            "slot": "note1",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video",
+              "withdrawn-launch",
+              "cadence-build",
+              "cadence-recurring"
+            ]
+          },
+          {
+            "slot": "note2",
+            "span_keys": [
+              "angle-round-table",
+              "hook-video",
+              "withdrawn-launch",
+              "cadence-build",
+              "cadence-recurring"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "key": "verify",
+            "kind": "verification",
+            "purpose": "Verify intended factual claims, historical attribution and sources before use",
+            "component_slots": [
+              "opening",
+              "point1",
+              "example1",
+              "point2",
+              "example2",
+              "point3",
+              "example3",
+              "bridge1",
+              "bridge2",
+              "bridge3",
+              "bridge4",
+              "close",
+              "cta",
+              "length-basis",
+              "note1",
+              "note2"
+            ],
+            "depends_on": []
+          },
+          {
+            "key": "draft",
+            "kind": "production",
+            "purpose": "Draft and storyboard the spoken short video",
+            "component_slots": [
+              "opening",
+              "point1",
+              "example1",
+              "point2",
+              "example2",
+              "point3",
+              "example3",
+              "bridge1",
+              "bridge2",
+              "bridge3",
+              "bridge4",
+              "close",
+              "cta",
+              "length-basis",
+              "note1",
+              "note2"
+            ],
+            "depends_on": [
+              "verify"
+            ]
+          },
+          {
+            "key": "review",
+            "kind": "production",
+            "purpose": "Review the resulting draft against original sources, audience and finished-length target",
+            "component_slots": [
+              "opening",
+              "point1",
+              "example1",
+              "point2",
+              "example2",
+              "point3",
+              "example3",
+              "bridge1",
+              "bridge2",
+              "bridge3",
+              "bridge4",
+              "close",
+              "cta",
+              "length-basis",
+              "note1",
+              "note2"
+            ],
+            "depends_on": [
+              "verify",
+              "draft"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "output_schemas": {
+    "opening": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "opening": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 800
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 800
+          },
+          "minItems": 0,
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "title",
+        "opening",
+        "assumptions"
+      ]
+    },
+    "point": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "point": {
+          "type": "string",
+          "minLength": 60,
+          "maxLength": 1800
+        },
+        "example": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 900
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 800
+          },
+          "minItems": 0,
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "point",
+        "example",
+        "assumptions"
+      ]
+    },
+    "close": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "close": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 800
+        },
+        "cta": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 500
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 800
+          },
+          "minItems": 0,
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "close",
+        "cta",
+        "assumptions"
+      ]
+    },
+    "bridges": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "bridges": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 600
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 800
+          },
+          "minItems": 0,
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "bridges",
+        "assumptions"
+      ]
+    },
+    "discussion-outline.production": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "production_notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 40,
+            "maxLength": 800
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "finished_length_estimate": {
+          "type": "integer",
+          "minimum": 600,
+          "maximum": 900
+        },
+        "finished_length_basis": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 500
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 30,
+                "maxLength": 1200
+              },
+              "completion_checks": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 20,
+                  "maxLength": 500
+                },
+                "minItems": 1,
+                "maxItems": 4
+              }
+            },
+            "required": [
+              "text",
+              "completion_checks"
+            ]
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 800
+          },
+          "minItems": 0,
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "production_notes",
+        "finished_length_estimate",
+        "finished_length_basis",
+        "actions",
+        "assumptions"
+      ]
+    },
+    "spoken-video-outline.production": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "production_notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 40,
+            "maxLength": 800
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "finished_length_estimate": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 90
+        },
+        "finished_length_basis": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 500
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 30,
+                "maxLength": 1200
+              },
+              "completion_checks": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 20,
+                  "maxLength": 500
+                },
+                "minItems": 1,
+                "maxItems": 4
+              }
+            },
+            "required": [
+              "text",
+              "completion_checks"
+            ]
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 800
+          },
+          "minItems": 0,
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "production_notes",
+        "finished_length_estimate",
+        "finished_length_basis",
+        "actions",
+        "assumptions"
+      ]
+    }
+  }
+}

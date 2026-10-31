@@ -1,0 +1,234 @@
+{
+  "schema": "cairntir.i04.historical-context.v1",
+  "kind": "historical_provisional",
+  "project": "Synthetic library workshop",
+  "attribution": "historical_record_unverified",
+  "human_confirmation": false,
+  "sources": [
+    {
+      "source_id": "SYN-ANGLES",
+      "path": "sources/angles.md",
+      "original_path": "synthetic/library-workshop/angles.md",
+      "bytes": 657,
+      "sha256": "20d55c59059ac9101cc86677d4859df7f802d3dda8f412694eae975e3cddbcd9",
+      "anchors": [
+        {
+          "id": "angle-enemies",
+          "anchor": "## Catalog comparison",
+          "anchor_occurrences": 1,
+          "excerpt": "## Catalog comparison\r\n**Frame:** The invented library workshop treats agreement as a signal requiring a fresh shelf check.\r\n**Best for:** A provisional discussion of two synthetic catalog cards.\r\n",
+          "excerpt_sha256": "0a860a7c94909d1cbf4fb2a826973830ff5624fb2d6a0d96100e0e2987085fad",
+          "byte_start": 111,
+          "byte_length": 197
+        },
+        {
+          "id": "angle-round-table",
+          "anchor": "## Shelf review",
+          "anchor_occurrences": 1,
+          "excerpt": "## Shelf review\r\n**Frame:** Independent invented shelf notes can reveal a missing observation.\r\n**Best for:** A short concept demonstration with labelled mock cards.\r\n",
+          "excerpt_sha256": "c19cfb79f17d2b9d5087a52c141a3418b422cc6bf112f6f655142fd54c7b14b7",
+          "byte_start": 310,
+          "byte_length": 167
+        },
+        {
+          "id": "angle-founder",
+          "anchor": "## Workshop story",
+          "anchor_occurrences": 1,
+          "excerpt": "## Workshop story\r\n**Frame:** An imaginary workshop organizer proposes a catalog exercise.\r\n**Best for:** An attributed account that supplies no current operational evidence.\r\n",
+          "excerpt_sha256": "90c106dd2aa735e0a9bdaa317ca9c6f9700fc7dddbaa999b432598922df49f8b",
+          "byte_start": 479,
+          "byte_length": 176
+        }
+      ]
+    },
+    {
+      "source_id": "SYN-HOOKS",
+      "path": "sources/hooks.md",
+      "original_path": "synthetic/library-workshop/hooks.md",
+      "bytes": 664,
+      "sha256": "b7b4e1138eedf65a131f8b9c128a6a83a0eae1ddf5c0de9b29d438abbc5ed6a4",
+      "anchors": [
+        {
+          "id": "hook-builder",
+          "anchor": "## Workshop short note",
+          "anchor_occurrences": 1,
+          "excerpt": "## Workshop short note\r\nAn invented organizer proposed a library catalog exercise; no present implementation is established.\r\n",
+          "excerpt_sha256": "c82d6375b0581f3b5cf2c60fde18bf4b7d0f921c0815d1e06dc34480a505407b",
+          "byte_start": 111,
+          "byte_length": 126
+        },
+        {
+          "id": "hook-twitter",
+          "anchor": "## Catalog short note",
+          "anchor_occurrences": 1,
+          "excerpt": "## Catalog short note\r\nTwo invented catalog cards agree on a shelf label; what still needs checking?\r\n",
+          "excerpt_sha256": "c2d5a08242af2312603adbe0c98154fb780f9b01dfe539b7286d2d92f84905d2",
+          "byte_start": 239,
+          "byte_length": 102
+        },
+        {
+          "id": "hook-reddit",
+          "anchor": "## Catalog discussion",
+          "anchor_occurrences": 1,
+          "excerpt": "## Catalog discussion\r\nWhich observation would distinguish agreement from a shared outdated catalog note?\r\n",
+          "excerpt_sha256": "0d1741692ab1f713dbce5bed5b7e0ae9920cde5a84e3e0620155ad3778b3dc9b",
+          "byte_start": 343,
+          "byte_length": 107
+        },
+        {
+          "id": "hook-linkedin",
+          "anchor": "## Workshop letter",
+          "anchor_occurrences": 1,
+          "excerpt": "## Workshop letter\r\nAn imaginary library workshop can rehearse checking the evidence behind a catalog entry.\r\n",
+          "excerpt_sha256": "67495de7c44a93cc1a7c50ce176f463c04d2a2bdac4540beb4ae48f667103f15",
+          "byte_start": 452,
+          "byte_length": 110
+        },
+        {
+          "id": "hook-video",
+          "anchor": "## Shelf video",
+          "anchor_occurrences": 1,
+          "excerpt": "## Shelf video\r\nCompare two invented shelf cards and ask which missing observation matters next.\r\n",
+          "excerpt_sha256": "55645b8930324d7d134ac579de1a57f12e5b2063a985a741bc864923972244d9",
+          "byte_start": 564,
+          "byte_length": 98
+        }
+      ]
+    },
+    {
+      "source_id": "SYN-POLICY",
+      "path": "sources/policy.md",
+      "original_path": "synthetic/library-workshop/policy.md",
+      "bytes": 550,
+      "sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+      "anchors": [
+        {
+          "id": "withdrawn-launch",
+          "anchor": "## Superseded workshop date",
+          "anchor_occurrences": 1,
+          "excerpt": "## Superseded workshop date\r\nThe imaginary workshop date of May 17 was withdrawn. Do not restore that date or imply a confirmed event.\r\n",
+          "excerpt_sha256": "9ddfecbc96de07263c8d2b38d06e6ff94aeb6cd9687925470c3094e8392339a2",
+          "byte_start": 111,
+          "byte_length": 136
+        },
+        {
+          "id": "cadence-build",
+          "anchor": "## Preparation cadence",
+          "anchor_occurrences": 1,
+          "excerpt": "## Preparation cadence\r\nPrepare one discussion outline and one spoken concept. All examples are invented and all source claims remain provisional.\r\n",
+          "excerpt_sha256": "e2c96103198b26cb2f901c9487952efe49321e23363a2add54aa8b0214a7d0db",
+          "byte_start": 249,
+          "byte_length": 148
+        },
+        {
+          "id": "cadence-recurring",
+          "anchor": "## Recurring review",
+          "anchor_occurrences": 1,
+          "excerpt": "## Recurring review\r\nRecheck source wording before reuse. Drafts are planning artifacts and supply no publication permission or human confirmation.\r\n",
+          "excerpt_sha256": "318b418212530cd369fbb93eca65199451ea2a6623c4018138dab607d972f31c",
+          "byte_start": 399,
+          "byte_length": 149
+        }
+      ]
+    }
+  ],
+  "ideas": [
+    {
+      "id": "catalog-comparison",
+      "title": "Catalog comparison",
+      "source_ref": {
+        "source_id": "SYN-ANGLES",
+        "anchor_id": "angle-enemies"
+      },
+      "hooks": [
+        {
+          "id": "catalog-short",
+          "channel": "short-note",
+          "format": "short_post",
+          "source_ref": {
+            "source_id": "SYN-HOOKS",
+            "anchor_id": "hook-twitter"
+          },
+          "text": "Two invented catalog cards agree on a shelf label; what still needs checking?"
+        },
+        {
+          "id": "catalog-discussion",
+          "channel": "workshop",
+          "format": "discussion",
+          "source_ref": {
+            "source_id": "SYN-HOOKS",
+            "anchor_id": "hook-reddit"
+          },
+          "text": "Which observation would distinguish agreement from a shared outdated catalog note?"
+        }
+      ]
+    },
+    {
+      "id": "shelf-review",
+      "title": "Shelf review",
+      "source_ref": {
+        "source_id": "SYN-ANGLES",
+        "anchor_id": "angle-round-table"
+      },
+      "hooks": [
+        {
+          "id": "shelf-video",
+          "channel": "concept-video",
+          "format": "spoken_video",
+          "source_ref": {
+            "source_id": "SYN-HOOKS",
+            "anchor_id": "hook-video"
+          },
+          "text": "Compare two invented shelf cards and ask which missing observation matters next."
+        }
+      ]
+    },
+    {
+      "id": "workshop-story",
+      "title": "Workshop story",
+      "source_ref": {
+        "source_id": "SYN-ANGLES",
+        "anchor_id": "angle-founder"
+      },
+      "hooks": [
+        {
+          "id": "workshop-short",
+          "channel": "short-note",
+          "format": "build_log",
+          "source_ref": {
+            "source_id": "SYN-HOOKS",
+            "anchor_id": "hook-builder"
+          },
+          "text": "An invented organizer proposed a library catalog exercise; no present implementation is established."
+        },
+        {
+          "id": "workshop-letter",
+          "channel": "letter",
+          "format": "professional_post",
+          "source_ref": {
+            "source_id": "SYN-HOOKS",
+            "anchor_id": "hook-linkedin"
+          },
+          "text": "An imaginary library workshop can rehearse checking the evidence behind a catalog entry."
+        }
+      ]
+    }
+  ],
+  "constraints_refs": [
+    {
+      "source_id": "SYN-POLICY",
+      "anchor_id": "cadence-build"
+    },
+    {
+      "source_id": "SYN-POLICY",
+      "anchor_id": "cadence-recurring"
+    }
+  ],
+  "withdrawn_date_refs": [
+    {
+      "source_id": "SYN-POLICY",
+      "anchor_id": "withdrawn-launch"
+    }
+  ],
+  "claims_policy": "This entirely synthetic historical corpus supplies unverified context, no current operational evidence, no human confirmation and no permission to publish."
+}

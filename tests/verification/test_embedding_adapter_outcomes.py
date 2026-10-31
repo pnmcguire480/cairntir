@@ -3,6 +3,7 @@ from __future__ import annotations
 import builtins
 import os
 import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -13,6 +14,22 @@ from cairntir.memory.embeddings import (
     SentenceTransformerProvider,
     embed_query_readonly,
 )
+
+
+def _write_assets(root: Path) -> None:
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "model.onnx").write_bytes(b"external model loader fixture")
+    for name in (
+        "config.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "special_tokens_map.json",
+    ):
+        (root / name).write_text("{}", encoding="utf-8")
+
+
+def _descriptor(model: str) -> dict:
+    return {"model": model, "dim": 2, "model_file": "model.onnx", "sources": {}}
 
 
 @pytest.mark.parametrize(
@@ -48,10 +65,15 @@ def test_unavailable_model_names_its_cache_and_correct_download_advice(
     monkeypatch.setenv("HF_HUB_OFFLINE", offline)
     monkeypatch.delenv("FASTEMBED_CACHE_PATH", raising=False)
 
-    def unavailable(**kwargs):
-        raise OSError("model files unavailable")
+    class UnavailableModel:
+        @staticmethod
+        def list_supported_models():
+            return [_descriptor("missing/model")]
 
-    monkeypatch.setitem(sys.modules, "fastembed", SimpleNamespace(TextEmbedding=unavailable))
+        def __init__(self, **kwargs):
+            raise OSError("model files unavailable")
+
+    monkeypatch.setitem(sys.modules, "fastembed", SimpleNamespace(TextEmbedding=UnavailableModel))
     with pytest.raises(EmbeddingError) as raised:
         FastEmbedProvider("missing/model").embed(["memory"])
     message = str(raised.value)
@@ -66,6 +88,10 @@ def test_native_model_output_cannot_corrupt_stdio_and_streams_recover_after_fail
     tmp_cairntir_home, monkeypatch, capfd, factory, fail
 ):
     class NoisyModel:
+        @staticmethod
+        def list_supported_models():
+            return [_descriptor(FastEmbedProvider.DEFAULT_MODEL)]
+
         def __init__(self, *args, **kwargs):
             os.write(1, b"native model startup\n")
             print("python model startup")
@@ -84,6 +110,10 @@ def test_native_model_output_cannot_corrupt_stdio_and_streams_recover_after_fail
             assert kwargs == {"normalize_embeddings": True, "convert_to_numpy": True}
             return self.embed(texts)
 
+    if factory is FastEmbedProvider:
+        cache = tmp_cairntir_home / "models"
+        monkeypatch.setenv("FASTEMBED_CACHE_PATH", str(cache))
+        _write_assets(cache / FastEmbedProvider.DEFAULT_MODEL.rsplit("/", 1)[-1])
     monkeypatch.setitem(sys.modules, "fastembed", SimpleNamespace(TextEmbedding=NoisyModel))
     monkeypatch.setitem(
         sys.modules, "sentence_transformers", SimpleNamespace(SentenceTransformer=NoisyModel)
@@ -107,6 +137,10 @@ def test_model_without_dimension_is_rejected_before_accepting_memory(
     tmp_cairntir_home, monkeypatch, factory
 ):
     class MissingDimension:
+        @staticmethod
+        def list_supported_models():
+            return [_descriptor(FastEmbedProvider.DEFAULT_MODEL)]
+
         def __init__(self, *args, **kwargs):
             pass
 
@@ -116,6 +150,10 @@ def test_model_without_dimension_is_rejected_before_accepting_memory(
         def embed(self, texts):
             return []
 
+    if factory is FastEmbedProvider:
+        cache = tmp_cairntir_home / "models"
+        monkeypatch.setenv("FASTEMBED_CACHE_PATH", str(cache))
+        _write_assets(cache / FastEmbedProvider.DEFAULT_MODEL.rsplit("/", 1)[-1])
     monkeypatch.setitem(sys.modules, "fastembed", SimpleNamespace(TextEmbedding=MissingDimension))
     monkeypatch.setitem(
         sys.modules, "sentence_transformers", SimpleNamespace(SentenceTransformer=MissingDimension)
@@ -141,16 +179,14 @@ def test_readonly_model_uses_existing_assets_and_never_rewrites_them(
 ):
     cache = tmp_cairntir_home / "models"
     assets = cache / directory
-    assets.mkdir(parents=True)
-    model = assets / "model.onnx"
-    model.write_bytes(b"external model loader fixture")
+    _write_assets(assets)
     monkeypatch.setenv("FASTEMBED_CACHE_PATH", str(cache))
     calls = []
 
     class LocalModel:
         @staticmethod
         def list_supported_models():
-            return [{"model": "test/example", "model_file": "model.onnx", "sources": {}}]
+            return [_descriptor("test/example")]
 
         def __init__(self, **kwargs):
             calls.append(kwargs)

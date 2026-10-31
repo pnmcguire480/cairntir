@@ -3,15 +3,26 @@
 from __future__ import annotations
 
 import hashlib
+import html
 import json
 import re
 from dataclasses import dataclass
-from typing import Final, Literal
+from datetime import UTC, date, datetime
+from typing import Any, Final, Literal
 
 from cairntir.contracts import Store
-from cairntir.errors import MemoryStoreError
+from cairntir.errors import MemoryStoreError, ProjectionError
 from cairntir.learning import list_discoveries, record_discovery
+from cairntir.memory.store import DrawerStore
 from cairntir.memory.taxonomy import Drawer, Layer
+from cairntir.procedures import (
+    PracticeLifecycleReceipt,
+    PracticeSupersessionReceipt,
+    ProcedureBook,
+    ProcedureError,
+    practice_read_view,
+)
+from cairntir.provenance import Sensitivity
 
 ReaderLevel = Literal["novice", "intermediate", "expert"]
 TeachBackPhase = Literal["immediate", "delayed"]
@@ -19,6 +30,8 @@ TeachBackPhase = Literal["immediate", "delayed"]
 READER_LEVELS: Final[tuple[ReaderLevel, ...]] = ("novice", "intermediate", "expert")
 TEACH_BACK_PHASES: Final[tuple[TeachBackPhase, ...]] = ("immediate", "delayed")
 CODEGLASS_ROOM: Final[str] = "codeglass"
+CHECK_REPORT_SCHEMA: Final[str] = "cairntir.codeglass-check-report.v1"
+HUMANFLOW_SCHEMA: Final[str] = "cairntir.humanflow-walkthrough.v1"
 _WALKTHROUGH_KIND: Final[str] = "codeglass.walkthrough"
 _TEACHBACK_KIND: Final[str] = "codeglass.teachback"
 _SECTION_NAMES: Final[tuple[str, ...]] = ("what", "how", "where", "when", "why")
@@ -58,9 +71,33 @@ def record_walkthrough(
     evidence_ids: tuple[int, ...],
     glossary: str,
     danger_zones: str,
+    check_report_schema: str | None = None,
+    humanflow_metadata: dict[str, Any] | None = None,
 ) -> Drawer:
     """Persist a complete, cited walkthrough after deterministic validation."""
+    if humanflow_metadata is not None and (
+        check_report_schema != CHECK_REPORT_SCHEMA
+        or set(humanflow_metadata)
+        != {
+            "humanflow_schema",
+            "bundle_sha256",
+            "response_sha256",
+            "adapter",
+            "humanflow_reader_level",
+            "claim_anchors",
+            "claims",
+        }
+        or humanflow_metadata["humanflow_schema"] != HUMANFLOW_SCHEMA
+        or any(
+            not isinstance(humanflow_metadata[key], str)
+            or re.fullmatch(r"[0-9a-f]{64}", humanflow_metadata[key]) is None
+            for key in ("bundle_sha256", "response_sha256")
+        )
+    ):
+        raise ValueError("unsupported HumanFlow metadata")
     clean_target = target.strip()
+    if check_report_schema not in (None, CHECK_REPORT_SCHEMA):
+        raise ValueError("unsupported CodeGlass check report schema")
     if not clean_target:
         raise ValueError("CodeGlass target must be non-empty")
     if reader_level not in READER_LEVELS:
@@ -112,6 +149,8 @@ def record_walkthrough(
                 "target": clean_target,
                 "reader_level": reader_level,
                 "evidence_drawer_ids": list(evidence_ids),
+                **({"check_report_schema": check_report_schema} if check_report_schema else {}),
+                **(humanflow_metadata or {}),
                 "walkthrough_fingerprint": walkthrough_fingerprint(
                     wing=wing,
                     target=clean_target,
@@ -122,6 +161,96 @@ def record_walkthrough(
             },
         )
     )
+
+
+def render_check_report(report: dict[str, Any]) -> str:
+    """Render an evidence snapshot without executing checks or inferring rule credit."""
+
+    def cell(value: object) -> str:
+        text = "UNKNOWN" if value is None else str(value)
+        text = html.escape(text, quote=True)
+        for character in "|`[]()":
+            text = text.replace(character, f"&#{ord(character)};")
+        return text.replace("\r", "").replace("\n", "<br>")
+
+    def link(drawer_id: int | None) -> str:
+        return f"[[cairntir-sync/receipts/drawer-{drawer_id}]]" if drawer_id else "UNKNOWN"
+
+    lines = [
+        "## Check outcomes",
+        "Publication snapshot. Historical outcomes and current artifact availability are separate.",
+        "Errors prevented: UNKNOWN. Test passes do not establish rule causation.",
+    ]
+    for attempt in report["attempts"]:
+        lines.extend(("", f"### Attempt {cell(attempt['attempt_id'])}"))
+        for source in attempt["source_inputs"]:
+            lines.append(f"Source: {cell(source['path'])} — {cell(source['sha256'])}")
+        for stage in attempt["stages"]:
+            required = stage["required"]
+            lines.extend(
+                (
+                    "",
+                    f"#### {cell(stage['stage_id'])}: {cell(stage['status'])}",
+                    f"Command: {cell(stage['command_status'])}; "
+                    f"artifacts: {cell(stage['artifact_availability'])}.",
+                    f"Required minimum: {required['passed']}/{required['total']} passed; "
+                    f"{required['executed']}/{required['total']} executed; "
+                    f"{required['collected']}/{required['total']} collected. "
+                    "Whole-suite completeness: UNKNOWN.",
+                    f"Code coverage: {cell(stage['coverage'])}",
+                    f"Stage receipt: {link(stage['stage_result_id'])}",
+                    "",
+                    "| Check | Outcome | Required | JUnit SHA256 | Evidence |",
+                    "| --- | --- | --- | --- | --- |",
+                )
+            )
+            for case in stage["cases"]:
+                lines.append(
+                    f"| {cell(case['classname'])} / {cell(case['name'])} | "
+                    f"{cell(case['outcome'])} | {case['required']} | "
+                    f"{cell(case['junit_sha256'])} | {link(case['stage_result_id'])} |"
+                )
+            lines.extend(f"Diagnostic: {cell(item)}" for item in stage["diagnostics"])
+    lines.extend(("", "## Attempt changes"))
+    if not report["trend"]:
+        lines.append("No adjacent measured attempts to compare.")
+    for trend in report["trend"]:
+        lines.append(
+            f"{cell(trend['stage_id'])}: {cell(trend['from_attempt_id'])} → "
+            f"{cell(trend['to_attempt_id'])}: {cell(trend['comparability'])}"
+        )
+        lines.extend(
+            f"- {cell(row['classname'])} / {cell(row['name'])}: "
+            f"{cell(row['from'])} → {cell(row['to'])}"
+            for row in trend["changes"]
+        )
+    lines.extend(("", "## Explicit practice observations"))
+    if not report["observations"]:
+        lines.append("No practice attribution supplied; impact remains UNKNOWN.")
+    for row in report["observations"]:
+        lines.extend(
+            (
+                f"- {link(row['receipt_id'])}: {cell(row['origin'])}, "
+                f"{cell(row['scope'])} {link(row['stage_result_id'])}; "
+                f"procedure {link(row['procedure_id'])}, root {link(row['root_id'])}, "
+                f"version {cell(row['version'])}, revision {cell(row['revision_sha256'])}.",
+                f"  Triggered: {cell(row['triggered'])}; "
+                f"false positive: {cell(row['false_positive'])}; "
+                f"overridden: {cell(row['overridden'])}; "
+                f"baseline impact: {cell(row['baseline_impact'])}; "
+                f"practice impact: {cell(row['practice_impact'])}; "
+                f"unit: {cell(row['impact_unit'])}; "
+                f"supersedes: {link(row['supersedes_id'])}.",
+            )
+        )
+    lines.extend(("", "## Captured event evidence"))
+    events = report.get("event_ids", [])
+    lines.append(
+        ", ".join(cell(item) for item in events)
+        if events
+        else "UNKNOWN: no event references available."
+    )
+    return "\n".join(lines)
 
 
 def walkthrough_fingerprint(
@@ -360,3 +489,284 @@ def _concepts(drawer: Drawer | None, key: str) -> tuple[str, ...]:
 
 def _format_score(value: float | None) -> str:
     return f"{value:.0%}" if value is not None else "not recorded"
+
+
+@dataclass(frozen=True, slots=True)
+class PracticeRegisterRevision:
+    """One original stored revision and its content and metadata fingerprints."""
+
+    drawer_id: int
+    supersedes_id: int | None
+    state: str
+    revision_sha256: str
+    content: str
+    content_sha256: str
+    metadata_sha256: str
+    owner: str | None
+    version: str | None
+    rationale: str | None
+    review_due: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class PracticeRegisterRow:
+    """The actual current leaf, governance and retrievable family history."""
+
+    root_id: int
+    current_id: int
+    status: str
+    title: str
+    owner: str | None
+    version: str | None
+    rationale: str | None
+    review_due: str | None
+    due: bool | None
+    review_id: int | None
+    history: tuple[PracticeRegisterRevision, ...]
+    lifecycle: tuple[PracticeLifecycleReceipt, ...] = ()
+    assigned_tier: str | None = None
+    effective_tier: str | None = None
+    mode: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class PracticeConflictRow:
+    """A public comparison of original rules with explicit revision freshness."""
+
+    conflict_id: int
+    first_id: int
+    second_id: int
+    first_severity: str
+    second_severity: str
+    first_context: tuple[str, ...]
+    second_context: tuple[str, ...]
+    situation: tuple[str, ...]
+    status: str
+    winner_id: int | None
+    basis: str | None
+    current: bool
+    source_ids: tuple[int, ...]
+    origin: str
+    first_title: str
+    second_title: str
+
+
+@dataclass(frozen=True, slots=True)
+class PracticeRegisterSnapshot:
+    """A complete authorized wing register evaluated at an explicit review date."""
+
+    wing: str
+    as_of: str
+    rows: tuple[PracticeRegisterRow, ...]
+    conflicts: tuple[PracticeConflictRow, ...] = ()
+    supersessions: tuple[PracticeSupersessionReceipt, ...] = ()
+
+
+def build_practice_register(
+    store: DrawerStore, *, wing: str, as_of: str
+) -> PracticeRegisterSnapshot:
+    """Read authenticated current practice families without changing the store."""
+    if not isinstance(wing, str) or not wing.strip():
+        raise ValueError("practice register requires an explicit wing")
+    if not isinstance(as_of, str) or date.fromisoformat(as_of).isoformat() != as_of:
+        raise ValueError("practice register date must be YYYY-MM-DD")
+    view = practice_read_view(store)
+    book = ProcedureBook(view, {})
+    checked: dict[int, Drawer] = {}
+    now = datetime.now(UTC)
+
+    def source(drawer_id: int) -> Drawer:
+        if drawer_id in checked:
+            return checked[drawer_id]
+        drawer = view.get(drawer_id)
+        provenance = view.get_provenance(drawer_id)
+        if (
+            drawer is None
+            or drawer.wing != wing
+            or provenance is None
+            or provenance.sensitivity is Sensitivity.SECRET
+            or (provenance.valid_from is not None and provenance.valid_from > now)
+            or (provenance.valid_until is not None and provenance.valid_until <= now)
+        ):
+            raise ProjectionError("practice register unavailable")
+        checked[drawer_id] = drawer
+        for relation in view.portable_relations(drawer_id):
+            source(relation["target_drawer_id"])
+        return drawer
+
+    rows: list[PracticeRegisterRow] = []
+    titles: dict[int, str] = {}
+    conflicts: list[PracticeConflictRow] = []
+    with book.complete_history(wing=wing):
+        current = book.list(wing=wing, active_only=False)
+        roots: set[int] = set()
+        for procedure in current:
+            family = book.history(procedure.drawer_id)
+            if not family or family[-1] != procedure or family[0].drawer_id in roots:
+                raise ProcedureError("practice family changed or is incomplete")
+            roots.add(family[0].drawer_id)
+            history: list[PracticeRegisterRevision] = []
+            for revision in family:
+                titles[revision.drawer_id] = revision.spec.title
+                drawer = source(revision.drawer_id)
+                for evidence_id in revision.spec.evidence_ids:
+                    source(evidence_id)
+                if revision.evaluation_id is not None:
+                    evaluation = book.get_evaluation(revision.evaluation_id)
+                    source(evaluation.drawer_id)
+                    for case in evaluation.cases:
+                        for evidence_id in (
+                            case.evidence_id,
+                            case.baseline_prediction_id,
+                            case.baseline_observation_id,
+                            case.candidate_prediction_id,
+                            case.candidate_observation_id,
+                        ):
+                            source(evidence_id)
+                governance = revision.spec.governance
+                metadata = json.dumps(
+                    drawer.metadata,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    allow_nan=False,
+                )
+                history.append(
+                    PracticeRegisterRevision(
+                        revision.drawer_id,
+                        revision.supersedes_id,
+                        revision.state,
+                        revision.revision_sha256,
+                        drawer.content,
+                        hashlib.sha256(drawer.content.encode("utf-8")).hexdigest(),
+                        hashlib.sha256(metadata.encode("utf-8")).hexdigest(),
+                        governance.owner if governance else None,
+                        governance.version if governance else None,
+                        governance.rationale if governance else None,
+                        governance.review_due if governance else None,
+                    )
+                )
+            reviews = book.review_history(procedure.drawer_id)
+            for review in reviews:
+                source(review.drawer_id)
+                for evidence_id in (
+                    *review.assessment.evidence_ids,
+                    *review.assessment.observation_ids,
+                ):
+                    source(evidence_id)
+            matching = [
+                review
+                for review in reviews
+                if review.assessment.revision_sha256 == procedure.revision_sha256
+            ]
+            latest = matching[-1] if matching else None
+            if latest is not None and latest.reviewed_on > as_of:
+                raise ProcedureError("register date precedes a recorded review")
+            governance = procedure.spec.governance
+            deadline = (
+                latest.next_review_due if latest else governance.review_due if governance else None
+            )
+            status = (
+                "active_governance_incomplete"
+                if procedure.state == "promoted" and governance is None
+                else "active"
+                if procedure.state == "promoted"
+                else "withdrawn"
+                if procedure.state in {"expired", "rejected"}
+                else "pending"
+            )
+            lifecycle = book.lifecycle_history(procedure.drawer_id)
+            for event in lifecycle:
+                source(event.drawer_id)
+                for evidence_id in event.evidence_ids:
+                    source(evidence_id)
+            latest_phase = lifecycle[-1] if lifecycle else None
+            phase_applies = (
+                latest_phase is not None
+                and latest_phase.epoch_id == book._practice_epoch(procedure)
+                and procedure.state not in {"expired", "rejected"}
+            )
+            if latest_phase is not None:
+                status = (
+                    latest_phase.state
+                    if phase_applies
+                    else "withdrawn"
+                    if procedure.state in {"expired", "rejected"}
+                    else "awaiting_lifecycle_reset"
+                )
+            rows.append(
+                PracticeRegisterRow(
+                    family[0].drawer_id,
+                    procedure.drawer_id,
+                    status,
+                    procedure.spec.title,
+                    governance.owner if governance else None,
+                    governance.version if governance else None,
+                    governance.rationale if governance else None,
+                    deadline,
+                    deadline <= as_of if deadline else None,
+                    latest.drawer_id if latest else None,
+                    tuple(history),
+                    lifecycle,
+                    latest_phase.assigned_tier if latest_phase and phase_applies else None,
+                    latest_phase.effective_tier if latest_phase and phase_applies else None,
+                    latest_phase.mode
+                    if latest_phase and phase_applies
+                    else ("UNAPPLIED" if latest_phase else None),
+                )
+            )
+        supersessions = book._supersessions(wing)
+        for directive in supersessions:
+            source(directive.drawer_id)
+            for evidence_id in directive.evidence_ids:
+                source(evidence_id)
+        receipts = book.list_conflicts(wing=wing)
+        for receipt in receipts:
+            first, second = receipt.first, receipt.second
+            references = tuple(
+                sorted(
+                    {
+                        first.procedure_id,
+                        second.procedure_id,
+                        first.evidence_id,
+                        second.evidence_id,
+                        receipt.conflict_evidence_id,
+                    }
+                )
+            )
+            source(receipt.drawer_id)
+            for reference in references:
+                source(reference)
+            if first.procedure_id not in titles or second.procedure_id not in titles:
+                raise ProcedureError("conflict practice history is incomplete")
+            eligible = {
+                item.procedure_id
+                for item in book._scan_practices(wing=wing, context=receipt.situation)
+                if item.mode == "ACTIVE"
+            }
+            fresh = first.procedure_id in eligible and second.procedure_id in eligible
+            conflicts.append(
+                PracticeConflictRow(
+                    receipt.drawer_id,
+                    first.procedure_id,
+                    second.procedure_id,
+                    first.severity,
+                    second.severity,
+                    first.context,
+                    second.context,
+                    receipt.situation,
+                    receipt.status if fresh else "stale_revision",
+                    receipt.winner_id if fresh else None,
+                    receipt.basis if fresh else None,
+                    fresh,
+                    references,
+                    receipt.origin,
+                    titles[first.procedure_id],
+                    titles[second.procedure_id],
+                )
+            )
+        if book.list_conflicts(wing=wing) != receipts:
+            raise ProcedureError("practice conflicts changed during read")
+        if book.list(wing=wing, active_only=False) != current:
+            raise ProcedureError("practice register changed during read")
+    return PracticeRegisterSnapshot(wing, as_of, tuple(rows), tuple(conflicts), supersessions)

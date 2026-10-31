@@ -96,8 +96,28 @@ jobs:
         run: uv python install ${{ matrix.python }}
       - name: Install dependencies
         run: uv sync --locked --all-extras
+      - name: Fetch exact Q07 inputs before offline tests
+        run: uv run --no-sync python -B scripts/fetch_ci_wheels.py --output "${{ runner.temp }}/q07-wheels"
+      - name: Prepare actual Q05 tools and offline build
+        run: uv run --no-sync python -B -X pycache_prefix="${{ runner.temp }}/q05-prep-bytecache" scripts/provision_q05.py --output "${{ runner.temp }}/q05-tools"
+      - name: Prepare actual Python verification tools
+        run: uv run --no-sync python -I -B tests/acceptance/paladin_python_real_unit/prepare.py --output "${{ runner.temp }}/python-tools" --q05-platform "${{ runner.temp }}/q05-tools/platform.json" --repo "${{ github.workspace }}"
       - name: Run tests
-        run: uv run pytest -m "not slow" --cov-fail-under=92
+        env:
+          CAIRNTIR_Q05_PLATFORM: ${{ runner.temp }}/q05-tools/platform.json
+          CAIRNTIR_PALADIN_PLATFORM: ${{ runner.temp }}/python-tools/platform.json
+          CAIRNTIR_Q07_WHEELHOUSE: ${{ runner.temp }}/q07-wheels
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/q05-test-bytecache
+        run: uv run --no-sync python -X pycache_prefix="${{ runner.temp }}/q05-test-bytecache" -m pytest -m "not slow" --cov-fail-under=90 -o verbosity_assertions=2 --junitxml="${{ runner.temp }}/source-tests.xml" --cov-report=json:"${{ runner.temp }}/source-coverage.json"
+      - name: Retain source test results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: source-tests-${{ matrix.os }}-${{ matrix.python }}
+          path: |
+            ${{ runner.temp }}/source-tests.xml
+            ${{ runner.temp }}/source-coverage.json
+          retention-days: 7
 
   eval:
     name: LongMemEval R@5 Gate

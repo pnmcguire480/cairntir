@@ -1,0 +1,74 @@
+{
+  "schema": "cairntir.paladin-python-public-inputs.v1",
+  "status": "NEW_TEXT_ONLY_INPUT_MANIFEST_NOT_EXECUTION",
+  "files": [
+    {
+      "path": "acceptance/coverage.ini",
+      "bytes": 43,
+      "sha256": "b57af4d316583dee96565acb0ea72affa549119fce45ce795e90fb2ba3ae48d3"
+    },
+    {
+      "path": "acceptance/mypy.ini",
+      "bytes": 21,
+      "sha256": "abdf82c9cf63d4ad1244e8fc0f433ef840176b0fcacc3e2ebe043c2c7e689741"
+    },
+    {
+      "path": "acceptance/pytest.ini",
+      "bytes": 31,
+      "sha256": "55212a046a62a688a6c4e07820bd1da8749c70d876d4869aeab61d0486f44cc0"
+    },
+    {
+      "path": "acceptance/ruff.toml",
+      "bytes": 27,
+      "sha256": "d2798102f12b8e251f27f7779b1e0ca9567f3fb5efbd17f865d92ba7890fb549"
+    },
+    {
+      "path": "acceptance/test_integration.py",
+      "bytes": 705,
+      "sha256": "dde8dc973a3ca4676d24a791aa244c4f3bba36d2d4ad4d4ae35e8caa971dd4e0"
+    },
+    {
+      "path": "acceptance/test_unit.py",
+      "bytes": 212,
+      "sha256": "d94ec87afa4d1861653334cd581729971c9ede16fd9769897112b8cf4505dd11"
+    },
+    {
+      "path": "pyproject.toml",
+      "bytes": 232,
+      "sha256": "0167800dae4610f1916776629a6ec2f006cc5358c302e95b593f4208a9bdb5c2"
+    },
+    {
+      "path": "src/paladin_fixture/__init__.py",
+      "bytes": 49,
+      "sha256": "6a446968c965d87a82c9f10518915275eac0d758d0b6ca9067782a316f551605"
+    },
+    {
+      "path": "src/paladin_fixture/boundaries.py",
+      "bytes": 73,
+      "sha256": "040e29ddb9f466380e710415a29f8fc2fb8f9f4914ba5c6e694064161da7a22a"
+    },
+    {
+      "path": "src/paladin_fixture/counter.py",
+      "bytes": 753,
+      "sha256": "ba4cbe68e159ce3fc96221bfdd77f6e79afbb28da0d414c0513c31c921c8243b"
+    }
+  ],
+  "omitted_generated_cache_files": [
+    {
+      "path": "acceptance/.ruff_cache/.gitignore",
+      "bytes": 35,
+      "sha256": "9e3a60f1e6ec4ae60215c11d54b171392745ec25e9dded433d5bd921363af316"
+    },
+    {
+      "path": "acceptance/.ruff_cache/0.15.9/2827163292385118806",
+      "bytes": 146,
+      "sha256": "2875706e3736a5be57be69f1269701beaf319ad28948b9b98a42eedf77d1a942"
+    },
+    {
+      "path": "acceptance/.ruff_cache/CACHEDIR.TAG",
+      "bytes": 43,
+      "sha256": "5953156d7e0c564a427251316eaf26f8870e6483ae2197f916b630e4f93e31ae"
+    }
+  ],
+  "qualification": "Ten original generic text bytes preserved. Three generated Ruff-cache artifacts omitted from this new public input set; historical freezes/results remain unchanged and do not transfer."
+}

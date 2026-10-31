@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sqlite3
 import sys
 from collections.abc import Callable
 from datetime import UTC, datetime
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, cast
+from typing import TYPE_CHECKING, Annotated, Any, cast
 
 import typer
 
@@ -42,7 +43,6 @@ from cairntir.hosts import (
     inspect_host,
     upsert_marked_policy,
 )
-from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import (
     PRODUCTION_MODEL,
     embedding_space_id,
@@ -73,6 +73,9 @@ from cairntir.transcript import (
 )
 from cairntir.update import maybe_check_in_background, pending_update_banner
 
+if TYPE_CHECKING:
+    from cairntir.mcp.backend import CairntirBackend
+
 
 def _configure_windows_stdio() -> None:
     """Keep Unicode CLI output safe when Windows redirects through cp1252.
@@ -97,10 +100,163 @@ app = typer.Typer(
     add_completion=False,
 )
 
+question_app = typer.Typer(
+    help="Record and resolve evidence-linked questions.", no_args_is_help=True
+)
+app.add_typer(question_app, name="question")
+
 backup_app = typer.Typer(
     help="Configure and inspect verified SQLite backups.", no_args_is_help=True
 )
 app.add_typer(backup_app, name="backup")
+
+dream_app = typer.Typer(help="Inspect and run the opt-in local Dream pilot.", no_args_is_help=True)
+app.add_typer(dream_app, name="dream")
+
+practice_review_app = typer.Typer(
+    help="Schedule evidence-backed advisory practice reviews.", no_args_is_help=True
+)
+app.add_typer(practice_review_app, name="practice-review")
+
+
+def _dream_output(action: Callable[[], dict[str, Any]]) -> None:
+    from cairntir.dream import DreamError
+
+    try:
+        result = action()
+    except (DreamError, CairntirError, sqlite3.Error, OSError) as exc:
+        typer.echo(f"cairntir: Dream failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(json.dumps(result, ensure_ascii=False))
+
+
+@dream_app.command("enable")
+def dream_enable(
+    scope: str = typer.Option(..., "--scope"),
+    model: str = typer.Option(..., "--model"),
+    endpoint: str = typer.Option(..., "--endpoint"),
+) -> None:
+    """Opt in to one local model and local memory scope."""
+    from cairntir.dream import enable
+
+    _dream_output(
+        lambda: enable(
+            db_path(create=False),
+            scope=scope,
+            model=model,
+            endpoint=endpoint,
+            provider_factory=production_embedding_provider,
+        )
+    )
+
+
+@dream_app.command("status")
+def dream_status() -> None:
+    """Inspect Dream without creating a disabled store."""
+    from cairntir.dream import status
+
+    _dream_output(
+        lambda: status(db_path(create=False), provider_factory=production_embedding_provider)
+    )
+
+
+@dream_app.command("tick")
+def dream_tick(
+    max_wings: int = typer.Option(1, "--max-wings"),
+    timeout_seconds: int = typer.Option(5, "--timeout-seconds"),
+) -> None:
+    """Process at most one wing and one bounded local model request."""
+    from cairntir.dream import tick
+
+    _dream_output(
+        lambda: tick(
+            db_path(create=False),
+            provider_factory=production_embedding_provider,
+            max_wings=max_wings,
+            timeout_seconds=timeout_seconds,
+        )
+    )
+
+
+@dream_app.command("configure")
+def dream_configure(
+    poll_seconds: float | None = typer.Option(None, "--poll-seconds"),
+    review_seconds: float | None = typer.Option(None, "--review-seconds"),
+    retry_seconds: float | None = typer.Option(None, "--retry-seconds"),
+    inference_seconds: float | None = typer.Option(None, "--inference-seconds"),
+    max_calls: int | None = typer.Option(None, "--max-calls"),
+    window_seconds: float | None = typer.Option(None, "--window-seconds"),
+    max_pending: int | None = typer.Option(None, "--max-pending"),
+    exclude_wing: Annotated[list[str] | None, typer.Option("--exclude-wing")] = None,
+    clear_excluded_wings: bool = typer.Option(False, "--clear-excluded-wings"),
+) -> None:
+    """Configure autonomous scheduling without implicitly enabling Dream."""
+    from cairntir.dream import DreamError
+    from cairntir.dream_controller import configure
+
+    changes = {
+        key: value
+        for key, value in {
+            "poll_seconds": poll_seconds,
+            "review_seconds": review_seconds,
+            "retry_seconds": retry_seconds,
+            "inference_seconds": inference_seconds,
+            "max_calls": max_calls,
+            "window_seconds": window_seconds,
+            "max_pending": max_pending,
+        }.items()
+        if value is not None
+    }
+
+    def apply() -> dict[str, Any]:
+        if clear_excluded_wings and exclude_wing:
+            raise DreamError("Cannot clear and supply excluded wings together")
+        settings: dict[str, Any] = dict(changes)
+        if clear_excluded_wings or exclude_wing:
+            settings["exclude_wings"] = exclude_wing or []
+        return configure(db_path(create=False), **settings)
+
+    _dream_output(apply)
+
+
+@dream_app.command("start")
+def dream_start() -> None:
+    """Start one detached controller for the selected store."""
+    from cairntir.dream_controller import start
+
+    _dream_output(lambda: start(db_path(create=False)))
+
+
+@dream_app.command("run")
+def dream_run() -> None:
+    """Run the controller in the foreground until stopped."""
+    from cairntir.dream_controller import run
+
+    _dream_output(lambda: run(db_path(create=False), production_embedding_provider))
+
+
+@dream_app.command("stop")
+def dream_stop() -> None:
+    """Stop scheduling and drain the bounded inference process."""
+    from cairntir.dream_controller import stop
+
+    _dream_output(lambda: stop(db_path(create=False)))
+
+
+@dream_app.command("receipts")
+def dream_receipts(limit: int = typer.Option(100, "--limit")) -> None:
+    """Read finished controller attempts in chronological order."""
+    from cairntir.dream_controller import receipts
+
+    _dream_output(lambda: receipts(db_path(create=False), limit))
+
+
+@dream_app.command("candidate")
+def dream_candidate(candidate_id: str) -> None:
+    """Read a pending proposal without promoting it into ordinary memory."""
+    from cairntir.dream import candidate
+
+    _dream_output(lambda: candidate(db_path(create=False), candidate_id))
 
 
 def _backup_output(action: Callable[[], dict[str, Any]]) -> None:
@@ -154,6 +310,8 @@ def _backend(
     Every production entry point uses the same provider factory. Equal
     dimensions do not make two embedding spaces compatible.
     """
+    from cairntir.mcp.backend import CairntirBackend
+
     store = _open_store(read_only=True) if read_only else _open_store()
     if close_with is not None:
         close_with.call_on_close(store.close)
@@ -203,6 +361,8 @@ def _root(ctx: typer.Context) -> None:
     from cairntir.access import AccessDenied, startup_token, validate_startup
 
     global _startup_grant
+    if ctx.invoked_subcommand in {"managed", "codex-managed", "claude-session-start"}:
+        return
     _startup_grant = startup_token()
     if _startup_grant is not None:
         validate_startup(db_path(create=False), _startup_grant)
@@ -219,9 +379,11 @@ def _root(ctx: typer.Context) -> None:
             "discovery-transition",
             "discoveries",
             "learning-log",
+            "obsidian-project",
             "discover-scan",
             "calibration",
             "export",
+            "study-export",
             "import",
         }:
             raise AccessDenied("access denied: restricted session: administrative command denied")
@@ -234,6 +396,12 @@ def _root(ctx: typer.Context) -> None:
         "doctor",
         "status",
         "version",
+        "obsidian-sync",
+        "obsidian-project",
+        "question",
+        "dream",
+        "practice-review",
+        "study-export",
     }:
         return
     # Best-effort self-heal for commands not excluded above. Once
@@ -367,6 +535,8 @@ def doctor(
         raise typer.Exit(code=1)
     if not report.verified:
         typer.echo("semantic reads and writes are disabled until `cairntir reindex` succeeds.")
+        if gate:
+            _run_gate(path, vault, semantic_failed=True)
         raise typer.Exit(code=1)
 
     typer.echo()
@@ -403,7 +573,7 @@ def doctor(
         _run_gate(path, vault)
 
 
-def _run_gate(path: Path, vault: Path | None) -> None:
+def _run_gate(path: Path, vault: Path | None, *, semantic_failed: bool = False) -> None:
     """The ``doctor --gate`` half: store integrity and vault drift.
 
     Runs the same five rules as ``scripts/check_store_health.py`` — one
@@ -424,7 +594,7 @@ def _run_gate(path: Path, vault: Path | None) -> None:
     finally:
         conn.close()
 
-    failed = False
+    failed = semantic_failed
     if health.drawer_count == 0:
         typer.echo("store gate: SKIP: store is empty -- nothing to gate.")
     else:
@@ -436,7 +606,9 @@ def _run_gate(path: Path, vault: Path | None) -> None:
         else:
             typer.echo("  store is whole.")
 
-    if vault is None:
+    if semantic_failed and vault is not None:
+        typer.echo("vault gate: SKIP: semantic store verification failed.")
+    elif vault is None:
         typer.echo(
             "vault gate: SKIP: no vault given (pass --vault or set "
             "CAIRNTIR_VAULT) -- drift not checked."
@@ -1068,23 +1240,388 @@ def calibration_cmd(
         raise typer.Exit(code=1) from exc
 
 
+@app.command("managed")
+def managed_cmd(
+    config: Annotated[Path, typer.Option("--config")],
+    session_id: str = typer.Option(..., "--session-id"),
+    task_id: str | None = typer.Option(None, "--task-id"),
+) -> None:
+    """Run acknowledged request capture and configured actions over foreground JSONL."""
+    from cairntir.access import startup_token, validate_startup
+    from cairntir.managed import ManagedRuntime, ManagedRuntimeError, stream_command
+    from cairntir.obsidian_bridge import _read_json
+
+    global _startup_grant
+    failed = False
+    operation = "start"
+
+    def emit(value: dict[str, Any]) -> None:
+        typer.echo(json.dumps(value, ensure_ascii=False, separators=(",", ":")))
+
+    def error(exc: Exception) -> None:
+        emit(
+            {
+                "schema": "cairntir.managed-error.v1",
+                "status": "error",
+                "operation": operation,
+                "error": str(exc),
+            }
+        )
+
+    def unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ManagedRuntimeError("duplicate JSON object key")
+            result[key] = value
+        return result
+
+    try:
+        _startup_grant = startup_token()
+        if _startup_grant is not None:
+            validate_startup(db_path(create=False), _startup_grant)
+        config_hash = hashlib.sha256(config.read_bytes()).hexdigest()
+        configuration = _read_json(config, max_bytes=2 * 1024 * 1024)
+        if hashlib.sha256(config.read_bytes()).hexdigest() != config_hash:
+            raise ManagedRuntimeError("configuration changed during startup")
+        with _open_store(capture_path="cli.managed") as store:
+            runtime = ManagedRuntime(store, config=configuration)
+            emit(runtime.start(session_id, task_id=task_id))
+            closed = False
+            while not closed:
+                line = sys.stdin.readline(2 * 1024 * 1024 + 1)
+                if not line:
+                    operation = "close"
+                    emit(runtime.close())
+                    break
+                operation = "decode"
+                try:
+                    if len(line) > 2 * 1024 * 1024:
+                        while line and not line.endswith("\n"):
+                            line = sys.stdin.readline(2 * 1024 * 1024 + 1)
+                        raise ManagedRuntimeError("command exceeds JSONL input limit")
+                    command = json.loads(line, object_pairs_hook=unique)
+                    if isinstance(command, dict) and isinstance(command.get("operation"), str):
+                        operation = command["operation"]
+                    if hashlib.sha256(config.read_bytes()).hexdigest() != config_hash:
+                        raise ManagedRuntimeError(
+                            "configuration changed; restart the managed runtime"
+                        )
+                    result = stream_command(runtime, command)
+                    emit(result)
+                    closed = result.get("schema") == "cairntir.managed-close.v1"
+                except (CairntirError, OSError, ValueError) as exc:
+                    failed = True
+                    error(exc)
+    except (CairntirError, OSError, ValueError) as exc:
+        error(exc)
+        raise typer.Exit(code=1) from exc
+    if failed:
+        raise typer.Exit(code=1)
+
+
+@app.command("codex-managed")
+def codex_managed_cmd(
+    config: Annotated[Path, typer.Option("--config")],
+    session_id: str = typer.Option(..., "--session-id"),
+    task_id: str | None = typer.Option(None, "--task-id"),
+) -> None:
+    """Acknowledge current task briefs through Codex before configured actions."""
+    from cairntir.access import startup_token, validate_startup
+    from cairntir.codex_managed import CodexManaged, CodexManagedError, stream_command
+    from cairntir.managed import ManagedRuntime
+    from cairntir.obsidian_bridge import _read_json
+
+    global _startup_grant
+    operation = "start"
+    failed = False
+
+    def emit(value: dict[str, Any]) -> None:
+        typer.echo(json.dumps(value, ensure_ascii=False, separators=(",", ":")))
+
+    def error(exc: Exception) -> None:
+        emit(
+            {
+                "schema": "cairntir.codex-managed-error.v1",
+                "status": "error",
+                "operation": operation,
+                "error": str(exc),
+            }
+        )
+
+    def unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise CodexManagedError("duplicate JSON object key")
+            result[key] = value
+        return result
+
+    try:
+        _startup_grant = startup_token()
+        if _startup_grant is not None:
+            validate_startup(db_path(create=False), _startup_grant)
+        config_hash = hashlib.sha256(config.read_bytes()).hexdigest()
+        values = _read_json(config, max_bytes=2 * 1024 * 1024)
+        if (
+            values.keys() != {"schema", "runtime", "host"}
+            or values["schema"] != "cairntir.codex-managed-cli.v1"
+        ):
+            raise CodexManagedError("invalid Codex managed configuration wrapper")
+        if hashlib.sha256(config.read_bytes()).hexdigest() != config_hash:
+            raise CodexManagedError("configuration changed during startup")
+        with _open_store(capture_path="cli.codex-managed") as store:
+            session = CodexManaged(
+                ManagedRuntime(store, config=values["runtime"]), config=values["host"]
+            )
+            emit(session.start(session_id, task_id=task_id))
+            closed = False
+            while not closed:
+                line = sys.stdin.readline(2 * 1024 * 1024 + 1)
+                if not line:
+                    operation = "close"
+                    emit(session.close())
+                    break
+                operation = "decode"
+                try:
+                    if len(line) > 2 * 1024 * 1024:
+                        while line and not line.endswith("\n"):
+                            line = sys.stdin.readline(2 * 1024 * 1024 + 1)
+                        raise CodexManagedError("command exceeds JSONL input limit")
+                    command = json.loads(line, object_pairs_hook=unique)
+                    if isinstance(command, dict) and isinstance(command.get("operation"), str):
+                        operation = command["operation"]
+                    if hashlib.sha256(config.read_bytes()).hexdigest() != config_hash:
+                        raise CodexManagedError(
+                            "configuration changed; restart the managed session"
+                        )
+                    result = stream_command(session, command)
+                    emit(result)
+                    closed = result.get("schema") == "cairntir.managed-close.v1"
+                except (CairntirError, OSError, ValueError, TypeError) as exc:
+                    failed = True
+                    error(exc)
+    except (CairntirError, OSError, ValueError, TypeError) as exc:
+        error(exc)
+        raise typer.Exit(code=1) from exc
+    if failed:
+        raise typer.Exit(code=1)
+
+
+def _question_output(action: Callable[[DrawerStore], dict[str, Any]]) -> None:
+    try:
+        with _open_store(capture_path="cli.question") as store:
+            result = action(store)
+    except (CairntirError, OSError, ValueError) as exc:
+        typer.echo(f"cairntir: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(json.dumps(result, ensure_ascii=False))
+
+
+@question_app.command("open")
+def question_open_cmd(
+    request: Path,
+    wing: str = typer.Option(..., "--wing", "-w"),
+) -> None:
+    """Append an explicitly owned or unassigned question from a JSON request."""
+    from cairntir.obsidian_bridge import _read_json
+    from cairntir.questions import open_question
+
+    _question_output(
+        lambda store: open_question(
+            store, _read_json(request, max_bytes=2 * 1024 * 1024), wing=wing
+        )
+    )
+
+
+@question_app.command("resolve")
+def question_resolve_cmd(
+    request: Path,
+    wing: str = typer.Option(..., "--wing", "-w"),
+) -> None:
+    """Append an explicit resolution bound to the question and supporting evidence."""
+    from cairntir.obsidian_bridge import _read_json
+    from cairntir.questions import resolve_question
+
+    _question_output(
+        lambda store: resolve_question(
+            store, _read_json(request, max_bytes=2 * 1024 * 1024), wing=wing
+        )
+    )
+
+
+@question_app.command("list")
+def question_list_cmd(
+    wing: str = typer.Option(..., "--wing", "-w"),
+    include_resolved: bool = typer.Option(False, "--include-resolved"),
+) -> None:
+    """Read current questions, optionally including declared resolutions and legacy history."""
+    from cairntir.questions import list_questions
+
+    _question_output(
+        lambda store: list_questions(store, wing=wing, include_resolved=include_resolved)
+    )
+
+
+@app.command("obsidian-sync")
+def obsidian_sync_cmd(
+    vault: Path = typer.Argument(..., help="Path to the Obsidian vault."),  # noqa: B008
+    wing: str = typer.Option(..., "--wing", "-w"),
+) -> None:
+    """Acknowledge explicit vault corrections and refresh the scoped memory view."""
+    from cairntir.obsidian_bridge import sync_workspace
+
+    try:
+        with _open_store(capture_path="cli.obsidian-sync") as store:
+            report = sync_workspace(store, vault=vault, wing=wing)
+    except (CairntirError, OSError, ValueError) as exc:
+        report = {
+            "schema": "cairntir.obsidian-sync.v1",
+            "wing": wing,
+            "results": [],
+            "projection": {"status": "error", "error": str(exc)},
+        }
+    typer.echo(json.dumps(report, ensure_ascii=False))
+    if report["projection"]["status"] != "complete" or any(
+        row["status"] != "committed" or not row.get("receipt_written") for row in report["results"]
+    ):
+        raise typer.Exit(code=1)
+
+
+def _practice_review_input(path: Path, required: set[str]) -> dict[str, Any]:
+    def unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate JSON key")
+            result[key] = value
+        return result
+
+    try:
+        value = json.loads(path.read_text(encoding="utf8"), object_pairs_hook=unique)
+    except (OSError, UnicodeError, ValueError) as exc:
+        typer.echo("cairntir: invalid practice review input", err=True)
+        raise typer.Exit(code=1) from exc
+    if not isinstance(value, dict) or not required <= value.keys() <= required | {"supersedes_id"}:
+        typer.echo("cairntir: invalid practice review input", err=True)
+        raise typer.Exit(code=1)
+    return value
+
+
+def _practice_review_command(
+    action: Callable[[DrawerStore], dict[str, Any]], *, json_output: bool = True
+) -> None:
+    try:
+        store = _open_store(capture_path="cli.practice-review")
+        try:
+            result = action(store)
+        finally:
+            store.close()
+        output = (
+            json.dumps(result, ensure_ascii=False, allow_nan=False)
+            if json_output
+            else result["rendered"]
+        )
+    except (CairntirError, OSError, ValueError, TypeError, KeyError) as exc:
+        typer.echo("cairntir: practice review unavailable", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(output)
+
+
+@practice_review_app.command("configure")
+def practice_review_configure(plan_json: Path = typer.Argument(...)) -> None:  # noqa: B008
+    """Persist an explicit policy and cadence from a UTF-8 JSON file."""
+    from cairntir.practice_scheduler import PracticeReviewScheduler
+    from cairntir.procedures import PracticeReviewPolicy
+
+    values = _practice_review_input(
+        plan_json, {"wing", "first_scan_on", "scan_interval_days", "policy"}
+    )
+
+    def configure(store: DrawerStore) -> dict[str, Any]:
+        return PracticeReviewScheduler(store).configure(
+            **{**values, "policy": PracticeReviewPolicy(**values["policy"])}
+        )
+
+    _practice_review_command(configure)
+
+
+@practice_review_app.command("tick")
+def practice_review_tick(
+    wing: str = typer.Option(..., "--wing", "-w"),
+    as_of: str | None = typer.Option(None, "--as-of"),
+    json_output: bool = typer.Option(False, "--json"),
+) -> None:
+    """Run a bounded unattended scan; a noncurrent date is a simulation."""
+    from cairntir.practice_scheduler import PracticeReviewScheduler
+
+    _practice_review_command(
+        lambda store: PracticeReviewScheduler(store).tick(wing=wing, as_of=as_of),
+        json_output=json_output,
+    )
+
+
+@practice_review_app.command("observe")
+def practice_review_observe(input_json: Path = typer.Argument(...)) -> None:  # noqa: B008
+    """Attach explicit measurements to an already executed PALADIN stage."""
+    from dataclasses import asdict
+
+    from cairntir.managed import ManagedRuntime
+    from cairntir.paladin_python import PaladinPythonRun
+    from cairntir.procedures import PracticeObservation
+
+    values = _practice_review_input(
+        input_json, {"runtime_config", "contract", "stage_id", "practice_id", "observation"}
+    )
+
+    def observe(store: DrawerStore) -> dict[str, Any]:
+        raw = values["observation"]
+        observation = PracticeObservation(**{**raw, "evidence_ids": raw.get("evidence_ids", ())})
+        run = PaladinPythonRun(
+            ManagedRuntime(store, config=values["runtime_config"]), contract=values["contract"]
+        )
+        return asdict(
+            run.record_practice_observation(
+                values["stage_id"],
+                values["practice_id"],
+                observation=observation,
+                supersedes_id=values.get("supersedes_id"),
+            )
+        )
+
+    _practice_review_command(observe)
+
+
 @app.command("obsidian-project")
 def obsidian_project_cmd(
     vault: Path = typer.Argument(..., help="Path to the Obsidian vault."),  # noqa: B008
     wing: str | None = typer.Option(None, "--wing", "-w"),
+    practice_register: bool = typer.Option(False, "--practice-register"),
 ) -> None:
-    """Project the learning log and CodeGlass notes one-way into Obsidian."""
+    """Project learning notes or the explicit practice register into Obsidian."""
     from cairntir.obsidian import project_to_obsidian
 
-    store = _open_store(capture_path="cli.obsidian-project")
+    store = _open_store(
+        capture_path="cli.obsidian-project",
+        read_only=practice_register or _startup_grant is not None,
+    )
     try:
         try:
-            result = project_to_obsidian(store, vault=vault, wing=wing)
+            result = project_to_obsidian(
+                store, vault=vault, wing=wing, practice_register=practice_register
+            )
         except ProjectionError as exc:
             typer.echo(f"cairntir: {exc}", err=True)
             raise typer.Exit(code=1) from exc
     finally:
         store.close()
+    if result.practice_register_status == "unavailable":
+        typer.echo("cairntir: practice register unavailable", err=True)
+        raise typer.Exit(code=1)
+    if result.practice_register_note is not None:
+        typer.echo(f"projected practice register to {result.practice_register_note}")
+        typer.echo("SQLite is authoritative; human notes are preserved.")
+        return
     typer.echo(f"projected learning log to {result.learning_log}")
     typer.echo(f"projected {len(result.codeglass_notes)} CodeGlass note(s)")
     typer.echo(f"projected {len(result.receipt_notes)} drawer receipt note(s)")
@@ -1587,6 +2124,29 @@ def replay_cmd(
         typer.echo(f"  chain extended: #{leaf.id} <- #{new_prediction_id} (new prediction)")
 
 
+@app.command("study-export")
+def study_export(
+    selection: Path,
+    wing: Annotated[str, typer.Option("--wing")],
+    notebook_key: Annotated[str, typer.Option("--notebook-key")],
+    output: Annotated[Path, typer.Option("--output")],
+) -> None:
+    """Publish four local study sources from an explicit portable-UUID selection."""
+    from cairntir.study import StudyExportError, export_study_sources
+
+    try:
+        chosen = json.loads(selection.read_bytes())
+        with _open_store(read_only=True) as store:
+            receipt = export_study_sources(
+                store, wing=wing, notebook_key=notebook_key, selection=chosen, output=output
+            )
+    except (CairntirError, OSError, ValueError) as exc:
+        error = exc if isinstance(exc, CairntirError) else StudyExportError(str(exc))
+        typer.echo(f"cairntir: {error}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(json.dumps(receipt, ensure_ascii=False))
+
+
 @app.command("export")
 def export_cmd(
     path: Path,
@@ -1695,10 +2255,8 @@ def migrate_cmd(
 ) -> None:
     """Apply forward-only schema migrations to a Cairntir drawer database.
 
-    Opening a database through :class:`DrawerStore` already runs the
-    migration chain, so this command is mostly a user-facing receipt
-    that reports the before/after ``PRAGMA user_version`` and fails
-    fast if the database is unreadable.
+    Opening a database through :class:`DrawerStore` runs the migration
+    chain, but a nonempty v7 index requires an explicit reindex to reach v8.
     """
     import sqlite3
 
@@ -1731,10 +2289,15 @@ def migrate_cmd(
         typer.echo("already up to date — no migration needed")
         return
 
-    # Opening through DrawerStore applies the forward-only ALTER TABLE
-    # chain and stamps user_version to SCHEMA_VERSION.
     with _open_store(target, capture_path="cli.migrate") as store:
         after = store._conn.execute("PRAGMA user_version").fetchone()[0]
+    if after != SCHEMA_VERSION:
+        typer.echo(
+            f"cairntir: migration remains at schema {after}; run `cairntir reindex` "
+            f"to rebuild the semantic index and reach schema {SCHEMA_VERSION}.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
     typer.echo(f"migrated to:      {after}")
 
 
@@ -2284,6 +2847,44 @@ def _coerce_input(raw: str, type_name: str) -> object:
 def main() -> None:
     """Module entry point for ``python -m cairntir``."""
     app()
+
+
+def _claude_session_input(binding: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    if not binding.is_absolute():
+        raise ValueError("binding path must be absolute")
+    values = json.loads(binding.read_text(encoding="utf-8"))
+    event = json.load(sys.stdin)
+    if not isinstance(values, dict) or not isinstance(event, dict):
+        raise TypeError("binding and event must be JSON objects")
+    return values, event
+
+
+@app.command("claude-session-start")
+def claude_session_start(binding: Annotated[Path, typer.Option("--binding")]) -> None:
+    """Deliver a fixed, read-only Cairntir brief to Claude SessionStart."""
+    from cairntir.access import AccessDenied, ScopedStore, startup_token, validate_startup
+    from cairntir.hosts import _claude_session_binding, compose_claude_session_start
+
+    global _startup_grant
+    previous = _startup_grant
+    try:
+        values, event = _claude_session_input(binding)
+        fixed = _claude_session_binding(values)
+        token = startup_token()
+        if token is None:
+            raise AccessDenied("startup brief requires CAIRNTIR_GRANT_FILE")
+        validate_startup(fixed.store_path, token)
+        _startup_grant = token
+        with _open_store(path=fixed.store_path, read_only=True) as store:
+            result = compose_claude_session_start(
+                cast(ScopedStore, store), binding=values, event=event
+            )
+        typer.echo(json.dumps(result, ensure_ascii=False))
+    except (CairntirError, ValueError, TypeError, OSError, sqlite3.Error) as exc:
+        typer.echo(f"cairntir: startup brief unavailable: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    finally:
+        _startup_grant = previous
 
 
 if __name__ == "__main__":

@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.0a1] - 2026-10-29 - experimental preview
+
+Reindexing now embeds complete content in bounded chunks instead of the historical over-window refusal. The 1.7 release account below remains historical; its active commitment mapping names the replacement helpers.
+
+Experimental preview branch; not a stable release or PyPI publication. Includes the new memory provenance/currentness, Obsidian corrections and managed continuity, practice/evidence tools, calendar and Blender integrations. Dream and unfinished ideation/UI flows remain experimental. See [ALPHA.md](ALPHA.md) for install instructions, exact limits and follow-up dates. Full combined tests/90% coverage and upgrade/rollback qualification remain open; prior failures are preserved.
+
 All notable changes to Cairntir will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
@@ -491,7 +497,11 @@ file   tests/unit/test_model_cache.py
 symbol src/cairntir/config.py model_cache_dir
 # One window constant, read by the report *and* the write path.
 symbol src/cairntir/memory/embeddings.py PRODUCTION_CHAR_WINDOW
-symbol src/cairntir/memory/store.py _drawers_over_window
+# Historical 1.7 binding: src/cairntir/memory/store.py _drawers_over_window.
+# Superseded in 2.0.0a1: complete bounded chunks replace over-window refusal.
+symbol src/cairntir/memory/store.py _chunk_window
+symbol src/cairntir/memory/store.py _chunk_spans
+symbol src/cairntir/memory/store.py _embedded_chunks
 # WAL correctness: the guard, and the sidecars the swap must not leave behind.
 symbol src/cairntir/memory/store.py _discard_sidecars
 symbol src/cairntir/memory/store.py wing_counts
@@ -502,7 +512,8 @@ test   tests/unit/test_store.py test_list_by_limit_none_returns_everything
 test   tests/unit/test_store.py test_content_lengths_counts_the_whole_corpus
 test   tests/unit/test_store.py test_reindex_refuses_to_replace_a_database_written_during_the_rebuild
 test   tests/unit/test_store.py test_reindex_discards_stale_write_ahead_sidecars
-test   tests/unit/test_store.py test_reindex_refuses_drawers_wider_than_the_embedder_window
+# Historical 1.7 test: test_reindex_refuses_drawers_wider_than_the_embedder_window.
+test   tests/unit/test_store.py test_reindex_embeds_drawers_wider_than_the_embedder_window
 test   tests/unit/test_update.py test_a_published_release_is_newer_than_its_own_prep_version
 test   tests/integration/test_mcp_backend.py test_unknown_wing_total_is_not_capped_by_a_scan_limit
 ```

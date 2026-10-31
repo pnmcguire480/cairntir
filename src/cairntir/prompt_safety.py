@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
-from typing import Final
+from typing import Any, Final
 
 from cairntir.memory.taxonomy import Drawer
 from cairntir.provenance import WriteProvenance
@@ -65,6 +65,7 @@ def render_memory_evidence(
     provenance: WriteProvenance,
     *,
     content: str | None = None,
+    fields: dict[str, Any] | None = None,
 ) -> str:
     """Render one drawer as a single JSON evidence record."""
     quoted_content = drawer.content if content is None else content
@@ -84,6 +85,8 @@ def render_memory_evidence(
         "suspicious": assessment.suspicious,
         "security_signals": list(assessment.signals),
     }
+    if fields is not None:
+        payload.update(fields)
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
 
 

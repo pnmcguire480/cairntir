@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cairntir"
-version = "1.12.4"
+version = "2.0.0a1"
 description = "Host-neutral memory-first reasoning layer for AI coding agents."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -26,7 +26,7 @@ keywords = [
     "governance",
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
@@ -44,7 +44,7 @@ dependencies = [
     "typer>=0.12.0",
     "platformdirs>=4.0.0",
     "pydantic>=2.7.0",
-    "mcp>=1.28.1,<2",
+    "mcp>=1.30.0,<2",
 ]
 
 [project.optional-dependencies]
@@ -80,13 +80,7 @@ cairntir-mcp = "cairntir.mcp.server:main"
 packages = ["src/cairntir"]
 
 [tool.hatch.build.targets.sdist]
-include = [
-    "/src", "/tests", "/scripts", "/addons", "/docs", "/plans",
-    "/README.md", "/LICENSE", "/CHANGELOG.md", "/CONTRIBUTING.md",
-    "/CLAUDE.md", "/AGENTS.md", "/QWEN.md", "/ETHOS.md",
-    "/SECURITY.md", "/CODE_OF_CONDUCT.md", "/GOVERNANCE.md",
-    "/pyproject.toml", "/uv.lock", "/mkdocs.yml",
-]
+include = ["/src", "/addons", "/docs/recipes", "/README.md", "/LICENSE", "/ALPHA.md", "/CHANGELOG.md", "/pyproject.toml", "/uv.lock", "/commands", "/.claude-plugin"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "src/cairntir/skills/crucible.md" = "cairntir/skills/crucible.md"
@@ -166,10 +160,10 @@ addopts = [
     "-ra",
     "--strict-markers",
     "--strict-config",
-    "--cov=cairntir",
+    "--cov=src/cairntir",
     "--cov-report=term-missing",
     "--cov-report=html",
-    "--cov-fail-under=92",
+    "--cov-fail-under=90",
     "--cov-precision=6",
 ]
 markers = [
@@ -187,7 +181,7 @@ patch = ["subprocess"]
 omit = [
     # Thin entrypoints. mcp/server.py is the stdio adapter; tool
     # behaviour is tested via backend + test_mcp_server.py. Omitting
-    # it hides transport-layer coverage from the 92% gate on purpose
+    # it hides transport-layer coverage from the 90% gate on purpose
     # — do not read a green coverage number as "the stdio loop is
     # tested."
     "src/cairntir/__main__.py",

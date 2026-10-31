@@ -113,9 +113,10 @@ read discount only applies to a prefix that does not move.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from dataclasses import dataclass, field, replace
+from typing import TYPE_CHECKING, Any
 
+from cairntir.derivation import derivation_status, is_withheld
 from cairntir.memory.anchors import recall_for_change
 from cairntir.memory.taxonomy import Drawer, Layer
 
@@ -218,6 +219,8 @@ class Handoff:
     message has to *say so* rather than assert that nothing is wrong.
     Carried so the renderer can name the reason without a second query.
     """
+
+    review_receipts: list[dict[str, Any]] = field(default_factory=list)
 
     @property
     def used_chars(self) -> int:
@@ -373,14 +376,27 @@ def compose(
         raise ValueError(f"budget_chars must be positive, got {budget_chars}")
 
     candidates = _gather(store, wing=wing, files=files, max_deltas=max_deltas)
+    review = []
+    for key, drawers in candidates.items():
+        eligible = []
+        for drawer in drawers:
+            if drawer.id is None:
+                continue
+            state = derivation_status(store, drawer.id)
+            if is_withheld(state):
+                review.append({"drawer_id": drawer.id, "derivation": state})
+            else:
+                eligible.append(drawer)
+        candidates[key] = eligible
     wing_drawers = store.list_by(wing=wing, limit=_SCAN_LIMIT)
-    return _fit(
+    brief = _fit(
         wing=wing,
         candidates=candidates,
         budget_chars=budget_chars,
         wing_total=len(wing_drawers),
         deep_total=sum(1 for d in wing_drawers if d.layer is Layer.DEEP),
     )
+    return replace(brief, review_receipts=review)
 
 
 def _gather(
@@ -416,7 +432,10 @@ def _gather(
     predictions = _fresh(_open_predictions(wing_drawers))
     protocol = _fresh(store.list_by(wing=wing, layer=Layer.IDENTITY, limit=_SCAN_LIMIT))
     deltas = _fresh(store.list_by(wing=wing, layer=Layer.ESSENTIAL, limit=max_deltas))
-    questions = _fresh(_open_questions(wing_drawers))
+    from cairntir.questions import list_questions
+
+    open_ids = {entry["drawer_id"] for entry in list_questions(store, wing=wing)["questions"]}
+    questions = _fresh(_open_questions(wing_drawers, open_ids=open_ids))
     anchored = _fresh(_anchored(store, wing=wing, files=files))
     # Gathered last so _fresh() has already claimed every drawer another
     # section wants: this is a fallback, never a competitor. DEEP stays
@@ -515,7 +534,9 @@ def _open_predictions(wing_drawers: list[Drawer]) -> list[Drawer]:
     return [d for d in wing_drawers if is_open_prediction(d) and d.id not in settled]
 
 
-def _open_questions(wing_drawers: list[Drawer]) -> list[Drawer]:
+def _open_questions(
+    wing_drawers: list[Drawer], *, open_ids: set[int] | None = None
+) -> list[Drawer]:
     """Drawers explicitly flagged as an unanswered question.
 
     One shape counts, and it is an exact match rather than a guess: a
@@ -531,6 +552,8 @@ def _open_questions(wing_drawers: list[Drawer]) -> list[Drawer]:
     from prose. A question nobody recorded as one is not surfaced, which is the
     honest behaviour.
     """
+    if open_ids is not None:
+        return [d for d in wing_drawers if d.id in open_ids]
     superseded = {d.supersedes_id for d in wing_drawers if d.supersedes_id is not None}
     return [
         d for d in wing_drawers if bool(d.metadata.get("open_question")) and d.id not in superseded

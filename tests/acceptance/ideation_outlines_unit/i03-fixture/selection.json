@@ -1,0 +1,27 @@
+{
+  "kind": "historical_provisional",
+  "idea_id": "SYN-SELECT-item-1",
+  "title": "Catalog comparison rehearsal",
+  "selected_text": "1. **Catalog comparison rehearsal** [synthetic] - candidate only.\r\n   Compare invented shelf notes and record the observation that would settle a discrepancy.",
+  "selection_reason": "Invented provisional workshop candidate; no historical ranking or human selection is authenticated.",
+  "attribution": "historical_record_unverified",
+  "human_confirmation": false,
+  "sources": [
+    {
+      "source_id": "SYN-SELECT",
+      "path": "catalog-selection.md",
+      "sha256": "02765823d2f7fda8561f3b45333ec4483be39d179585de199cc9bb4531178e86",
+      "anchor": "## Provisional workshop selection",
+      "excerpt": "1. **Catalog comparison rehearsal** [synthetic] - candidate only.\r\n   Compare invented shelf notes and record the observation that would settle a discrepancy.",
+      "excerpt_sha256": "0effea3b478c4196c9bd7c19fc4b368c08422749a21357845daa2dd30b6c9884"
+    },
+    {
+      "source_id": "SYN-DETAIL",
+      "path": "catalog-detail.md",
+      "sha256": "54cd831a2ca24718291f302a6f2cdd55c8e29fcae5109f2567c1aa10410b7ce9",
+      "anchor": "## Catalog rehearsal steps",
+      "excerpt": "1. Read two invented catalog cards.\r\n2. Record their dates and common worksheet dependency.\r\n3. Request a fresh shelf observation before making a current claim.",
+      "excerpt_sha256": "f4d1457b1c734d88cae35b55ecf032f1074f47e8fd71e7ce2b2d64a061cbbf3d"
+    }
+  ]
+}
