@@ -82,3 +82,6 @@ tests/acceptance/practice_register_unit/** -text whitespace=cr-at-eol
 tests/acceptance/practice_governance_unit/** -text whitespace=cr-at-eol
 tests/acceptance/practice_review_edges_unit/** -text whitespace=cr-at-eol
 tests/acceptance/practice_review_remaining_unit/** -text whitespace=cr-at-eol
+tests/acceptance/paladin_python_real_unit/** -text whitespace=cr-at-eol
+tests/acceptance/managed_cli_unit/** -text whitespace=cr-at-eol
+tests/acceptance/humanflow_unit/** -text whitespace=cr-at-eol

@@ -389,6 +389,161 @@
       "source_sha256": "a5b3ef4232450a5229d300637f386592e76aca05314d186a045c51cfc441e01d",
       "sha256": "ac68bf83d29a0d2d7b73ed303c8628314a01975f96b4151f269d2878eb35878d",
       "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/conftest.py",
+      "sha256": "c49e2c8db9470a22ac64479fb9cae77a3cffc5c2ed3cea4c09b7c3af35c26025",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/fixture/acceptance/coverage.ini",
+      "sha256": "b57af4d316583dee96565acb0ea72affa549119fce45ce795e90fb2ba3ae48d3",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/fixture/acceptance/mypy.ini",
+      "sha256": "abdf82c9cf63d4ad1244e8fc0f433ef840176b0fcacc3e2ebe043c2c7e689741",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/fixture/acceptance/pytest.ini",
+      "sha256": "55212a046a62a688a6c4e07820bd1da8749c70d876d4869aeab61d0486f44cc0",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/fixture/acceptance/ruff.toml",
+      "sha256": "d2798102f12b8e251f27f7779b1e0ca9567f3fb5efbd17f865d92ba7890fb549",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/fixture/acceptance/test_integration.py",
+      "sha256": "dde8dc973a3ca4676d24a791aa244c4f3bba36d2d4ad4d4ae35e8caa971dd4e0",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/fixture/acceptance/test_unit.py",
+      "sha256": "d94ec87afa4d1861653334cd581729971c9ede16fd9769897112b8cf4505dd11",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/fixture/pyproject.toml",
+      "sha256": "0167800dae4610f1916776629a6ec2f006cc5358c302e95b593f4208a9bdb5c2",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/fixture/src/paladin_fixture/__init__.py",
+      "sha256": "6a446968c965d87a82c9f10518915275eac0d758d0b6ca9067782a316f551605",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/fixture/src/paladin_fixture/boundaries.py",
+      "sha256": "040e29ddb9f466380e710415a29f8fc2fb8f9f4914ba5c6e694064161da7a22a",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/fixture/src/paladin_fixture/counter.py",
+      "sha256": "ba4cbe68e159ce3fc96221bfdd77f6e79afbb28da0d414c0513c31c921c8243b",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/fixtures.py",
+      "sha256": "6624382317d5f5cd4f911de2c6f010c44d0255e004125877573b45168268809d",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/INPUTS.json",
+      "sha256": "6d73c5a94b4dcbd0b3dbc7606c8ce218c1f9281fd69e22a351abceeb93a67301",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/prepare.py",
+      "sha256": "da5412d5eec167bfcaea64deeba15524203c19b5792b0230f4c0a8d58cad4eb2",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/README.md",
+      "sha256": "f52f4800004f846b856e51a2da4a8df1a449cfd12a3b94e56fa7ba03a924cd71",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/ruff.toml",
+      "sha256": "29e7550e934ef042da0eabcefc8e633a5c2aad628e3d96305c9ff4908ead0576",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/stage-template.json",
+      "sha256": "12e42730215f49681b1b93a77fb87a2b2144a6872c6b40ae084b99d216c9341f",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/paladin_python_real_unit/test_real_tools.py",
+      "sha256": "d21d5699a805697c9fbd3cfcbba5f8c3693be50576b80b4ff16c07e05afee5b2",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/managed_cli_unit/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/managed_cli_unit/README.md",
+      "sha256": "f415b94ef72f2d32cdad30d3a6d1da4a0147ae9670a4b5954995ad26577a872f",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/managed_cli_unit/test_managed_cli.py",
+      "sha256": "9473eca42b926355d68729699c6220f385fa45c4baada50f0e95f5950151df03",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/humanflow_unit/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/humanflow_unit/fixture/flow-bug.py",
+      "sha256": "88e24dc625269c56059bd3db31082ad83f449e34d88072cebaa6eb6459cd95fc",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/humanflow_unit/fixture/flow-repair.py",
+      "sha256": "d7668b338a980051023a8707905759948312eccc8afe1c0d224fcda66518777d",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/humanflow_unit/fixture/run_stage.py",
+      "sha256": "45ff0f6b375ef0c43fd1b411db893e17a4fa3df277a769c57d13b3d2b124aa02",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/humanflow_unit/README.md",
+      "sha256": "8e7f3588bc8f27a8e0f1e74b15349673986e6de1280573771a6d8e8ad49ca271",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/humanflow_unit/ruff.toml",
+      "sha256": "29e7550e934ef042da0eabcefc8e633a5c2aad628e3d96305c9ff4908ead0576",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/humanflow_unit/test_boundary.py",
+      "sha256": "2df7605a798467c5433f4443207cdcca2d714f3340e2ba1b5856b69055fdf27a",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/humanflow_unit/test_humanflow.py",
+      "sha256": "26d1a7340dfc2bcb7c5d3ee4a59000abb07d4da6d075c81657d0d5fd864f3c63",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
+    },
+    {
+      "path": "tests/acceptance/humanflow_unit/test_transport.py",
+      "sha256": "f906ba0be222cedf6082614b047a04ede22d047bbb9b72659a5b171e4c71ba53",
+      "source_kind": "reviewed portable acceptance source; original behavior and input provenance described in package README"
     }
   ],
   "synthetic_ports": [
@@ -1769,6 +1924,20 @@
         "hosted_contribution": "Pending later fresh matrix"
       },
       "limits": "Temporary Hash32 SQLite/inert runner and fixture-time guards. Selected scoped checks include injected grant seams; no blanket authentication, guarded collection/startup, sealed historical qualification, live-model/native observer or protected-host custody transfer. Eleven subTest sites are source structure, not measured extra passes. All61 original R18 cases are now restored locally; no roadmap ID retired."
+    },
+    {
+      "name": "Release finish-line behavioral qualification",
+      "packages": [
+        "paladin_python_real_unit",
+        "managed_cli_unit",
+        "humanflow_unit"
+      ],
+      "verification": "43 cases and five real-tool defect subtests pass locally. Original real-Python import failure remains preserved; only Windows pytest source-path binding was repaired. Focused outer coverage fails remain visible; full combined90 is still open.",
+      "adaptations": [
+        "Python adapter binds pytest source path relative to its unchanged config, avoiding Windows shlex backslash loss.",
+        "Qualified seven-tool preparer accepts a canonical fresh output instead of a fixed private machine path. Original RECORD/copy/runtime guards remain."
+      ],
+      "limits": "No protected custody, hosted portability, live narration/model efficacy, second-machine or stable release claim. R12 remains the November12 follow-up."
     }
   ],
   "ast_contract_compatibility": {

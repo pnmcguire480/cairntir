@@ -100,9 +100,12 @@ jobs:
         run: uv run --no-sync python -B scripts/fetch_ci_wheels.py --output "${{ runner.temp }}/q07-wheels"
       - name: Prepare actual Q05 tools and offline build
         run: uv run --no-sync python -B -X pycache_prefix="${{ runner.temp }}/q05-prep-bytecache" scripts/provision_q05.py --output "${{ runner.temp }}/q05-tools"
+      - name: Prepare actual Python verification tools
+        run: uv run --no-sync python -I -B tests/acceptance/paladin_python_real_unit/prepare.py --output "${{ runner.temp }}/python-tools" --q05-platform "${{ runner.temp }}/q05-tools/platform.json" --repo "${{ github.workspace }}"
       - name: Run tests
         env:
           CAIRNTIR_Q05_PLATFORM: ${{ runner.temp }}/q05-tools/platform.json
+          CAIRNTIR_PALADIN_PLATFORM: ${{ runner.temp }}/python-tools/platform.json
           CAIRNTIR_Q07_WHEELHOUSE: ${{ runner.temp }}/q07-wheels
           PYTHONPYCACHEPREFIX: ${{ runner.temp }}/q05-test-bytecache
         run: uv run --no-sync python -X pycache_prefix="${{ runner.temp }}/q05-test-bytecache" -m pytest -m "not slow" --cov-fail-under=90 -o verbosity_assertions=2 --junitxml="${{ runner.temp }}/source-tests.xml" --cov-report=json:"${{ runner.temp }}/source-coverage.json"
