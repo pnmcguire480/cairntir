@@ -91,8 +91,9 @@ the production installation as an incidental build step.
 ## Last Session - 2026-10-30 (bounded release completion)
 
 Current checkpoint: published head5fe8945a contains39 curated commits/390 paths.
-CI41155243753 has four completed POSIX jobs, each2,705 passes/two skips;
-coverage85.528949–85.557994% still fails90. Five test jobs remain running.
+CI41155243753 has five completed POSIX jobs, each2,705 passes/two skips,
+and Windows3.12 with2,707 passes. Coverage85.528949–86.464855% still fails90.
+Three test jobs remain running. CodeQL passes.
 All nine actual Python input preparations, lint/types/docs and three OS
 mutation jobs pass. Do not restart the running matrix or repeat completed
 qualification. The older results below remain historical evidence.
@@ -107,7 +108,7 @@ assessment completed the exercised product workflow. Exact actual seeded text
 is preserved; intended Japanese/emoji fixture text was garbled at creation.
 No historical before/after backup digest was persisted. See v2-alpha-ci.md.
 
-Qualified local changes awaiting the next scoped commit: independent Codex
+Qualified local changes committed as c921420e: independent Codex
 CLI10 cases PASS; installed verifier expects22 unique tools including
 cairntir_correct; package and upgrade evidence documentation. The new wheel is
 601a95a06371c373adf80a9847ef6bcf9bf1cfc88b70ad87324edfd63b4efd32.
@@ -116,6 +117,14 @@ No merge, tag, PyPI or production adoption. Next: finish current matrix
 measurement, then address meaningful missing behavior toward90 without adding
 a verification framework. Existing UI worker acceptance cases are already
 restored; do not re-port or rerun them as new coverage.
+
+Next qualified local batch: two independently frozen Dream lifecycle cases
+PASS in27.24s, unchanged hash1c07dee29c488f7953812dbe143c781e4c386916057f408af967e10523cfccd5.
+Actual SQLite/worker subprocesses verify failed-launch recovery and stopping
+then restarting queued inference, retained interruption receipts, unchanged
+memory and closed owned processes/streams. Focused coverage6.997978% remains
+FAIL, not a full-suite result. Independent review PASS; no live-model usefulness
+or external model-server cancellation claim. No product code was changed.
 
 The user explicitly resumed release work after the pause. Follow the single
 [finish-line checklist](docs/release/v2-finish-line.md), preserving the agreed

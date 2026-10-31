@@ -14,7 +14,7 @@ cairntir version
 cairntir --help
 ```
 
-Set `CAIRNTIR_HOME` to an absolute disposable directory before starting Cairntir or its MCP client. This preview uses database schema 8 and creates a backup before migrating an older store. The full upgrade/restore/rollback workflow is still unqualified; use a separate store and pilot vault for this preview.
+Set `CAIRNTIR_HOME` to an absolute disposable directory before starting Cairntir or its MCP client. This preview uses database schema 8 and creates a backup before migrating an older store. A populated legacy semantic index remains unavailable until explicit backed-up reindexing. The exercised Windows upgrade/restore/rollback workflow has local evidence; full platform qualification remains open. Use a separate store and pilot vault for this preview. See the [upgrade guide](docs/embedding-artifacts.md) before considering an existing store.
 
 Connect your client's MCP configuration to the virtual environment's `cairntir-mcp` executable. Ensure that client inherits the same isolated `CAIRNTIR_HOME`. The existing MCP tool names remain available. Ordinary memory does not require enabling experimental background workers or native agent adapters.
 
@@ -39,6 +39,14 @@ Dream is an explicit opt-in preview with bounded background scheduling, candidat
 Audience/angle/channel/outline pipelines, HumanFlow teaching, UI/visual verification, claim-to-test generation, field pilots and feedback efficacy remain unfinished. Candidate lessons stay candidates/HOLD. The local study exporter is usable, but actual NotebookLM delivery/update remains open. The calendar does not publish content to external platforms.
 
 ## Known verification limits
+
+Local Windows installed-wheel checks now pass CLI/MCP, interrupted-session
+resume, all-table backup/restore, restored semantic recall and failed-write
+rollback/retry. Retained evidence also verifies actual 1.12.4 upgrade/reindex
+and restoration under 1.12.4. The [CI record](docs/release/v2-alpha-ci.md)
+preserves three failed runner reports and the exact limits of that assessment.
+These results do not establish protected evaluator custody or multi-platform
+release readiness. The older packaging limitations below are historical.
 
 Current measured head `81ed7897` passes all assertions across nine OS/Python
 jobs: 2,664 passes on Windows; 2,662 passes and two skips on Linux/macOS.

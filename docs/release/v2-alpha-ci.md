@@ -18,6 +18,15 @@ release requirements. Historical results below keep their original criteria.
 
 ## Local installed and upgrade evidence
 
+Two independently authored Dream lifecycle cases pass in27.24 seconds using
+real SQLite, actual worker subprocesses and a controlled loopback responder.
+A failed launch retains recoverable work; a stopped inference retains its
+interruption receipt and completes the same queued job after restart. Original
+memory remains unchanged; owned processes and streams close. Frozen test hash:
+`1c07dee29c488f7953812dbe143c781e4c386916057f408af967e10523cfccd5`.
+Focused outer coverage remains FAIL at6.997978%; this is not a global result
+or evidence of live-model usefulness or termination of external model-server work.
+
 Runtime wheel built from `5fe8945a`: SHA256
 `601a95a06371c373adf80a9847ef6bcf9bf1cfc88b70ad87324edfd63b4efd32`.
 All106 installed package files match the wheel. The Windows installed probe
