@@ -1,6 +1,6 @@
 # Embedding artifact identity
 
-Available in the **unpublished 1.14.0 candidate**. This is an explicit index
+Available in the **2.0.0a1 preview**. This is an explicit index
 compatibility change for FastEmbed users; plan the rebuild before upgrading.
 
 Cairntir now binds a FastEmbed semantic index to the actual ONNX model,
@@ -32,6 +32,9 @@ Raw `get` remains available, including when model assets are absent; it retains
 ordinary access bookkeeping. Semantic reads and writes are refused until an
 explicit successful rebuild. This applies to CLI and MCP clients. `status`
 continues to count stored drawers without requiring model assets.
+
+An existing populated schema 7 store retains that schema marker during legacy
+reads. Successful explicit reindexing completes the transition to schema 8.
 
 Before any real rebuild, stop all clients using that store, confirm its identity
 and intended cache, and choose a new backup path. Then, when authorized:

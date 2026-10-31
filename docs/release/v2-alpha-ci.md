@@ -16,6 +16,40 @@ skipped downstream; the package job rejects that missing installed evidence.
 The [frozen finish-line checklist](v2-finish-line.md) tracks the remaining
 release requirements. Historical results below keep their original criteria.
 
+## Local installed and upgrade evidence
+
+Runtime wheel built from `5fe8945a`: SHA256
+`601a95a06371c373adf80a9847ef6bcf9bf1cfc88b70ad87324edfd63b4efd32`.
+All106 installed package files match the wheel. The Windows installed probe
+passes CLI/MCP,22 unique tools including correction, interrupted-session resume,
+all-table backup/restoration, restored semantic recall, late-write rollback and
+retry, and JSON-safe update notices. The verifier's obsolete21-tool assertion
+failed against the actual22-tool surface before correction; uniqueness and
+object-schema checks remain, with explicit correction-tool presence required.
+
+The actual1.12.4-to-preview upgrade has composite retained evidence: populated
+schema7 remains unverified until backed-up reindex; reindex produces verified
+schema8 and working semantic recall. Restoring the pre-upgrade backup under
+actual1.12.4 restores verified old identity and recall. IDs, content, wing, room,
+layer, metadata and creation timestamps are identical across original backup,
+reindex backup, upgraded database and restored old store. The original backup
+currently matches the first automatic pre-v8 snapshot byte-for-byte.
+
+All three runner failures remain **FAIL**: the first expected schema8 before
+explicit reindex; the second omitted the chunking namespace from the expected
+stored identity; the continuation's two product-check children passed but its
+outer report comparison decoded Windows CP1252 output as UTF-8. After the third
+failure, that runner approach stopped. Independent read-only database and
+retained-command review completed the product assessment without rerunning
+migration or relabelling failed runs. No earlier persisted backup digest exists;
+the byte comparison establishes equality between retained snapshots only.
+The seed literal contains mojibake rather than its intended Japanese/emoji text:
+exact preservation is proven for the actual stored Unicode. The separate
+installed-wheel probe uses its original Unicode request unchanged.
+
+These are local Windows results, not hosted multi-platform qualification or
+global90 coverage. Production stores/installations remain unchanged.
+
 | Run / head | Result |
 | --- | --- |
 | [Initial CI](https://github.com/pnmcguire480/cairntir/actions/runs/40827340947), `09175f6b` | FAIL: 17 Windows-only API type errors on Linux. |
