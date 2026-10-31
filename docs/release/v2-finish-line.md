@@ -12,13 +12,13 @@ different approach; non-blocking improvements stay on the follow-up roadmap.
 
 | Agreed requirement | Current working evidence | Remaining work | Acceptance / blocker |
 | --- | --- | --- | --- |
-| Combined source suite and 90% coverage | PR140 head 5fe8945a: four completed POSIX jobs each pass 2,705 tests/two skips; coverage 85.528949–85.557994%. Five jobs remain running. Lint/types/docs and three OS mutation jobs pass. | Complete current matrix measurement; meaningful behavioral coverage of measured missing paths; fix actual failures only. | Same full matrix reaches 90%; completed jobs currently FAIL on coverage alone. |
-| Actual PALADIN Python workflow | Windows import-path repair: three original scenarios and five deliberate-defect subtests PASS in 539.04 seconds; input preservation PASS. Original failure retained. | Qualify portable preparation and hosted execution. | Clean five-stage workflow, rejected broken implementations and preserved repair evidence pass locally; 95% subject floor, 60-second stages and 1 MiB output limits unchanged. |
+| Combined source suite and 90% coverage | Complete 5fe8945a matrix: all nine assertion suites pass, Windows 2,707 each and POSIX 2,705/two skips. Coverage 85.528949–86.506810%. Lint/types/docs, CodeQL and three OS mutation jobs pass. | Measure published 5015aa9d; meaningful behavioral coverage of measured missing paths; fix actual failures only. | Same full matrix reaches 90%; current complete matrix FAIL on coverage alone. |
+| Actual PALADIN Python workflow | Local three original scenarios/five deliberate-defect subtests PASS; portable preparation and original cases pass on all nine hosted jobs at 5fe8945a. Original failure retained. | None for this exercised workflow. | Clean five-stage workflow, rejected broken implementations and preserved repair evidence pass; 95% subject floor, 60-second stages and 1 MiB output limits unchanged. |
 | Promised memory workflows | Component evidence exists for origin/currentness, Obsidian corrections, managed acknowledgement/resume, practices, calendar and Blender. R06 and other completed commitments remain closed. | Reuse valid receipts; demonstrate release candidate through documented workflows where integrated evidence is missing. | Exact candidate end-to-end evidence; no claim of automatic text-based supersession or cross-store SQLite sync. |
 | E22 second supported machine | Artifact identity implementation exists; roadmap still OPEN. | Verify exact model bytes and supported workflow on a second supported machine. | Real second-machine receipt; access/setup is an external dependency. |
 | Protected independent evaluator | Public regression/mutation checks pass; protected custody remains unqualified. | Use independently controlled evaluation environment. | Builder cannot access private tests; administrator-controlled local account alone is insufficient. |
 | Installed package, upgrade, restore and rollback | Local Windows wheel passes CLI/MCP, cold resume, all-table backup/restore, semantic recall and failed-write rollback/retry. Composite retained evidence verifies actual 1.12.4 upgrade/reindex to schema8 and backup restoration under1.12.4. Three runner failures and the fixture-encoding limitation remain visible. | Obtain remaining hosted platform evidence after the coverage gate. | Exact seeded fields, identities and semantic recall verified before/after; no production-store experiments. |
-| Reviewed delivery | Draft PR140, 39 curated commits/390 paths at 5fe8945a. | Include only qualified changes, current evidence and usable delivery instructions; identify exact candidate commit/artifacts. | Final review and explicit merge/publication approval; not yet release-ready. |
+| Reviewed delivery | Draft PR140, 41 curated commits/393 paths at 5015aa9d. | Include only qualified changes, current evidence and usable delivery instructions; identify exact candidate commit/artifacts. | Final review and explicit merge/publication approval; not yet release-ready. |
 
 ## Existing local work
 
@@ -32,7 +32,7 @@ different approach; non-blocking improvements stay on the follow-up roadmap.
   12; these checks cover code already included in the global coverage surface.
 
 Portable seven-tool preparation succeeds locally and on all nine hosted jobs.
-Its original copy/digest/runtime guards remain; five full test jobs are pending.
+Its original copy/digest/runtime guards remain; all nine full assertion suites pass.
 Focused outer coverage fails remain visible (Python 14.119872%, managed CLI
 10.493706%, HumanFlow 15.268186%); none is a combined application result.
 

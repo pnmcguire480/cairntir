@@ -48,10 +48,12 @@ preserves three failed runner reports and the exact limits of that assessment.
 These results do not establish protected evaluator custody or multi-platform
 release readiness. The older packaging limitations below are historical.
 
-Current measured head `81ed7897` passes all assertions across nine OS/Python
-jobs: 2,664 passes on Windows; 2,662 passes and two skips on Linux/macOS.
-Coverage alone remains below 90%, at 84.131543–85.109404%. Installed/evaluation
-jobs remain blocked downstream. The [finish-line checklist](docs/release/v2-finish-line.md)
+Latest complete measurement `5fe8945a` passes all assertions across nine OS/Python
+jobs: 2,707 passes on Windows; 2,705 passes and two skips on Linux/macOS.
+Coverage alone remains below 90%, at 85.528949–86.506810%. Installed/evaluation
+jobs remain blocked downstream. Published `5015aa9d` adds 12 locally passing
+behavioral cases and awaits its own complete matrix.
+The [finish-line checklist](docs/release/v2-finish-line.md)
 tracks the remaining release requirements. The earlier measurements below are
 historical; they do not describe the current head.
 

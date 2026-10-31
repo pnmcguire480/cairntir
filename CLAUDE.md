@@ -90,13 +90,30 @@ the production installation as an incidental build step.
 
 ## Last Session - 2026-10-30 (bounded release completion)
 
-Current checkpoint: published head5fe8945a contains39 curated commits/390 paths.
-CI41155243753 has five completed POSIX jobs, each2,705 passes/two skips,
-and Windows3.12 with2,707 passes. Coverage85.528949–86.464855% still fails90.
-Three test jobs remain running. CodeQL passes.
+Current checkpoint: published head5015aa9d contains41 curated commits/393 paths.
+Previous complete CI41155243753 at5fe8945a passes all nine assertion suites:
+six POSIX jobs each2,705 passes/two skips, Windows each2,707 passes.
+Coverage85.528949–86.506810% still fails90. CodeQL passes.
 All nine actual Python input preparations, lint/types/docs and three OS
 mutation jobs pass. Do not restart the running matrix or repeat completed
-qualification. The older results below remain historical evidence.
+qualification. Fresh CI41159819628 and CodeQL41159819640 run for5015aa9d.
+The older results below remain historical evidence.
+
+The first5015 CI attempt stopped at the advisory service TLS handshake timeout;
+prior lint/types/docs/preservation/link checks passed. One failed-job retry was
+passed without changing checker/lock/timeouts; nine source jobs started.
+Preserve attempt1. Six new
+independently frozen worker-input boundary cases PASS locally in27.07s,
+hash4527463080e5317d05bfdf481b850cb521705d1a4fc91c8b3151d375038abba9.
+They qualify intact-input validation and tamper/path/request refusal with no
+artifacts, not native browser execution or Q04 readiness. Focused outer
+coverage3.298264% remains FAIL; hold this next batch locally during current CI.
+The independent persisted-grant correction workflow also PASS in21.39s:
+authorized append/replay followed by revocation denies identical retry without
+cached receipt/content disclosure or changes to the post-revocation database.
+Hasha60341c0d0870412c29214860a2fb4a8db07db158f4ae0e8a6c09c5049bbe132
+is unchanged; focused outercoverage8.745842% remains FAIL. Seven new local
+cases total; no product code changes and no full-coverage claim.
 
 Local Windows current-wheel qualification passes CLI/MCP, cold resume,
 backup/restore, semantic recall and failed-write rollback/retry. Retained
@@ -118,7 +135,7 @@ measurement, then address meaningful missing behavior toward90 without adding
 a verification framework. Existing UI worker acceptance cases are already
 restored; do not re-port or rerun them as new coverage.
 
-Next qualified local batch: two independently frozen Dream lifecycle cases
+Published in5015aa9d: two independently frozen Dream lifecycle cases
 PASS in27.24s, unchanged hash1c07dee29c488f7953812dbe143c781e4c386916057f408af967e10523cfccd5.
 Actual SQLite/worker subprocesses verify failed-launch recovery and stopping
 then restarting queued inference, retained interruption receipts, unchanged

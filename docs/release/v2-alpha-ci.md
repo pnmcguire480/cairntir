@@ -2,7 +2,44 @@
 
 This records actual results for draft [PR140](https://github.com/pnmcguire480/cairntir/pull/140). It does not approve stable release or production adoption.
 
-## Current measured head: 81ed7897
+## Current complete measurement: 5fe8945a
+
+[CI 41155243753](https://github.com/pnmcguire480/cairntir/actions/runs/41155243753)
+passes all assertions across nine jobs: Windows 2,707 each; Linux/macOS 2,705
+each with two skips. Coverage alone fails the unchanged 90% floor:
+85.528949–85.557994% on POSIX and 86.464855–86.506810% on Windows.
+Lint/types/docs/preservation/advisories, CodeQL, three OS regression/mutation
+jobs and all nine tool preparations pass. Installed/evaluation jobs are skipped
+downstream; the aggregate package gate fails for the skipped installed check.
+
+The next two qualified commits, c921420e and 5015aa9d, are published on PR140.
+Their 12 passing local cases and installed evidence below await fresh combined
+measurement. No merge, tag, PyPI publication or production adoption occurred.
+
+Run41159819628 at5015aa9d initially stopped before source tests: the advisory
+service TLS handshake timed out. Earlier lint/types/docs/preservation/link
+checks passed. The failed job was retried once without changing the checker,
+timeouts or dependency lock; the retry passed and started all nine source jobs.
+The first failed attempt remains visible.
+
+Six further independently frozen worker-input cases pass locally in27.07s:
+intact owned inputs validate without side effects; substituted tool/project
+bytes, escaping paths and mismatched requests are refused without artifacts.
+They use inert tool fixtures, not native browser execution. Frozen SHA256
+4527463080e5317d05bfdf481b850cb521705d1a4fc91c8b3151d375038abba9.
+Focused outer coverage3.298264% remains FAIL; full-matrix gain is unmeasured.
+
+One independently frozen correction-authorization workflow passes in21.39s
+using actual SQLite and persisted grants. An authorized correction appends its
+successor; identical replay returns the same receipt without database changes.
+After revocation, the same bound backend refuses the same request without
+disclosing source/correction text or identity, and preserves the entire logical
+database after revocation. Frozen SHA256
+a60341c0d0870412c29214860a2fb4a8db07db158f4ae0e8a6c09c5049bbe132.
+Focused outer coverage8.745842% remains FAIL; this is not full-suite evidence.
+The case is sequential backend behavior, not concurrent revocation or MCP transport.
+
+## Previous complete measurement: 81ed7897
 
 [CI 41002352488](https://github.com/pnmcguire480/cairntir/actions/runs/41002352488)
 completed with no assertion failures on all nine source jobs. Each Windows job
