@@ -580,6 +580,26 @@ def _discard_sidecars(path: Path) -> None:
             ) from exc
 
 
+def _discard_stale_reindex_temporaries(path: Path) -> None:
+    """Remove rebuild copies a crashed reindex left next to ``path``.
+
+    Only exact names this module generates are touched. A temporary copy is
+    derived data and the source database is never involved. A file that will
+    not delete may belong to a running reindex, so the refusal is surfaced.
+    """
+    generated = re.compile(rf"\.{re.escape(path.name)}\.reindex-[0-9a-f]{{32}}\.tmp(?:-wal|-shm)?")
+    for candidate in path.parent.iterdir():
+        if generated.fullmatch(candidate.name) is None:
+            continue
+        try:
+            candidate.unlink(missing_ok=True)
+        except OSError as exc:
+            raise MemoryStoreError(
+                f"failed to remove stale reindex file {candidate}; "
+                f"another reindex may be running: {exc}"
+            ) from exc
+
+
 def reindex_database(
     path: Path,
     embedder: EmbeddingProvider,
@@ -604,6 +624,7 @@ def reindex_database(
     """
     if not path.exists():
         raise MemoryStoreError(f"cannot reindex missing database at {path}")
+    _discard_stale_reindex_temporaries(path)
     _checkpoint_database(path)
     temporary = path.with_name(f".{path.name}.reindex-{uuid4().hex}.tmp")
     try:

@@ -1083,10 +1083,18 @@ def _tool_specs() -> list[types.Tool]:
                 "properties": {
                     "wing": {"type": "string"},
                     "source_drawer_id": {"type": "integer", "minimum": 1},
-                    "source_identity": {"type": "string", "minLength": 1},
+                    "source_identity": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "The drawer's portable_identity from cairntir_get.",
+                    },
                     "source_sha256": {"type": "string", "minLength": 64, "maxLength": 64},
                     "content": {"type": "string", "minLength": 1},
-                    "idempotency_key": {"type": "string", "minLength": 1},
+                    "idempotency_key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "A canonical UUID you generate; reuse it to retry.",
+                    },
                     "model": {"type": "string"},
                 },
             },

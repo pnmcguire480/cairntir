@@ -19,6 +19,9 @@ Experimental preview; not a stable release or PyPI publication. Alpha releases n
 ### Fixed
 
 - Semantic search no longer fails on every query once a v2 store holds more than 4,096 indexed chunks. 2.0.0a1 asked sqlite-vec for every chunk, which it refuses above that limit. Search now caps that request and uses an exact scan when the cap would otherwise return too few distinct drawers. Published 1.12.4 is not affected.
+- The next reindex removes rebuild copies left by a crashed one. It only touches names it generated and reports a file it cannot delete, which may belong to a running reindex.
+- `cairntir_correct` now says that `idempotency_key` must be a UUID and that `source_identity` is the `portable_identity` from `cairntir_get`.
+- Plain `pytest` can now load the whole test tree, so the documented commands and the evaluation gate work the same as `python -m pytest`.
 
 ## [2.0.0a1] - 2026-10-29 - experimental preview
 
