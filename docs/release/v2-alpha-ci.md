@@ -2,7 +2,17 @@
 
 This records actual results for draft [PR140](https://github.com/pnmcguire480/cairntir/pull/140). It does not approve stable release or production adoption.
 
-## Current complete measurement: 5fe8945a
+## Current complete measurement: 5015aa9d
+
+[CI 41159819628](https://github.com/pnmcguire480/cairntir/actions/runs/41159819628)
+passes all assertions across nine jobs: Windows 2,719 each; Linux/macOS 2,717
+each with two skips. Coverage alone fails the unchanged 90% floor: 86.11–86.13%
+on Linux/macOS and 87.11–87.12% on Windows. Lint/types/docs, CodeQL and three OS
+regression/mutation jobs pass. Installed/evaluation jobs are skipped downstream;
+the aggregate package gate fails for that skip, as a consequence and not a
+separate product failure.
+
+## Previous complete measurement: 5fe8945a
 
 [CI 41155243753](https://github.com/pnmcguire480/cairntir/actions/runs/41155243753)
 passes all assertions across nine jobs: Windows 2,707 each; Linux/macOS 2,705

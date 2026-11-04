@@ -2,14 +2,14 @@
 
 An experimental preview of the work toward 2.0. Stable PyPI remains 1.12.4. This preview makes the new code available for feedback; it is not the completed 2.0 release.
 
-## Install from the preview branch
+## Install the alpha
 
-Use Python 3.11–3.13 in a separate virtual environment. Install the published preview branch:
+Use Python 3.11–3.13 in a separate virtual environment. Install the wheel attached to the [alpha pre-release](https://github.com/pnmcguire480/cairntir/releases/tag/alpha-2.0.0a1):
 
 ```sh
 python -m venv .venv-alpha
 # Activate .venv-alpha for your shell, then:
-python -m pip install "git+https://github.com/pnmcguire480/cairntir.git@codex/v2-alpha-preview"
+python -m pip install "https://github.com/pnmcguire480/cairntir/releases/download/alpha-2.0.0a1/cairntir-2.0.0a1-py3-none-any.whl"
 cairntir version
 cairntir --help
 ```
@@ -48,11 +48,13 @@ preserves three failed runner reports and the exact limits of that assessment.
 These results do not establish protected evaluator custody or multi-platform
 release readiness. The older packaging limitations below are historical.
 
-Latest complete measurement `5fe8945a` passes all assertions across nine OS/Python
-jobs: 2,707 passes on Windows; 2,705 passes and two skips on Linux/macOS.
-Coverage alone remains below 90%, at 85.528949–86.506810%. Installed/evaluation
-jobs remain blocked downstream. Published `5015aa9d` adds 12 locally passing
-behavioral cases and awaits its own complete matrix.
+**This alpha does not pass its own release gate.** The latest complete measurement,
+`5015aa9d`, passes all assertions across nine OS/Python jobs: 2,719 passes on
+Windows; 2,717 passes and two skips on Linux/macOS. Coverage remains below the
+unchanged 90% floor, at 86.11–86.13% on Linux/macOS and 87.11–87.12% on Windows.
+Hosted installed/evaluation jobs are skipped downstream of that failure. Seven
+later cases pass locally and await their own complete matrix; they add tests and
+change no runtime code.
 The [finish-line checklist](docs/release/v2-finish-line.md)
 tracks the remaining release requirements. The earlier measurements below are
 historical; they do not describe the current head.
