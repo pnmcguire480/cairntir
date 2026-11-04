@@ -19,6 +19,10 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Fixed
+
+- Semantic search no longer fails on every query once a v2 store holds more than 4,096 indexed chunks. 2.0.0a1 asked sqlite-vec for every chunk, which it refuses above that limit. Search now caps that request and uses an exact scan when the cap would otherwise return too few distinct drawers. Published 1.12.4 is not affected.
+
 ## [1.12.4] - 2026-10-02
 
 ### Fixed

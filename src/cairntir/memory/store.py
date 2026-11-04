@@ -80,6 +80,7 @@ def _embed_one(embedder: EmbeddingProvider, text: str) -> list[float]:
 
 
 _DEFAULT_CHUNK_CHARS = 6000
+_VEC_KNN_LIMIT = 4096  # sqlite-vec refuses a larger k on any single query.
 
 
 def _chunk_window(embedder: EmbeddingProvider) -> int:
@@ -2883,48 +2884,55 @@ class DrawerStore:
                 f"embedding dimension mismatch: expected {status.stored_dimension}, "
                 f"got {len(vector)}"
             )
-        clauses = ["v.embedding MATCH ?", "k = ?"]
-        search_params: list[Any] = [_pack(vector), status.vector_count]
+        clauses = ["1"]
+        filter_params: list[Any] = []
         if not include_expired:
             clauses.append("v.valid_until > ?")
-            search_params.append(datetime.now(UTC).isoformat())
+            filter_params.append(datetime.now(UTC).isoformat())
         if trust is not None:
             clauses.append("v.trust = ?")
-            search_params.append(trust.value)
+            filter_params.append(trust.value)
         if wing is not None:
             clauses.append("v.wing = ?")
-            search_params.append(wing)
+            filter_params.append(wing)
         if room is not None:
             clauses.append("v.room = ?")
-            search_params.append(room)
+            filter_params.append(room)
         if layer is not None:
             clauses.append("v.layer = ?")
-            search_params.append(layer.value)
+            filter_params.append(layer.value)
         where = " AND ".join(clauses)
+        packed = _pack(vector)
+        k = min(status.vector_count, _VEC_KNN_LIMIT)
         try:
             rows = self._conn.execute(
                 f"""
                 SELECT d.*, v.distance AS distance
                 FROM vec_drawers v
                 JOIN drawers d ON d.id = v.drawer_id
-                WHERE {where}
+                WHERE v.embedding MATCH ? AND k = ? AND {where}
                 ORDER BY v.distance
                 """,  # noqa: S608 — clauses are static; values remain bound parameters
-                search_params,
+                [packed, k, *filter_params],
             ).fetchall()
+            results = _nearest_distinct_drawers(rows, limit)
+            if len(results) < limit and len(rows) == _VEC_KNN_LIMIT:
+                # The engine's limit ended the list early and chunks of the same
+                # drawers filled it, so other in-scope drawers may remain unseen.
+                rows = self._conn.execute(
+                    f"""
+                    SELECT d.*, vec_distance_L2(v.embedding, ?) AS distance
+                    FROM vec_drawers v
+                    JOIN drawers d ON d.id = v.drawer_id
+                    WHERE {where}
+                    ORDER BY distance
+                    """,  # noqa: S608 — clauses are static; values remain bound parameters
+                    [packed, *filter_params],
+                ).fetchall()
+                results = _nearest_distinct_drawers(rows, limit)
         except sqlite3.Error as exc:
             raise MemoryStoreError(f"search failed: {exc}") from exc
 
-        results: list[tuple[Drawer, float]] = []
-        seen: set[int] = set()
-        for row in rows:
-            drawer_id = int(row["id"])
-            if drawer_id in seen:
-                continue
-            seen.add(drawer_id)
-            results.append((_row_to_drawer(row), float(row["distance"])))
-            if len(results) >= limit:
-                break
         # Touch hits so the forgetting curve treats them as fresh. Done
         # after scoring so the update doesn't perturb the ranking read.
         for drawer, _ in results:
@@ -2933,6 +2941,21 @@ class DrawerStore:
         if rerank_by_belief:
             results = rerank_results(results)
         return results
+
+
+def _nearest_distinct_drawers(rows: list[sqlite3.Row], limit: int) -> list[tuple[Drawer, float]]:
+    """Keep each drawer's closest chunk from distance-ordered rows, up to ``limit`` drawers."""
+    results: list[tuple[Drawer, float]] = []
+    seen: set[int] = set()
+    for row in rows:
+        drawer_id = int(row["id"])
+        if drawer_id in seen:
+            continue
+        seen.add(drawer_id)
+        results.append((_row_to_drawer(row), float(row["distance"])))
+        if len(results) >= limit:
+            break
+    return results
 
 
 def _copy_locked_database(source: Path, destination: Path) -> None:
