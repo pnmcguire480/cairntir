@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.0a3] - 2026-11-04 - experimental preview
+
+Experimental preview; not a stable release or PyPI publication. The 85% alpha coverage floor still applies, with 90% owed for stable 2.0.
+
+### Changed
+
+- Install pins fastembed, NumPy, ONNX Runtime and tokenizers exactly. A store's embedding identity includes those installed versions, so an unpinned install could differ from a locked build and refuse semantic reads and writes until a reindex.
+
+### Fixed
+
+- `cairntir doctor` recognizes hosts configured with the `cairntir-mcp` launcher instead of reporting them as missing.
+- README, SECURITY and the how-to guide name 1.12.4 as the current stable release.
+
 ## [2.0.0a2] - 2026-11-04 - experimental preview
 
 Experimental preview; not a stable release or PyPI publication. Alpha releases now use an 85% coverage floor, set by the maintainer, with 90% owed on a later date and still the target for stable 2.0. Earlier results keep their original criteria.

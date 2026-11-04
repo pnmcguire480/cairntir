@@ -19,7 +19,7 @@ import sys
 import tomllib
 from collections.abc import Mapping
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import TYPE_CHECKING, Any, Final, Literal, cast
 
 if TYPE_CHECKING:
@@ -568,6 +568,8 @@ def configure_host(
 
 
 _IDENTITY_KEYS: Final[tuple[str, ...]] = ("command", "args")
+_LAUNCHER_NAME: Final[str] = "cairntir-mcp"
+_MODULE_LAUNCH_PREFIX: Final[tuple[str, ...]] = ("-m", "cairntir.mcp.server")
 
 
 def _entry_matches(actual: object, expected: dict[str, object]) -> bool:
@@ -576,11 +578,31 @@ def _entry_matches(actual: object, expected: dict[str, object]) -> bool:
     Compared on identity keys only. Hosts and users legitimately add their own
     fields around ours -- Codex per-tool ``approval_mode``, Gemini ``trust``,
     Copilot tool filters -- and demanding exact equality made ``doctor`` report
-    a correctly wired host as unconfigured.
+    a correctly wired host as unconfigured. A ``cairntir-mcp`` launcher with this
+    host's arguments also names the server, whichever folder it is installed in.
     """
     if not isinstance(actual, dict):
         return False
-    return all(actual.get(key) == expected[key] for key in _IDENTITY_KEYS if key in expected)
+    if all(actual.get(key) == expected[key] for key in _IDENTITY_KEYS if key in expected):
+        return True
+    actual_argv = _entry_argv(actual)
+    return (
+        bool(actual_argv)
+        and PureWindowsPath(actual_argv[0]).stem.casefold() == _LAUNCHER_NAME
+        and actual_argv[1:] == _entry_argv(expected)[len(_MODULE_LAUNCH_PREFIX) + 1 :]
+    )
+
+
+def _entry_argv(entry: dict[str, object]) -> list[str]:
+    """Return an entry's full argv from either host shape, or nothing if malformed."""
+    command = entry.get("command")
+    if isinstance(command, list):
+        argv: list[object] = list(command)
+    else:
+        args = entry.get("args", [])
+        argv = [command, *args] if isinstance(args, list) else []
+    strings = [item for item in argv if isinstance(item, str)]
+    return strings if len(strings) == len(argv) else []
 
 
 def _json_status(path: Path, *, host: HostName) -> tuple[bool, str]:

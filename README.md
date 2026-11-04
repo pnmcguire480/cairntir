@@ -1,6 +1,6 @@
 # Cairntir
 
-> **2.0.0a2 experimental preview:** [install and feature status](ALPHA.md). Stable PyPI remains 1.12.4. Full 2.0 release verification is unfinished.
+> **2.0.0a3 experimental preview:** [install and feature status](ALPHA.md). Stable PyPI remains 1.12.4. Full 2.0 release verification is unfinished.
 
 Persistent, local-first memory for AI coding agents. Claude Code, Codex,
 Cursor, Qwen Code, and other MCP clients share one searchable project history.
@@ -13,7 +13,7 @@ Cairntir stores decisions, facts, unfinished work, and outcomes as verbatim
 *drawers* in a SQLite database you own. A budgeted handoff restores complete
 drawers across sessions; semantic and file-anchored recall find deeper evidence.
 
-Stable release: **1.12.4**. This branch is **2.0.0a2**, an experimental preview. See [preview status](ALPHA.md) and [changelog](CHANGELOG.md).
+Stable release: **1.12.4**. This branch is **2.0.0a3**, an experimental preview. See [preview status](ALPHA.md) and [changelog](CHANGELOG.md).
 Published downloads are on
 [PyPI](https://pypi.org/project/cairntir/) and
 [GitHub Releases](https://github.com/pnmcguire480/cairntir/releases).
@@ -33,10 +33,9 @@ cairntir version
 cairntir doctor
 ```
 
-The diagnostic changes below are **unreleased**; `pip install` currently
-selects published 1.12.3. That release's doctor/status/version may still run
-registration and update callbacks, and status may open the store for writing.
-See the change record before treating an installed diagnostic as read-only.
+`pip install` selects stable 1.12.4, which includes the read-only diagnostics
+below. Older releases' doctor/status/version may still run registration and
+update callbacks, and status may open the store for writing.
 
 In this candidate, `version` reports this CLI's version. `status` and `doctor` inspect the store
 and configuration without registering hosts or checking for updates. A
