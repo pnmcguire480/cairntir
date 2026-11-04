@@ -19,6 +19,10 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Security
+
+- Update locked dependencies with published advisories (Pillow, certifi, filelock, fsspec, mcp, setuptools, virtualenv) and the release tooling pinned in GitHub Actions.
+
 ### Added
 
 - `cairntir audience` commands: check an audience's status, confirm it yourself at a terminal, and carry it into a specification.
