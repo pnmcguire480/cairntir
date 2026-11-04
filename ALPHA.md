@@ -26,6 +26,7 @@ Connect your client's MCP configuration to the virtual environment's `cairntir-m
 | Obsidian workspace | Explicit correction forms/outbox and visible accepted/conflicted/failed state, preserving human notes. | [Desktop plugin](addons/cairntir_obsidian/README.md), [correction protocol](docs/obsidian-corrections.md) |
 | Managed agent continuity | Opt-in managed sessions and a supported Codex acknowledgement/cold-resume route. | [Managed sessions](docs/managed-sessions.md), [Codex](docs/codex-managed.md) |
 | Practices and inspectable checks | Governed practice history, review scheduling, conflict/lifecycle handling, Python/resource checks and offline verification bootstrap. | [Practices](docs/practice-register.md), [resources](docs/resource-verification.md), [bootstrap](docs/verification-bootstrap.md) |
+| Audience lock | Provisional audience revisions, confirmation by a person at a terminal and transfer into a specification. | [Audience lock](docs/audience-lock.md) |
 | Creative and Blender workflows | Source-bound editable calendar, stored iteration bytes, Blender scene capture and dated prior print recall. | [Calendar](docs/ideation-calendar.md), [artifacts](docs/iteration-artifacts.md), [Blender](addons/cairntir_blender/README.md) |
 
 These capabilities have component-specific evidence from development. That evidence is not a passing result for the complete alpha or stable 2.0 suite. Existing v1 memory features and the bundled recipe files are foundations, not newly invented capabilities.
