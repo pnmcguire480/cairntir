@@ -17,7 +17,7 @@ import shutil
 import subprocess
 import sys
 import tomllib
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path, PureWindowsPath
 from typing import TYPE_CHECKING, Any, Final, Literal, cast
@@ -507,7 +507,7 @@ def configure_host(
     if host == "codex":
         if scope == "user":
             registration_path = home / ".codex" / "config.toml"
-            already, _ = _codex_status(registration_path)
+            already, _ = _codex_status(registration_path, match=_entry_matches)
             if already:
                 # `codex mcp add` rewrites the whole stanza, silently dropping
                 # anything the user added under it -- per-tool approval_mode
@@ -635,7 +635,11 @@ def _json_status(path: Path, *, host: HostName) -> tuple[bool, str]:
     return True, str(path)
 
 
-def _codex_status(path: Path) -> tuple[bool, str]:
+def _codex_status(
+    path: Path,
+    *,
+    match: Callable[[object, dict[str, object]], bool] = _entry_reaches_server,
+) -> tuple[bool, str]:
     try:
         if not path.exists():
             return False, f"missing {path}"
@@ -644,7 +648,7 @@ def _codex_status(path: Path) -> tuple[bool, str]:
         return False, f"{path} is not valid readable TOML: {type(exc).__name__}: {exc}"
     servers = parsed.get("mcp_servers", {})
     spec = servers.get(MCP_SERVER_NAME) if isinstance(servers, dict) else None
-    if not _entry_reaches_server(spec, mcp_spec("codex")):
+    if not match(spec, mcp_spec("codex")):
         return False, f"{path} has no matching Cairntir MCP entry"
     return True, str(path)
 
