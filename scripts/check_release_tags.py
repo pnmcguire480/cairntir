@@ -13,6 +13,8 @@ matching git tag, with two deliberate exemptions:
 * The version currently in ``pyproject.toml`` is exempt only while its tag does
   not exist. During release prep the changelog header is written before the tag;
   once tagged, the same gate verifies that version reached PyPI.
+* A pre-release with an ``alpha-<version>`` tag is published on GitHub only. It
+  needs that tag instead, and is not checked against PyPI.
 * Versions in :data:`KNOWN_UNRELEASED` are exempt because they are historical
   fact. They are recorded here rather than hidden, and retagging them now would
   re-trigger the publish workflow against a stale commit.
@@ -45,6 +47,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CHANGELOG = REPO_ROOT / "CHANGELOG.md"
 PYPROJECT = REPO_ROOT / "pyproject.toml"
+
+PRERELEASE_VERSION = re.compile(r"\d+\.\d+\.\d+(?:a|b|rc)\d+")
+"""A pre-release may publish under ``alpha-<version>``, which skips the PyPI workflow."""
 
 CHANGELOG_VERSION = re.compile(r"^## \[(\d+\.\d+\.\d+(?:(?:a|b|rc)\d+)?)\]", re.MULTILINE)
 
@@ -91,12 +96,12 @@ def current_version() -> str:
 
 
 def existing_tags() -> set[str]:
-    """Return every ``vx.y.z`` tag known to the local repository."""
+    """Return every ``vx.y.z`` and ``alpha-*`` tag known to the local repository."""
     git = shutil.which("git")
     if git is None:
         raise OSError("could not find `git` on PATH")
     result = subprocess.run(  # noqa: S603 - executable resolved by shutil.which
-        [git, "tag", "--list", "v*.*.*"],
+        [git, "tag", "--list", "v*.*.*", "alpha-*"],
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
@@ -128,6 +133,16 @@ def pypi_published_versions(fetch: Callable[[str], str] = fetch_pypi_json) -> se
 def unpublished(versions: list[str], published: set[str]) -> list[str]:
     """Return the tagged versions missing from PyPI, in the order given."""
     return [version for version in versions if version not in published]
+
+
+def published_as_github_prerelease(version: str, tags: set[str]) -> bool:
+    """Return whether a pre-release has its deliberate GitHub-only ``alpha-`` tag.
+
+    A ``v`` tag would publish to PyPI, so these pre-releases never carry one. The
+    gate still needs a real tag: a changelog entry alone does not pass, and a
+    stable version cannot use this route.
+    """
+    return PRERELEASE_VERSION.fullmatch(version) is not None and f"alpha-{version}" in tags
 
 
 def main() -> int:
@@ -166,7 +181,7 @@ def main() -> int:
     for version in changelog_versions():
         if version == current and in_flight:
             continue
-        if version in KNOWN_UNRELEASED:
+        if version in KNOWN_UNRELEASED or published_as_github_prerelease(version, tags):
             continue
         if f"v{version}" not in tags:
             violations.append(version)

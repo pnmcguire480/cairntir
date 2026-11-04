@@ -12,6 +12,10 @@ Experimental preview; not a stable release or PyPI publication. Alpha releases n
 
 - `cairntir audience` commands: check an audience's status, confirm it yourself at a terminal, and carry it into a specification.
 
+### Changed
+
+- The release tag check accepts an `alpha-<version>` tag for a pre-release published only on GitHub. Stable versions still need a `v` tag and a PyPI release.
+
 ### Fixed
 
 - Semantic search no longer fails on every query once a v2 store holds more than 4,096 indexed chunks. 2.0.0a1 asked sqlite-vec for every chunk, which it refuses above that limit. Search now caps that request and uses an exact scan when the cap would otherwise return too few distinct drawers. Published 1.12.4 is not affected.
