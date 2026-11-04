@@ -118,6 +118,11 @@ practice_review_app = typer.Typer(
 )
 app.add_typer(practice_review_app, name="practice-review")
 
+audience_app = typer.Typer(
+    help="Confirm an audience and carry it into a specification.", no_args_is_help=True
+)
+app.add_typer(audience_app, name="audience")
+
 
 def _dream_output(action: Callable[[], dict[str, Any]]) -> None:
     from cairntir.dream import DreamError
@@ -1416,6 +1421,79 @@ def _question_output(action: Callable[[DrawerStore], dict[str, Any]]) -> None:
         typer.echo(f"cairntir: {exc}", err=True)
         raise typer.Exit(code=1) from exc
     typer.echo(json.dumps(result, ensure_ascii=False))
+
+
+def _audience_output(action: Callable[[Path], dict[str, Any]], store: Path | None) -> None:
+    from cairntir.config import db_path
+
+    try:
+        result = action(store if store is not None else db_path(create=False))
+    except (CairntirError, sqlite3.Error, OSError) as exc:
+        typer.echo(f"cairntir: audience failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(json.dumps(result, ensure_ascii=False, indent=2))
+
+
+@audience_app.command("status")
+def audience_status_cmd(
+    wing: str = typer.Option(..., "--wing", "-w"),
+    vault: Path = typer.Option(..., "--vault"),  # noqa: B008
+    store: Path | None = typer.Option(  # noqa: B008
+        None, "--store", help="Defaults to the Cairntir store."
+    ),
+    spec: Path | None = typer.Option(  # noqa: B008
+        None, "--spec", help="Also check this specification."
+    ),
+) -> None:
+    """Show the current audience, whether a person confirmed it, and the spec's state."""
+    from cairntir.audience_lock import audience_lock, spec_transfer_state
+
+    def action(path: Path) -> dict[str, Any]:
+        state = audience_lock(path, vault, wing)
+        if spec is not None:
+            state["spec"] = spec_transfer_state(path, vault, wing, spec)
+        return state
+
+    _audience_output(action, store)
+
+
+@audience_app.command("confirm")
+def audience_confirm_cmd(
+    wing: str = typer.Option(..., "--wing", "-w"),
+    vault: Path = typer.Option(..., "--vault"),  # noqa: B008
+    store: Path | None = typer.Option(  # noqa: B008
+        None, "--store", help="Defaults to the Cairntir store."
+    ),
+) -> None:
+    """Confirm the current audience yourself, at an interactive terminal."""
+    from cairntir.audience_lock import confirm_audience
+
+    _audience_output(
+        lambda path: confirm_audience(
+            path,
+            vault,
+            wing,
+            interactive=sys.stdin.isatty() and sys.stdout.isatty(),
+            ask=input,
+            show=typer.echo,
+        ),
+        store,
+    )
+
+
+@audience_app.command("transfer-spec")
+def audience_transfer_cmd(
+    spec: Path = typer.Option(..., "--spec"),  # noqa: B008
+    wing: str = typer.Option(..., "--wing", "-w"),
+    vault: Path = typer.Option(..., "--vault"),  # noqa: B008
+    store: Path | None = typer.Option(  # noqa: B008
+        None, "--store", help="Defaults to the Cairntir store."
+    ),
+) -> None:
+    """Write the current audience and its status into the specification's marked block."""
+    from cairntir.audience_lock import transfer_audience_to_spec
+
+    _audience_output(lambda path: transfer_audience_to_spec(path, vault, wing, spec), store)
 
 
 @question_app.command("open")

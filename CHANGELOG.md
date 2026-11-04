@@ -19,6 +19,10 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 
 ## [Unreleased]
 
+### Added
+
+- `cairntir audience` commands: check an audience's status, confirm it yourself at a terminal, and carry it into a specification.
+
 ## [1.12.4] - 2026-10-02
 
 ### Fixed
