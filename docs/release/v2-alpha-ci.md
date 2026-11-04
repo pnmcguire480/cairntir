@@ -6,6 +6,8 @@ The maintainer set an 85% coverage floor for alpha releases, with 90% owed on a 
 
 [Run 41765020679](https://github.com/pnmcguire480/cairntir/actions/runs/41765020679) at `4df2ba56`, the last run under the 90% floor, had zero assertion failures: 2,724 passes and two skips on each Linux/macOS job, 2,726 passes on each Windows job. Coverage of 87.23-87.26% on Linux/macOS and 88.06-88.09% on Windows FAILED that floor, and its package and evaluation jobs were skipped as a result.
 
+The coverage gate's calibration test moved with the floor: 2,124 of 2,500 units (84.96%) must fail and 2,125 (85%) must pass. It previously used 2,249 and 2,250 for the 90% floor.
+
 That run did not exercise large stores. A later trial on an upgraded copy of a real 5,362-drawer store found that every semantic search failed past 4,096 indexed chunks. [PR 145](https://github.com/pnmcguire480/cairntir/pull/145) fixes it.
 
 This records actual results for draft [PR140](https://github.com/pnmcguire480/cairntir/pull/140). It does not approve stable release or production adoption.
