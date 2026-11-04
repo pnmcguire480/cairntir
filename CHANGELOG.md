@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.0.0a2] - 2026-11-04 - experimental preview
+
+Experimental preview; not a stable release or PyPI publication. Alpha releases now use an 85% coverage floor, set by the maintainer, with 90% owed on a later date and still the target for stable 2.0. Earlier results keep their original criteria.
+
+### Security
+
+- Update locked dependencies with published advisories (Pillow, certifi, filelock, fsspec, mcp, setuptools, virtualenv) and the release tooling pinned in GitHub Actions.
+
+### Added
+
+- `cairntir audience` commands: check an audience's status, confirm it yourself at a terminal, and carry it into a specification.
+
+### Fixed
+
+- Semantic search no longer fails on every query once a v2 store holds more than 4,096 indexed chunks. 2.0.0a1 asked sqlite-vec for every chunk, which it refuses above that limit. Search now caps that request and uses an exact scan when the cap would otherwise return too few distinct drawers. Published 1.12.4 is not affected.
+
 ## [2.0.0a1] - 2026-10-29 - experimental preview
 
 Reindexing now embeds complete content in bounded chunks instead of the historical over-window refusal. The 1.7 release account below remains historical; its active commitment mapping names the replacement helpers.
@@ -18,18 +34,6 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 [docs/deprecation-policy.md](docs/deprecation-policy.md).
 
 ## [Unreleased]
-
-### Security
-
-- Update locked dependencies with published advisories (Pillow, certifi, filelock, fsspec, mcp, setuptools, virtualenv) and the release tooling pinned in GitHub Actions.
-
-### Added
-
-- `cairntir audience` commands: check an audience's status, confirm it yourself at a terminal, and carry it into a specification.
-
-### Fixed
-
-- Semantic search no longer fails on every query once a v2 store holds more than 4,096 indexed chunks. 2.0.0a1 asked sqlite-vec for every chunk, which it refuses above that limit. Search now caps that request and uses an exact scan when the cap would otherwise return too few distinct drawers. Published 1.12.4 is not affected.
 
 ## [1.12.4] - 2026-10-02
 

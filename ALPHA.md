@@ -1,15 +1,15 @@
-# Cairntir 2.0.0a1 preview
+# Cairntir 2.0.0a2 preview
 
 An experimental preview of the work toward 2.0. Stable PyPI remains 1.12.4. This preview makes the new code available for feedback; it is not the completed 2.0 release.
 
 ## Install the alpha
 
-Use Python 3.11–3.13 in a separate virtual environment. Install the wheel attached to the [alpha pre-release](https://github.com/pnmcguire480/cairntir/releases/tag/alpha-2.0.0a1):
+Use Python 3.11–3.13 in a separate virtual environment. Install the wheel attached to the [alpha pre-release](https://github.com/pnmcguire480/cairntir/releases/tag/alpha-2.0.0a2):
 
 ```sh
 python -m venv .venv-alpha
 # Activate .venv-alpha for your shell, then:
-python -m pip install "https://github.com/pnmcguire480/cairntir/releases/download/alpha-2.0.0a1/cairntir-2.0.0a1-py3-none-any.whl"
+python -m pip install "https://github.com/pnmcguire480/cairntir/releases/download/alpha-2.0.0a2/cairntir-2.0.0a2-py3-none-any.whl"
 cairntir version
 cairntir --help
 ```
@@ -49,7 +49,11 @@ preserves three failed runner reports and the exact limits of that assessment.
 These results do not establish protected evaluator custody or multi-platform
 release readiness. The older packaging limitations below are historical.
 
-**This alpha does not pass its own release gate.** The latest complete measurement,
+**Coverage floor for this alpha.** On 4 November 2026 the maintainer set an 85% coverage floor for alpha releases, with 90% owed on a later date and still the target for stable 2.0. Earlier runs keep their results under the 90% floor they were measured against. See the [CI record](docs/release/v2-alpha-ci.md).
+
+**2.0.0a1 search bug, fixed here.** In 2.0.0a1, every semantic search fails once a store passes 4,096 indexed chunks. Upgrade to this alpha if you installed that one.
+
+**Historical: 2.0.0a1 did not pass its release gate.** The measurement at that time,
 `5015aa9d`, passes all assertions across nine OS/Python jobs: 2,719 passes on
 Windows; 2,717 passes and two skips on Linux/macOS. Coverage remains below the
 unchanged 90% floor, at 86.11–86.13% on Linux/macOS and 87.11–87.12% on Windows.

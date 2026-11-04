@@ -5,6 +5,8 @@ The 23 completed component commitments stay complete. E22 remains the one
 open November commitment; the 11 dated follow-ups remain assigned to their
 existing dates. They are not new prerequisites for November 6.
 
+Decision, 4 November 2026: the maintainer set an 85% floor for alpha releases, in their words "lets make it 85% for release and we can go back on another date and kill tokens getting to 90% another day." 90% stays owed and remains the stable 2.0 target; this table's requirement is unchanged and earlier failures stay failures.
+
 No merge, tag, PyPI publication or production adoption without final approval.
 Preserve failures and the 90% overall coverage floor. No percentage-only tests.
 Two repairs without measured progress or three unsuccessful rounds require a

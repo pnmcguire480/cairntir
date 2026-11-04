@@ -1,5 +1,13 @@
 # Alpha CI evidence — 29 October 2026
 
+## 2.0.0a2 alpha floor (4 November 2026)
+
+The maintainer set an 85% coverage floor for alpha releases, with 90% owed on a later date and still the target for stable 2.0. CI and `pyproject.toml` use 85 from this point forward. This does not change any earlier result: every run recorded below keeps its result under the floor it was measured against.
+
+[Run 41765020679](https://github.com/pnmcguire480/cairntir/actions/runs/41765020679) at `4df2ba56`, the last run under the 90% floor, had zero assertion failures: 2,724 passes and two skips on each Linux/macOS job, 2,726 passes on each Windows job. Coverage of 87.23-87.26% on Linux/macOS and 88.06-88.09% on Windows FAILED that floor, and its package and evaluation jobs were skipped as a result.
+
+That run did not exercise large stores. A later trial on an upgraded copy of a real 5,362-drawer store found that every semantic search failed past 4,096 indexed chunks. [PR 145](https://github.com/pnmcguire480/cairntir/pull/145) fixes it.
+
 This records actual results for draft [PR140](https://github.com/pnmcguire480/cairntir/pull/140). It does not approve stable release or production adoption.
 
 ## Current complete measurement: 5015aa9d
