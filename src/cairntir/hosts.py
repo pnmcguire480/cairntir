@@ -578,13 +578,24 @@ def _entry_matches(actual: object, expected: dict[str, object]) -> bool:
     Compared on identity keys only. Hosts and users legitimately add their own
     fields around ours -- Codex per-tool ``approval_mode``, Gemini ``trust``,
     Copilot tool filters -- and demanding exact equality made ``doctor`` report
-    a correctly wired host as unconfigured. A ``cairntir-mcp`` launcher with this
-    host's arguments also names the server, whichever folder it is installed in.
+    a correctly wired host as unconfigured.
     """
     if not isinstance(actual, dict):
         return False
-    if all(actual.get(key) == expected[key] for key in _IDENTITY_KEYS if key in expected):
+    return all(actual.get(key) == expected[key] for key in _IDENTITY_KEYS if key in expected)
+
+
+def _entry_reaches_server(actual: object, expected: dict[str, object]) -> bool:
+    """True when a read-only status check should report this host as configured.
+
+    A ``cairntir-mcp`` launcher with this host's arguments also reaches the server,
+    whichever folder it is installed in. Refresh keeps using ``_entry_matches``: a
+    launcher entry may carry user settings it must not treat as already current.
+    """
+    if _entry_matches(actual, expected):
         return True
+    if not isinstance(actual, dict):
+        return False
     actual_argv = _entry_argv(actual)
     return (
         bool(actual_argv)
@@ -617,7 +628,7 @@ def _json_status(path: Path, *, host: HostName) -> tuple[bool, str]:
     except OSError as exc:
         return False, f"could not inspect {path}: {type(exc).__name__}: {exc}"
     servers = config.get(mcp_container_key(host), {})
-    if not isinstance(servers, dict) or not _entry_matches(
+    if not isinstance(servers, dict) or not _entry_reaches_server(
         servers.get(MCP_SERVER_NAME), mcp_entry(host)
     ):
         return False, f"{path} has no matching Cairntir MCP entry"
@@ -633,7 +644,7 @@ def _codex_status(path: Path) -> tuple[bool, str]:
         return False, f"{path} is not valid readable TOML: {type(exc).__name__}: {exc}"
     servers = parsed.get("mcp_servers", {})
     spec = servers.get(MCP_SERVER_NAME) if isinstance(servers, dict) else None
-    if not _entry_matches(spec, mcp_spec("codex")):
+    if not _entry_reaches_server(spec, mcp_spec("codex")):
         return False, f"{path} has no matching Cairntir MCP entry"
     return True, str(path)
 
