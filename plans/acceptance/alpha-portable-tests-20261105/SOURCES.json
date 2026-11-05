@@ -15,7 +15,10 @@
     "embedding_artifacts_unit: tests 18, 19, 22 and 26 expect CHUNK_PREFIX + provider identity on stored identity, because the alpha labels its chunk policy there. Exact comparison retained.",
     "embedding_artifacts_unit: the CLI subprocess timeout rises from 15 to 120 seconds for slower CI hosts; CLI trace files are no longer written; __init__.py preloads the CLI and MCP server so patch.dict(sys.modules) cannot unload their imports between tests; a loop callback binds its loop variables; nested with statements are merged.",
     "obsidian_integration_unit: the plugin harness keeps its originals/ subfolder so test_real_plugin.cjs stays byte-for-byte; the actual-process timeout rises from 60 to 120 seconds; test_missing_node_fails_instead_of_skipping is added; dict() fixtures become literals.",
-    "questions_durable_unit: both routers share node_executable with an environment-based Windows fallback; the actual-process timeout rises from 60 to 120 seconds; test_missing_node_fails_instead_of_skipping is added; the rollback helper exception gains an Error suffix."
+    "questions_durable_unit: both routers share node_executable with an environment-based Windows fallback; the actual-process timeout rises from 60 to 120 seconds; test_missing_node_fails_instead_of_skipping is added; the rollback helper exception gains an Error suffix.",
+    "managed_runtime_unit: only tests named in the manifest are copied; the alpha's own managed tests cover the rest. The parametrized request argument is renamed envelope_request because pytest 9 reserves request; the JSON key is unchanged.",
+    "managed_runtime_unit: test_cli_changed_config_cannot_launch_using_previous_ack and test_real_cli_jsonl_start_capture_brief_ack_dispatch_close replace a downloaded model with a sitecustomize shim selecting HashEmbeddingProvider; they remain real separate processes.",
+    "managed_runtime_unit: the two projection source files merge into one module that imports the alpha's existing projection fixture; remaining lint exceptions are per-line noqa annotations on the carried code."
   ],
   "supplemental_ports": [],
   "broken_controls": [
@@ -42,6 +45,16 @@
     {
       "break": "src/cairntir/questions.py open_question caller-transaction refusal removed",
       "test": "test_caller_transaction_cannot_acknowledge_a_durable_question",
+      "result": "failed as intended"
+    },
+    {
+      "break": "src/cairntir/managed.py dispatch caller-transaction refusal removed",
+      "test": "test_owner_outer_transaction_cannot_fake_preaction_commit",
+      "result": "failed as intended"
+    },
+    {
+      "break": "src/cairntir/managed.py _ack_state accepts incomplete or not-ready briefs",
+      "test": "test_incomplete_brief_cannot_be_acknowledged",
       "result": "failed as intended"
     }
   ],
@@ -193,6 +206,103 @@
       },
       "sha256": "7a907bc0ce27dde2c65f1a05f1343c2d9c31b4ba3025fa0737c87b629efcf4e0",
       "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_core.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/test_managed_core.py": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b"
+      },
+      "sha256": "47389b9eebe84c4a71619997305cd31d7bad6217eba92d1b4ae3791c0cfc62eb",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_close.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/test_managed_close.py": "9e59ec79df2d7cc9cb7d19e09e2945e8990531e0c1ccb213ff4aef383de1c2ba"
+      },
+      "sha256": "f4ade594f28611818ea2376bb3a8191b042fa0d3eb612479e840b556ba79196b",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_state.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/test_managed_state.py": "43e9b17d2367a54b6f8b160257b40028f142eed6c271fb5b3b915c63590f8595"
+      },
+      "sha256": "f87d45210cdcc44f15d49c1bddb4770668960832d2fcb9ac34b5cb45c7f56788",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_process.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/test_managed_process.py": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452"
+      },
+      "sha256": "0d9329737539b1876847ff595298726ca537961c0dbd9d38992d9a8b3618ac7d",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_config.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/test_managed_config.py": "ce482af7f4e30f0a47ebeb69b7533265f947af60c01e35bc1accc0d2a41f6639"
+      },
+      "sha256": "d1e7895126869a6f646db6968a5fd0acab08e14ec88ac315a052e67c48222792",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/process_child.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/process_child.py": "9abe47c5a82eae0c99a454cf4a7f59d4e36b3702a6aab3d2788880c2d02817f1"
+      },
+      "sha256": "511d7f3f164c77f6363368dcefa966608f151631a461524388e220a80e6183d6",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/process_driver.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/process_driver.py": "715d9aa48e794663f9e92a740b784efd76769404823058774e5e5dad97e446c3"
+      },
+      "sha256": "715d9aa48e794663f9e92a740b784efd76769404823058774e5e5dad97e446c3",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_environment.py",
+      "sources": {
+        "plans/acceptance/managed-environment/test_managed_environment.py": "da903fb6ef2c8d06a09fbf796d7a380266ebc6b3909c306ea18f8249906cf7c0"
+      },
+      "sha256": "e87ebb8c8bdb9f1b3df02703189ba4edcddd7be2a825b11743f2be680cb7663f",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_protocol.py",
+      "sources": {
+        "plans/acceptance/managed-protocol/test_managed_protocol.py": "674ec5d36d6b57346a1e0cb5632413f42a8a608a1ed235bf23316e794e0e389a"
+      },
+      "sha256": "05a8349c21b1511a546392b8f45d0ccc020cd2fde43d93b37f46f1bb7ae3d0b0",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_projection_integrity.py",
+      "sources": {
+        "plans/acceptance/v2-managed-projection/test_projection_corruption.py": "8cd7a2c9afadc2b8011d4d52316d4ace6e9afb84e4c9ea4943386326ef9140ff",
+        "plans/acceptance/v2-managed-projection/test_projection_outcome_binding.py": "ea8c14fd0b1b04341375bc29d1ea59a1d903f518c2f3de6a13f50b3e0eb73e7f"
+      },
+      "sha256": "e25865b0fbd4fa3014a906cf2e7578de213e779e671c5105812d77e2d53c9154",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_durable_boundaries.py",
+      "sources": {
+        "plans/acceptance/managed-hosted-repair/active/test_managed_durable_boundaries_v4.py": "eb8012464251ac9a9e5a4b99348a1e64b1914788eebeb68e822ceb564ee84618"
+      },
+      "sha256": "322c06fec9becb9ae8f2d1acaacde66f45ee0266406afa1254390d0482e6afe0",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_hidden_event.py",
+      "sources": {
+        "plans/acceptance/managed-hosted-repair/active/test_hidden_event_v3.py": "bdb290bbda03e4f719878f2c773e3167347068a2de540e5fb760c41422ba6c02"
+      },
+      "sha256": "61cbf8edf668e72d02bc3fa622020ee5b4a3992c6ddff8d3526b1ad70fbe1f39",
+      "unchanged_bytes": false
     }
   ]
 }
