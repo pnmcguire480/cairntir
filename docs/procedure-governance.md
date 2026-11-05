@@ -67,6 +67,6 @@ existing store backup when changing application versions.
 
 This finite capability is available through trusted Python startup code and the
 existing `propose`, `revise`, `history` and `list` APIs. A review date is stored
-intent: it neither expires a practice nor triggers a callback. The repository's
-`plans/practice-governance-r17.md` records qualification and the reserved connected
-governance work.
+intent: it neither expires a practice nor triggers a callback. The
+[practice governance plan](https://github.com/pnmcguire480/cairntir/blob/f47df33e2a60ad822dceccc8ccc5d0b863f2a15b/plans/practice-governance-r17.md)
+records qualification and the reserved connected governance work.
