@@ -1914,7 +1914,8 @@ def reason_cmd(
     idempotency_key: str | None = typer.Option(
         None,
         "--idempotency-key",
-        help="Stable retry key. Reusing it replays the committed result without duplicate writes.",
+        help="Stable retry key. Reusing it with identical evidence replays the committed result "
+        "without duplicate writes; reusing it with changed evidence is refused.",
     ),
 ) -> None:
     """Run one Reason loop step: predict \u2192 observe \u2192 update belief.
@@ -2031,7 +2032,8 @@ def replay_cmd(
     idempotency_key: str | None = typer.Option(
         None,
         "--idempotency-key",
-        help="Stable retry key. Reusing it cannot extend the decision chain twice.",
+        help="Stable retry key. Reusing it cannot extend the decision chain twice; "
+        "reusing it with changed evidence is refused.",
     ),
 ) -> None:
     """Replay a past decision against today's evidence.
@@ -2183,6 +2185,7 @@ def replay_cmd(
                 inputs,
                 supersedes_id=leaf.id,
                 idempotency_key=idempotency_key,
+                retry_anchor=decision_drawer_id,
             )
         except (RecipeError, ValueError) as exc:
             typer.echo(f"cairntir: replay failed: {exc}", err=True)
@@ -2801,7 +2804,8 @@ def recipe_run_cmd(
     idempotency_key: str | None = typer.Option(
         None,
         "--idempotency-key",
-        help="Stable retry key. Reusing it replays the recipe result without duplicate writes.",
+        help="Stable retry key. Reusing it with identical evidence replays the recipe result "
+        "without duplicate writes; reusing it with changed evidence is refused.",
     ),
 ) -> None:
     """Execute a named recipe with the given inputs.

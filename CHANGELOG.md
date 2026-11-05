@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Reusing an idempotency key with a changed claim, prediction, observation, verdict or delta in `cairntir reason`, `recipe-run` or `replay` now raises `IdempotencyConflictError`. It used to report success with the original receipt and drop the new evidence without warning. Found by an independent evaluation of 2.0.0a2. Keys recorded by earlier releases keep replaying on an exact retry, but they hold no record of their evidence, so changed evidence under one of those keys is still not detected.
+- `cairntir replay` now replays an exact retry. It used to refuse one, because the first run had moved the end of the decision chain that the retry key was bound to.
+
 ## [2.0.0a3] - 2026-11-04 - experimental preview
 
 Experimental preview; not a stable release or PyPI publication. The 85% alpha coverage floor still applies, with 90% owed for stable 2.0.

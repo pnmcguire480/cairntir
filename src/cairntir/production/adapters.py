@@ -61,6 +61,7 @@ class StoreBackedMemory:
         operation: str,
         request: dict[str, Any],
         action: Callable[[], dict[str, Any]],
+        legacy_request: dict[str, Any] | None = None,
     ) -> WorkflowExecution:
         """Delegate durable replay to the concrete store."""
         if not isinstance(self.store, DurableStore):
@@ -70,6 +71,7 @@ class StoreBackedMemory:
             operation=operation,
             request=request,
             action=action,
+            legacy_request=legacy_request,
         )
 
     def recall(
@@ -169,6 +171,10 @@ class NullRunner:
         self._success = success
         self._delta = delta
 
+    def retry_evidence(self) -> dict[str, Any]:
+        """Return the verdict a retry must match to replay."""
+        return {"observed": self._observed, "success": self._success, "delta": self._delta}
+
     def run(self, hypothesis: Hypothesis) -> Outcome:
         """Return an :class:`Outcome` built from the stored verdict."""
         if self._success is None:
@@ -237,6 +243,15 @@ class ManualProposer:
         self._hypothesis = hypothesis
         self._claim = claim
         self._predicted_outcome = predicted_outcome
+
+    def retry_evidence(self) -> dict[str, Any]:
+        """Return the claim and prediction a retry must match to replay."""
+        if self._hypothesis is not None:
+            return {
+                "claim": self._hypothesis.claim,
+                "predicted_outcome": self._hypothesis.predicted_outcome,
+            }
+        return {"claim": self._claim, "predicted_outcome": self._predicted_outcome}
 
     def propose(self, *, question: str, wing: str, room: str) -> Hypothesis:
         """Return the caller-supplied hypothesis.
