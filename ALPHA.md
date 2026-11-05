@@ -1,15 +1,15 @@
-# Cairntir 2.0.0a3 preview
+# Cairntir 2.0.0a4 preview
 
 An experimental preview of the work toward 2.0. Stable PyPI remains 1.12.4. This preview makes the new code available for feedback; it is not the completed 2.0 release.
 
 ## Install the alpha
 
-Use Python 3.11–3.13 in a separate virtual environment. Install the wheel attached to the [alpha pre-release](https://github.com/pnmcguire480/cairntir/releases/tag/alpha-2.0.0a3):
+Use Python 3.11–3.13 in a separate virtual environment. Install the wheel attached to the [alpha pre-release](https://github.com/pnmcguire480/cairntir/releases/tag/alpha-2.0.0a4):
 
 ```sh
 python -m venv .venv-alpha
 # Activate .venv-alpha for your shell, then:
-python -m pip install "https://github.com/pnmcguire480/cairntir/releases/download/alpha-2.0.0a3/cairntir-2.0.0a3-py3-none-any.whl"
+python -m pip install "https://github.com/pnmcguire480/cairntir/releases/download/alpha-2.0.0a4/cairntir-2.0.0a4-py3-none-any.whl"
 cairntir version
 cairntir --help
 ```

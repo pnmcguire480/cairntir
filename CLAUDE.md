@@ -5,7 +5,7 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **2.0.0a3**, an experimental preview. The stable release is
+Source version: **2.0.0a4**, an experimental preview. The stable release is
 **1.12.4**. Read [ALPHA.md](ALPHA.md) before installing or claiming feature
 readiness; it defines the supported preview and every remaining release gate.
 Use a separate virtual environment, disposable store and pilot vault.

@@ -57,7 +57,7 @@ from cairntir.reason.ports import (
     MemoryGateway,
 )
 
-__version__ = "2.0.0a3"
+__version__ = "2.0.0a4"
 
 __all__ = [
     "BeliefStore",

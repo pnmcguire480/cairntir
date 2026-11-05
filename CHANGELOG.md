@@ -1,6 +1,8 @@
 # Changelog
 
-## [Unreleased]
+## [2.0.0a4] - 2026-11-05 - experimental preview
+
+Experimental preview; not a stable release or PyPI publication. The 85% alpha coverage floor still applies, with 90% owed for stable 2.0.
 
 ### Fixed
 
