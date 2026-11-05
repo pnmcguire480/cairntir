@@ -9,7 +9,71 @@
     "The 30 tests the manifest marks as left behind, with their reasons.",
     "Logs, XML results, receipts and zip files from the original packets."
   ],
-  "adaptations": [],
+  "adaptations": [
+    "All packages: package-relative imports replace packet loaders, frozen-file hash checks and script entry points; normal lint and formatting apply; dependency-list and other left-behind tests are omitted per the manifest.",
+    "embedding_artifacts_unit: packet run folders become normal temp folders with a canonical root; the synthetic CLI's root check now requires the parent test's temp root and a CAIRNTIR_HOME beneath it; the review controls' machine path is removed.",
+    "embedding_artifacts_unit: tests 18, 19, 22 and 26 expect CHUNK_PREFIX + provider identity on stored identity, because the alpha labels its chunk policy there. Exact comparison retained.",
+    "embedding_artifacts_unit: the CLI subprocess timeout rises from 15 to 120 seconds for slower CI hosts; CLI trace files are no longer written; __init__.py preloads the CLI and MCP server so patch.dict(sys.modules) cannot unload their imports between tests; a loop callback binds its loop variables; nested with statements are merged."
+  ],
   "supplemental_ports": [],
-  "broken_controls": []
+  "broken_controls": [
+    {
+      "break": "src/cairntir/memory/artifacts.py PinnedArtifacts.verify returns without rehashing",
+      "test": "test_11_changed_pinned_bytes_rejected_before_model_construction",
+      "result": "failed as intended"
+    }
+  ],
+  "files": [
+    {
+      "path": "tests/acceptance/embedding_artifacts_unit/fixture.py",
+      "sources": {
+        "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501"
+      },
+      "sha256": "9b019c66eacd3c8194a724b5e234324be50eb898eb82c786e3f01258adb5fe71",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/embedding_artifacts_unit/test_artifact_identity.py",
+      "sources": {
+        "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501"
+      },
+      "sha256": "b1eb99196fd8a20cb72c79a310345d19bdb86443b2b10a93d3484f4a7111fb60",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/embedding_artifacts_unit/test_artifact_cli.py",
+      "sources": {
+        "plans/acceptance/embedding-artifacts-1.14/test_embedding_supplement_v3.py": "ab7e7873d973015b63485c640db8d1aac680976dfaa52772f4b7445ab52b8ad4"
+      },
+      "sha256": "286ae61d6c1e7c4b44dca212c69dd0a45e614a0d7505d7379c92222a829daccb",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/embedding_artifacts_unit/cli_synthetic_process.py",
+      "sources": {
+        "plans/acceptance/embedding-artifacts-1.14/cli_synthetic_process.py": "98015901896b00a5c1b8f6314952fc1103336c47ece172431c2d9757080cf516"
+      },
+      "sha256": "88a9099efd219ab296fa0651307d266dc0fb5da9643d7b275d2b5170cde684cd",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/embedding_artifacts_unit/test_relative_cache.py",
+      "sources": {
+        "plans/acceptance/embedding-artifacts-1.14/test_relative_cache_supplement_v2.py": "b21fe31b51e07f32de992cbc08792bcee82380711575264a02b689751775c7b1"
+      },
+      "sha256": "6b192baed66ae5a9e783cb02b9ba6181ae0be5c2d6ba8f0aca3d735c7b366f3d",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/embedding_artifacts_unit/test_artifact_refusals.py",
+      "sources": {
+        "plans/acceptance/embedding-artifacts-1.14/review/adversarial_controls.py": "51881aa4879c3162faefb2aa4d0a1d13b75f632ec532d63580e39132cf287510",
+        "plans/acceptance/embedding-artifacts-1.14/review/cache_permission_control.py": "a710e33823e9fc9241fdd7f9568f95332ffaf208e09d84e0817ad857d9df3556",
+        "plans/acceptance/embedding-artifacts-1.14/review/hub_layout_control.py": "deb49b2066d452b3af8524f1c6daaad81721568696bc075b3b7bba87e1a27c78",
+        "plans/acceptance/embedding-artifacts-1.14/review/hub_layout_control_v2.py": "89a9c5c2eb1805583e9fb98d738ccd8ceec8cf03ab8b7a0dca1aef3a4690741e"
+      },
+      "sha256": "3fdb7196a45b1c6115d073b4f43a0a84c40490632a7aa08fc305482472e6dc44",
+      "unchanged_bytes": false
+    }
+  ]
 }
