@@ -13,13 +13,24 @@
     "All packages: package-relative imports replace packet loaders, frozen-file hash checks and script entry points; normal lint and formatting apply; dependency-list and other left-behind tests are omitted per the manifest.",
     "embedding_artifacts_unit: packet run folders become normal temp folders with a canonical root; the synthetic CLI's root check now requires the parent test's temp root and a CAIRNTIR_HOME beneath it; the review controls' machine path is removed.",
     "embedding_artifacts_unit: tests 18, 19, 22 and 26 expect CHUNK_PREFIX + provider identity on stored identity, because the alpha labels its chunk policy there. Exact comparison retained.",
-    "embedding_artifacts_unit: the CLI subprocess timeout rises from 15 to 120 seconds for slower CI hosts; CLI trace files are no longer written; __init__.py preloads the CLI and MCP server so patch.dict(sys.modules) cannot unload their imports between tests; a loop callback binds its loop variables; nested with statements are merged."
+    "embedding_artifacts_unit: the CLI subprocess timeout rises from 15 to 120 seconds for slower CI hosts; CLI trace files are no longer written; __init__.py preloads the CLI and MCP server so patch.dict(sys.modules) cannot unload their imports between tests; a loop callback binds its loop variables; nested with statements are merged.",
+    "obsidian_integration_unit: the plugin harness keeps its originals/ subfolder so test_real_plugin.cjs stays byte-for-byte; the actual-process timeout rises from 60 to 120 seconds; test_missing_node_fails_instead_of_skipping is added; dict() fixtures become literals."
   ],
   "supplemental_ports": [],
   "broken_controls": [
     {
       "break": "src/cairntir/memory/artifacts.py PinnedArtifacts.verify returns without rehashing",
       "test": "test_11_changed_pinned_bytes_rejected_before_model_construction",
+      "result": "failed as intended"
+    },
+    {
+      "break": "src/cairntir/obsidian_bridge.py sync_workspace caller-transaction refusal removed",
+      "test": "test_outer_transaction_sync_refuses_before_writing_acknowledgement",
+      "result": "failed as intended"
+    },
+    {
+      "break": "src/cairntir/obsidian_bridge.py apply_correction caller-transaction refusal removed",
+      "test": "test_outer_transaction_cannot_return_a_false_durable_commit",
       "result": "failed as intended"
     }
   ],
@@ -74,6 +85,54 @@
       },
       "sha256": "3fdb7196a45b1c6115d073b4f43a0a84c40490632a7aa08fc305482472e6dc44",
       "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/obsidian_integration_unit/test_correction_integration.py",
+      "sources": {
+        "plans/acceptance/obsidian-correction-1.15/test_integration.py": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340"
+      },
+      "sha256": "fdf96b6368e6b4d37a162ef3c64aa7cced3d70ed480dac67837dbb35885a0cec",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/obsidian_integration_unit/test_correction_ci_contracts.py",
+      "sources": {
+        "plans/acceptance/obsidian-correction-ci-1.15/test_obsidian_correction_ci_contracts.py": "256c225922d03bbac84a55502c8ed1f00f649f783225b7cdf2a7f2d0a397ee3d"
+      },
+      "sha256": "d01d67e54eff36ea57e94f796100f161bbffa8a43b4a3891cec0f3bb04fdbe65",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/obsidian_integration_unit/test_projection_newlines.py",
+      "sources": {
+        "plans/acceptance/obsidian-correction-1.15/originals/v2-obsidian/test_projection_newlines.py": "64b931e36ad15afca63a5796b9777aad2ce1b1c339acd57a24e9d38ea9b50837"
+      },
+      "sha256": "ec53d55dd05032c7f12d416c7bc358177dac395b93bd79f1e428b04e2535e436",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/obsidian_integration_unit/test_plugin_acceptance.py",
+      "sources": {
+        "plans/acceptance/obsidian-correction-1.15/test_obsidian_frozen_acceptance.py": "6abfc6aba17201478c6938db9b52441d586738dfc4bddb21ef1b3b2199d819cc"
+      },
+      "sha256": "bd4ed0e3d87a9ccb83c59c84d880dfef5816e6769701a3a31e481bb9e9ec4b1d",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/obsidian_integration_unit/plugin/test_real_plugin.cjs",
+      "sources": {
+        "plans/acceptance/obsidian-correction-1.15/test_real_plugin.cjs": "690b9fac1f4a3abafe0fedb47d8136e87458b4d81b48330a5c46703559ff4cca"
+      },
+      "sha256": "690b9fac1f4a3abafe0fedb47d8136e87458b4d81b48330a5c46703559ff4cca",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/obsidian_integration_unit/plugin/originals/v2-obsidian-plugin/test-obsidian-plugin-v3.cjs",
+      "sources": {
+        "plans/acceptance/obsidian-correction-1.15/originals/v2-obsidian-plugin/test-obsidian-plugin-v3.cjs": "d29e26bd424c445b1bc3021edae496ab3a2b6d166902cb294e7750bcf080aed4"
+      },
+      "sha256": "d29e26bd424c445b1bc3021edae496ab3a2b6d166902cb294e7750bcf080aed4",
+      "unchanged_bytes": true
     }
   ]
 }
