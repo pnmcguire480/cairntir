@@ -1876,6 +1876,7 @@ class DrawerStore:
         operation: str,
         request: dict[str, Any],
         action: Callable[[], dict[str, Any]],
+        legacy_request: dict[str, Any] | None = None,
     ) -> WorkflowExecution:
         """Execute ``action`` atomically and replay its result on safe retries.
 
@@ -1883,6 +1884,12 @@ class DrawerStore:
         operation's writes and its ``committed`` receipt then share one
         transaction. A crash can therefore leave only ``started`` or the
         complete result—never half a multi-drawer workflow.
+
+        ``legacy_request`` is the narrower fingerprint an earlier release
+        recorded for this operation. A receipt bound to it still matches,
+        because that release kept no record of the fields added since. A
+        committed one replays unchanged; an unfinished one is rebound to
+        ``request``, so the run that finishes it fixes its identity.
         """
         key = idempotency_key.strip()
         op = operation.strip()
@@ -1892,6 +1899,9 @@ class DrawerStore:
             raise ValueError("operation must be non-empty")
         try:
             fingerprint = request_hash(request)
+            accepted = {fingerprint}
+            if legacy_request is not None:
+                accepted.add(request_hash(legacy_request))
         except ValueError as exc:
             raise WorkflowError(str(exc)) from exc
 
@@ -1911,7 +1921,7 @@ class DrawerStore:
                         (key, op, fingerprint, WorkflowState.STARTED.value, now, now),
                     )
                 else:
-                    if existing.operation != op or existing.request_hash != fingerprint:
+                    if existing.operation != op or existing.request_hash not in accepted:
                         raise IdempotencyConflictError(
                             f"idempotency key {key!r} is already bound to a different request"
                         )
@@ -1922,10 +1932,10 @@ class DrawerStore:
                             """
                             UPDATE workflow_runs
                             SET state = ?, attempt_count = attempt_count + 1,
-                                updated_at = ?, result = NULL, error = NULL
+                                updated_at = ?, result = NULL, error = NULL, request_hash = ?
                             WHERE idempotency_key = ?
                             """,
-                            (WorkflowState.STARTED.value, now, key),
+                            (WorkflowState.STARTED.value, now, fingerprint, key),
                         )
         except sqlite3.Error as exc:
             raise WorkflowError(f"failed to prepare workflow {key!r}: {exc}") from exc

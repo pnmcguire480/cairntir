@@ -1734,6 +1734,7 @@ class ScopedStore:
         operation: str,
         request: dict[str, Any],
         action: Callable[[], dict[str, Any]],
+        legacy_request: dict[str, Any] | None = None,
     ) -> WorkflowExecution:
         """Apply the bound grant to the corresponding drawer-store operation."""
         with self.transaction():
@@ -1745,6 +1746,7 @@ class ScopedStore:
                     operation=operation,
                     request=request,
                     action=action,
+                    legacy_request=legacy_request,
                 )
             finally:
                 if operation == "portable.import.v2":

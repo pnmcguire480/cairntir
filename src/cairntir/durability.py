@@ -65,6 +65,7 @@ class DurableStore(Protocol):
         operation: str,
         request: dict[str, Any],
         action: Callable[[], dict[str, Any]],
+        legacy_request: dict[str, Any] | None = None,
     ) -> WorkflowExecution:
         """Execute and durably replay one idempotent operation."""
         ...
