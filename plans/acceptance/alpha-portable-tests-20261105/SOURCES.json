@@ -1,0 +1,15 @@
+{
+  "schema": "cairntir.portable-test-source.v1",
+  "purpose": "Ordinary alpha CI test source carried from draft PRs 125, 126, 128, 129 and 131; not a protected evaluator or historical qualification result.",
+  "source_branch": "codex/v2-integration-20261010",
+  "source_commit": "f47df33e2a60ad822dceccc8ccc5d0b863f2a15b",
+  "manifest": "plans/acceptance/alpha-portable-tests-20261105/MANIFEST.json",
+  "scope": "Synthetic stores and disposable folders. The frozen evidence and its restore tool stay on the kept source branch.",
+  "excluded": [
+    "The 30 tests the manifest marks as left behind, with their reasons.",
+    "Logs, XML results, receipts and zip files from the original packets."
+  ],
+  "adaptations": [],
+  "supplemental_ports": [],
+  "broken_controls": []
+}
