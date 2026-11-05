@@ -32,6 +32,11 @@
       "break": "src/cairntir/obsidian_bridge.py apply_correction caller-transaction refusal removed",
       "test": "test_outer_transaction_cannot_return_a_false_durable_commit",
       "result": "failed as intended"
+    },
+    {
+      "break": "src/cairntir/obsidian_bridge.py apply_correction no longer refuses non-editable governed sources",
+      "test": "test_generic_correction_refuses_structured_governed_workflows",
+      "result": "failed as intended"
     }
   ],
   "files": [
@@ -133,6 +138,14 @@
       },
       "sha256": "d29e26bd424c445b1bc3021edae496ab3a2b6d166902cb294e7750bcf080aed4",
       "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/combined_foundation_unit/test_combined_foundation.py",
+      "sources": {
+        "plans/acceptance/combined-foundation-1.15/test_combined_foundation_acceptance.py": "0e854b83994e367e587795249d65f73a1c3d6c01289e62c441d013098d95111f"
+      },
+      "sha256": "1475638f72346721e9876ddb2f9509a239a0f428bc1f1d6a4960d63b72275e92",
+      "unchanged_bytes": false
     }
   ]
 }
