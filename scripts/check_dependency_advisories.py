@@ -17,7 +17,7 @@ def audit_package(package: tuple[str, str]) -> list[str]:
     """Return active advisory ids or a withdrawn-release finding for a package."""
     name, version = package
     url = f"https://pypi.org/pypi/{name}/{version}/json"
-    with urlopen(url, timeout=20) as response:  # noqa: S310 - fixed HTTPS origin
+    with urlopen(url, timeout=20) as response:  # fixed HTTPS origin
         data: dict[str, Any] = json.load(response)
     findings = [
         f"{name}=={version}: {advisory['id']}"

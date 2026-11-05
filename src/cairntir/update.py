@@ -156,12 +156,12 @@ def _fetch_latest_from_pypi() -> str | None:
     Network errors, JSON errors, and missing fields all map to ``None``
     — this is fail-silent by design.
     """
-    request = urllib.request.Request(  # noqa: S310 — fixed PyPI URL, not user input
+    request = urllib.request.Request(  # fixed PyPI URL, not user input
         _PYPI_URL,
         headers={"User-Agent": _USER_AGENT, "Accept": "application/json"},
     )
     try:
-        with urllib.request.urlopen(  # noqa: S310 — same as above
+        with urllib.request.urlopen(  # noqa: S310 — fixed PyPI URL, not user input
             request, timeout=_NETWORK_TIMEOUT_SECONDS
         ) as response:
             payload = json.loads(response.read())
