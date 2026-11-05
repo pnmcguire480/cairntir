@@ -14,7 +14,8 @@
     "embedding_artifacts_unit: packet run folders become normal temp folders with a canonical root; the synthetic CLI's root check now requires the parent test's temp root and a CAIRNTIR_HOME beneath it; the review controls' machine path is removed.",
     "embedding_artifacts_unit: tests 18, 19, 22 and 26 expect CHUNK_PREFIX + provider identity on stored identity, because the alpha labels its chunk policy there. Exact comparison retained.",
     "embedding_artifacts_unit: the CLI subprocess timeout rises from 15 to 120 seconds for slower CI hosts; CLI trace files are no longer written; __init__.py preloads the CLI and MCP server so patch.dict(sys.modules) cannot unload their imports between tests; a loop callback binds its loop variables; nested with statements are merged.",
-    "obsidian_integration_unit: the plugin harness keeps its originals/ subfolder so test_real_plugin.cjs stays byte-for-byte; the actual-process timeout rises from 60 to 120 seconds; test_missing_node_fails_instead_of_skipping is added; dict() fixtures become literals."
+    "obsidian_integration_unit: the plugin harness keeps its originals/ subfolder so test_real_plugin.cjs stays byte-for-byte; the actual-process timeout rises from 60 to 120 seconds; test_missing_node_fails_instead_of_skipping is added; dict() fixtures become literals.",
+    "questions_durable_unit: both routers share node_executable with an environment-based Windows fallback; the actual-process timeout rises from 60 to 120 seconds; test_missing_node_fails_instead_of_skipping is added; the rollback helper exception gains an Error suffix."
   ],
   "supplemental_ports": [],
   "broken_controls": [
@@ -36,6 +37,11 @@
     {
       "break": "src/cairntir/obsidian_bridge.py apply_correction no longer refuses non-editable governed sources",
       "test": "test_generic_correction_refuses_structured_governed_workflows",
+      "result": "failed as intended"
+    },
+    {
+      "break": "src/cairntir/questions.py open_question caller-transaction refusal removed",
+      "test": "test_caller_transaction_cannot_acknowledge_a_durable_question",
       "result": "failed as intended"
     }
   ],
@@ -146,6 +152,47 @@
       },
       "sha256": "1475638f72346721e9876ddb2f9509a239a0f428bc1f1d6a4960d63b72275e92",
       "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/questions_durable_unit/test_durable_ack.py",
+      "sources": {
+        "plans/acceptance/questions-port-1.16/test_questions_durable_ack.py": "37e9123e740fb5c481e3d7e075d9b2ddcee2ecceaa22995bd330c6596632ff04"
+      },
+      "sha256": "2c1858e90ba0dc865c5d9f7dd5715c01121d0d6bf4c23d8443b265ae2fdc5b6b",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/questions_durable_unit/test_question_plugin.py",
+      "sources": {
+        "plans/acceptance/questions-port-1.16/maintained_port_router.py": "2164123fb495f01a487be60ff7c77d3d0201cbc85bca4fea5a9e16ad893e11e4",
+        "plans/acceptance/questions-port-1.16/process/maintained_process_router.py": "2f920869f8d2b3f475ec75f78d60bbe1779175a46bc36cea336220e83f364e9a"
+      },
+      "sha256": "83bff96eb5f451c93c859644588717b581f8dfe763d85162dd5a0de11378ee9c",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/questions_durable_unit/plugin/test_question_plugin.js",
+      "sources": {
+        "plans/acceptance/v2-questions/test_question_plugin.js": "f5c2d51a9f517031528eed3a9a7bee976a76135a9cca8032068ddcbaa424dc42"
+      },
+      "sha256": "f5c2d51a9f517031528eed3a9a7bee976a76135a9cca8032068ddcbaa424dc42",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/questions_durable_unit/plugin/test_question_plugin_submission.cjs",
+      "sources": {
+        "plans/acceptance/v2-questions/test_question_plugin_submission.cjs": "1157de20f381158503cf1c4aa8f50dab1ce6f45ec32007f69c0d201accc09846"
+      },
+      "sha256": "1157de20f381158503cf1c4aa8f50dab1ce6f45ec32007f69c0d201accc09846",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/questions_durable_unit/plugin/test_real_question_plugin.cjs",
+      "sources": {
+        "plans/acceptance/questions-port-1.16/process/test_real_question_plugin.cjs": "7a907bc0ce27dde2c65f1a05f1343c2d9c31b4ba3025fa0737c87b629efcf4e0"
+      },
+      "sha256": "7a907bc0ce27dde2c65f1a05f1343c2d9c31b4ba3025fa0737c87b629efcf4e0",
+      "unchanged_bytes": true
     }
   ]
 }
