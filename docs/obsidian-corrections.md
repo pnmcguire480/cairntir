@@ -32,7 +32,7 @@ files are local copies: use a vault appropriate for that data and its recipients
 
 ## Submit and retry a correction
 
-The [optional desktop plugin](https://github.com/pnmcguire480/cairntir/blob/feat/explicit-question-lifecycle-20261003/addons/cairntir_obsidian/README.md) provides
+The [optional desktop plugin](https://github.com/pnmcguire480/cairntir/blob/f47df33e2a60ad822dceccc8ccc5d0b863f2a15b/addons/cairntir_obsidian/README.md) provides
 **Refresh workspace** and **Correct current memory**. Configure the Python
 executable, Cairntir home and wing explicitly. Loading the plugin runs no sync.
 The correction form starts from exact manifest text; Cancel submits nothing.
