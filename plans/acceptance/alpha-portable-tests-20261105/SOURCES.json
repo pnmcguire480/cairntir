@@ -18,7 +18,9 @@
     "questions_durable_unit: both routers share node_executable with an environment-based Windows fallback; the actual-process timeout rises from 60 to 120 seconds; test_missing_node_fails_instead_of_skipping is added; the rollback helper exception gains an Error suffix.",
     "managed_runtime_unit: only tests named in the manifest are copied; the alpha's own managed tests cover the rest. The parametrized request argument is renamed envelope_request because pytest 9 reserves request; the JSON key is unchanged.",
     "managed_runtime_unit: test_cli_changed_config_cannot_launch_using_previous_ack and test_real_cli_jsonl_start_capture_brief_ack_dispatch_close replace a downloaded model with a sitecustomize shim selecting HashEmbeddingProvider; they remain real separate processes.",
-    "managed_runtime_unit: the two projection source files merge into one module that imports the alpha's existing projection fixture; remaining lint exceptions are per-line noqa annotations on the carried code."
+    "managed_runtime_unit: the two projection source files merge into one module that imports the alpha's existing projection fixture; remaining lint exceptions are per-line noqa annotations on the carried code.",
+    "embedding_artifacts_unit: cli_synthetic_process.py drops --source-root and its sys.path insertion, so the child imports the cairntir its environment provides rather than pinning a checkout.",
+    "embedding_artifacts_unit: test_artifact_refusals.py removes Controls.record and OBSERVATIONS, moves shared setup onto a test-free ControlsFixture base so inherited tests are not collected twice, moves prepare_hub onto HubControl, and replaces the per-test script loaders with ordinary classes."
   ],
   "supplemental_ports": [],
   "broken_controls": [
