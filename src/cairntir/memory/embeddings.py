@@ -29,9 +29,10 @@ import os
 import sys
 from collections.abc import Iterator, Sequence
 from pathlib import Path
-from typing import Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 from cairntir.errors import EmbeddingError
+from cairntir.memory.artifacts import MissingArtifactsError, PinnedArtifacts
 
 
 @runtime_checkable
@@ -111,13 +112,12 @@ weights come from. The registry resolves it to
 ``ModelSource(hf="xenova/jina-embeddings-v2-small-en")`` — a third-party
 ONNX re-conversion — and ``ModelSource`` carries no revision field, so a
 download takes that repository's ``HEAD`` at the moment it runs and
-integrity checking is size-only. Two machines provisioned a month apart
-can therefore hold different weights under this same name, with nothing in
-the store recording which. Pinning needs a fastembed API that does not
-exist yet; until then the exposure is written down rather than implied,
-and :meth:`FastEmbedProvider.embedding_space_id` deliberately keys the
-stored embedding space to this string, so a *dimension* change is caught
-even when a silent weight change is not.
+integrity checking is size-only. Cairntir identifies the locally resolved
+ONNX and tokenizer/configuration bytes with a canonical SHA256 manifest and
+pins the same model directory for construction. Runtime package versions are
+included in this identity; moving a cache directory does not change it.
+Older name-only indexes remain unverified until an explicit backed-up rebuild.
+
 """
 
 PRODUCTION_TOKEN_WINDOW = 8192
@@ -188,11 +188,24 @@ class FastEmbedProvider:
         self._model_name = model_name
         self._model: object | None = None
         self._dim: int | None = None
+        self._artifacts: PinnedArtifacts | None = None
+
+    def _pinned_artifacts(self) -> PinnedArtifacts:
+        if self._artifacts is None:
+            try:
+                self._artifacts = PinnedArtifacts(self._model_name)
+            except (OSError, RuntimeError, UnicodeError) as exc:
+                raise EmbeddingError(f"cannot resolve local embedding artifacts: {exc}") from exc
+        return self._artifacts
+
+    def artifact_manifest(self) -> dict[str, Any]:
+        """Identify cached bytes without loading a model, downloading or writing files."""
+        return self._pinned_artifacts().manifest()
 
     @property
     def embedding_space_id(self) -> str:
-        """Return the model/runtime identity without loading the model."""
-        return f"fastembed/text-embedding-v1/model={self._model_name}"
+        """Return the identity of the exact pinned artifacts and runtime versions."""
+        return self._pinned_artifacts().identity
 
     def _load(self) -> None:
         _embed_trace(f"fastembed _load start model={self._model_name!r}")
@@ -204,36 +217,54 @@ class FastEmbedProvider:
             ) from exc
         from cairntir.config import model_cache_dir
 
-        cache = model_cache_dir()
-        _embed_trace(f"fastembed imported; constructing TextEmbedding() cache={cache}")
+        cache = self._artifacts.cache if self._artifacts is not None else model_cache_dir()
         try:
+            if self._artifacts is None:
+                try:
+                    self._pinned_artifacts()
+                except MissingArtifactsError:
+                    # Only absent assets permit acquisition. Malformed registry,
+                    # path containment and runtime evidence errors fail closed.
+                    with _silence_io():
+                        TextEmbedding(model_name=self._model_name, cache_dir=str(cache))
+                    self._pinned_artifacts()
+            artifacts = self._pinned_artifacts()
+            artifacts.verify()
             with _silence_io():
-                model = TextEmbedding(model_name=self._model_name, cache_dir=str(cache))
+                model = TextEmbedding(
+                    model_name=self._model_name,
+                    cache_dir=str(artifacts.cache),
+                    specific_model_path=str(artifacts.root),
+                    local_files_only=True,
+                )
         except Exception as exc:
-            # Name the model *and* the cache. The generic fastembed error here
-            # is indistinguishable from "no network", which sent users to
-            # `cairntir reindex` — the one command that cannot help, because
-            # reindex is what stamped the store to this model in the first
-            # place. See config.model_cache_dir.
             offline = os.environ.get("HF_HUB_OFFLINE") == "1"
             hint = (
                 "offline mode is on (HF_HUB_OFFLINE=1), so it will not be fetched. "
-                "Run `cairntir setup` to download it into that directory."
+                "Run `cairntir setup` to obtain complete assets in that directory."
                 if offline
-                else "it will be downloaded on first use if the network allows."
+                else "explicit setup can acquire assets if the network allows."
             )
             raise EmbeddingError(
-                f"embedding model {self._model_name!r} is not available in cache {cache}; {hint}"
+                f"embedding model {self._model_name!r} is not available or failed "
+                f"artifact validation in cache {cache}; {hint} Cause: {exc}"
             ) from exc
         _embed_trace("fastembed TextEmbedding constructed; reading dimension via probe")
         # fastembed doesn't expose dimension directly. Embed a tiny probe
         # to read it. The probe also forces the ONNX session to warm up,
         # so subsequent embed() calls don't pay any first-use overhead.
-        with _silence_io():
-            probe = list(model.embed(["dimension probe"]))
+        try:
+            with _silence_io():
+                probe = list(model.embed(["dimension probe"]))
+        except Exception as exc:
+            raise EmbeddingError(f"model dimension probe failed: {exc}") from exc
         if not probe:
             raise EmbeddingError(f"model {self._model_name} returned no probe vectors")
         dim = len(probe[0])
+        if dim != artifacts.dimension:
+            raise EmbeddingError(
+                f"model dimension {dim} differs from pinned manifest {artifacts.dimension}"
+            )
         self._model = model
         self._dim = int(dim)
         _embed_trace(f"fastembed _load complete dim={self._dim}")
@@ -267,27 +298,22 @@ class FastEmbedProvider:
     def embed_query_readonly(self, query: str) -> list[float]:
         """Embed using existing local assets, without download or diagnostic file writes."""
         if self._model is None:
-            from cairntir.config import model_cache_dir
-
-            cache = model_cache_dir(create=False)
-            if not cache.is_dir():
-                raise EmbeddingError(
-                    f"task embedding requires an existing local model cache: {cache}"
-                )
+            artifacts = self._pinned_artifacts()
+            artifacts.verify()
             try:
                 from fastembed import TextEmbedding
 
                 with _silence_io():
-                    model_path = _cached_fastembed_model(self._model_name, cache)
                     self._model = TextEmbedding(
                         model_name=self._model_name,
-                        cache_dir=str(cache),
-                        specific_model_path=str(model_path),
+                        cache_dir=str(artifacts.cache),
+                        specific_model_path=str(artifacts.root),
                         local_files_only=True,
                     )
             except Exception as exc:
                 raise EmbeddingError(
-                    f"task embedding model {self._model_name!r} is unavailable locally in {cache}"
+                    f"task embedding model {self._model_name!r} is unavailable "
+                    f"locally in {artifacts.cache}: {exc}"
                 ) from exc
         try:
             with _silence_io():
@@ -297,6 +323,8 @@ class FastEmbedProvider:
         if len(vectors) != 1:
             raise EmbeddingError("task embedding returned an invalid vector count")
         vector = [float(x) for x in vectors[0]]
+        if self._artifacts is not None and len(vector) != self._artifacts.dimension:
+            raise EmbeddingError("task vector dimension differs from pinned artifact manifest")
         self._dim = len(vector)
         return vector
 
@@ -398,9 +426,45 @@ def _embed_trace(message: str) -> None:
         return
 
 
+def _cached_hub_snapshot(source: str, cache: Path) -> Path | None:
+    """Resolve only the selected local Hub snapshot, including incomplete ones."""
+    if (
+        not isinstance(source, str)
+        or any(part in {"", ".", ".."} for part in source.split("/"))
+        or any(char in source for char in "\\:\x00")
+    ):
+        raise EmbeddingError("invalid embedding Hub repository identifier")
+    repository = (cache / ("models--" + source.replace("/", "--"))).resolve()
+    if not repository.is_relative_to(cache):
+        raise EmbeddingError("embedding Hub repository escapes the configured cache")
+    if not repository.exists():
+        return None
+    if not repository.is_dir():
+        raise EmbeddingError("embedding Hub repository is not a directory")
+    reference = (repository / "refs" / "main").resolve()
+    if not reference.is_relative_to(repository):
+        raise EmbeddingError("embedding Hub reference escapes its repository")
+    try:
+        with reference.open(encoding="utf-8") as stream:
+            revision = stream.read(257)
+    except FileNotFoundError:
+        revision = "main"
+    if (
+        not revision
+        or len(revision) > 256
+        or revision != revision.strip()
+        or revision in {".", ".."}
+        or any(char in revision for char in "/\\:\x00\r\n")
+    ):
+        raise EmbeddingError("invalid local embedding Hub reference")
+    selected = (repository / "snapshots" / revision).resolve()
+    if not selected.is_relative_to(repository):
+        raise EmbeddingError("embedding Hub snapshot escapes its repository")
+    return selected if selected.exists() else None
+
+
 def _cached_fastembed_model(model_name: str, cache: Path) -> Path:
     from fastembed import TextEmbedding
-    from huggingface_hub import try_to_load_from_cache
 
     description = next(
         (
@@ -415,16 +479,24 @@ def _cached_fastembed_model(model_name: str, cache: Path) -> Path:
     model_file = str(description["model_file"])
     source = description["sources"].get("hf")
     if source:
-        cached = try_to_load_from_cache(str(source), model_file, cache_dir=cache)
-        if isinstance(cached, str):
-            return Path(cached).parents[len(Path(model_file).parts) - 1]
+        snapshot = _cached_hub_snapshot(source, cache)
+        if snapshot is not None:
+            return snapshot
+    partial: Path | None = None
     for directory in (
         cache / model_name.split("/")[-1],
         cache / f"fast-{model_name.split('/')[-1]}",
     ):
-        if (directory / model_file).is_file():
+        if (directory / model_file).exists():
             return directory
-    raise EmbeddingError(f"no existing local assets for task embedding model {model_name!r}")
+        if directory.exists() or directory.is_symlink():
+            if not directory.is_dir():
+                raise EmbeddingError(f"embedding model cache entry is not a directory: {directory}")
+            if partial is None:
+                partial = directory
+    if partial is not None:
+        return partial
+    raise MissingArtifactsError(f"no existing local assets for task embedding model {model_name!r}")
 
 
 def embed_query_readonly(provider: EmbeddingProvider, query: str) -> list[float]:

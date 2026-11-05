@@ -1,0 +1,1 @@
+These four cases use inline synthetic discoveries and disposable Hash-backed stores. They preserve public-only startup without hidden-history reads, authorized discovery visibility, mixed-wing procedure boundaries and ID-selector authorization before dependency closure. Source migration and lint do not execute the cases or qualify native hosts.

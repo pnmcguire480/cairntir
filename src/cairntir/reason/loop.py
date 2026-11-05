@@ -34,6 +34,7 @@ from cairntir.reason.ports import (
     HypothesisProposer,
     LearningMemoryGateway,
     MemoryGateway,
+    retry_arguments,
 )
 
 
@@ -92,12 +93,15 @@ class ReasonLoop:
                 execution = memory.execute_once(
                     idempotency_key=idempotency_key,
                     operation="reason.step",
-                    request={
-                        "question": question,
-                        "wing": wing,
-                        "room": room,
-                        "supersedes_id": supersedes_id,
-                    },
+                    **retry_arguments(
+                        {
+                            "question": question,
+                            "wing": wing,
+                            "room": room,
+                            "supersedes_id": supersedes_id,
+                        },
+                        adapters=(self._proposer, self._runner),
+                    ),
                     action=lambda: _belief_update_to_dict(
                         self._step_once(
                             question=question,

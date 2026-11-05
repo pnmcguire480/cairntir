@@ -1,0 +1,59 @@
+{
+  "schema": "cairntir.q05-public-build-inputs.v1",
+  "inputs": [
+    {
+      "name": "hatchling",
+      "version": "1.32.3",
+      "filename": "hatchling-1.32.3-py3-none-any.whl",
+      "url": "https://files.pythonhosted.org/packages/f6/89/268c7e4b2bcf2071047366c4c3b4b0e89f640e13ea7bfdaf1df6c40e5140/hatchling-1.32.3-py3-none-any.whl",
+      "sha256": "d05b350af5d9aa5bf7b34b434a45a742b99e67d0b48ea67d240cfeab98e13945",
+      "bytes": 78895,
+      "metadata_url": "https://pypi.org/pypi/hatchling/1.32.3/json"
+    },
+    {
+      "name": "packaging",
+      "version": "26.2",
+      "filename": "packaging-26.2-py3-none-any.whl",
+      "url": "https://files.pythonhosted.org/packages/df/b2/87e62e8c3e2f4b32e5fe99e0b86d576da1312593b39f47d8ceef365e95ed/packaging-26.2-py3-none-any.whl",
+      "sha256": "5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e",
+      "bytes": 100195,
+      "metadata_url": "https://pypi.org/pypi/packaging/26.2/json"
+    },
+    {
+      "name": "pathspec",
+      "version": "1.1.1",
+      "filename": "pathspec-1.1.1-py3-none-any.whl",
+      "url": "https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl",
+      "sha256": "a00ce642f577bf7f473932318056212bc4f8bfdf53128c78bbd5af0b9b20b189",
+      "bytes": 57328,
+      "metadata_url": "https://pypi.org/pypi/pathspec/1.1.1/json"
+    },
+    {
+      "name": "pluggy",
+      "version": "1.6.0",
+      "filename": "pluggy-1.6.0-py3-none-any.whl",
+      "url": "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl",
+      "sha256": "e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746",
+      "bytes": 20538,
+      "metadata_url": "https://pypi.org/pypi/pluggy/1.6.0/json"
+    },
+    {
+      "name": "tomlkit",
+      "version": "0.15.1",
+      "filename": "tomlkit-0.15.1-py3-none-any.whl",
+      "url": "https://files.pythonhosted.org/packages/13/bc/8c13eb66537dce1d2bd3a57132902f38d0e7f5bb46fa9f4daed9fe9d76ee/tomlkit-0.15.1-py3-none-any.whl",
+      "sha256": "177a05aece5a8ca5266fd3c448abb47b8d352f09d477d3ca8332db4d89b24304",
+      "bytes": 49449,
+      "metadata_url": "https://pypi.org/pypi/tomlkit/0.15.1/json"
+    },
+    {
+      "name": "trove-classifiers",
+      "version": "2026.6.1.19",
+      "filename": "trove_classifiers-2026.6.1.19-py3-none-any.whl",
+      "url": "https://files.pythonhosted.org/packages/7c/a4/81502f486f01db95bc8320646a8a12511f5e556cb63d5e224d91816605c4/trove_classifiers-2026.6.1.19-py3-none-any.whl",
+      "sha256": "ab4c4ec93cc4a4e7815fa759906e05e6bb3f2fbd92ea0f897288c6a43efd15b3",
+      "bytes": 14211,
+      "metadata_url": "https://pypi.org/pypi/trove-classifiers/2026.6.1.19/json"
+    }
+  ]
+}

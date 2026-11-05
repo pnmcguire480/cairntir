@@ -1,5 +1,56 @@
 # Changelog
 
+## [2.0.0a4] - 2026-11-05 - experimental preview
+
+Experimental preview; not a stable release or PyPI publication. The 85% alpha coverage floor still applies, with 90% owed for stable 2.0.
+
+### Fixed
+
+- Reusing an idempotency key with a changed claim, prediction, observation, verdict or delta in `cairntir reason`, `recipe-run` or `replay` now raises `IdempotencyConflictError`. It used to report success with the original receipt and drop the new evidence without warning. Found by an independent evaluation of 2.0.0a2. Keys recorded by earlier releases keep replaying on an exact retry, but they hold no record of their evidence, so changed evidence under one of those keys is still not detected.
+- `cairntir replay` now replays an exact retry. It used to refuse one, because the first run had moved the end of the decision chain that the retry key was bound to.
+
+## [2.0.0a3] - 2026-11-04 - experimental preview
+
+Experimental preview; not a stable release or PyPI publication. The 85% alpha coverage floor still applies, with 90% owed for stable 2.0.
+
+### Changed
+
+- Install pins fastembed, NumPy, ONNX Runtime and tokenizers exactly. A store's embedding identity includes those installed versions, so an unpinned install could differ from a locked build and refuse semantic reads and writes until a reindex.
+
+### Fixed
+
+- `cairntir doctor` recognizes hosts configured with the `cairntir-mcp` launcher instead of reporting them as missing.
+- README, SECURITY and the how-to guide name 1.12.4 as the current stable release.
+
+## [2.0.0a2] - 2026-11-04 - experimental preview
+
+Experimental preview; not a stable release or PyPI publication. Alpha releases now use an 85% coverage floor, set by the maintainer, with 90% owed on a later date and still the target for stable 2.0. Earlier results keep their original criteria.
+
+### Security
+
+- Update locked dependencies with published advisories (Pillow, certifi, filelock, fsspec, mcp, setuptools, virtualenv) and the release tooling pinned in GitHub Actions.
+
+### Added
+
+- `cairntir audience` commands: check an audience's status, confirm it yourself at a terminal, and carry it into a specification.
+
+### Changed
+
+- The release tag check accepts an `alpha-<version>` tag for a pre-release published only on GitHub. Stable versions still need a `v` tag and a PyPI release.
+
+### Fixed
+
+- Semantic search no longer fails on every query once a v2 store holds more than 4,096 indexed chunks. 2.0.0a1 asked sqlite-vec for every chunk, which it refuses above that limit. Search now caps that request and uses an exact scan when the cap would otherwise return too few distinct drawers. Published 1.12.4 is not affected.
+- The next reindex removes rebuild copies left by a crashed one. It only touches names it generated and reports a file it cannot delete, which may belong to a running reindex.
+- `cairntir_correct` now says that `idempotency_key` must be a UUID and that `source_identity` is the `portable_identity` from `cairntir_get`.
+- Plain `pytest` can now load the whole test tree, so the documented commands and the evaluation gate work the same as `python -m pytest`.
+
+## [2.0.0a1] - 2026-10-29 - experimental preview
+
+Reindexing now embeds complete content in bounded chunks instead of the historical over-window refusal. The 1.7 release account below remains historical; its active commitment mapping names the replacement helpers.
+
+Experimental preview branch; not a stable release or PyPI publication. Includes the new memory provenance/currentness, Obsidian corrections and managed continuity, practice/evidence tools, calendar and Blender integrations. Dream and unfinished ideation/UI flows remain experimental. See [ALPHA.md](ALPHA.md) for install instructions, exact limits and follow-up dates. Full combined tests/90% coverage and upgrade/rollback qualification remain open; prior failures are preserved.
+
 All notable changes to Cairntir will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
@@ -12,10 +63,6 @@ release after the two-minor warning window, rather than requiring a MAJOR bump.
 [docs/deprecation-policy.md](docs/deprecation-policy.md).
 
 ## [Unreleased]
-
-### Security
-
-- Update locked dependencies with published advisories (Pillow, certifi, filelock, fsspec, mcp, setuptools, virtualenv) and the release tooling pinned in GitHub Actions.
 
 ## [1.12.4] - 2026-10-02
 
@@ -495,7 +542,11 @@ file   tests/unit/test_model_cache.py
 symbol src/cairntir/config.py model_cache_dir
 # One window constant, read by the report *and* the write path.
 symbol src/cairntir/memory/embeddings.py PRODUCTION_CHAR_WINDOW
-symbol src/cairntir/memory/store.py _drawers_over_window
+# Historical 1.7 binding: src/cairntir/memory/store.py _drawers_over_window.
+# Superseded in 2.0.0a1: complete bounded chunks replace over-window refusal.
+symbol src/cairntir/memory/store.py _chunk_window
+symbol src/cairntir/memory/store.py _chunk_spans
+symbol src/cairntir/memory/store.py _embedded_chunks
 # WAL correctness: the guard, and the sidecars the swap must not leave behind.
 symbol src/cairntir/memory/store.py _discard_sidecars
 symbol src/cairntir/memory/store.py wing_counts
@@ -506,7 +557,8 @@ test   tests/unit/test_store.py test_list_by_limit_none_returns_everything
 test   tests/unit/test_store.py test_content_lengths_counts_the_whole_corpus
 test   tests/unit/test_store.py test_reindex_refuses_to_replace_a_database_written_during_the_rebuild
 test   tests/unit/test_store.py test_reindex_discards_stale_write_ahead_sidecars
-test   tests/unit/test_store.py test_reindex_refuses_drawers_wider_than_the_embedder_window
+# Historical 1.7 test: test_reindex_refuses_drawers_wider_than_the_embedder_window.
+test   tests/unit/test_store.py test_reindex_embeds_drawers_wider_than_the_embedder_window
 test   tests/unit/test_update.py test_a_published_release_is_newer_than_its_own_prep_version
 test   tests/integration/test_mcp_backend.py test_unknown_wing_total_is_not_capped_by_a_scan_limit
 ```

@@ -1,0 +1,43 @@
+{
+  "viewports": [
+    {
+      "id": "mobile",
+      "width": 375,
+      "height": 800,
+      "device_scale_factor": 1
+    },
+    {
+      "id": "desktop",
+      "width": 1280,
+      "height": 800,
+      "device_scale_factor": 1
+    }
+  ],
+  "locale": "en-US",
+  "timezone_id": "UTC",
+  "color_scheme": "light",
+  "reduced_motion": "reduce",
+  "font": {
+    "path": "assets/Vera.ttf",
+    "sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+    "license_path": "assets/bitstream-vera-license.txt",
+    "license_sha256": "3361d054759a2fc686a2c058be82deaf9c2e6fe549be9004d7935a6c1736315d",
+    "css_family": "Cairntir Vera",
+    "platform_family": "Bitstream Vera Sans",
+    "text_selectors": [
+      "#heading",
+      "#intro",
+      "#email-label",
+      "#submit",
+      "#details-toggle"
+    ],
+    "postscript_name": "BitstreamVeraSans-Roman"
+  },
+  "screenshot": {
+    "type": "png",
+    "full_page": false,
+    "animations": "disabled",
+    "caret": "hide",
+    "masks": []
+  }
+}

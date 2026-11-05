@@ -1,0 +1,27 @@
+{
+  "kind": "historical_provisional",
+  "idea_id": "synthetic-concept-1",
+  "title": "Hypothetical Change-Review Cards",
+  "selected_text": "A hypothetical change-review card proposes a candidate guideline after an example change. A reviewer may accept, revise or reject the draft. Café notes remain provisional.",
+  "selection_reason": "Synthetic prior-draft selection for a controlled test. Selection and usefulness are unverified.",
+  "attribution": "historical_record_unverified",
+  "human_confirmation": false,
+  "sources": [
+    {
+      "source_id": "synthetic-note-a",
+      "path": "synthetic-concept.md",
+      "sha256": "b4085e6732551bb07cfc1931cece71f3b3c2f01bc123a1f0b20ac7d65926bc4d",
+      "anchor": "## Selected concept",
+      "excerpt": "A hypothetical change-review card proposes a candidate guideline after an example change. A reviewer may accept, revise or reject the draft. Café notes remain provisional.",
+      "excerpt_sha256": "0f30261100398b31f4bce242a2ec4bc2e7cf4408fadd96d5b566ec7014da4ace"
+    },
+    {
+      "source_id": "synthetic-note-b",
+      "path": "synthetic-review.md",
+      "sha256": "4e0b661f7270743f707161706114bbe77d312f78b04e64f5a0560bea1a9c97ab",
+      "anchor": "## Candidate review steps",
+      "excerpt": "Read an example change. Draft a candidate guideline. Place the draft in a pending-review queue; no rule is activated by this fictional exercise.",
+      "excerpt_sha256": "71c88a1167471e97759c471554402e36df8ed26f6c10c494b28c147d212eb05e"
+    }
+  ]
+}

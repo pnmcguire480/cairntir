@@ -37,7 +37,7 @@ def _embedder() -> HashEmbeddingProvider:
 
 
 def _content(generation: int, slot: str) -> str:
-    return f"{TASK}; generation={generation}; slot={slot}; " + (slot + " evidence. ") * 850
+    return f"{TASK}; generation={generation:06d}; slot={slot}; " + (slot + " evidence. ") * 850
 
 
 def _tree(root: Path, *, racing: bool = False) -> dict[str, tuple[int, str]]:

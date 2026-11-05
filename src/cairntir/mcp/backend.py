@@ -16,6 +16,7 @@ import json
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
+from cairntir.agent_correction import correct_agent
 from cairntir.calibration import calibration_report, render_calibration
 from cairntir.codeglass import (
     READER_LEVELS,
@@ -28,6 +29,8 @@ from cairntir.codeglass import (
     walkthrough_fingerprint,
 )
 from cairntir.context import compose_task_context
+from cairntir.decision_currentness import CurrentnessIndex, currentness_index
+from cairntir.derivation import derivation_status, evidence_fields, is_withheld
 from cairntir.durability import request_hash
 from cairntir.errors import AnchorError, MCPError
 from cairntir.handoff import DEFAULT_BUDGET_CHARS, Handoff
@@ -47,6 +50,7 @@ from cairntir.memory.anchors import ANCHORS_KEY, extract_path_candidates, parse_
 from cairntir.memory.anchors import recall_for_change as anchors_recall_for_change
 from cairntir.memory.retrieval import RetrievalResult, Retriever
 from cairntir.memory.taxonomy import Drawer, Layer
+from cairntir.origin import check_capture_origin, origin_reference
 from cairntir.prompt_safety import (
     EVIDENCE_BOUNDARY,
     assess_memory_content,
@@ -140,6 +144,30 @@ class CairntirBackend:
 
     # ------------------------------------------------------------------ tools
 
+    def correct(
+        self,
+        *,
+        wing: str,
+        source_drawer_id: int,
+        source_identity: str,
+        source_sha256: str,
+        content: str,
+        idempotency_key: str,
+        model: str | None = None,
+    ) -> str:
+        """Append a checked correction without rewriting the source drawer."""
+        receipt = correct_agent(
+            self._store,
+            wing=wing,
+            source_drawer_id=source_drawer_id,
+            source_identity=source_identity,
+            source_sha256=source_sha256,
+            content=content,
+            idempotency_key=idempotency_key,
+            model=model,
+        )
+        return json.dumps(receipt, ensure_ascii=False, sort_keys=True)
+
     def hotfix(
         self,
         *,
@@ -199,8 +227,19 @@ class CairntirBackend:
         claim: str | None = None,
         predicted_outcome: str | None = None,
         checkpoint: dict[str, Any] | None = None,
+        reference_origin: str | None = None,
     ) -> str:
         """Store a verbatim drawer. Returns a human-readable confirmation."""
+        check_capture_origin(
+            self._store,
+            content=content,
+            reference_origin=reference_origin,
+            metadata=metadata,
+            claim=claim,
+            predicted_outcome=predicted_outcome,
+            anchors=anchors,
+            checkpoint=checkpoint,
+        )
         if checkpoint is not None:
             from cairntir.tasks import TaskBook
 
@@ -385,15 +424,40 @@ class CairntirBackend:
             )
         return reply
 
-    def get(self, *, drawer_id: int) -> str:
+    def get(
+        self,
+        *,
+        drawer_id: int,
+        expected_identity: str | None = None,
+        expected_source_store_id: str | None = None,
+        expected_content_sha256: str | None = None,
+    ) -> str:
         """Return one complete drawer as stable, structured JSON."""
+        guarded = any(
+            expected is not None
+            for expected in (expected_identity, expected_source_store_id, expected_content_sha256)
+        )
+        reference = origin_reference(self._store, drawer_id) if guarded else None
+        if reference is not None and any(
+            expected is not None and expected != actual
+            for expected, actual in (
+                (expected_identity, reference["identity"]),
+                (expected_source_store_id, reference["source_store_id"]),
+                (expected_content_sha256, reference["content_sha256"]),
+            )
+        ):
+            raise MCPError("drawer reference expectations do not match")
         drawer = self._store.get(drawer_id)
         if drawer is None:
             raise MCPError(f"no drawer with id {drawer_id}")
+        if reference is None:
+            reference = origin_reference(self._store, drawer_id)
         provenance = self._required_provenance(drawer_id)
         assessment = assess_memory_content(drawer.content)
         payload = {
             "resource": _drawer_ref(drawer),
+            "origin_reference": reference,
+            "derivation": derivation_status(self._store, drawer_id),
             "id": drawer.id,
             "wing": drawer.wing,
             "room": drawer.room,
@@ -414,6 +478,7 @@ class CairntirBackend:
             "suspicious": assessment.suspicious,
             "security_signals": list(assessment.signals),
         }
+        payload.update(currentness_index(self._store, wing=drawer.wing).fields(drawer))
         return json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True)
 
     def recall(
@@ -445,12 +510,9 @@ class CairntirBackend:
         "fit". Once the budget is spent the remaining hits fall back to
         snippets and are named with their ids, exactly as an oversize hit is.
 
-        The parameter is deliberately **not** published in the
-        ``cairntir_recall`` tool schema yet. The ceiling is what fixes the
-        defect; the tunable is new surface, and new surface makes a MINOR
-        under ``docs/release-cadence.md``. It exists here so the bound is
-        testable at small sizes, and so the next MINOR can expose it by
-        adding the property and nothing else.
+        This legacy method retains its content-only ceiling and text format.
+        MCP calls explicitly supplying ``budget_chars`` use :meth:`recall_bounded`
+        instead, which bounds the complete serialized result envelope.
         """
         if not query.strip():
             raise MCPError("recall requires a non-empty query")
@@ -463,8 +525,23 @@ class CairntirBackend:
             return f"No drawers matched {query!r}."
         lines = [f"{len(hits)} hit(s) for {query!r}:"]
         evidence: list[str] = []
+        indices: dict[str, CurrentnessIndex] = {}
         spent = 0
         for index, (drawer, distance) in enumerate(hits):
+            if drawer.id is None:
+                raise MCPError("recall returned an unpersisted drawer")
+            state = derivation_status(self._store, drawer.id)
+            if is_withheld(state):
+                lines.append(f"  #{drawer.id}  derivation={state['status']}; body withheld.")
+                evidence.append(
+                    render_memory_evidence(
+                        drawer,
+                        self._required_provenance(drawer.id),
+                        content="Memory body withheld pending derivation review.",
+                        fields=_currentness_fields(self._store, drawer, indices),
+                    )
+                )
+                continue
             wants_full = index < full_content
             size = len(drawer.content)
             remaining = budget_chars - spent
@@ -490,11 +567,35 @@ class CairntirBackend:
                     drawer,
                     self._required_provenance(drawer.id),
                     content=drawer.content if served_full else _snippet(drawer.content),
+                    fields=_currentness_fields(self._store, drawer, indices),
                 )
             )
         if full_content:
             lines.insert(1, f"  full content: {spent:,}/{budget_chars:,} chars used.")
         return "\n".join(lines) + "\n\n" + render_evidence_block(evidence)
+
+    def recall_bounded(
+        self,
+        *,
+        query: str,
+        wing: str | None = None,
+        room: str | None = None,
+        limit: int = 10,
+        full_content: int = 0,
+        budget_chars: int,
+    ) -> str:
+        """Return whole recall evidence within a complete MCP result budget."""
+        from cairntir.recall_budget import recall_bounded
+
+        return recall_bounded(
+            self._store,
+            query=query,
+            wing=wing,
+            room=room,
+            limit=limit,
+            full_content=full_content,
+            budget_chars=budget_chars,
+        )
 
     def cross_recall(self, *, query: str, limit: int = 10) -> str:
         """Semantic search over *every* wing. Returns hits annotated by wing.
@@ -513,6 +614,7 @@ class CairntirBackend:
         wings_seen = {d.wing for d, _ in hits}
         lines = [f"{len(hits)} hit(s) across {len(wings_seen)} wing(s) for {query!r}:"]
         evidence: list[str] = []
+        indices: dict[str, CurrentnessIndex] = {}
         for drawer, distance in hits:
             lines.append(
                 f"  #{drawer.id}  [{drawer.wing}]  {drawer.room}  "
@@ -524,6 +626,7 @@ class CairntirBackend:
                     drawer,
                     self._required_provenance(drawer.id),
                     content=_snippet(drawer.content),
+                    fields=_currentness_fields(self._store, drawer, indices),
                 )
             )
         return "\n".join(lines) + "\n\n" + render_evidence_block(evidence)
@@ -562,6 +665,7 @@ class CairntirBackend:
             f"{len(result.matches)} anchored drawer(s) touch those {len(files)} file(s){scope}:"
         ]
         evidence: list[str] = []
+        indices: dict[str, CurrentnessIndex] = {}
         for match in result.matches:
             drawer = match.drawer
             where = ", ".join(
@@ -576,6 +680,7 @@ class CairntirBackend:
                     drawer,
                     self._required_provenance(drawer.id),
                     content=_snippet(drawer.content),
+                    fields=_currentness_fields(self._store, drawer, indices),
                 )
             )
         body = "\n".join(lines) + _malformed_note(result.malformed_drawer_ids)
@@ -678,7 +783,10 @@ class CairntirBackend:
         if budget_chars is not None and budget_chars < 1:
             raise MCPError("budget_chars must be at least 1")
         result = self._retriever.load(wing=wing, query=query, include_deep=False)
-        context = _format_retrieval(wing, result, store=self._store, budget_chars=budget_chars)
+        indices = {wing: currentness_index(self._store, wing=wing)}
+        context = _format_retrieval(
+            wing, result, store=self._store, budget_chars=budget_chars, indices=indices
+        )
         active = list_discoveries(self._store, wing=wing, active_only=True, limit=5)
         if not active:
             return context
@@ -691,6 +799,7 @@ class CairntirBackend:
                 render_memory_evidence(
                     drawer,
                     self._required_provenance(discovery.drawer_id),
+                    fields=_currentness_fields(self._store, drawer, indices),
                 )
             )
         return (
@@ -996,6 +1105,7 @@ class CairntirBackend:
             return f"No timeline entries for {entity!r} in wing {wing!r}."
         lines = [f"Timeline for {entity!r} in {wing!r} ({len(matched)} entries):"]
         evidence: list[str] = []
+        index = currentness_index(self._store, wing=wing)
         for d in matched:
             lines.append(f"  {_fmt_ts(d.created_at)}  #{d.id}  {d.room}  {_content_receipt(d)}")
             evidence.append(
@@ -1003,6 +1113,7 @@ class CairntirBackend:
                     d,
                     self._required_provenance(d.id),
                     content=_snippet(d.content),
+                    fields=index.fields(d),
                 )
             )
         return "\n".join(lines) + "\n\n" + render_evidence_block(evidence)
@@ -1019,12 +1130,14 @@ class CairntirBackend:
             f"## Context — wing={wing!r}, essential drawers={len(essentials)}",
         ]
         if essentials:
+            index = currentness_index(self._store, wing=wing)
             for d in essentials:
                 context.append(
                     render_memory_evidence(
                         d,
                         self._required_provenance(d.id),
                         content=_snippet(d.content),
+                        fields=index.fields(d),
                     )
                 )
         else:
@@ -1048,6 +1161,14 @@ class CairntirBackend:
 
 
 # ------------------------------------------------------------------ helpers
+
+
+def _currentness_fields(
+    store: DrawerStore, drawer: Drawer, indices: dict[str, CurrentnessIndex]
+) -> dict[str, Any]:
+    if drawer.wing not in indices:
+        indices[drawer.wing] = currentness_index(store, wing=drawer.wing)
+    return {**indices[drawer.wing].fields(drawer), **evidence_fields(store, drawer)}
 
 
 def _content_hash(content: str) -> str:
@@ -1181,7 +1302,18 @@ def _format_handoff(brief: Handoff, *, store: DrawerStore) -> str:
         f"{brief.included_count} drawer(s) whole, {brief.omitted_count} named but not fetched.",
         "",
     ]
+    if brief.review_receipts:
+        lines.append("## Derivations withheld pending review")
+        for receipt in brief.review_receipts:
+            state = receipt["derivation"]
+            lines.append(
+                f"  #{receipt['drawer_id']}  derivation={state['status']}; "
+                f"reasons={','.join(state['reasons'])}; historical get remains available."
+            )
+        lines.append("")
     if brief.is_empty:
+        if brief.review_receipts:
+            return "\n".join(lines) + "\n"
         if brief.wing_is_unknown:
             lines.append(
                 f"Nothing is recorded for wing {brief.wing!r}. If that is unexpected, "
@@ -1212,6 +1344,7 @@ def _format_handoff(brief: Handoff, *, store: DrawerStore) -> str:
         return "\n".join(lines) + "\n"
 
     evidence: list[str] = []
+    indices: dict[str, CurrentnessIndex] = {}
     for section in brief.sections:
         if not section.included and not section.omitted:
             continue
@@ -1221,7 +1354,13 @@ def _format_handoff(brief: Handoff, *, store: DrawerStore) -> str:
             if drawer.id is None:
                 raise MCPError("stored drawer is missing its id")
             lines.append(f"  #{drawer.id}  {drawer.room}  {len(drawer.content):,} chars")
-            evidence.append(render_memory_evidence(drawer, _provenance_or_fail(store, drawer.id)))
+            evidence.append(
+                render_memory_evidence(
+                    drawer,
+                    _provenance_or_fail(store, drawer.id),
+                    fields=_currentness_fields(store, drawer, indices),
+                )
+            )
         if section.omitted:
             lines.append(
                 f"  ...{len(section.omitted)} not fetched — cairntir_get(<id>) for any you need:"
@@ -1241,6 +1380,7 @@ def _format_retrieval(
     *,
     store: DrawerStore,
     budget_chars: int | None = None,
+    indices: dict[str, CurrentnessIndex],
 ) -> str:
     """Render a session_start payload, optionally under a hard character ceiling.
 
@@ -1276,7 +1416,10 @@ def _format_retrieval(
             if provenance is None:
                 raise MCPError(f"drawer {d.id} is missing write provenance")
             stub = f"  #{d.id}  {d.room}  {_content_receipt(d)}"
-            entry = render_memory_evidence(d, provenance, content=_snippet(d.content))
+            fields = _currentness_fields(store, d, indices)
+            entry = render_memory_evidence(
+                d, provenance, content=_snippet(d.content), fields=fields
+            )
             cost = len(stub) + len(entry)
             if budget_chars is not None and spent + cost > budget_chars:
                 omitted.append(d.id)

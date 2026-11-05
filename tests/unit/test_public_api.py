@@ -81,5 +81,5 @@ def test_dunder_all_matches_snapshot() -> None:
     assert frozenset(cairntir.__all__) == EXPECTED_PUBLIC_NAMES
 
 
-def test_version_is_v1() -> None:
-    assert cairntir.__version__.startswith("1.")
+def test_version_is_v2() -> None:
+    assert cairntir.__version__.startswith("2.")

@@ -83,6 +83,7 @@ class RecipeRunner:
         *,
         supersedes_id: int | None = None,
         idempotency_key: str | None = None,
+        retry_anchor: int | None = None,
     ) -> RecipeResult:
         """Validate inputs against ``contract`` and execute the skill chain.
 
@@ -93,21 +94,33 @@ class RecipeRunner:
         on the leaf of a past decision's chain instead of starting a
         fresh one. The seed drawer itself is unaffected; supersedes
         edges are reserved for the load-bearing reason output.
+
+        ``retry_anchor`` names the stable drawer a retry is about when
+        ``supersedes_id`` is a chain leaf. A committed run moves that leaf,
+        so without an anchor an exact retry would look like a new request.
         """
         _validate_inputs(contract, inputs)
-        from cairntir.reason.ports import DurableMemoryGateway
+        from cairntir.reason.ports import DurableMemoryGateway, retry_arguments
 
         if isinstance(self._memory, DurableMemoryGateway):
             if idempotency_key is not None:
                 execution = self._memory.execute_once(
                     idempotency_key=idempotency_key,
                     operation="recipe.run",
-                    request={
-                        "recipe_name": contract.name,
-                        "recipe_version": contract.version,
-                        "inputs": inputs,
-                        "supersedes_id": supersedes_id,
-                    },
+                    **retry_arguments(
+                        {
+                            "recipe_name": contract.name,
+                            "recipe_version": contract.version,
+                            "inputs": inputs,
+                            "supersedes_id": supersedes_id,
+                        },
+                        adapters=(
+                            (self._proposer, self._runner) if "reason" in contract.skills else ()
+                        ),
+                        overrides=(
+                            {"supersedes_id": retry_anchor} if retry_anchor is not None else None
+                        ),
+                    ),
                     action=lambda: _recipe_result_to_dict(
                         self._run_once(
                             contract,

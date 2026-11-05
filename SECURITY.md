@@ -8,7 +8,7 @@ that have not been tagged yet.
 
 | Version | Security-fix support |
 | ------- | -------------------- |
-| Latest published release (currently `1.12.3`) | Supported |
+| Latest published stable release (currently `1.12.4`) | Supported |
 | Older published releases | Upgrade to the latest supported release |
 | `main` and other development candidates | Unreleased; not proof of an installed fix |
 

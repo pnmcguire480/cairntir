@@ -123,7 +123,7 @@ def test_doctor_reports_missing_vector_without_attempting_repair(seeded):
     before = contents(database)
     result = RUNNER.invoke(app, ["doctor", "--gate"])
     assert result.exit_code == 1 and "reindex" in result.output
-    assert "2 vectors for 3 drawers" in result.output
+    assert "2 vectors for 3 active spans" in result.output
     assert contents(database) == before
 
 

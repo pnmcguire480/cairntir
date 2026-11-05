@@ -231,6 +231,15 @@ pass that path-level evidence as `delta` instead of discarding it. The loop reje
 blank commitments, scope changes, outcomes bound to another hypothesis, incomplete
 experiment records, and idempotency claims made through a non-durable gateway.
 
+A retry key binds the question, scope and, for `ManualProposer` and `NullRunner`,
+the claim, prediction, observation, verdict and delta. An identical retry replays
+the original result. Changed evidence raises `IdempotencyConflictError`, so use a
+new key for new evidence. A custom adapter joins this check by adding a
+`retry_evidence()` method; otherwise its retries replay on the question and scope
+alone, which suits a model that can draft different text each time. A key recorded
+before 2.0.0a4 has no record of its evidence, so it still replays on the question
+and scope alone.
+
 Automatic reflection counts only uniquely bound Reason prediction/observation
 pairs. It keeps repeated claims separated by room and may propose a reviewable
 candidate, but it never corroborates or promotes one.

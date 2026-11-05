@@ -1,0 +1,519 @@
+{
+  "schema": "cairntir.outline-assembly-plan.v2",
+  "requests": [
+    {
+      "request_id": "discussion-outline",
+      "point_count": 3,
+      "production_note_count": 2,
+      "verification_action_key": "verify",
+      "spans": [
+        {
+          "key": "angle-enemies",
+          "source_id": "SYN-ANGLES",
+          "anchor_id": "angle-enemies",
+          "source_sha256": "98dc0f53df2ca8360f564a10c184fb323a2296925b1441c3a8f4b68c7bd7b8b2",
+          "excerpt_sha256": "0a860a7c94909d1cbf4fb2a826973830ff5624fb2d6a0d96100e0e2987085fad",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 197,
+          "span_sha256": "0a860a7c94909d1cbf4fb2a826973830ff5624fb2d6a0d96100e0e2987085fad"
+        },
+        {
+          "key": "hook-reddit",
+          "source_id": "SYN-HOOKS",
+          "anchor_id": "hook-reddit",
+          "source_sha256": "b7b4e1138eedf65a131f8b9c128a6a83a0eae1ddf5c0de9b29d438abbc5ed6a4",
+          "excerpt_sha256": "0d1741692ab1f713dbce5bed5b7e0ae9920cde5a84e3e0620155ad3778b3dc9b",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 107,
+          "span_sha256": "0d1741692ab1f713dbce5bed5b7e0ae9920cde5a84e3e0620155ad3778b3dc9b"
+        },
+        {
+          "key": "withdrawn-launch",
+          "source_id": "SYN-POLICY",
+          "anchor_id": "withdrawn-launch",
+          "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "excerpt_sha256": "9ddfecbc96de07263c8d2b38d06e6ff94aeb6cd9687925470c3094e8392339a2",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 136,
+          "span_sha256": "9ddfecbc96de07263c8d2b38d06e6ff94aeb6cd9687925470c3094e8392339a2"
+        },
+        {
+          "key": "cadence-build",
+          "source_id": "SYN-POLICY",
+          "anchor_id": "cadence-build",
+          "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "excerpt_sha256": "e2c96103198b26cb2f901c9487952efe49321e23363a2add54aa8b0214a7d0db",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 148,
+          "span_sha256": "e2c96103198b26cb2f901c9487952efe49321e23363a2add54aa8b0214a7d0db"
+        },
+        {
+          "key": "cadence-recurring",
+          "source_id": "SYN-POLICY",
+          "anchor_id": "cadence-recurring",
+          "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "excerpt_sha256": "318b418212530cd369fbb93eca65199451ea2a6623c4018138dab607d972f31c",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 149,
+          "span_sha256": "318b418212530cd369fbb93eca65199451ea2a6623c4018138dab607d972f31c"
+        }
+      ],
+      "component_bindings": [
+        {
+          "slot": "opening",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "point1",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "example1",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "point2",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "example2",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "point3",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "example3",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "bridge1",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "bridge2",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "bridge3",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "bridge4",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "close",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "cta",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "length-basis",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit"
+          ]
+        },
+        {
+          "slot": "note1",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit",
+            "withdrawn-launch",
+            "cadence-build",
+            "cadence-recurring"
+          ]
+        },
+        {
+          "slot": "note2",
+          "span_keys": [
+            "angle-enemies",
+            "hook-reddit",
+            "withdrawn-launch",
+            "cadence-build",
+            "cadence-recurring"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "key": "verify",
+          "kind": "verification",
+          "purpose": "Verify intended factual claims, historical attribution and sources before use",
+          "component_slots": [
+            "opening",
+            "point1",
+            "example1",
+            "point2",
+            "example2",
+            "point3",
+            "example3",
+            "bridge1",
+            "bridge2",
+            "bridge3",
+            "bridge4",
+            "close",
+            "cta",
+            "length-basis",
+            "note1",
+            "note2"
+          ],
+          "depends_on": []
+        },
+        {
+          "key": "draft",
+          "kind": "production",
+          "purpose": "Draft the neutral discussion post",
+          "component_slots": [
+            "opening",
+            "point1",
+            "example1",
+            "point2",
+            "example2",
+            "point3",
+            "example3",
+            "bridge1",
+            "bridge2",
+            "bridge3",
+            "bridge4",
+            "close",
+            "cta",
+            "length-basis",
+            "note1",
+            "note2"
+          ],
+          "depends_on": [
+            "verify"
+          ]
+        },
+        {
+          "key": "review",
+          "kind": "production",
+          "purpose": "Review the resulting draft against original sources, audience and finished-length target",
+          "component_slots": [
+            "opening",
+            "point1",
+            "example1",
+            "point2",
+            "example2",
+            "point3",
+            "example3",
+            "bridge1",
+            "bridge2",
+            "bridge3",
+            "bridge4",
+            "close",
+            "cta",
+            "length-basis",
+            "note1",
+            "note2"
+          ],
+          "depends_on": [
+            "verify",
+            "draft"
+          ]
+        }
+      ]
+    },
+    {
+      "request_id": "spoken-video-outline",
+      "point_count": 3,
+      "production_note_count": 2,
+      "verification_action_key": "verify",
+      "spans": [
+        {
+          "key": "angle-round-table",
+          "source_id": "SYN-ANGLES",
+          "anchor_id": "angle-round-table",
+          "source_sha256": "98dc0f53df2ca8360f564a10c184fb323a2296925b1441c3a8f4b68c7bd7b8b2",
+          "excerpt_sha256": "47dcf8a849b613797706f97e9272ac2d2bfab80e0ad0b5343a944de7afb6da3f",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 194,
+          "span_sha256": "47dcf8a849b613797706f97e9272ac2d2bfab80e0ad0b5343a944de7afb6da3f"
+        },
+        {
+          "key": "hook-video",
+          "source_id": "SYN-HOOKS",
+          "anchor_id": "hook-video",
+          "source_sha256": "b7b4e1138eedf65a131f8b9c128a6a83a0eae1ddf5c0de9b29d438abbc5ed6a4",
+          "excerpt_sha256": "55645b8930324d7d134ac579de1a57f12e5b2063a985a741bc864923972244d9",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 98,
+          "span_sha256": "55645b8930324d7d134ac579de1a57f12e5b2063a985a741bc864923972244d9"
+        },
+        {
+          "key": "withdrawn-launch",
+          "source_id": "SYN-POLICY",
+          "anchor_id": "withdrawn-launch",
+          "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "excerpt_sha256": "9ddfecbc96de07263c8d2b38d06e6ff94aeb6cd9687925470c3094e8392339a2",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 136,
+          "span_sha256": "9ddfecbc96de07263c8d2b38d06e6ff94aeb6cd9687925470c3094e8392339a2"
+        },
+        {
+          "key": "cadence-build",
+          "source_id": "SYN-POLICY",
+          "anchor_id": "cadence-build",
+          "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "excerpt_sha256": "e2c96103198b26cb2f901c9487952efe49321e23363a2add54aa8b0214a7d0db",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 148,
+          "span_sha256": "e2c96103198b26cb2f901c9487952efe49321e23363a2add54aa8b0214a7d0db"
+        },
+        {
+          "key": "cadence-recurring",
+          "source_id": "SYN-POLICY",
+          "anchor_id": "cadence-recurring",
+          "source_sha256": "fd9be78172ecf70671bac732603556170789d41ce17e38dbde58fc90cefbb443",
+          "excerpt_sha256": "318b418212530cd369fbb93eca65199451ea2a6623c4018138dab607d972f31c",
+          "excerpt_byte_start": 0,
+          "excerpt_byte_end": 149,
+          "span_sha256": "318b418212530cd369fbb93eca65199451ea2a6623c4018138dab607d972f31c"
+        }
+      ],
+      "component_bindings": [
+        {
+          "slot": "opening",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "point1",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "example1",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "point2",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "example2",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "point3",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "example3",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "bridge1",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "bridge2",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "bridge3",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "bridge4",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "close",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "cta",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "length-basis",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video"
+          ]
+        },
+        {
+          "slot": "note1",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video",
+            "withdrawn-launch",
+            "cadence-build",
+            "cadence-recurring"
+          ]
+        },
+        {
+          "slot": "note2",
+          "span_keys": [
+            "angle-round-table",
+            "hook-video",
+            "withdrawn-launch",
+            "cadence-build",
+            "cadence-recurring"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "key": "verify",
+          "kind": "verification",
+          "purpose": "Verify intended factual claims, historical attribution and sources before use",
+          "component_slots": [
+            "opening",
+            "point1",
+            "example1",
+            "point2",
+            "example2",
+            "point3",
+            "example3",
+            "bridge1",
+            "bridge2",
+            "bridge3",
+            "bridge4",
+            "close",
+            "cta",
+            "length-basis",
+            "note1",
+            "note2"
+          ],
+          "depends_on": []
+        },
+        {
+          "key": "draft",
+          "kind": "production",
+          "purpose": "Draft and storyboard the spoken short video",
+          "component_slots": [
+            "opening",
+            "point1",
+            "example1",
+            "point2",
+            "example2",
+            "point3",
+            "example3",
+            "bridge1",
+            "bridge2",
+            "bridge3",
+            "bridge4",
+            "close",
+            "cta",
+            "length-basis",
+            "note1",
+            "note2"
+          ],
+          "depends_on": [
+            "verify"
+          ]
+        },
+        {
+          "key": "review",
+          "kind": "production",
+          "purpose": "Review the resulting draft against original sources, audience and finished-length target",
+          "component_slots": [
+            "opening",
+            "point1",
+            "example1",
+            "point2",
+            "example2",
+            "point3",
+            "example3",
+            "bridge1",
+            "bridge2",
+            "bridge3",
+            "bridge4",
+            "close",
+            "cta",
+            "length-basis",
+            "note1",
+            "note2"
+          ],
+          "depends_on": [
+            "verify",
+            "draft"
+          ]
+        }
+      ]
+    }
+  ]
+}

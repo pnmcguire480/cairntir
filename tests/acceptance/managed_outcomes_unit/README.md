@@ -1,0 +1,3 @@
+These 15 ordinary tests use disposable SQLite stores, HashEmbeddingProvider and bounded local Python children. They exercise invalid-input atomicity, exact failed-process output, one-second timeout uncertainty, the 128-byte output cap, witnessed read failure, non-launching replay, grant revocation, projection refusal and concurrent checkpoint reads.
+
+The source scenarios and deadlines are retained. Scoped lint and static source comparison do not execute these cases. Existing historical qualification does not transfer to this port, and these local fixtures do not qualify native host capture or arbitrary descendant containment.

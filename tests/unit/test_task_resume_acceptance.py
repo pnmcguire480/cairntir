@@ -271,20 +271,20 @@ def test_all_existing_mcp_tools_advertise_object_root_schemas() -> None:
     from cairntir.mcp.server import _tool_specs
 
     tools = _tool_specs()
-    assert len(tools) == 21
-    assert len({tool.name for tool in tools}) == 21
+    assert len(tools) == 22
+    assert len({tool.name for tool in tools}) == 22
     malformed = [tool.name for tool in tools if tool.inputSchema.get("type") != "object"]
     assert malformed == [], f"MCP tools require object-root input schemas: {malformed}"
 
 
-def test_real_stdio_advertises_21_object_root_tool_schemas(owner: DrawerStore) -> None:
+def test_real_stdio_advertises_22_object_root_tool_schemas(owner: DrawerStore) -> None:
     peer = _McpPeer("claude")
     try:
         peer.initialize()
         response = peer.request("tools/list", {})
         tools = response["result"]["tools"]
-        assert len(tools) == 21
-        assert len({tool["name"] for tool in tools}) == 21
+        assert len(tools) == 22
+        assert len({tool["name"] for tool in tools}) == 22
         assert all(tool["inputSchema"].get("type") == "object" for tool in tools)
     finally:
         peer.close()

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Printer notes</title>
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<style>
+@font-face { font-family: "Cairntir Vera"; src: url("assets/Vera.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: block; }
+* { box-sizing: border-box; }
+html { background: #f2f5fa; color: #182033; }
+body { margin: 0; font: 16px/1.5 "Cairntir Vera"; }
+main { width: calc(100% - 32px); max-width: 560px; margin: 24px auto; padding: 24px; background: #ffffff; border: 1px solid #d1d8e4; border-radius: 12px; }
+h1 { font-size: 28px; line-height: 1.25; font-weight: 400; margin: 0 0 16px; }
+p { margin: 0 0 20px; }
+label { display: block; margin-bottom: 6px; }
+input { display: block; width: 100%; min-width: 0; height: 44px; padding: 8px; border: 1px solid #52647e; border-radius: 4px; font: inherit; color: inherit; background: white; }
+.actions { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+.button { display: block; width: 100%; border: 0; border-radius: 4px; padding: 12px; background: #2459c4; color: white; font: inherit; text-align: center; cursor: pointer; }
+.button:focus-visible, input:focus-visible { outline: 3px solid #bf6b00; outline-offset: 3px; }
+#details { margin-top: 20px; padding: 12px; border: 1px solid #52647e; }
+[hidden] { display: none; }
+</style>
+</head>
+<body>
+<main id="content">
+<h1 id="heading">Printer notes</h1>
+<p id="intro">Keep a note for the next print.</p>
+<label id="email-label" for="email">Email address</label>
+<input id="email" type="text" autocomplete="off">
+<div class="actions">
+<button class="button" id="submit" type="button">Save note</button>
+<div class="button" id="details-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="details">Show details</div>
+</div>
+<div id="details" hidden>Review the recorded settings before your next print.</div>
+</main>
+<script>
+const toggle = document.getElementById('details-toggle');
+const details = document.getElementById('details');
+toggle.addEventListener('click', () => {
+  const expanded = toggle.getAttribute('aria-expanded') === 'true';
+  toggle.setAttribute('aria-expanded', String(!expanded));
+  details.hidden = expanded;
+});
+</script>
+</body>
+</html>

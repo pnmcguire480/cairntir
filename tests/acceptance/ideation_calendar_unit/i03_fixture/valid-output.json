@@ -1,0 +1,65 @@
+{
+  "schema": "cairntir.channel-output.v1",
+  "adaptations": [
+    {
+      "channel_id": "community-discussion",
+      "format_id": "question-post",
+      "hook": "Which invented observation belongs in a mock notebook comparison?",
+      "content": {
+        "title": "Reviewing two imaginary notebook observations",
+        "body": "This synthetic notebook concept compares invented observations and lists uncertainty before review. Which evidence would help a pretend classroom reviewer decide whether an interpretation should remain provisional?",
+        "closing_question": "What would make you revise or reject a fictional interpretation?"
+      },
+      "source_ids": [
+        "synthetic-i03-concept",
+        "synthetic-i03-outline"
+      ],
+      "assumption_ids": [
+        "A1"
+      ]
+    },
+    {
+      "channel_id": "newsletter",
+      "format_id": "short-note",
+      "hook": "An imaginary notebook entry can begin a conversation about uncertainty.",
+      "content": {
+        "subject": "A mock notebook exercise for provisional review",
+        "preview": "Two invented observations remain open to revision.",
+        "body": "The synthetic outline reads two pretend observations, records uncertainty and asks for review. Its fictional interpretation remains provisional throughout this classroom exercise.",
+        "call_to_action": "Reply with one invented observation you would ask a reviewer to examine."
+      },
+      "source_ids": [
+        "synthetic-i03-outline"
+      ],
+      "assumption_ids": [
+        "A1"
+      ]
+    },
+    {
+      "channel_id": "short-video",
+      "format_id": "thirty-second-concept",
+      "hook": "Picture two pretend sensors leaving a question in a mock notebook.",
+      "content": {
+        "spoken_opening": "Could these invented observations support more than one interpretation?",
+        "screen_text": "Synthetic concept: observation, uncertainty, review",
+        "visual_concept": "Show two imaginary notebook cards. Highlight their disagreement. Place an uncertainty card beside them and move the interpretation into a pending-review column marked synthetic concept.",
+        "call_to_action": "Which fictional observation would you review first?"
+      },
+      "source_ids": [
+        "synthetic-i03-concept",
+        "synthetic-i03-outline"
+      ],
+      "assumption_ids": [
+        "A1"
+      ]
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "A1",
+      "claim": "Pretend classroom readers may find a notebook comparison worth discussing.",
+      "reason": "No real audience interest or usefulness has been established by the synthetic concept.",
+      "source_ids": []
+    }
+  ]
+}

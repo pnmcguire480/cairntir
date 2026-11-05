@@ -1,0 +1,240 @@
+{
+  "lint": {
+    "argv": [
+      "@python",
+      "-I",
+      "-B",
+      "-m",
+      "ruff",
+      "check",
+      "--config",
+      {
+        "root": "snapshot",
+        "path": "acceptance/ruff.toml",
+        "prefix": ""
+      },
+      "--no-cache",
+      "--output-format",
+      "json",
+      "--output-file",
+      {
+        "root": "output",
+        "path": "lint/report.json",
+        "prefix": ""
+      },
+      {
+        "root": "snapshot",
+        "path": "src",
+        "prefix": ""
+      }
+    ],
+    "cwd": {
+      "root": "snapshot",
+      "path": ""
+    },
+    "timeout_seconds": 60,
+    "output_limit_bytes": 1048576
+  },
+  "types": {
+    "argv": [
+      "@python",
+      "-I",
+      "-B",
+      "-m",
+      "mypy",
+      "--config-file",
+      {
+        "root": "snapshot",
+        "path": "acceptance/mypy.ini",
+        "prefix": ""
+      },
+      "--strict",
+      "--no-incremental",
+      "--cache-dir",
+      {
+        "root": "output",
+        "path": "types/cache",
+        "prefix": ""
+      },
+      "--junit-xml",
+      {
+        "root": "output",
+        "path": "types/report.xml",
+        "prefix": ""
+      },
+      {
+        "root": "snapshot",
+        "path": "src",
+        "prefix": ""
+      }
+    ],
+    "cwd": {
+      "root": "snapshot",
+      "path": ""
+    },
+    "timeout_seconds": 60,
+    "output_limit_bytes": 1048576
+  },
+  "build": {
+    "argv": [
+      "@uv",
+      "build",
+      "--offline",
+      "--no-index",
+      "--find-links",
+      "@wheelhouse",
+      "--no-config",
+      "--no-python-downloads",
+      "--link-mode",
+      "copy",
+      "--python",
+      "@python",
+      "--build-constraints",
+      "@build_constraints",
+      "--wheel",
+      "--out-dir",
+      {
+        "root": "output",
+        "path": "build",
+        "prefix": ""
+      },
+      {
+        "root": "snapshot",
+        "path": "",
+        "prefix": ""
+      }
+    ],
+    "cwd": {
+      "root": "snapshot",
+      "path": ""
+    },
+    "timeout_seconds": 60,
+    "output_limit_bytes": 1048576
+  },
+  "unit": {
+    "argv": [
+      "@python",
+      "-I",
+      "-B",
+      "-m",
+      "pytest",
+      "-c",
+      {
+        "root": "snapshot",
+        "path": "acceptance/pytest.ini",
+        "prefix": ""
+      },
+      "--rootdir",
+      {
+        "root": "snapshot",
+        "path": "",
+        "prefix": ""
+      },
+      "--override-ini",
+      {
+        "root": "snapshot",
+        "path": "src",
+        "prefix": "pythonpath="
+      },
+      "-p",
+      "no:cacheprovider",
+      "--override-ini",
+      "junit_family=xunit2",
+      "-p",
+      "pytest_cov",
+      "--cov",
+      "paladin_fixture.boundaries",
+      "--cov-config",
+      {
+        "root": "snapshot",
+        "path": "acceptance/coverage.ini",
+        "prefix": ""
+      },
+      "--cov-report",
+      {
+        "root": "output",
+        "path": "unit/coverage.json",
+        "prefix": "json:"
+      },
+      "--junitxml",
+      {
+        "root": "output",
+        "path": "unit/report.xml",
+        "prefix": ""
+      },
+      "--basetemp",
+      {
+        "root": "output",
+        "path": "unit/tmp",
+        "prefix": ""
+      },
+      {
+        "root": "snapshot",
+        "path": "acceptance/test_unit.py",
+        "prefix": ""
+      },
+      "-q"
+    ],
+    "cwd": {
+      "root": "snapshot",
+      "path": ""
+    },
+    "timeout_seconds": 60,
+    "output_limit_bytes": 1048576
+  },
+  "integration": {
+    "argv": [
+      "@python",
+      "-I",
+      "-B",
+      "-m",
+      "pytest",
+      "-c",
+      {
+        "root": "snapshot",
+        "path": "acceptance/pytest.ini",
+        "prefix": ""
+      },
+      "--rootdir",
+      {
+        "root": "snapshot",
+        "path": "",
+        "prefix": ""
+      },
+      "--override-ini",
+      {
+        "root": "snapshot",
+        "path": "src",
+        "prefix": "pythonpath="
+      },
+      "-p",
+      "no:cacheprovider",
+      "--override-ini",
+      "junit_family=xunit2",
+      "--junitxml",
+      {
+        "root": "output",
+        "path": "integration/report.xml",
+        "prefix": ""
+      },
+      "--basetemp",
+      {
+        "root": "output",
+        "path": "integration/tmp",
+        "prefix": ""
+      },
+      {
+        "root": "snapshot",
+        "path": "acceptance/test_integration.py",
+        "prefix": ""
+      },
+      "-q"
+    ],
+    "cwd": {
+      "root": "snapshot",
+      "path": ""
+    },
+    "timeout_seconds": 60,
+    "output_limit_bytes": 1048576
+  }
+}
