@@ -68,12 +68,12 @@ historical; they do not describe the current head.
 - The subsequent `460e4223` run exposes 53 resource setup errors from shared runtime/cache drift and five Ubuntu bootstrap failures from its generated `lib64` alias. Its completed samples measure 80.54–80.57% coverage. The bounded bootstrap repair preserves the strict integrity guard, passes a frozen cold-runtime witness and the nine local bootstrap regressions; fresh POSIX/full-matrix qualification remains pending. Local symlink capability skips do not count as POSIX verification.
 - The local admission harness currently loses its Guard profiler during an expected Git refusal: 21 selected checks produced 18 complete passes and 5 stage errors across 3 checks. The observer repair remains deferred; its failure has not been relabelled.
 - Native Windows version reporting is independently verified in five framework cases, including real values, restoration and retained shell refusal. This is a test-harness improvement, not an extra product feature.
-- Independent protected evaluator custody, second supported-machine readiness and complete installed upgrade/restore/rollback qualification remain open.
+- Independent protected evaluator custody and complete installed upgrade/restore/rollback qualification remain open. Second supported-machine readiness is verified for embedding identity only (E22, below).
 - Local packaging smoke checks establish a build/install/basic-memory/MCP server construction and tool metadata only. They do not establish model efficacy, graphical host adoption or stable release readiness.
 
 ## Follow-up roadmap
 
-The original 35 commitments remain assigned: 23 component criteria complete, 12 open. This count is not a count of new features. The stable 2.0 planning target remains 6 November 2026, with 7 November reserve and 5 November GO/NO-GO; unresolved gates still determine readiness.
+The original 35 commitments remain assigned: 24 component criteria complete, 11 open. This count is not a count of new features. The stable 2.0 planning target remains 6 November 2026, with 7 November reserve and 5 November GO/NO-GO; unresolved gates still determine readiness.
 
 | Follow-up | Target |
 | --- | --- |
@@ -89,6 +89,6 @@ The original 35 commitments remain assigned: 23 component criteria complete, 12 
 | C50 LongMemEval/calibration and independent reproduction | 3 December 2026 |
 | R16 ten-user pilot and structured feedback | 4 December 2026 |
 
-E22 embedding artifact identity on a second supported machine remains open. Protected evaluator custody is a separate open release gate. [The portable 35-item register](docs/alpha-roadmap.json) retains every item; local proof archives and machine-specific paths are excluded from this branch.
+E22 is complete against its original criterion. A second physical machine (the work PC, not Patrick's own) acquired the model into an empty cache and produced the same five file hashes and the same identity as the home machine, and refused a one-byte model change (receipts dated 3 and 4 November 2026, run on commit 5015aa9d; `embeddings.py` is unchanged in 1.13.0). This does not cover upgrade/restore/rollback or any other feature on that machine. Protected evaluator custody is a separate open release gate. [The portable 35-item register](docs/alpha-roadmap.json) retains every item; local proof archives and machine-specific paths are excluded from this branch.
 
 Report the alpha version, host/OS, minimal reproduction and observed versus expected behavior when opening an issue. Do not upload private memory stores, vaults or authentication files.
