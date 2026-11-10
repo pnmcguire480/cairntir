@@ -1104,6 +1104,25 @@ def _tool_specs() -> list[types.Tool]:
     return specs
 
 
+_WING_READ_TOOLS: Final[frozenset[str]] = frozenset(
+    {
+        "cairntir_handoff",
+        "cairntir_session_start",
+        "cairntir_recall",
+        "cairntir_recall_for_change",
+        "cairntir_timeline",
+        "cairntir_discoveries",
+        "cairntir_learning_log",
+        "cairntir_calibration",
+    }
+)
+"""Tools that only read. They accept a folder-style wing name and say how it was read.
+
+A tool that writes keeps refusing such a name, and the refusal suggests the
+hyphenated spelling: a write lands under the name the caller actually chose.
+"""
+
+
 def _dispatch(backend: CairntirBackend, name: str, args: dict[str, Any]) -> str:
     match name:
         case "cairntir_remember":
@@ -1180,13 +1199,18 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
 
         nonlocal update_banner_shown
         wing_note = None
+        wing_hint = ""
         given_wing = arguments.get("wing")
         if isinstance(given_wing, str) and canonical_wing(given_wing) != given_wing:
-            arguments = {**arguments, "wing": canonical_wing(given_wing)}
-            wing_note = (
-                f"[cairntir note] wing {given_wing!r} was read as {arguments['wing']!r}. "
-                "Use that spelling from now on."
-            )
+            intended = canonical_wing(given_wing)
+            if name in _WING_READ_TOOLS:
+                arguments = {**arguments, "wing": intended}
+                wing_note = (
+                    f"[cairntir note] wing {given_wing!r} was read as {intended!r}. "
+                    "Use that spelling from now on."
+                )
+            else:
+                wing_hint = f" Did you mean wing {intended!r}?"
         checkpoint_mode = name == "cairntir_remember" and arguments.get("checkpoint") is not None
         resume_mode = name == "cairntir_handoff" and (
             arguments.get("resume", False) or arguments.get("task_id") is not None
@@ -1208,7 +1232,7 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
         except CairntirError as exc:
             if not task_mode:
                 _trace(f"_call CairntirError name={name!r} msg={exc}")
-            text = f"[cairntir error] {exc}"
+            text = f"[cairntir error] {exc}{wing_hint}"
             return types.CallToolResult(
                 content=[types.TextContent(type="text", text=text)], isError=True
             )
@@ -1220,7 +1244,7 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
             # tool call as a raw framework error. Surface it as a clean
             # message — the caller (an LLM) can read the field path and
             # retry with a corrected argument.
-            text = f"[cairntir error] invalid argument: {_format_validation_error(exc)}"
+            text = f"[cairntir error] invalid argument: {_format_validation_error(exc)}{wing_hint}"
             return types.CallToolResult(
                 content=[types.TextContent(type="text", text=text)], isError=True
             )

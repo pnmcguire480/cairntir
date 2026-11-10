@@ -168,22 +168,45 @@ def test_spaced_wing_reads_the_existing_hyphenated_wing_and_says_so(
     assert "'Musician Pile' was read as 'musician-pile'" in out
 
 
-def test_spaced_wing_writes_into_the_existing_hyphenated_wing(
-    backend: CairntirBackend, store: DrawerStore
+@pytest.mark.parametrize(
+    ("tool", "extra"),
+    [
+        ("cairntir_remember", {"room": "notes", "content": "second track", "model": "test"}),
+        (
+            "cairntir_discover",
+            {"title": "t", "summary": "s", "novelty": "user", "evidence_ids": [1]},
+        ),
+    ],
+)
+def test_a_write_under_a_spaced_wing_is_refused_with_the_spelling_to_use(
+    backend: CairntirBackend, store: DrawerStore, tool: str, extra: dict[str, Any]
 ) -> None:
-    result = _call(
-        backend,
-        "cairntir_remember",
-        {"wing": "Musician Pile", "room": "notes", "content": "second track", "model": "test"},
-    )
+    before = store.wing_counts()
 
-    assert not result.isError
-    assert "'Musician Pile' was read as 'musician-pile'" in _text(result)
-    assert store.wing_counts() == {
-        "musician-pile": 2,
-        "completion-engine-source": 1,
-        "cairntir": 1,
+    result = _call(backend, tool, {"wing": "Musician Pile", **extra})
+
+    assert result.isError
+    assert "[cairntir error]" in _text(result)
+    assert "Did you mean wing 'musician-pile'?" in _text(result)
+    assert "was read as" not in _text(result)
+    assert store.wing_counts() == before
+
+
+def test_every_tool_that_reads_a_wing_accepts_the_folder_name() -> None:
+    from cairntir.mcp.server import _WING_READ_TOOLS, _tool_specs
+
+    takes_a_wing = {
+        tool.name for tool in _tool_specs() if "wing" in tool.inputSchema.get("properties", {})
     }
+    writers = {
+        "cairntir_remember",
+        "cairntir_discover",
+        "cairntir_discover_scan",
+        "cairntir_codeglass_record",
+        "cairntir_audit",
+        "cairntir_correct",
+    }
+    assert takes_a_wing - writers == _WING_READ_TOOLS
 
 
 def test_valid_wing_gets_no_note(backend: CairntirBackend) -> None:
@@ -206,6 +229,7 @@ def test_unusable_wing_is_still_refused_and_writes_nothing(
 
     assert result.isError
     assert "invalid" in _text(result)
+    assert "Did you mean" not in _text(result)
     assert store.wing_counts() == before
 
 
