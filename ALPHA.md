@@ -1,22 +1,22 @@
-# Cairntir 2.0.0a4 preview
+# Cairntir 1.13.0: the work toward 2.0
 
-An experimental preview of the work toward 2.0. Stable PyPI remains 1.12.4. This preview makes the new code available for feedback; it is not the completed 2.0 release.
+Version 1.13.0 publishes the work toward 2.0 on PyPI, so it can be used and tested while the rest of the roadmap is finished. It is not the completed 2.0 release: 2.0.0 is reserved for the finished roadmap. Earlier builds of this work were GitHub-only previews numbered 2.0.0a1 to 2.0.0a4, and this version replaces them. Some features below are still experimental and say so.
 
-## Install the alpha
+## Install or upgrade
 
-Use Python 3.11–3.13 in a separate virtual environment. Install the wheel attached to the [alpha pre-release](https://github.com/pnmcguire480/cairntir/releases/tag/alpha-2.0.0a4):
+Use Python 3.11–3.13.
 
 ```sh
-python -m venv .venv-alpha
-# Activate .venv-alpha for your shell, then:
-python -m pip install "https://github.com/pnmcguire480/cairntir/releases/download/alpha-2.0.0a4/cairntir-2.0.0a4-py3-none-any.whl"
+python -m pip install --upgrade cairntir
 cairntir version
 cairntir --help
 ```
 
-Set `CAIRNTIR_HOME` to an absolute disposable directory before starting Cairntir or its MCP client. This preview uses database schema 8 and creates a backup before migrating an older store. A populated legacy semantic index remains unavailable until explicit backed-up reindexing. The exercised Windows upgrade/restore/rollback workflow has local evidence; full platform qualification remains open. Use a separate store and pilot vault for this preview. See the [upgrade guide](docs/embedding-artifacts.md) before considering an existing store.
+**Upgrading an existing store from 1.12 or earlier needs one manual step.** This version uses database schema 8 and binds the semantic index to the exact model files and runtime versions. Until you rebuild the index, semantic search and saving new memories are refused; reading a drawer by id with `cairntir get` and counting with `cairntir status` keep working. Stop every client that uses the store, then run `cairntir reindex --yes --backup /absolute/path/to/new-backup.db`. The command writes that backup before it changes anything. Read the [upgrade guide](docs/embedding-artifacts.md) first. This upgrade, its restore and its rollback have been exercised on two Windows machines; other platforms have automated coverage only.
 
-Connect your client's MCP configuration to the virtual environment's `cairntir-mcp` executable. Ensure that client inherits the same isolated `CAIRNTIR_HOME`. The existing MCP tool names remain available. Ordinary memory does not require enabling experimental background workers or native agent adapters.
+If you installed a 2.0.0a preview, `pip` treats it as newer than 1.13.0. Install this version explicitly with `python -m pip install "cairntir==1.13.0"`.
+
+Connect your client's MCP configuration to the `cairntir-mcp` executable, or run `cairntir setup`. The existing MCP tool names remain available. Ordinary memory does not require enabling experimental background workers or native agent adapters.
 
 ## What you can try
 
@@ -49,7 +49,7 @@ preserves three failed runner reports and the exact limits of that assessment.
 These results do not establish protected evaluator custody or multi-platform
 release readiness. The older packaging limitations below are historical.
 
-**Coverage floor for this alpha.** On 4 November 2026 the maintainer set an 85% coverage floor for alpha releases, with 90% owed on a later date and still the target for stable 2.0. Earlier runs keep their results under the 90% floor they were measured against. See the [CI record](docs/release/v2-alpha-ci.md).
+**Coverage floor.** On 9 November 2026 the maintainer set an 87% coverage floor for this release, with 90% owed on a later date. The alpha previews used an 85% floor set on 4 November 2026. Earlier runs keep their results under the 90% floor they were measured against. See the [CI record](docs/release/v2-alpha-ci.md).
 
 **2.0.0a1 search bug, fixed here.** In 2.0.0a1, every semantic search fails once a store passes 4,096 indexed chunks. Upgrade to this alpha if you installed that one.
 

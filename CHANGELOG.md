@@ -1,6 +1,12 @@
 # Changelog
 
-## [Unreleased]
+## [1.13.0] - 2026-11-09
+
+Publishes the work toward 2.0 on PyPI under a 1.x number, by the maintainer's decision, so it can be used and tested while the remaining roadmap is finished. 2.0.0 stays reserved for the finished roadmap. This version contains everything in the GitHub-only previews 2.0.0a1 to 2.0.0a4 below, plus the entries here. Some features remain experimental; [ALPHA.md](ALPHA.md) says which.
+
+**Upgrading from 1.12 or earlier needs one manual step.** Semantic search and saving new memories are refused on an existing store until you stop its clients and run `cairntir reindex --yes --backup /absolute/path/to/new-backup.db`. Reading by id and `cairntir status` keep working. See the [upgrade guide](docs/embedding-artifacts.md).
+
+Verification limits: the coverage floor is 87%, set by the maintainer on 9 November 2026 with 90% owed on a later date. The independent evaluator has not rerun its tests since the retry fix in 2.0.0a4. The upgrade has been exercised on two Windows machines.
 
 ### Fixed
 
@@ -9,7 +15,7 @@
 
 ### Changed
 
-- MCP tools accept a folder-style wing name such as `Musician Pile` and read it as `musician-pile`: lowercase, with each run of spaces as one hyphen. The reply carries a note naming the wing that was used. They used to refuse the name, so a write that failed before now lands in the hyphenated wing. Valid names, including ones with underscores, are used exactly as given, and a name that still cannot be a wing is refused as before. Replies with a size ceiling carry no note, so the ceiling holds. The CLI is unchanged.
+- MCP tools that only read (`cairntir_handoff`, `cairntir_session_start`, `cairntir_recall`, `cairntir_recall_for_change`, `cairntir_timeline`, `cairntir_discoveries`, `cairntir_learning_log`, `cairntir_calibration`) accept a folder-style wing name such as `Musician Pile` and read it as `musician-pile`: lowercase, with each run of spaces as one hyphen. The reply carries a note naming the wing that was used, except replies with a size ceiling, so the ceiling holds. Tools that write still refuse such a name, and the refusal now suggests the hyphenated spelling. Valid names, including ones with underscores, are used exactly as given. The CLI is unchanged.
 - The host policy text tells hosts to use hyphens for spaces in the wing name, and to choose from the listed wings or ask when a wing does not exist, never to report the store as empty. Run `cairntir setup` again to refresh installed copies.
 
 ## [2.0.0a4] - 2026-11-05 - experimental preview

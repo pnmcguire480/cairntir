@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cairntir"
-version = "2.0.0a4"
+version = "1.13.0"
 description = "Host-neutral memory-first reasoning layer for AI coding agents."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -168,7 +168,7 @@ addopts = [
     "--cov=src/cairntir",
     "--cov-report=term-missing",
     "--cov-report=html",
-    "--cov-fail-under=85",
+    "--cov-fail-under=87",
     "--cov-precision=6",
 ]
 markers = [
