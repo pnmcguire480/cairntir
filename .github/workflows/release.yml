@@ -52,13 +52,26 @@ jobs:
         run: uv run mypy --strict src
       - name: Provision evaluation models and isolated corpus
         run: uv run python scripts/provision_eval.py --home "$CAIRNTIR_HOME"
+      # The acceptance suites need the same prepared tools the CI test jobs
+      # build. The v1.13.0 tag's first run had none of them and failed 69 tests
+      # before publication for that reason alone.
+      - name: Fetch exact Q07 inputs before offline tests
+        run: uv run --no-sync python -B scripts/fetch_ci_wheels.py --output "${{ runner.temp }}/q07-wheels"
+      - name: Prepare actual Q05 tools and offline build
+        run: uv run --no-sync python -B -X pycache_prefix="${{ runner.temp }}/q05-prep-bytecache" scripts/provision_q05.py --output "${{ runner.temp }}/q05-tools"
+      - name: Prepare actual Python verification tools
+        run: uv run --no-sync python -I -B tests/acceptance/paladin_python_real_unit/prepare.py --output "${{ runner.temp }}/python-tools" --q05-platform "${{ runner.temp }}/q05-tools/platform.json" --repo "${{ github.workspace }}"
       - name: Tests and coverage
         # PyPI cannot contain this version until the publish job below. The
         # one self-referential integration test runs after trusted publishing.
         env:
           HF_HUB_OFFLINE: "1"
           TRANSFORMERS_OFFLINE: "1"
-        run: uv run pytest -q -k "not test_every_released_changelog_version_is_tagged"
+          CAIRNTIR_Q05_PLATFORM: ${{ runner.temp }}/q05-tools/platform.json
+          CAIRNTIR_PALADIN_PLATFORM: ${{ runner.temp }}/python-tools/platform.json
+          CAIRNTIR_Q07_WHEELHOUSE: ${{ runner.temp }}/q07-wheels
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/q05-test-bytecache
+        run: uv run --no-sync python -X pycache_prefix="${{ runner.temp }}/q05-test-bytecache" -m pytest -q -k "not test_every_released_changelog_version_is_tagged"
       - name: No silent exceptions
         run: uv run python scripts/check_no_silent_except.py
       - name: Every planned commitment landed
