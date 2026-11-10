@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- `cairntir audience capture` saves the five audience fields (audience, channels, pain, sophistication, desired outcome) as a provisional revision with a source for each. It never confirms: only `cairntir audience confirm` at a terminal does that. The same values as the current revision make no new revision; changed values make a new provisional one. This closes the gap that left the audience lock reachable only from Python.
+
 ## [1.13.0] - 2026-11-09
 
 Publishes the work toward 2.0 on PyPI under a 1.x number, by the maintainer's decision, so it can be used and tested while the remaining roadmap is finished. 2.0.0 stays reserved for the finished roadmap. This version contains everything in the GitHub-only previews 2.0.0a1 to 2.0.0a4 below, plus the entries here. Some features remain experimental; [ALPHA.md](ALPHA.md) says which.
