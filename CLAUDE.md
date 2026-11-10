@@ -295,8 +295,10 @@ At conversation start, after context compaction, and whenever continuity is lost
 
 1. Resume: reuse the known wing and this conversation's task_id with
    `cairntir_handoff(wing, resume=true, task_id=...)`. If the wing is unknown,
-   infer it from the lowercase project folder name; clarify ambiguity. With no
-   known task_id, omit it to discover active tasks. For `ambiguous`, select a
+   infer it from the project folder name, lowercase with hyphens for spaces
+   (`my-project`); clarify ambiguity. If a reply says the wing does not exist,
+   choose from the wings it lists or ask; never report the store as empty. With
+   no known task_id, omit it to discover active tasks. For `ambiguous`, select a
    task; never guess from recency. For `omitted`, retry with required_chars.
    For `terminal`, stop that task. For `unavailable`, check the saved identity
    and access; report the gap. Never silently switch to another task. Only a

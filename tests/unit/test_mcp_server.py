@@ -182,7 +182,7 @@ def test_remember_invalid_wing_returns_clean_error(_backend: CairntirBackend) ->
         server,
         "cairntir_remember",
         {
-            "wing": "Has Spaces And Capitals",
+            "wing": "Has/Slashes And Capitals",
             "room": "valid-room",
             "content": "valid content",
         },

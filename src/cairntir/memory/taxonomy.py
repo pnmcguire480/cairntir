@@ -44,6 +44,24 @@ class Layer(StrEnum):
     DEEP = "deep"
 
 
+_WING_SEPARATORS = re.compile(r"\s+")
+
+
+def canonical_wing(value: str) -> str:
+    """Return the wing a folder-style name refers to, or ``value`` unchanged.
+
+    Hosts are told to name the wing after the working folder, and folders are
+    called ``Musician Pile``. A valid wing is returned exactly as given. Any
+    other name is lowercased with each run of spaces turned into one hyphen.
+    If that is still not a valid wing the original comes back, so validation
+    refuses it under the name the caller actually sent.
+    """
+    if not isinstance(value, str) or _IDENT_RE.match(value):
+        return value
+    candidate = _WING_SEPARATORS.sub("-", value.strip().lower())
+    return candidate if _IDENT_RE.match(candidate) else value
+
+
 def _validate_ident(value: str, kind: str) -> str:
     """Validate a wing or room identifier, raising :class:`TaxonomyError` on failure."""
     if not isinstance(value, str) or not _IDENT_RE.match(value):

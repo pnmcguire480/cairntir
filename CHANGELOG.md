@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- `cairntir_handoff` on a wing with no memories now says the wing does not exist, states how many drawers and wings the store holds, and names the existing wings with the closest names first. It used to say the store "may be new or misconfigured", which made hosts report an empty memory when they had only guessed the wing name wrong. A store with nothing in it still gets the original message. A restricted session is told only about wings it can read.
+- `cairntir_session_start` lists the closest wing names first in its existing unknown-wing notice.
+
+### Changed
+
+- MCP tools accept a folder-style wing name such as `Musician Pile` and read it as `musician-pile`: lowercase, with each run of spaces as one hyphen. The reply carries a note naming the wing that was used. They used to refuse the name, so a write that failed before now lands in the hyphenated wing. Valid names, including ones with underscores, are used exactly as given, and a name that still cannot be a wing is refused as before. Replies with a size ceiling carry no note, so the ceiling holds. The CLI is unchanged.
+- The host policy text tells hosts to use hyphens for spaces in the wing name, and to choose from the listed wings or ask when a wing does not exist, never to report the store as empty. Run `cairntir setup` again to refresh installed copies.
+
 ## [2.0.0a4] - 2026-11-05 - experimental preview
 
 Experimental preview; not a stable release or PyPI publication. The 85% alpha coverage floor still applies, with 90% owed for stable 2.0.

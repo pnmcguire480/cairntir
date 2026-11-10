@@ -11,6 +11,7 @@ without needing to stand up a stdio server.
 
 from __future__ import annotations
 
+import difflib
 import hashlib
 import json
 from datetime import datetime
@@ -1238,20 +1239,46 @@ def _unknown_wing_notice(store: DrawerStore, wing: str) -> str | None:
             "genuinely empty. If that is unexpected, it may be new or misconfigured. "
             "Do not substitute model memory."
         )
+    return _existing_wings_notice(counts, wing)
+
+
+def _existing_wings_notice(counts: dict[str, int], wing: str) -> str:
+    """Say that ``wing`` is unused, and name the wings that are, closest first.
+
+    ``handoff`` used to answer an unused wing with "the store may be new or
+    misconfigured". On 2026-11-08 Codex, working in a folder named ``can``,
+    read that as "Cairntir knows nothing" while the store held about 5,650
+    drawers in 80 wings. Hosts are told to prefer ``handoff``, so the weaker
+    of the two notices was the one they actually saw.
+    """
     total = sum(counts.values())
     ranked = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
     listed = ", ".join(f"{name} ({n})" for name, n in ranked[:12])
     more = "" if len(ranked) <= 12 else f", and {len(ranked) - 12} more"
+    close = _closest_wings(wing, [name for name, _ in ranked])
+    closest = (
+        "Closest names: " + ", ".join(f"{name} ({counts[name]})" for name in close) + ".\n\n"
+        if close
+        else ""
+    )
     return (
         f"WING {wing!r} DOES NOT EXIST. **This store is not empty** — it holds "
         f"{total:,} drawers across {len(ranked)} wings, and any identity drawers "
         "listed below belong to other wings, because identity is cross-wing by "
         "design.\n\n"
+        f"{closest}"
         f"Existing wings: {listed}{more}.\n\n"
         "Do not report this as an empty or broken store, and do not start writing "
         "to a new wing without asking — that splits a project's memory in two. Pick "
         "the wing that matches this project, or ask the user which one is right."
     )
+
+
+def _closest_wings(wing: str, names: list[str], *, limit: int = 3) -> list[str]:
+    """Existing wings whose names resemble ``wing``; ``names`` is in preference order."""
+    extended = [name for name in names if name.startswith(wing) or wing.startswith(name)]
+    similar = difflib.get_close_matches(wing, names, n=limit, cutoff=0.6)
+    return list(dict.fromkeys([*extended, *similar]))[:limit]
 
 
 def _snippet(content: str, limit: int = 100) -> str:
@@ -1315,8 +1342,11 @@ def _format_handoff(brief: Handoff, *, store: DrawerStore) -> str:
         if brief.review_receipts:
             return "\n".join(lines) + "\n"
         if brief.wing_is_unknown:
+            counts = store.wing_counts()
             lines.append(
-                f"Nothing is recorded for wing {brief.wing!r}. If that is unexpected, "
+                _existing_wings_notice(counts, brief.wing)
+                if counts
+                else f"Nothing is recorded for wing {brief.wing!r}. If that is unexpected, "
                 "the store may be new or misconfigured — do not substitute model memory."
             )
         else:

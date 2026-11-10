@@ -26,6 +26,7 @@ from cairntir.hosts import TRANSCRIPT_HOSTS
 from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import production_embedding_provider
 from cairntir.memory.store import DrawerStore
+from cairntir.memory.taxonomy import canonical_wing
 from cairntir.provenance import TrustLevel, WriteProvenance
 from cairntir.transcript import DEFAULT_RECOVERY_BUDGET_CHARS, RecoveryContext
 from cairntir.update import maybe_check_in_background, pending_update_banner
@@ -1178,6 +1179,14 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
         from cairntir.access import ScopedStore
 
         nonlocal update_banner_shown
+        wing_note = None
+        given_wing = arguments.get("wing")
+        if isinstance(given_wing, str) and canonical_wing(given_wing) != given_wing:
+            arguments = {**arguments, "wing": canonical_wing(given_wing)}
+            wing_note = (
+                f"[cairntir note] wing {given_wing!r} was read as {arguments['wing']!r}. "
+                "Use that spelling from now on."
+            )
         checkpoint_mode = name == "cairntir_remember" and arguments.get("checkpoint") is not None
         resume_mode = name == "cairntir_handoff" and (
             arguments.get("resume", False) or arguments.get("task_id") is not None
@@ -1217,6 +1226,8 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
             )
 
         content = [types.TextContent(type="text", text=text)]
+        if wing_note is not None and not task_mode:
+            content.append(types.TextContent(type="text", text=wing_note))
         if not task_mode and not update_banner_shown:
             banner = pending_update_banner()
             if banner is not None:
