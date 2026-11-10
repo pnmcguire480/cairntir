@@ -35,7 +35,7 @@ English text saying a decision was reversed does not automatically create a supe
 
 ## Experimental and unfinished work
 
-Dream is an explicit opt-in preview with bounded background scheduling, candidates and stop/cancellation handling. Integrated usefulness/resource qualification remains incomplete; proposals do not automatically authorize code edits, rule promotion or memory deletion.
+Dream is an explicit opt-in preview with bounded background scheduling, candidates and stop/cancellation handling. Integrated usefulness/resource qualification remains incomplete; proposals do not automatically authorize code edits, rule promotion or memory deletion. A first real-model run (Mistral 7B through Ollama, 10 November 2026) found that Dream discarded every real answer because it never asked for its reply format; that is fixed in Unreleased. After the fix the run met the input, call-budget, stop and offline limits, but the original one-second tick limit of under 4 seconds failed in two of four timed runs (4.045 and 4.114 seconds). No usefulness threshold or hardware limit has been set, so usefulness and resource use are measured, not passed.
 
 Audience/angle/channel/outline pipelines, HumanFlow teaching, UI/visual verification, claim-to-test generation, field pilots and feedback efficacy remain unfinished. Candidate lessons stay candidates/HOLD. The local study exporter is usable, but actual NotebookLM delivery/update remains open. The calendar does not publish content to external platforms.
 
