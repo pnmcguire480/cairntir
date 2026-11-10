@@ -108,7 +108,7 @@ jobs:
           CAIRNTIR_PALADIN_PLATFORM: ${{ runner.temp }}/python-tools/platform.json
           CAIRNTIR_Q07_WHEELHOUSE: ${{ runner.temp }}/q07-wheels
           PYTHONPYCACHEPREFIX: ${{ runner.temp }}/q05-test-bytecache
-        run: uv run --no-sync python -X pycache_prefix="${{ runner.temp }}/q05-test-bytecache" -m pytest -m "not slow" --cov-fail-under=85 -o verbosity_assertions=2 --junitxml="${{ runner.temp }}/source-tests.xml" --cov-report=json:"${{ runner.temp }}/source-coverage.json"
+        run: uv run --no-sync python -X pycache_prefix="${{ runner.temp }}/q05-test-bytecache" -m pytest -m "not slow" --cov-fail-under=87 -o verbosity_assertions=2 --junitxml="${{ runner.temp }}/source-tests.xml" --cov-report=json:"${{ runner.temp }}/source-coverage.json"
       - name: Retain source test results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
