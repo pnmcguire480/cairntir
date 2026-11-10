@@ -1,0 +1,44 @@
+[
+  {
+    "request_id": "discussion-outline",
+    "idea_id": "catalog-comparison",
+    "hook_id": "catalog-discussion",
+    "format_id": "discussion",
+    "audience": "Participants in an invented library workshop comparing catalog notes.",
+    "finished_length": {
+      "unit": "words",
+      "minimum": 600,
+      "maximum": 900
+    },
+    "production_constraints": [
+      "Prepare a written discussion outline with a written opening, ordered developed points and examples, adjacent bridges, close, audience question, estimated finished length and useful production notes.",
+      "Use a neutral workshop frame. Ask for a catalog observation, counterexample or missing evidence without announcing availability or an event.",
+      "Label every invented comparison and mock demonstration hypothetical. Synthetic historical excerpts cannot authenticate a current real-world finding.",
+      "Keep selected idea, hook and source traceability on every component. Do not transfer the invented organizer identity to a real user or revive the withdrawn May 17 workshop date.",
+      "Provide planned production actions with observable completion checks. Remove unsupported factual wording or label it as an assumption with linked verification before use.",
+      "Do not publish, contact anyone, perform research, mark planned work complete or fabricate human confirmation.",
+      "Use exactly 3 developed key points, 4 adjacent written bridges from opening through the 3 points to close, 2 production notes and 2-3 concrete planned actions with observable completion checks."
+    ]
+  },
+  {
+    "request_id": "spoken-video-outline",
+    "idea_id": "shelf-review",
+    "hook_id": "shelf-video",
+    "format_id": "spoken_video",
+    "audience": "Viewers of a clearly synthetic library shelf concept demonstration.",
+    "finished_length": {
+      "unit": "seconds",
+      "minimum": 60,
+      "maximum": 90
+    },
+    "production_constraints": [
+      "Prepare a speakable short-video outline with an opening, ordered developed beats and examples, adjacent spoken bridges, close, audience question, estimated duration and useful production notes.",
+      "Use a neutral workshop frame. Ask for a catalog observation, counterexample or missing evidence without announcing availability or an event.",
+      "Label every invented comparison and mock demonstration hypothetical. Synthetic historical excerpts cannot authenticate a current real-world finding.",
+      "Keep selected idea, hook and source traceability on every component. Do not transfer the invented organizer identity to a real user or revive the withdrawn May 17 workshop date.",
+      "Provide planned production actions with observable completion checks. Remove unsupported factual wording or label it as an assumption with linked verification before use.",
+      "Do not publish, contact anyone, perform research, mark planned work complete or fabricate human confirmation.",
+      "Use exactly 3 developed key points, 4 adjacent written bridges from opening through the 3 points to close, 2 production notes and 2-3 concrete planned actions with observable completion checks."
+    ]
+  }
+]

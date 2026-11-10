@@ -81,5 +81,7 @@ def test_dunder_all_matches_snapshot() -> None:
     assert frozenset(cairntir.__all__) == EXPECTED_PUBLIC_NAMES
 
 
-def test_version_is_v1() -> None:
-    assert cairntir.__version__.startswith("1.")
+def test_version_carries_the_work_toward_v2() -> None:
+    """1.13.0 published the v2 work under a 1.x number; 2.0.0 waits for the roadmap."""
+    major, minor = (int(part) for part in cairntir.__version__.split(".")[:2])
+    assert (major, minor) >= (1, 13)

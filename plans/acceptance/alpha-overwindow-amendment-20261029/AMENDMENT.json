@@ -1,0 +1,21 @@
+{
+  "schema": "cairntir.alpha-overwindow-amendment.v1",
+  "path": "tests/unit/test_store.py",
+  "before_sha256": "eecf66a7db47a02dc54f24bc0633840f45a1289d7f48c69b075383e9be23f053",
+  "after_sha256": "3a08f1e46c5d72fa63c8c6b3e64d4bbdc4a33d2b657fdfe5c248f7430efa3753",
+  "archive": "plans/acceptance/alpha-overwindow-amendment-20261029/original-test_store.py",
+  "reason": "The 1.7 contract refused over-window reindexing. The 2.0 alpha explicitly replaces that policy with complete bounded chunking. Exactly one live unit case changes; the original frozen file and its criterion remain archived verbatim.",
+  "original_criterion": {
+    "name": "test_reindex_refuses_drawers_wider_than_the_embedder_window",
+    "current_alpha_result": "FAIL: DID NOT RAISE EmbeddingSpaceError",
+    "count": 1
+  },
+  "successor_criterion": {
+    "name": "test_reindex_embeds_drawers_wider_than_the_embedder_window",
+    "current_alpha_result": "PASS: exact content, verified replacement dimension and contiguous complete spans",
+    "count": 1
+  },
+  "historical_results_relabelled": false,
+  "other_frozen_files_changed": false,
+  "coverage_rules_changed": false
+}

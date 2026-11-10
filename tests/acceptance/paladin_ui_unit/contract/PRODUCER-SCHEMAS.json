@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cairntir:q04:producer-schemas:v1",
+  "title": "Proposed Q04 producer wire types; no execution authority",
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "uuid": {"type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"},
+    "id": {"type": "string", "minLength": 2, "maxLength": 128, "pattern": "^[a-z0-9][a-z0-9._:-]*[a-z0-9]$"},
+    "projectId": {"type": "string", "minLength": 2, "maxLength": 64, "pattern": "^[a-z0-9][a-z0-9._:-]{0,62}[a-z0-9]$"},
+    "text": {"type": "string", "minLength": 1, "maxLength": 512},
+    "selector": {"type": "string", "minLength": 1, "maxLength": 512},
+    "relative": {"type": "string", "minLength": 1, "maxLength": 512, "pattern": "^[^\\\\:\\r\\n\\u0000]+$"},
+    "absolute": {"type": "string", "minLength": 1, "maxLength": 2048},
+    "artifact": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256", "bytes"],
+      "properties": {"path": {"$ref": "#/$defs/relative"}, "sha256": {"$ref": "#/$defs/sha"}, "bytes": {"type": "integer", "minimum": 0, "maximum": 134217728}}
+    },
+    "fileReference": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256", "bytes"],
+      "properties": {"path": {"$ref": "#/$defs/absolute"}, "sha256": {"$ref": "#/$defs/sha"}, "bytes": {"type": "integer", "minimum": 0, "maximum": 2097152}}
+    },
+    "projectFile": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256", "bytes", "media_type"],
+      "properties": {"path": {"$ref": "#/$defs/relative"}, "sha256": {"$ref": "#/$defs/sha"}, "bytes": {"type": "integer", "minimum": 0, "maximum": 8388608}, "media_type": {"type": "string", "enum": ["text/html", "text/css", "text/javascript", "font/ttf", "image/png", "image/svg+xml", "text/plain"]}}
+    },
+    "project": {
+      "type": "object", "additionalProperties": false,
+      "required": ["project_id", "route_id", "state_id", "source_revision", "snapshot_root", "snapshot_sha256", "files", "entry_path"],
+      "properties": {"project_id": {"$ref": "#/$defs/projectId"}, "route_id": {"$ref": "#/$defs/id"}, "state_id": {"const": "initial"}, "source_revision": {"type": "string", "minLength": 1, "maxLength": 128}, "snapshot_root": {"$ref": "#/$defs/absolute"}, "snapshot_sha256": {"$ref": "#/$defs/sha"}, "files": {"type": "array", "minItems": 1, "maxItems": 128, "items": {"$ref": "#/$defs/projectFile"}}, "entry_path": {"$ref": "#/$defs/relative"}}
+    },
+    "toolFile": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256", "bytes"],
+      "properties": {"path": {"$ref": "#/$defs/relative"}, "sha256": {"$ref": "#/$defs/sha"}, "bytes": {"type": "integer", "minimum": 0, "maximum": 1073741824}}
+    },
+    "tool": {
+      "type": "object", "additionalProperties": false, "required": ["id", "root", "entry_path", "version", "files"],
+      "properties": {"id": {"type": "string", "enum": ["python", "node", "playwright", "playwright-core", "chrome", "pngjs", "pixelmatch", "worker", "producer"]}, "root": {"$ref": "#/$defs/absolute"}, "entry_path": {"$ref": "#/$defs/relative"}, "version": {"$ref": "#/$defs/text"}, "files": {"type": "array", "minItems": 1, "maxItems": 4096, "items": {"$ref": "#/$defs/toolFile"}}}
+    },
+    "selectedTools": {
+      "type": "object", "additionalProperties": false, "required": ["schema", "tools", "packaged_chromium_version"],
+      "properties": {"schema": {"const": "cairntir.paladin-ui-tools.v1"}, "tools": {"type": "array", "minItems": 9, "maxItems": 9, "items": {"$ref": "#/$defs/tool"}}, "packaged_chromium_version": {"const": "151.0.7922.34"}}
+    },
+    "viewports": {
+      "type": "array", "minItems": 2, "maxItems": 2, "items": false,
+      "prefixItems": [
+        {"type": "object", "additionalProperties": false, "required": ["id", "width", "height", "device_scale_factor"], "properties": {"id": {"const": "mobile"}, "width": {"const": 375}, "height": {"const": 800}, "device_scale_factor": {"const": 1}}},
+        {"type": "object", "additionalProperties": false, "required": ["id", "width", "height", "device_scale_factor"], "properties": {"id": {"const": "desktop"}, "width": {"const": 1280}, "height": {"const": 800}, "device_scale_factor": {"const": 1}}}
+      ]
+    },
+    "font": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256", "license_path", "license_sha256", "css_family", "platform_family", "postscript_name", "text_selectors"],
+      "properties": {"path": {"$ref": "#/$defs/relative"}, "sha256": {"const": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d"}, "license_path": {"$ref": "#/$defs/relative"}, "license_sha256": {"const": "3361d054759a2fc686a2c058be82deaf9c2e6fe549be9004d7935a6c1736315d"}, "css_family": {"$ref": "#/$defs/text"}, "platform_family": {"$ref": "#/$defs/text"}, "postscript_name": {"$ref": "#/$defs/text"}, "text_selectors": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/selector"}}}
+    },
+    "renderPolicy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["viewports", "locale", "timezone_id", "color_scheme", "reduced_motion", "font", "screenshot"],
+      "properties": {"viewports": {"$ref": "#/$defs/viewports"}, "locale": {"const": "en-US"}, "timezone_id": {"const": "UTC"}, "color_scheme": {"const": "light"}, "reduced_motion": {"const": "reduce"}, "font": {"$ref": "#/$defs/font"}, "screenshot": {"type": "object", "additionalProperties": false, "required": ["type", "full_page", "animations", "caret", "masks"], "properties": {"type": {"const": "png"}, "full_page": {"const": false}, "animations": {"const": "disabled"}, "caret": {"const": "hide"}, "masks": {"type": "array", "maxItems": 0}}}}
+    },
+    "documentCheck": {
+      "type": "object", "additionalProperties": false, "required": ["id", "kind", "family", "property", "expected"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "kind": {"const": "document-equals"}, "family": {"const": "accessibility"}, "property": {"enum": ["language", "title"]}, "expected": {"$ref": "#/$defs/text"}}
+    },
+    "axCheck": {
+      "type": "object", "additionalProperties": false, "required": ["id", "kind", "family", "selector", "role", "name"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "kind": {"const": "ax-role-name"}, "family": {"const": "accessibility"}, "selector": {"$ref": "#/$defs/selector"}, "role": {"$ref": "#/$defs/text"}, "name": {"$ref": "#/$defs/text"}}
+    },
+    "tabCheck": {
+      "type": "object", "additionalProperties": false, "required": ["id", "kind", "family", "start_selector", "expected_focus"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "kind": {"const": "keyboard-tab-order"}, "family": {"const": "accessibility"}, "start_selector": {"$ref": "#/$defs/selector"}, "expected_focus": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"$ref": "#/$defs/selector"}}}
+    },
+    "keyCheck": {
+      "type": "object", "additionalProperties": false, "required": ["id", "kind", "family", "key", "control", "panel", "expanded", "visible"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "kind": {"const": "keyboard-key-state"}, "family": {"const": "accessibility"}, "key": {"enum": ["Enter", "Space"]}, "control": {"$ref": "#/$defs/selector"}, "panel": {"$ref": "#/$defs/selector"}, "expanded": {"type": "boolean"}, "visible": {"type": "boolean"}}
+    },
+    "visibleCheck": {
+      "type": "object", "additionalProperties": false, "required": ["id", "kind", "family", "selectors", "tolerance_css_pixels"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "kind": {"const": "required-visible"}, "family": {"const": "responsive"}, "selectors": {"type": "array", "minItems": 1, "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/selector"}}, "tolerance_css_pixels": {"const": 1}}
+    },
+    "overflowCheck": {
+      "type": "object", "additionalProperties": false, "required": ["id", "kind", "family", "maximum_css_pixels"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "kind": {"const": "horizontal-overflow"}, "family": {"const": "responsive"}, "maximum_css_pixels": {"const": 1}}
+    },
+    "visualCheck": {
+      "type": "object", "additionalProperties": false, "required": ["id", "kind", "family", "threshold", "includeAA", "allowed_diff_ratio", "alpha", "aaColor", "diffColor", "diffColorAlt", "diffMask", "checkerboard"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "kind": {"const": "rgba-diff"}, "family": {"const": "visual"}, "threshold": {"const": 0.1}, "includeAA": {"const": true}, "allowed_diff_ratio": {"const": 0.001}, "alpha": {"const": 0.1}, "aaColor": {"const": [255, 255, 0]}, "diffColor": {"const": [255, 0, 0]}, "diffColorAlt": {"const": null}, "diffMask": {"const": false}, "checkerboard": {"const": true}}
+    },
+    "check": {"oneOf": [{"$ref": "#/$defs/documentCheck"}, {"$ref": "#/$defs/axCheck"}, {"$ref": "#/$defs/tabCheck"}, {"$ref": "#/$defs/keyCheck"}, {"$ref": "#/$defs/visibleCheck"}, {"$ref": "#/$defs/overflowCheck"}, {"$ref": "#/$defs/visualCheck"}]},
+    "evidenceReference": {"type": "object", "additionalProperties": false, "required": ["drawer_id", "source_identity", "content_sha256"], "properties": {"drawer_id": {"type": "integer", "minimum": 1}, "source_identity": {"$ref": "#/$defs/uuid"}, "content_sha256": {"$ref": "#/$defs/sha"}}},
+    "baselineReference": {
+      "type": "object", "additionalProperties": false, "required": ["baseline_id", "generation", "revision_sha256", "approval_id", "approval", "manifest_file", "baseline_origin_snapshot_sha256"],
+      "properties": {"baseline_id": {"$ref": "#/$defs/uuid"}, "generation": {"type": "integer", "minimum": 1}, "revision_sha256": {"$ref": "#/$defs/sha"}, "approval_id": {"$ref": "#/$defs/uuid"}, "approval": {"$ref": "#/$defs/evidenceReference"}, "manifest_file": {"$ref": "#/$defs/fileReference"}, "baseline_origin_snapshot_sha256": {"$ref": "#/$defs/sha"}}
+    },
+    "template": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "mode", "project", "output_root", "selected_tools", "render_policy", "checks", "baseline_reference"],
+      "properties": {"schema": {"const": "cairntir.paladin-ui-producer-template.v1"}, "mode": {"enum": ["capture-baseline", "compare"]}, "project": {"$ref": "#/$defs/project"}, "output_root": {"$ref": "#/$defs/absolute"}, "selected_tools": {"$ref": "#/$defs/fileReference"}, "render_policy": {"$ref": "#/$defs/renderPolicy"}, "checks": {"type": "array", "minItems": 3, "maxItems": 64, "items": {"$ref": "#/$defs/check"}}, "baseline_reference": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/baselineReference"}]}},
+      "allOf": [
+        {"if": {"properties": {"mode": {"const": "capture-baseline"}}}, "then": {"properties": {"baseline_reference": {"type": "null"}}}},
+        {"if": {"properties": {"mode": {"const": "compare"}}}, "then": {"properties": {"baseline_reference": {"$ref": "#/$defs/baselineReference"}}}}
+      ]
+    },
+    "request": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "run_id", "attempt_id", "action_id", "contract_sha256", "template_sha256", "template"],
+      "properties": {"schema": {"const": "cairntir.paladin-ui-producer.v1"}, "run_id": {"$ref": "#/$defs/uuid"}, "attempt_id": {"$ref": "#/$defs/uuid"}, "action_id": {"$ref": "#/$defs/uuid"}, "contract_sha256": {"$ref": "#/$defs/sha"}, "template_sha256": {"$ref": "#/$defs/sha"}, "template": {"$ref": "#/$defs/template"}}
+    },
+    "rect": {"type": "object", "additionalProperties": false, "required": ["x", "y", "width", "height"], "properties": {"x": {"type": "number"}, "y": {"type": "number"}, "width": {"type": "number"}, "height": {"type": "number"}}},
+    "activeElement": {"type": "object", "additionalProperties": false, "required": ["tag_name", "id"], "properties": {"tag_name": {"type": "string", "maxLength": 128}, "id": {"type": "string", "maxLength": 512}}},
+    "documentObservation": {"type": "object", "additionalProperties": false, "required": ["value"], "properties": {"value": {"type": "string", "maxLength": 4096}}},
+    "axObservation": {
+      "type": "object", "additionalProperties": false, "required": ["selector_count", "backend_node_id", "ax_node_id", "ignored", "role", "name"],
+      "properties": {"selector_count": {"type": "integer", "minimum": 0, "maximum": 512}, "backend_node_id": {"type": ["integer", "null"], "minimum": 1}, "ax_node_id": {"type": ["string", "null"], "maxLength": 128}, "ignored": {"type": ["boolean", "null"]}, "role": {"type": ["string", "null"], "maxLength": 512}, "name": {"type": ["string", "null"], "maxLength": 4096}}
+    },
+    "tabObservation": {
+      "type": "object", "additionalProperties": false, "required": ["initial", "start_matches", "steps"],
+      "properties": {"initial": {"$ref": "#/$defs/activeElement"}, "start_matches": {"type": "boolean"}, "steps": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"type": "object", "additionalProperties": false, "required": ["key", "actual", "expected_selector_matches"], "properties": {"key": {"const": "Tab"}, "actual": {"$ref": "#/$defs/activeElement"}, "expected_selector_matches": {"type": "boolean"}}}}}
+    },
+    "keyObservation": {
+      "type": "object", "additionalProperties": false, "required": ["actual_focus", "control_focused", "control_count", "panel_count", "expanded", "panel_visible"],
+      "properties": {"actual_focus": {"$ref": "#/$defs/activeElement"}, "control_focused": {"type": "boolean"}, "control_count": {"type": "integer", "minimum": 0, "maximum": 512}, "panel_count": {"type": "integer", "minimum": 0, "maximum": 512}, "expanded": {"type": ["string", "null"], "maxLength": 128}, "panel_visible": {"type": "boolean"}}
+    },
+    "visibleObservation": {
+      "type": "object", "additionalProperties": false, "required": ["elements"],
+      "properties": {"elements": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "object", "additionalProperties": false, "required": ["selector", "count", "rect", "visible", "within_viewport"], "properties": {"selector": {"$ref": "#/$defs/selector"}, "count": {"type": "integer", "minimum": 0, "maximum": 512}, "rect": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/rect"}]}, "visible": {"type": "boolean"}, "within_viewport": {"type": "boolean"}}}}}
+    },
+    "overflowObservation": {"type": "object", "additionalProperties": false, "required": ["scroll_width", "client_width", "viewport_width", "overflow_css_pixels"], "properties": {"scroll_width": {"type": "integer", "minimum": 0}, "client_width": {"type": "integer", "minimum": 0}, "viewport_width": {"type": "integer", "minimum": 1}, "overflow_css_pixels": {"type": "integer", "minimum": 0}}},
+    "visualObservation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["current", "baseline", "diff", "width", "height", "compared_pixels", "mismatched_pixels", "exact_changed_pixels", "allowed_diff_pixels", "diff_ratio"],
+      "properties": {"current": {"$ref": "#/$defs/artifact"}, "baseline": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/artifact"}]}, "diff": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/artifact"}]}, "width": {"type": "integer", "minimum": 1, "maximum": 1280}, "height": {"const": 800}, "compared_pixels": {"type": "integer", "minimum": 0, "maximum": 1024000}, "mismatched_pixels": {"type": ["integer", "null"], "minimum": 0, "maximum": 1024000}, "exact_changed_pixels": {"type": ["integer", "null"], "minimum": 0, "maximum": 1024000}, "allowed_diff_pixels": {"type": ["integer", "null"], "minimum": 0, "maximum": 1024000}, "diff_ratio": {"type": ["number", "null"], "minimum": 0, "maximum": 1}}
+    },
+    "checkResult": {
+      "type": "object", "additionalProperties": false, "required": ["check", "status", "observation", "evidence_paths", "diagnostic"],
+      "properties": {"check": {"$ref": "#/$defs/check"}, "status": {"enum": ["PASS", "FAIL", "UNREVIEWED", "UNSUPPORTED", "ERROR"]}, "observation": {}, "evidence_paths": {"type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/$defs/relative"}}, "diagnostic": {"type": ["string", "null"], "maxLength": 4096}},
+      "allOf": [
+        {"if": {"properties": {"check": {"properties": {"kind": {"const": "document-equals"}}}}}, "then": {"properties": {"observation": {"$ref": "#/$defs/documentObservation"}}}},
+        {"if": {"properties": {"check": {"properties": {"kind": {"const": "ax-role-name"}}}}}, "then": {"properties": {"observation": {"$ref": "#/$defs/axObservation"}}}},
+        {"if": {"properties": {"check": {"properties": {"kind": {"const": "keyboard-tab-order"}}}}}, "then": {"properties": {"observation": {"$ref": "#/$defs/tabObservation"}}}},
+        {"if": {"properties": {"check": {"properties": {"kind": {"const": "keyboard-key-state"}}}}}, "then": {"properties": {"observation": {"$ref": "#/$defs/keyObservation"}}}},
+        {"if": {"properties": {"check": {"properties": {"kind": {"const": "required-visible"}}}}}, "then": {"properties": {"observation": {"$ref": "#/$defs/visibleObservation"}}}},
+        {"if": {"properties": {"check": {"properties": {"kind": {"const": "horizontal-overflow"}}}}}, "then": {"properties": {"observation": {"$ref": "#/$defs/overflowObservation"}}}},
+        {"if": {"properties": {"check": {"properties": {"kind": {"const": "rgba-diff"}}}}}, "then": {"properties": {"observation": {"$ref": "#/$defs/visualObservation"}}}, "else": {"properties": {"status": {"enum": ["PASS", "FAIL", "UNSUPPORTED", "ERROR"]}}}}
+      ]
+    },
+    "fontUsage": {
+      "type": "object", "additionalProperties": false, "required": ["family_name", "postscript_name", "is_custom_font", "glyph_count"],
+      "properties": {"family_name": {"$ref": "#/$defs/text"}, "postscript_name": {"$ref": "#/$defs/text"}, "is_custom_font": {"type": "boolean"}, "glyph_count": {"type": "integer", "minimum": 0}}
+    },
+    "fontObservation": {
+      "type": "object", "additionalProperties": false, "required": ["selector", "backend_node_id", "document_fonts_ready", "font_face_loaded", "computed_family", "fonts"],
+      "properties": {"selector": {"$ref": "#/$defs/selector"}, "backend_node_id": {"type": "integer", "minimum": 1}, "document_fonts_ready": {"type": "boolean"}, "font_face_loaded": {"type": "boolean"}, "computed_family": {"$ref": "#/$defs/text"}, "fonts": {"type": "array", "maxItems": 16, "items": {"$ref": "#/$defs/fontUsage"}}}
+    },
+    "viewportResult": {
+      "type": "object", "additionalProperties": false, "required": ["id", "width", "height", "device_scale_factor", "checks", "font_observations"],
+      "properties": {"id": {"enum": ["mobile", "desktop"]}, "width": {"enum": [375, 1280]}, "height": {"const": 800}, "device_scale_factor": {"const": 1}, "checks": {"type": "array", "minItems": 3, "maxItems": 64, "items": {"$ref": "#/$defs/checkResult"}}, "font_observations": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"$ref": "#/$defs/fontObservation"}}}
+    },
+    "toolObservation": {"type": "object", "additionalProperties": false, "required": ["id", "entry_path", "entry_sha256", "version"], "properties": {"id": {"$ref": "#/$defs/id"}, "entry_path": {"$ref": "#/$defs/absolute"}, "entry_sha256": {"$ref": "#/$defs/sha"}, "version": {"$ref": "#/$defs/text"}}},
+    "pythonObservation": {
+      "type": "object", "additionalProperties": false, "required": ["id", "entry_path", "entry_sha256", "version", "isolated", "dont_write_bytecode", "optimize", "pycache_prefix", "cache_prefix_state"],
+      "properties": {"id": {"const": "python"}, "entry_path": {"$ref": "#/$defs/absolute"}, "entry_sha256": {"$ref": "#/$defs/sha"}, "version": {"$ref": "#/$defs/text"}, "isolated": {"const": true}, "dont_write_bytecode": {"const": true}, "optimize": {"const": 0}, "pycache_prefix": {"$ref": "#/$defs/absolute"}, "cache_prefix_state": {"enum": ["ABSENT", "EMPTY", "NONEMPTY"]}}
+    },
+    "families": {
+      "type": "object", "additionalProperties": false, "required": ["accessibility", "responsive", "visual"],
+      "properties": {"accessibility": {"enum": ["PASS", "FAIL", "INCONCLUSIVE"]}, "responsive": {"enum": ["PASS", "FAIL", "INCONCLUSIVE"]}, "visual": {"enum": ["PASS", "FAIL", "UNREVIEWED", "INCONCLUSIVE"]}}
+    },
+    "report": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "status", "run_id", "attempt_id", "action_id", "contract_sha256", "request_sha256", "template_sha256", "mode", "project_id", "current_source_revision", "current_snapshot_sha256", "baseline_origin_snapshot_sha256", "baseline_reference", "selected_tools_sha256", "tool_observations", "policy_sha256", "renderer", "renderer_sha256", "browser_lifecycle", "viewports", "families", "diagnostics", "raw_artifacts"],
+      "properties": {
+        "schema": {"const": "cairntir.paladin-ui-producer-result.v1"},
+        "status": {"enum": ["COMPLETE", "INCONCLUSIVE"]},
+        "run_id": {"$ref": "#/$defs/uuid"}, "attempt_id": {"$ref": "#/$defs/uuid"}, "action_id": {"$ref": "#/$defs/uuid"},
+        "contract_sha256": {"$ref": "#/$defs/sha"}, "request_sha256": {"$ref": "#/$defs/sha"}, "template_sha256": {"$ref": "#/$defs/sha"},
+        "mode": {"enum": ["capture-baseline", "compare"]}, "project_id": {"$ref": "#/$defs/projectId"},
+        "current_source_revision": {"type": "string", "minLength": 1, "maxLength": 128}, "current_snapshot_sha256": {"$ref": "#/$defs/sha"},
+        "baseline_origin_snapshot_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha"}]}, "baseline_reference": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/baselineReference"}]},
+        "selected_tools_sha256": {"$ref": "#/$defs/sha"}, "tool_observations": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"$ref": "#/$defs/toolObservation"}},
+        "policy_sha256": {"$ref": "#/$defs/sha"}, "renderer": {"$ref": "#/$defs/rendererFingerprint"}, "renderer_sha256": {"$ref": "#/$defs/sha"},
+        "browser_lifecycle": {"type": "object", "additionalProperties": false, "required": ["context_closed", "browser_closed", "disconnected_observed"], "properties": {"context_closed": {"type": "boolean"}, "browser_closed": {"type": "boolean"}, "disconnected_observed": {"type": "boolean"}}},
+        "viewports": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/$defs/viewportResult"}}, "families": {"$ref": "#/$defs/families"},
+        "diagnostics": {"type": "array", "maxItems": 128, "items": {"type": "string", "minLength": 1, "maxLength": 4096}}, "raw_artifacts": {"type": "array", "minItems": 11, "maxItems": 256, "items": {"$ref": "#/$defs/artifact"}}
+      }
+    },
+    "rawDocument": {
+      "type": "object", "additionalProperties": false, "required": ["language", "title", "url", "ready_state", "inner_width", "inner_height", "device_scale_factor", "scroll_width", "client_width", "active_element"],
+      "properties": {"language": {"type": "string", "maxLength": 4096}, "title": {"type": "string", "maxLength": 4096}, "url": {"type": "string", "maxLength": 2048}, "ready_state": {"enum": ["loading", "interactive", "complete"]}, "inner_width": {"type": "integer", "minimum": 1}, "inner_height": {"type": "integer", "minimum": 1}, "device_scale_factor": {"type": "number", "exclusiveMinimum": 0}, "scroll_width": {"type": "integer", "minimum": 0}, "client_width": {"type": "integer", "minimum": 0}, "active_element": {"$ref": "#/$defs/activeElement"}}
+    },
+    "rawElement": {
+      "type": "object", "additionalProperties": false, "required": ["node_id", "backend_node_id", "tag_name", "id", "text_content", "rect", "visible", "display", "visibility", "opacity", "font_family"],
+      "properties": {"node_id": {"type": "integer", "minimum": 1}, "backend_node_id": {"type": "integer", "minimum": 1}, "tag_name": {"type": "string", "maxLength": 128}, "id": {"type": "string", "maxLength": 512}, "text_content": {"type": "string", "maxLength": 16384}, "rect": {"$ref": "#/$defs/rect"}, "visible": {"type": "boolean"}, "display": {"type": "string", "maxLength": 128}, "visibility": {"type": "string", "maxLength": 128}, "opacity": {"type": "number", "minimum": 0, "maximum": 1}, "font_family": {"type": "string", "maxLength": 512}}
+    },
+    "rawDOM": {
+      "type": "object", "additionalProperties": false, "required": ["schema", "viewport_id", "document", "selectors"],
+      "properties": {"schema": {"const": "cairntir.paladin-ui-dom.v1"}, "viewport_id": {"enum": ["mobile", "desktop"]}, "document": {"$ref": "#/$defs/rawDocument"}, "selectors": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "object", "additionalProperties": false, "required": ["selector", "count", "matches"], "properties": {"selector": {"$ref": "#/$defs/selector"}, "count": {"type": "integer", "minimum": 0, "maximum": 512}, "matches": {"type": "array", "maxItems": 512, "items": {"$ref": "#/$defs/rawElement"}}}}}}
+    },
+    "cdpAXValue": {
+      "type": "object", "required": ["type"],
+      "properties": {"type": {"type": "string", "maxLength": 128}, "value": {"type": ["string", "number", "boolean", "null"]}, "relatedNodes": {"type": "array", "maxItems": 512}, "sources": {"type": "array", "maxItems": 512}},
+      "additionalProperties": true
+    },
+    "cdpAXNode": {
+      "type": "object", "required": ["nodeId", "ignored"],
+      "properties": {"nodeId": {"type": "string", "maxLength": 128}, "ignored": {"type": "boolean"}, "backendDOMNodeId": {"type": "integer", "minimum": 1}, "role": {"$ref": "#/$defs/cdpAXValue"}, "chromeRole": {"$ref": "#/$defs/cdpAXValue"}, "name": {"$ref": "#/$defs/cdpAXValue"}, "description": {"$ref": "#/$defs/cdpAXValue"}, "value": {"$ref": "#/$defs/cdpAXValue"}, "parentId": {"type": "string", "maxLength": 128}, "childIds": {"type": "array", "maxItems": 1024, "items": {"type": "string", "maxLength": 128}}},
+      "additionalProperties": true
+    },
+    "rawAX": {
+      "type": "object", "additionalProperties": false, "required": ["schema", "viewport_id", "nodes", "selector_mappings"],
+      "properties": {"schema": {"const": "cairntir.paladin-ui-ax.v1"}, "viewport_id": {"enum": ["mobile", "desktop"]}, "nodes": {"type": "array", "minItems": 1, "maxItems": 1024, "items": {"$ref": "#/$defs/cdpAXNode"}}, "selector_mappings": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "object", "additionalProperties": false, "required": ["selector", "node_ids", "backend_node_ids", "ax_node_ids"], "properties": {"selector": {"$ref": "#/$defs/selector"}, "node_ids": {"type": "array", "maxItems": 512, "items": {"type": "integer", "minimum": 1}}, "backend_node_ids": {"type": "array", "maxItems": 512, "items": {"type": "integer", "minimum": 1}}, "ax_node_ids": {"type": "array", "maxItems": 1024, "items": {"type": "string", "maxLength": 128}}}}}}
+    },
+    "rawFonts": {
+      "type": "object", "additionalProperties": false, "required": ["schema", "viewport_id", "font_path", "font_sha256", "license_sha256", "css_family", "platform_family", "postscript_name", "observations"],
+      "properties": {"schema": {"const": "cairntir.paladin-ui-fonts.v1"}, "viewport_id": {"enum": ["mobile", "desktop"]}, "font_path": {"$ref": "#/$defs/relative"}, "font_sha256": {"$ref": "#/$defs/sha"}, "license_sha256": {"$ref": "#/$defs/sha"}, "css_family": {"$ref": "#/$defs/text"}, "platform_family": {"$ref": "#/$defs/text"}, "postscript_name": {"$ref": "#/$defs/text"}, "observations": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"$ref": "#/$defs/fontObservation"}}}
+    },
+    "rawKeyboard": {
+      "type": "object", "additionalProperties": false, "required": ["schema", "viewport_id", "initial_active_element", "events", "results"],
+      "properties": {"schema": {"const": "cairntir.paladin-ui-keyboard.v1"}, "viewport_id": {"enum": ["mobile", "desktop"]}, "initial_active_element": {"$ref": "#/$defs/activeElement"}, "events": {"type": "array", "minItems": 1, "maxItems": 128, "items": {"type": "object", "additionalProperties": false, "required": ["ordinal", "check_id", "key", "active_element"], "properties": {"ordinal": {"type": "integer", "minimum": 1, "maximum": 128}, "check_id": {"$ref": "#/$defs/id"}, "key": {"enum": ["Tab", "Enter", "Space"]}, "active_element": {"$ref": "#/$defs/activeElement"}}}}, "results": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"allOf": [{"$ref": "#/$defs/checkResult"}, {"properties": {"check": {"oneOf": [{"$ref": "#/$defs/tabCheck"}, {"$ref": "#/$defs/keyCheck"}]}}}]}}}
+    },
+    "rawNetwork": {
+      "type": "object", "additionalProperties": false, "required": ["schema", "events"],
+      "properties": {"schema": {"const": "cairntir.paladin-ui-network.v1"}, "events": {"type": "array", "maxItems": 256, "items": {"type": "object", "additionalProperties": false, "required": ["ordinal", "viewport_id", "url", "method", "resource_type", "decision", "project_path", "sha256"], "properties": {"ordinal": {"type": "integer", "minimum": 1, "maximum": 256}, "viewport_id": {"type": ["string", "null"], "enum": ["mobile", "desktop", null]}, "url": {"type": "string", "minLength": 1, "maxLength": 2048}, "method": {"type": "string", "minLength": 1, "maxLength": 16}, "resource_type": {"type": "string", "minLength": 1, "maxLength": 32}, "decision": {"enum": ["fulfilled", "blocked"]}, "project_path": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/relative"}]}, "sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha"}]}}}}}
+    },
+    "rawComparison": {"$ref": "#/$defs/visualObservation"},
+    "rendererFingerprint": {
+      "type": "object", "additionalProperties": false, "required": ["browser", "os", "font", "pngjs", "pixelmatch", "policy_sha256"],
+      "properties": {
+        "browser": {"type": "object", "additionalProperties": false, "required": ["runtime_manifest_sha256", "version"], "properties": {"runtime_manifest_sha256": {"$ref": "#/$defs/sha"}, "version": {"$ref": "#/$defs/text"}}},
+        "os": {"type": "object", "additionalProperties": false, "required": ["platform", "release", "arch"], "properties": {"platform": {"$ref": "#/$defs/text"}, "release": {"$ref": "#/$defs/text"}, "arch": {"$ref": "#/$defs/text"}}},
+        "font": {"type": "object", "additionalProperties": false, "required": ["file_sha256", "custom_family", "postscript_name"], "properties": {"file_sha256": {"$ref": "#/$defs/sha"}, "custom_family": {"$ref": "#/$defs/text"}, "postscript_name": {"$ref": "#/$defs/text"}}},
+        "pngjs": {"type": "object", "additionalProperties": false, "required": ["payload_sha256", "version"], "properties": {"payload_sha256": {"$ref": "#/$defs/sha"}, "version": {"$ref": "#/$defs/text"}}},
+        "pixelmatch": {"type": "object", "additionalProperties": false, "required": ["payload_sha256", "version"], "properties": {"payload_sha256": {"$ref": "#/$defs/sha"}, "version": {"$ref": "#/$defs/text"}}},
+        "policy_sha256": {"$ref": "#/$defs/sha"}
+      }
+    },
+    "environmentControls": {
+      "type": "object", "additionalProperties": false, "required": ["values", "absent"],
+      "properties": {
+        "values": {"type": "object", "additionalProperties": false, "required": ["HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TEMP", "TMP", "XDG_CONFIG_HOME", "XDG_CACHE_HOME", "XDG_DATA_HOME", "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD"], "properties": {"HOME": {"$ref": "#/$defs/absolute"}, "USERPROFILE": {"$ref": "#/$defs/absolute"}, "APPDATA": {"$ref": "#/$defs/absolute"}, "LOCALAPPDATA": {"$ref": "#/$defs/absolute"}, "TEMP": {"$ref": "#/$defs/absolute"}, "TMP": {"$ref": "#/$defs/absolute"}, "XDG_CONFIG_HOME": {"$ref": "#/$defs/absolute"}, "XDG_CACHE_HOME": {"$ref": "#/$defs/absolute"}, "XDG_DATA_HOME": {"$ref": "#/$defs/absolute"}, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": {"const": "1"}}},
+        "absent": {"const": ["NODE_OPTIONS", "NODE_PATH", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY", "PLAYWRIGHT_DOWNLOAD_HOST", "CAIRNTIR_HOME", "CAIRNTIR_GRANT_FILE"]}
+      }
+    },
+    "invocation": {
+      "type": "object", "additionalProperties": false, "required": ["schema", "run_id", "attempt_id", "action_id", "contract_sha256", "request_sha256", "template_sha256", "selected_tools_sha256", "argv", "cwd", "environment_controls", "limits"],
+      "properties": {"schema": {"const": "cairntir.paladin-ui-invocation.v1"}, "run_id": {"$ref": "#/$defs/uuid"}, "attempt_id": {"$ref": "#/$defs/uuid"}, "action_id": {"$ref": "#/$defs/uuid"}, "contract_sha256": {"$ref": "#/$defs/sha"}, "request_sha256": {"$ref": "#/$defs/sha"}, "template_sha256": {"$ref": "#/$defs/sha"}, "selected_tools_sha256": {"$ref": "#/$defs/sha"}, "argv": {"type": "array", "minItems": 3, "maxItems": 32, "items": {"type": "string", "maxLength": 2048}}, "cwd": {"$ref": "#/$defs/absolute"}, "environment_controls": {"$ref": "#/$defs/environmentControls"}, "limits": {"$ref": "#/$defs/limits"}}
+    },
+    "ownershipError": {"type": "object", "additionalProperties": false, "required": ["stage", "type", "message"], "properties": {"stage": {"enum": ["validate", "create", "assign", "resume", "wait", "cleanup", "close", "closure"]}, "type": {"$ref": "#/$defs/text"}, "message": {"type": "string", "maxLength": 4096}}},
+    "processState": {
+      "type": "object", "additionalProperties": false,
+      "required": ["argv", "cwd", "started_at", "finished_at", "timeout_seconds", "elapsed_seconds", "pid", "direct_process_handle", "job_handle", "suspended_creation", "assigned_owned_job", "direct_exit_code", "timed_out", "cancelled", "output_truncated", "job_total_processes", "job_active_processes", "owned_tree_exit_observed", "job_handle_closed", "direct_process_handle_closed", "cleanup_uncertain", "errors"],
+      "properties": {"argv": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "string", "maxLength": 2048}}, "cwd": {"$ref": "#/$defs/absolute"}, "started_at": {"type": ["string", "null"], "format": "date-time"}, "finished_at": {"type": ["string", "null"], "format": "date-time"}, "timeout_seconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 120}, "elapsed_seconds": {"type": "number", "minimum": 0}, "pid": {"type": ["integer", "null"], "minimum": 1}, "direct_process_handle": {"type": ["integer", "null"], "minimum": 1}, "job_handle": {"type": ["integer", "null"], "minimum": 1}, "suspended_creation": {"type": "boolean"}, "assigned_owned_job": {"type": "boolean"}, "direct_exit_code": {"type": ["integer", "null"]}, "timed_out": {"type": "boolean"}, "cancelled": {"type": "boolean"}, "output_truncated": {"type": "boolean"}, "job_total_processes": {"type": "integer", "minimum": 0}, "job_active_processes": {"type": "integer", "minimum": 0}, "owned_tree_exit_observed": {"type": "boolean"}, "job_handle_closed": {"type": "boolean"}, "direct_process_handle_closed": {"type": "boolean"}, "cleanup_uncertain": {"type": "boolean"}, "errors": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/ownershipError"}}}
+    },
+    "ownership": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "phase", "run_id", "attempt_id", "action_id", "contract_sha256", "request_sha256", "template_sha256", "argv", "cwd", "started_at", "finished_at", "timeout_seconds", "elapsed_seconds", "python", "worker", "pid", "direct_process_handle", "job_handle", "suspended_creation", "assigned_owned_job", "direct_exit_code", "timed_out", "cancelled", "output_truncated", "job_total_processes", "job_active_processes", "owned_tree_exit_observed", "job_handle_closed", "direct_process_handle_closed", "cleanup_uncertain", "errors"],
+      "properties": {"schema": {"const": "cairntir.paladin-ui-ownership.v1"}, "phase": {"enum": ["START", "EXIT"]}, "run_id": {"$ref": "#/$defs/uuid"}, "attempt_id": {"$ref": "#/$defs/uuid"}, "action_id": {"$ref": "#/$defs/uuid"}, "contract_sha256": {"$ref": "#/$defs/sha"}, "request_sha256": {"$ref": "#/$defs/sha"}, "template_sha256": {"$ref": "#/$defs/sha"}, "argv": {"type": "array", "minItems": 3, "maxItems": 32, "items": {"type": "string", "maxLength": 2048}}, "cwd": {"$ref": "#/$defs/absolute"}, "started_at": {"type": "string", "format": "date-time"}, "finished_at": {"type": ["string", "null"], "format": "date-time"}, "timeout_seconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 120}, "elapsed_seconds": {"type": "number", "minimum": 0}, "python": {"$ref": "#/$defs/pythonObservation"}, "worker": {"$ref": "#/$defs/toolObservation"}, "pid": {"type": ["integer", "null"], "minimum": 1}, "direct_process_handle": {"type": ["integer", "null"], "minimum": 1}, "job_handle": {"type": ["integer", "null"], "minimum": 1}, "suspended_creation": {"type": "boolean"}, "assigned_owned_job": {"type": "boolean"}, "direct_exit_code": {"type": ["integer", "null"]}, "timed_out": {"type": "boolean"}, "cancelled": {"type": "boolean"}, "output_truncated": {"type": "boolean"}, "job_total_processes": {"type": "integer", "minimum": 0}, "job_active_processes": {"type": "integer", "minimum": 0}, "owned_tree_exit_observed": {"type": "boolean"}, "job_handle_closed": {"type": "boolean"}, "direct_process_handle_closed": {"type": "boolean"}, "cleanup_uncertain": {"type": "boolean"}, "errors": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/ownershipError"}}}
+    },
+    "closure": {
+      "type": "object", "additionalProperties": false, "required": ["schema", "run_id", "attempt_id", "action_id", "request_sha256", "files", "file_count", "total_bytes"],
+      "properties": {"schema": {"const": "cairntir.paladin-ui-closure.v1"}, "run_id": {"$ref": "#/$defs/uuid"}, "attempt_id": {"$ref": "#/$defs/uuid"}, "action_id": {"$ref": "#/$defs/uuid"}, "request_sha256": {"$ref": "#/$defs/sha"}, "files": {"type": "array", "minItems": 1, "maxItems": 4095, "items": {"$ref": "#/$defs/artifact"}}, "file_count": {"type": "integer", "minimum": 1, "maximum": 4095}, "total_bytes": {"type": "integer", "minimum": 0, "maximum": 134217728}}
+    },
+    "summary": {
+      "type": "object", "additionalProperties": false, "required": ["schema", "run_id", "attempt_id", "action_id", "contract_sha256", "request_sha256", "template_sha256", "report", "ownership", "closure"],
+      "properties": {"schema": {"const": "cairntir.paladin-ui-worker-summary.v1"}, "run_id": {"$ref": "#/$defs/uuid"}, "attempt_id": {"$ref": "#/$defs/uuid"}, "action_id": {"$ref": "#/$defs/uuid"}, "contract_sha256": {"$ref": "#/$defs/sha"}, "request_sha256": {"$ref": "#/$defs/sha"}, "template_sha256": {"$ref": "#/$defs/sha"}, "report": {"$ref": "#/$defs/artifact"}, "ownership": {"$ref": "#/$defs/artifact"}, "closure": {"$ref": "#/$defs/artifact"}}
+    },
+    "limits": {
+      "const": {"request_bytes": 262144, "template_bytes": 131072, "selected_tool_manifest_bytes": 2097152, "selected_tool_file_rows": 4096, "selected_tool_total_bytes": 2147483648, "project_files": 128, "project_total_bytes": 8388608, "report_bytes": 1048576, "raw_json_bytes": 2097152, "png_bytes": 8388608, "decoded_png_pixels": 1024000, "stdout_bytes": 65536, "stderr_bytes": 65536, "attempt_regular_files": 4096, "attempt_total_bytes": 134217728, "selectors": 32, "checks": 64, "dom_nodes": 512, "ax_nodes": 1024, "network_events": 256, "producer_work_seconds": 90, "wrapper_total_seconds": 120, "managed_timeout_seconds": 150}
+    }
+  }
+}

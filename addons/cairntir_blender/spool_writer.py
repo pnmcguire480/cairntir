@@ -141,6 +141,7 @@ def write_print_outcome(
     outcome: str,
     success: bool,
     notes: str = "",
+    scene_settings: dict[str, Any] | None = None,
     home: Path | None = None,
 ) -> Path:
     """Write a 3D-print iteration outcome as a prediction-bound drawer.
@@ -155,6 +156,9 @@ def write_print_outcome(
     The drawer's ``room`` is set to the material name so iterations
     cluster naturally: ``blender-print/PLA``, ``blender-print/PETG``.
     A future Decision Replay can walk the chain to compare iterations.
+
+    An optional scene snapshot adds observed context separately from manual
+    parameters. Calls without a snapshot retain the original metadata.
     """
     parameter_block = "\n".join(f"  {k}: {v}" for k, v in sorted(parameters.items()))
     body = (
@@ -169,17 +173,20 @@ def write_print_outcome(
         f"## Notes\n"
         f"{notes or '(none)'}\n"
     )
+    metadata: dict[str, Any] = {
+        "source": "blender",
+        "kind": "print_outcome",
+        "material": material,
+        "success": success,
+        "parameters": parameters,
+    }
+    if scene_settings is not None:
+        metadata.update(scene_settings=scene_settings, parameters_source="manual")
     return write_capture(
         wing=wing,
         room=material,
         content=body,
         layer="on_demand",
-        metadata={
-            "source": "blender",
-            "kind": "print_outcome",
-            "material": material,
-            "success": success,
-            "parameters": parameters,
-        },
+        metadata=metadata,
         home=home,
     )

@@ -1,0 +1,65 @@
+{
+  "schema": "cairntir.channel-output.v1",
+  "adaptations": [
+    {
+      "channel_id": "community-discussion",
+      "format_id": "question-post",
+      "hook": "What evidence belongs on a candidate-guideline review card?",
+      "content": {
+        "title": "Discuss a hypothetical review queue",
+        "body": "The synthetic concept proposes a draft guideline after an example change. A pending-review queue would keep acceptance, revision and rejection explicit. Which evidence would help distinguish a reusable guideline from one unusual change?",
+        "closing_question": "What would you review before accepting such a candidate?"
+      },
+      "source_ids": [
+        "synthetic-note-a",
+        "synthetic-note-b"
+      ],
+      "assumption_ids": [
+        "A1"
+      ]
+    },
+    {
+      "channel_id": "newsletter",
+      "format_id": "short-note",
+      "hook": "A fictional review card turns one change into a question.",
+      "content": {
+        "subject": "A draft guideline needs a review decision",
+        "preview": "A synthetic concept separates a proposal from an active rule.",
+        "body": "The invented review sketch puts candidate guidelines in a pending-review queue. Its proposed next step is a review decision, rather than automatic activation. This is a controlled concept example; it does not establish audience interest or effectiveness.",
+        "call_to_action": "Reply with the evidence you would want on a review card."
+      },
+      "source_ids": [
+        "synthetic-note-b"
+      ],
+      "assumption_ids": [
+        "A1"
+      ]
+    },
+    {
+      "channel_id": "short-video",
+      "format_id": "thirty-second-concept",
+      "hook": "Picture a draft guideline waiting for a review decision.",
+      "content": {
+        "spoken_opening": "Could this example change suggest a guideline worth reviewing?",
+        "screen_text": "Synthetic concept: change → draft → review",
+        "visual_concept": "Show an invented change, then a candidate card entering a pending-review column. Display accept, revise and reject options. Keep a synthetic concept label visible and leave the card unapproved.",
+        "call_to_action": "Which evidence would you inspect first?"
+      },
+      "source_ids": [
+        "synthetic-note-a",
+        "synthetic-note-b"
+      ],
+      "assumption_ids": [
+        "A1"
+      ]
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "A1",
+      "claim": "Some readers might want to discuss candidate-guideline review cards.",
+      "reason": "Audience interest and usefulness have not been measured; this is synthetic test material.",
+      "source_ids": []
+    }
+  ]
+}

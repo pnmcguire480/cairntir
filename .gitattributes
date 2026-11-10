@@ -59,3 +59,29 @@ plans/acceptance/core-status-20261001/** -text whitespace=cr-at-eol
 plans/acceptance/backup-contract-20261002/** -text whitespace=cr-at-eol
 plans/acceptance/backup-contract-20261002/CI-ROUND2-BACKUP-PROBE-FAILURE.txt whitespace=-blank-at-eol,cr-at-eol
 plans/acceptance/backup-contract-20261002/*-backup-check.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+
+# Preserve byte-addressed synthetic ideation fixtures.
+tests/acceptance/ideation_channels_unit/** -text whitespace=cr-at-eol
+tests/acceptance/ideation_calendar_unit/** -text whitespace=cr-at-eol
+tests/acceptance/ideation_outlines_unit/** -text whitespace=cr-at-eol
+tests/acceptance/ideation_assembler_unit/** -text whitespace=cr-at-eol
+tests/acceptance/ideation_calendar_unit/sources/*.md whitespace=-blank-at-eof,cr-at-eol
+tests/acceptance/ideation_outlines_unit/sources/*.md whitespace=-blank-at-eof,cr-at-eol
+tests/acceptance/ideation_assembler_unit/sources/*.md whitespace=-blank-at-eof,cr-at-eol
+
+# Keep source-hash receipts exact for ordinary acceptance ports.
+tests/acceptance/paladin_resources_unit/** -text whitespace=cr-at-eol
+tests/acceptance/bootstrap_predispatch_unit/** -text whitespace=cr-at-eol
+tests/acceptance/bootstrap_real_unit/** -text whitespace=cr-at-eol
+tests/acceptance/dream_response_unit/** -text whitespace=cr-at-eol
+tests/acceptance/dream_budget_unit/** -text whitespace=cr-at-eol
+tests/acceptance/practice_startup_unit/** -text whitespace=cr-at-eol
+tests/acceptance/practice_scope_unit/** -text whitespace=cr-at-eol
+tests/acceptance/practice_review_unit/** -text whitespace=cr-at-eol
+tests/acceptance/practice_register_unit/** -text whitespace=cr-at-eol
+tests/acceptance/practice_governance_unit/** -text whitespace=cr-at-eol
+tests/acceptance/practice_review_edges_unit/** -text whitespace=cr-at-eol
+tests/acceptance/practice_review_remaining_unit/** -text whitespace=cr-at-eol
+tests/acceptance/paladin_python_real_unit/** -text whitespace=cr-at-eol
+tests/acceptance/managed_cli_unit/** -text whitespace=cr-at-eol
+tests/acceptance/humanflow_unit/** -text whitespace=cr-at-eol

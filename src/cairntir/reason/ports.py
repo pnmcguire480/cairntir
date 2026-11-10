@@ -24,7 +24,7 @@ networks, or LLMs — that's the whole point of v0.6.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from contextlib import AbstractContextManager
 from typing import Any, Protocol, runtime_checkable
 
@@ -127,9 +127,50 @@ class DurableMemoryGateway(MemoryGateway, Protocol):
         operation: str,
         request: dict[str, Any],
         action: Callable[[], dict[str, Any]],
+        legacy_request: dict[str, Any] | None = None,
     ) -> WorkflowExecution:
         """Execute ``action`` once and replay its committed result on retry."""
         ...
+
+
+@runtime_checkable
+class RetryEvidenceAdapter(Protocol):
+    """An adapter whose output is fixed by evidence the caller supplied.
+
+    Declaring that evidence makes it part of a retry's identity, so reusing an
+    idempotency key with changed evidence conflicts instead of replaying the
+    original result. Adapters that generate their output, such as a model-backed
+    proposer, do not declare this: their retries replay on the request alone.
+    """
+
+    def retry_evidence(self) -> dict[str, Any]:
+        """Return the caller-supplied evidence this adapter will commit."""
+        ...
+
+
+def retry_arguments(
+    request: dict[str, Any],
+    *,
+    adapters: Iterable[object],
+    overrides: dict[str, Any] | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Return the request arguments that bind a retry to its full identity.
+
+    ``request`` is the fingerprint recorded before evidence was bound. It is
+    passed as ``legacy_request`` whenever the identity differs from it, so an
+    exact retry of a key recorded by an earlier release still replays.
+    """
+    identity = {**request, **(overrides or {})}
+    evidence = [
+        adapter.retry_evidence()
+        for adapter in adapters
+        if isinstance(adapter, RetryEvidenceAdapter)
+    ]
+    if evidence:
+        identity["evidence"] = evidence
+    if identity == request:
+        return {"request": request}
+    return {"request": identity, "legacy_request": request}
 
 
 @runtime_checkable

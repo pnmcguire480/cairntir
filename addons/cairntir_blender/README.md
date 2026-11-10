@@ -11,7 +11,7 @@
 ## What This Is
 
 A Blender add-on that captures decisions and 3D-print iteration outcomes
-into Cairntir's memory layer. You print something, you note what worked
+into Cairntir's memory layer and recalls prior print outcomes during preparation. You print something, you note what worked
 and what didn't, the parameters you used, and Cairntir keeps the record
 forever — searchable, prediction-bound, replayable through Decision
 Replay just like any code decision.
@@ -58,6 +58,12 @@ understands — no schema migration required.
 
 ---
 
+Recall uses a separate, installed Cairntir Python process. The add-on sends the
+selected wing, material and query; the bridge opens the existing store read-only,
+authorizes a read grant, filters print outcomes, ranks them with matching cached
+embeddings and returns complete drawers. Recall does not start the daemon,
+acquire a model, migrate the store or update memory access counters.
+
 ## Install
 
 1. Zip the `cairntir_blender/` directory:
@@ -90,8 +96,29 @@ In the Cairntir panel:
 - **Cairntir home** — overrides `$CAIRNTIR_HOME` for this session.
   Leave blank to use the env var or the default `~/.cairntir`.
 
-Settings persist in the .blend file (per-scene properties), not
-globally — different .blend files can target different wings.
+Wing, material, capture-home override and recall query persist per scene in the
+.blend file. Recall connection settings belong to trusted add-on preferences:
+
+- **Cairntir Python** — absolute path to Python with the compatible Cairntir
+  installation and its dependencies. The recall bridge requires the read-only
+  APIs provided by the 1.16.0 candidate.
+- **Cairntir home** — absolute path to an existing store. Set the capture-home
+  override to this same location when capturing into that store.
+- **Read grant file** — absolute path to a token file provisioned by the store
+  owner, with read access to the selected wing and material room. Owner tooling
+  can issue this with `cairntir.access.issue_grant`, using a scope such as
+  `{"wing": "blender-print", "rooms": ["pla"]}` and `capabilities=["read"]`.
+  Keep the returned token in the grant file; do not paste it into a scene.
+
+Recall never accepts an executable, home or grant from scene properties. It
+requires the store's matching embedding index and already cached production
+model artifacts. A configured FASTEMBED_CACHE_PATH is inherited from the host
+environment. Missing credentials, incompatible indexes and unavailable assets
+produce explicit refusals; the bridge does not fall back to owner access.
+
+Recall results and running jobs are temporary WindowManager state. They are not
+saved in .blend files. Changing the scene, selectors, query or connection hides
+old results and cancels an active read.
 
 ---
 
@@ -105,8 +132,9 @@ print outcome.
 
 ### Capture Print Outcome
 
-Structured drawer with parameters and an outcome verdict. The
-parameters captured by default:
+Structured drawer with manual print parameters, an outcome verdict, and
+an automatic snapshot of the current scene. The dialog labels these
+parameters as manual:
 - Nozzle temp (°C)
 - Bed temp (°C)
 - Infill (%)
@@ -119,6 +147,39 @@ and outcome laid out; the metadata carries the structured fields
 (`source: "blender"`, `kind: "print_outcome"`, `parameters`, `success`)
 so a future Decision Replay or consolidation pass can recover the
 prediction-bound semantics.
+
+Each operator capture also reads the passed Blender context: scene and
+view-layer names, mode, saved/filepath state, current units and unit scale,
+and active-object name, type, dimensions and scale. Vectors are copied as
+separate three-float lists without conversion or additional scaling.
+
+`metadata.scene_settings` uses schema `cairntir.blender-scene-settings.v1`,
+with a UTC observation time, host version/build, getter-path `values`, and
+`unavailable` reasons. Missing context, unavailable attributes, getter errors
+and unsupported values remain explicit; earlier observations are never reused.
+Nozzle temperature, bed temperature, infill and layer height stay unavailable
+with `PROVIDER_UNVERIFIED`. Scene units, custom properties and dialog defaults
+do not supply printer settings. `metadata.parameters_source` is `manual`.
+
+The stdlib writer accepts the optional `scene_settings` keyword. Calls without
+it preserve the original metadata and content.
+
+---
+
+### Recall Prior Prints
+
+Enter a **Prior print query** and click **Recall Prior Prints** in the Cairntir
+panel. The interactive read runs as a modal job; press Escape to cancel. It has
+a 60-second timeout and bounded output. Cancellation and timeout terminate the
+owned child process tree.
+
+The panel shows the recorded success/failure (or unknown), full outcome and
+manual parameters, saved date, local memory URI, portable UUID and content hash.
+Stored text remains untrusted evidence with no instruction authority. Only print
+outcomes in the authorized wing/material are eligible, before ranking and the
+default five-record limit. Whole records that cannot fit the response budget
+receive omission receipts; their content is never clipped into a partial record.
+An authorized empty result is distinct from denied access or an unavailable read.
 
 ---
 
@@ -147,21 +208,15 @@ The compounding workflow Cairntir was built for:
 
 ## What This Doesn't Do (yet)
 
-- **Pull from Cairntir into Blender.** This is a one-way capture
-  surface. Surfacing prior iteration drawers inside Blender as the
-  user sets up a new print is the obvious next step.
-- **Auto-detect parameters from the active scene.** Today the user
-  types nozzle/bed/infill/layer-height into the dialog. A future
-  version could read them from the active 3D printer settings if
-  Blender exposes them.
+- **Read printer-specific parameters from an unverified provider.**
+  Nozzle/bed/infill/layer-height remain manual dialog inputs. Automatic
+  scene observations do not establish a printer's configuration.
 - **Capture STL/G-code as drawer attachments.** The portable signed
   format already supports content beyond text; binary-attached
   drawers are a separate roadmap item.
 
-These gaps are not bugs — the v0.1 add-on exists to **prove the
-horizon thesis** by establishing that Cairntir's memory layer can
-serve a non-code workload at all. Refinement comes after the bet is
-de-risked.
+The v0.3 add-on adds scoped prior-print recall to the v0.2 scene capture
+workflow. It does not operate a printer or observe a physical print.
 
 ---
 
@@ -175,3 +230,14 @@ Blender writer must parse cleanly through
 right wing/room/layer/metadata. If that test ever breaks, the
 "Cairntir doesn't care what is being remembered" thesis becomes
 aspiration instead of fact.
+
+The scene reader is also stdlib-only. Native qualification additionally requires
+real add-on registration and operator dispatch, exact spool bytes, daemon
+persistence, and retrieval after reopening an isolated store. Unit fixtures alone
+do not establish that Blender workflow.
+
+The independent recall controls are in `tests/unit/test_blender_print_recall_c47.py`.
+They cover exact outcomes and identity, scope and kind filtering, revoked access,
+whole-record budgets, invalid replies and actual child-process cancellation. The
+sealed packet in `plans/acceptance/v2-blender-c47-acceptance-r1` also defines the
+native registered modal workflow and real rendered-panel evidence.

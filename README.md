@@ -1,10 +1,11 @@
 # Cairntir
 
+> **1.13.0 carries the work toward 2.0:** [feature status and limits](ALPHA.md). Upgrading from 1.12 or earlier? Semantic search and saving stop until you run one reindex command; read the [upgrade guide](docs/embedding-artifacts.md) first. 2.0.0 is reserved for the finished roadmap.
+
 Persistent, local-first memory for AI coding agents. Claude Code, Codex,
 Cursor, Qwen Code, and other MCP clients share one searchable project history.
 
 [![PyPI](https://img.shields.io/pypi/v/cairntir.svg)](https://pypi.org/project/cairntir/)
-[![CI](https://github.com/pnmcguire480/cairntir/actions/workflows/ci.yml/badge.svg)](https://github.com/pnmcguire480/cairntir/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -12,8 +13,7 @@ Cairntir stores decisions, facts, unfinished work, and outcomes as verbatim
 *drawers* in a SQLite database you own. A budgeted handoff restores complete
 drawers across sessions; semantic and file-anchored recall find deeper evidence.
 
-Current release: **1.12.3**. See the
-[release evidence](docs/release/v1.12.3.md) and [changelog](CHANGELOG.md).
+Current release: **1.13.0**. See [feature status](ALPHA.md) and [changelog](CHANGELOG.md).
 Published downloads are on
 [PyPI](https://pypi.org/project/cairntir/) and
 [GitHub Releases](https://github.com/pnmcguire480/cairntir/releases).
@@ -33,10 +33,9 @@ cairntir version
 cairntir doctor
 ```
 
-The diagnostic changes below are **unreleased**; `pip install` currently
-selects published 1.12.3. That release's doctor/status/version may still run
-registration and update callbacks, and status may open the store for writing.
-See the change record before treating an installed diagnostic as read-only.
+`pip install` selects stable 1.12.4, which includes the read-only diagnostics
+below. Older releases' doctor/status/version may still run registration and
+update callbacks, and status may open the store for writing.
 
 In this candidate, `version` reports this CLI's version. `status` and `doctor` inspect the store
 and configuration without registering hosts or checking for updates. A
@@ -110,7 +109,7 @@ restriction. See [data handling](docs/concept.md) for backup and trust boundarie
 
 ## Build and integrate
 
-The MCP server exposes **21 tools** over stdio. Stable Python protocols support
+The MCP server exposes **22 tools** over stdio. Stable Python protocols support
 custom backends; see the [integration guide](docs/integration-guide.md).
 
 ```text

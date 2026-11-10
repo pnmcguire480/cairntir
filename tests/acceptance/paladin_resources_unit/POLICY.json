@@ -1,0 +1,27 @@
+{
+  "schema": "cairntir.q05-policy.v1",
+  "workload_id": "local-sqlite-note-read-v1",
+  "dataset_sizes": [100, 1000],
+  "expected_outputs": [
+    {
+      "size": 100,
+      "expected_output_sha256": "1db455f8afc6340d2159eabcfbbca09e51ba36cc3e3a804d6a642b593165d919"
+    },
+    {
+      "size": 1000,
+      "expected_output_sha256": "4b90563629eef8241cdd991d957e269a15a7cc5367d32a82280cea5ad2f87ba6"
+    }
+  ],
+  "reads_per_sample": 256,
+  "warmups": 2,
+  "samples": 20,
+  "wall_scope": "isolated-process-import-open-read-return",
+  "wall_p95_ns": 250000000,
+  "python_peak_bytes": 8388608,
+  "profile_sql_calls": 512,
+  "bundle_compressed_bytes": 65536,
+  "bundle_uncompressed_bytes": 131072,
+  "security_rules": ["S307"],
+  "maximum_findings": 0,
+  "oracle": "note-{id:05d}; ids=((index*17)%size)+1 for index in range(256)"
+}

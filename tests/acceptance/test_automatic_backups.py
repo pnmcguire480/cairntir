@@ -470,11 +470,11 @@ def test_production_owner_startup_activates_backup_and_retains_transport_shape(
     api.configure(db, destination)
     before = _state(db)
     if transport == "cli":
-        result = _cli("status")
+        result = _cli("get", "1")
         assert result.returncode == 0, result.stderr
     else:
         result = _run_child("mcp-probe", db, START)
-        assert result["tools"] == 21 and not result["error"]
+        assert result["tools"] == 22 and not result["error"]
     assert len(api.status(db)["snapshots"]) == 1
     assert _state(Path(api.status(db)["snapshots"][0]["path"]), standalone=True) == before
 
@@ -495,7 +495,7 @@ def test_scoped_startup_cannot_trigger_owner_backups(case: Any, transport: str) 
         assert result.returncode == 0, result.stderr
     else:
         result = _run_child("mcp-probe", db, START, grant=grant)
-        assert result["tools"] == 21 and not result["error"]
+        assert result["tools"] == 22 and not result["error"]
     assert api.status(db)["snapshots"] == []
     assert _tree(db.parent.parent) == before
 

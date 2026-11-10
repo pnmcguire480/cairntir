@@ -320,7 +320,13 @@ def test_candidate_scan_limit_is_disclosed_and_never_claims_complete(store: Draw
     for index in range(12):
         _add(store, f"{TASK}: evidence {index}")
     _, payload = _task(store, candidate_limit=3)
-    assert payload["scan"] == {"limit": 3, "scanned": 3, "complete": False}
+    scan = payload["scan"]
+    assert {key: scan[key] for key in ("limit", "scanned", "complete")} == {
+        "limit": 3,
+        "scanned": 3,
+        "complete": False,
+    }
+    assert scan["currentness"] == "incomplete currentness scan: candidate limit"
 
 
 @pytest.mark.parametrize("budget", [2_048, 4_096, 8_192])
@@ -394,18 +400,40 @@ def test_selection_works_with_network_connections_forbidden(
 
 
 def test_legacy_no_task_transport_output_remains_identical(store: DrawerStore) -> None:
-    _add(store)
+    drawer = _add(store)
     backend = CairntirBackend(store)
     before = backend.handoff(wing=WING)
-    assert hashlib.sha256(before.encode()).hexdigest() == (
-        "5d125140f11bfc0ca4fa9fa0a79a073b0d9b9864d7783a7930ab47d14a71689a"
-    )
+    assert backend.handoff(wing=WING) == before
     assert _mcp_text(_mcp(backend, wing=WING)) == before
+    match = re.search(
+        r"<cairntir-memory-evidence>\n(.*?)\n</cairntir-memory-evidence>", before, re.S
+    )
+    assert match is not None
+    evidence = json.loads(match.group(1))
+    assert evidence["drawer_id"] == drawer.id
+    assert evidence["content"] == drawer.content
+    provenance = store.get_provenance(drawer.id)
+    assert evidence["trust"] == provenance.trust.value
+    assert evidence["host"] == provenance.host
+    assert evidence["model"] == provenance.model
+    assert evidence["session_id"] == provenance.session_id
+    assert evidence["saved_at"] == drawer.created_at.isoformat()
+    assert evidence["portable_identity"] == store.portable_identity(drawer.id)
+    assert evidence["origin_reference"] == {
+        "source_store_id": store.portable_store_identity(),
+        "source_drawer_id": drawer.id,
+        "identity": store.portable_identity(drawer.id),
+        "content_sha256": hashlib.sha256(drawer.content.encode("utf-8")).hexdigest(),
+    }
+    assert evidence["currentness"] == "unresolved"
+    assert evidence["instruction_authority"] == "none"
 
 
-def test_existing_mcp_surface_adds_parameters_without_a_new_tool() -> None:
+def test_existing_mcp_surface_preserves_handoff_parameters_with_correction_tool() -> None:
     specs = _tool_specs()
-    assert len(specs) == 21
+    assert len(specs) == 22
+    assert len({spec.name for spec in specs}) == 22
+    assert "cairntir_correct" in {spec.name for spec in specs}
     handoff = next(spec for spec in specs if spec.name == "cairntir_handoff")
     assert handoff.inputSchema["properties"]["task"]["type"] == "string"
     assert handoff.inputSchema["properties"]["candidate_limit"]["type"] == "integer"
@@ -719,9 +747,48 @@ def test_demo_report_escapes_untrusted_html_and_loads_no_remote_assets(
 def test_demo_repeats_the_same_selection_and_measurements(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    first, _, _ = _demo(tmp_path / "first", monkeypatch)
-    second, _, _ = _demo(tmp_path / "second", monkeypatch)
+    first, first_events, _ = _demo(tmp_path / "first", monkeypatch)
+    second, second_events, _ = _demo(tmp_path / "second", monkeypatch)
     assert first["request"] == second["request"]
     assert first["metrics"] == second["metrics"]
-    assert first["selected_payload"] == second["selected_payload"]
     assert first["abstention_payload"] == second["abstention_payload"]
+    selected = [json.loads(report["selected_payload"]) for report in (first, second)]
+    identities = []
+    store_ids = []
+    for payload, events in zip(selected, (first_events, second_events), strict=True):
+        with closing(sqlite3.connect(events[0][2])) as connection:
+            rows = {
+                drawer_id: (identity, created_at, content)
+                for drawer_id, identity, created_at, content in connection.execute(
+                    "SELECT d.id,p.identity,d.created_at,d.content FROM drawers d "
+                    "JOIN portable_records p ON p.drawer_id=d.id"
+                )
+            }
+            metadata = connection.execute(
+                "SELECT value FROM store_metadata WHERE key='portable_store_id'"
+            ).fetchone()
+            assert metadata is not None
+            store_id = metadata[0]
+        seen = set()
+        for entry in payload["evidence"]:
+            expected_identity, saved_at, content = rows[entry["drawer_id"]]
+            assert entry["content"] == content
+            assert entry["portable_identity"] == expected_identity
+            assert entry["saved_at"] == saved_at
+            origin = entry["origin_reference"]
+            assert origin == {
+                "source_store_id": store_id,
+                "source_drawer_id": entry["drawer_id"],
+                "identity": expected_identity,
+                "content_sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
+            }
+            seen.add(expected_identity)
+            entry["portable_identity"] = "<origin-store identity>"
+            origin["source_store_id"] = "<origin-store UUID>"
+            origin["identity"] = "<origin-drawer identity>"
+        assert seen
+        identities.append(seen)
+        store_ids.append(store_id)
+    assert identities[0].isdisjoint(identities[1])
+    assert store_ids[0] != store_ids[1]
+    assert selected[0] == selected[1]

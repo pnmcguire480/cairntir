@@ -1,0 +1,247 @@
+[
+  {
+    "id": "R06",
+    "title": "Unconditional session-start briefing agent",
+    "status": "COMPLETE",
+    "allocation": "NOVEMBER_RELEASE",
+    "target": "2026-10-30"
+  },
+  {
+    "id": "R07",
+    "title": "Session-close agent captures deferred work even on abrupt exit",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "R08",
+    "title": "Structured unresolved-question register with explicit resolution",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "R09",
+    "title": "Mandatory read of previous promises before work proceeds",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "R10",
+    "title": "Generate Last Session from a structured event log",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "R11",
+    "title": "Inspectable inventory of stored project memories",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "E22",
+    "title": "Pin exact embedding model bytes across machines",
+    "status": "OPEN",
+    "allocation": "NOVEMBER_RELEASE",
+    "target": "2026-10-30"
+  },
+  {
+    "id": "E23",
+    "title": "Caller-selected full-content recall budget",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "Q01",
+    "title": "PALADIN automatic static-analysis stage",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "Q02",
+    "title": "PALADIN automatic unit-test and coverage stage",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "Q03",
+    "title": "PALADIN automatic integration-test stage",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "Q04",
+    "title": "PALADIN UI, accessibility and visual-regression stage",
+    "status": "OPEN",
+    "allocation": "FOLLOW_UP",
+    "target": "2026-11-20"
+  },
+  {
+    "id": "Q05",
+    "title": "PALADIN performance and security stage",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "Q06",
+    "title": "Generated Human Wall checklists with human execution",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "Q07",
+    "title": "Bootstrap missing test infrastructure by detected stack",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "Q08",
+    "title": "Generate executable tests from Crucible's falsifiable claims",
+    "status": "OPEN",
+    "allocation": "FOLLOW_UP",
+    "target": "2026-11-25"
+  },
+  {
+    "id": "R12",
+    "title": "HumanFlow prose voice and CodeGlass narration",
+    "status": "OPEN",
+    "allocation": "FOLLOW_UP",
+    "target": "2026-11-12"
+  },
+  {
+    "id": "R13",
+    "title": "Four-category NotebookLM study export",
+    "status": "OPEN",
+    "allocation": "FOLLOW_UP",
+    "target": "2026-11-13"
+  },
+  {
+    "id": "R14",
+    "title": "Study personal code through quizzes and audio overviews",
+    "status": "OPEN",
+    "allocation": "FOLLOW_UP",
+    "target": "2026-11-27"
+  },
+  {
+    "id": "R15",
+    "title": "Per-walkthrough build score and custom-rule trend dashboard",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "I01",
+    "title": "Audience lock and transfer into the product specification",
+    "status": "OPEN",
+    "allocation": "FOLLOW_UP",
+    "target": "2026-11-11"
+  },
+  {
+    "id": "I02",
+    "title": "Generate and rank distinct angles with human selection",
+    "status": "OPEN",
+    "allocation": "FOLLOW_UP",
+    "target": "2026-11-17"
+  },
+  {
+    "id": "I03",
+    "title": "Match selected ideas to channel-specific hooks and formats",
+    "status": "OPEN",
+    "allocation": "FOLLOW_UP",
+    "target": "2026-11-19"
+  },
+  {
+    "id": "I04",
+    "title": "Thirty-day content calendar with repurposing",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "I05",
+    "title": "Expand selected angles into production-ready outlines",
+    "status": "OPEN",
+    "allocation": "FOLLOW_UP",
+    "target": "2026-11-24"
+  },
+  {
+    "id": "I06",
+    "title": "Deposit approved ideation lessons into a reusable ruleset",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "R17",
+    "title": "Rule ownership, version history and periodic revalidation",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "R18",
+    "title": "Quarterly rule review using production metrics",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "R19",
+    "title": "Explicit rule-conflict resolution with developer ADR tie-break",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "R20",
+    "title": "Rule lifecycle from proposal through validation to retirement",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "C47",
+    "title": "Recall prior print iterations inside Blender",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "C48",
+    "title": "Read print parameters automatically from the active scene",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "C49",
+    "title": "Attach STL or G-code artifacts to remembered iterations",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
+    "target": "2026-11-05"
+  },
+  {
+    "id": "C50",
+    "title": "Full memory benchmark with independent external reproduction",
+    "status": "OPEN",
+    "allocation": "FOLLOW_UP",
+    "target": "2026-12-03"
+  },
+  {
+    "id": "R16",
+    "title": "External-user pilot and feedback into the next roadmap",
+    "status": "OPEN",
+    "allocation": "FOLLOW_UP",
+    "target": "2026-12-04"
+  }
+]

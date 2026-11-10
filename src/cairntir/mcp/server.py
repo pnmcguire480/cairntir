@@ -26,6 +26,7 @@ from cairntir.hosts import TRANSCRIPT_HOSTS
 from cairntir.mcp.backend import CairntirBackend
 from cairntir.memory.embeddings import production_embedding_provider
 from cairntir.memory.store import DrawerStore
+from cairntir.memory.taxonomy import canonical_wing
 from cairntir.provenance import TrustLevel, WriteProvenance
 from cairntir.transcript import DEFAULT_RECOVERY_BUDGET_CHARS, RecoveryContext
 from cairntir.update import maybe_check_in_background, pending_update_banner
@@ -355,6 +356,15 @@ def _tool_specs() -> list[types.Tool]:
                     "wing": {"type": "string"},
                     "room": {"type": "string"},
                     "content": {"type": "string"},
+                    "reference_origin": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": (
+                            "Originating physical store UUID for copied references. "
+                            "Known-foreign numeric drawer references require "
+                            "portable bundle import."
+                        ),
+                    },
                     "checkpoint": {
                         "type": "object",
                         "additionalProperties": False,
@@ -545,9 +555,11 @@ def _tool_specs() -> list[types.Tool]:
                 "as snippets — enough to route, not enough to answer. Pass "
                 "full_content=N to get the top N hits with COMPLETE content, and "
                 "skip the cairntir_get round trip for the drawer that actually "
-                "answers. Full content is served under a cumulative budget_chars "
-                "ceiling; hits that do not fit are named, never truncated. One "
-                "good drawer beats ten headlines."
+                "answers. Pass budget_chars for a structured response whose complete "
+                "serialized MCP result fits that character ceiling. Whole evidence "
+                "includes provenance and hashes; omitted hits have bounded routing "
+                "receipts. With a budget, full_content=0 returns IDs without snippets. "
+                "Omit budget_chars to retain the legacy text response."
             ),
             inputSchema={
                 "type": "object",
@@ -557,6 +569,16 @@ def _tool_specs() -> list[types.Tool]:
                     "wing": {"type": "string"},
                     "room": {"type": "string"},
                     "limit": {"type": "integer", "default": 10, "minimum": 1},
+                    "budget_chars": {
+                        "type": "integer",
+                        "minimum": 1024,
+                        "maximum": 262144,
+                        "description": (
+                            "Optional complete serialized MCP result ceiling in characters, "
+                            "including JSON escaping and omission receipts. Whole evidence "
+                            "or explicit omissions; excludes outer JSON-RPC framing."
+                        ),
+                    },
                     "full_content": {
                         "type": "integer",
                         "default": 0,
@@ -582,13 +604,20 @@ def _tool_specs() -> list[types.Tool]:
             name="cairntir_get",
             description=(
                 "Fetch one complete, verbatim drawer by id as structured JSON. "
-                "Use this for cairntir://drawer/<id> references returned by recall."
+                "Numeric ids are local to the connected store. Pass origin expectations "
+                "when following a transferred reference."
             ),
             inputSchema={
                 "type": "object",
                 "required": ["drawer_id"],
                 "properties": {
                     "drawer_id": {"type": "integer", "minimum": 1},
+                    "expected_identity": {"type": "string", "format": "uuid"},
+                    "expected_source_store_id": {"type": "string", "format": "uuid"},
+                    "expected_content_sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$",
+                    },
                 },
             },
         ),
@@ -1033,16 +1062,78 @@ def _tool_specs() -> list[types.Tool]:
         ),
     ]
     specs.append(_hotfix_tool_spec())
+    specs.append(
+        types.Tool(
+            name="cairntir_correct",
+            description=(
+                "Append an explicit correction to a drawer read with cairntir_get. "
+                "Supply that drawer's portable_identity and exact content hash; "
+                "the original remains verbatim and linked as historical evidence. "
+                "Retry an uncertain result with the same idempotency_key."
+            ),
+            inputSchema={
+                "type": "object",
+                "required": [
+                    "wing",
+                    "source_drawer_id",
+                    "source_identity",
+                    "source_sha256",
+                    "content",
+                    "idempotency_key",
+                ],
+                "properties": {
+                    "wing": {"type": "string"},
+                    "source_drawer_id": {"type": "integer", "minimum": 1},
+                    "source_identity": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "The drawer's portable_identity from cairntir_get.",
+                    },
+                    "source_sha256": {"type": "string", "minLength": 64, "maxLength": 64},
+                    "content": {"type": "string", "minLength": 1},
+                    "idempotency_key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "A canonical UUID you generate; reuse it to retry.",
+                    },
+                    "model": {"type": "string"},
+                },
+            },
+        )
+    )
     return specs
+
+
+_WING_READ_TOOLS: Final[frozenset[str]] = frozenset(
+    {
+        "cairntir_handoff",
+        "cairntir_session_start",
+        "cairntir_recall",
+        "cairntir_recall_for_change",
+        "cairntir_timeline",
+        "cairntir_discoveries",
+        "cairntir_learning_log",
+        "cairntir_calibration",
+    }
+)
+"""Tools that only read. They accept a folder-style wing name and say how it was read.
+
+A tool that writes keeps refusing such a name, and the refusal suggests the
+hyphenated spelling: a write lands under the name the caller actually chose.
+"""
 
 
 def _dispatch(backend: CairntirBackend, name: str, args: dict[str, Any]) -> str:
     match name:
         case "cairntir_remember":
             return backend.remember(**args)
+        case "cairntir_correct":
+            return backend.correct(**args)
         case "cairntir_settle":
             return backend.settle(**args)
         case "cairntir_recall":
+            if "budget_chars" in args:
+                return backend.recall_bounded(**args)
             return backend.recall(**args)
         case "cairntir_get":
             return backend.get(**args)
@@ -1107,12 +1198,27 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
         from cairntir.access import ScopedStore
 
         nonlocal update_banner_shown
+        wing_note = None
+        wing_hint = ""
+        given_wing = arguments.get("wing")
+        if isinstance(given_wing, str) and canonical_wing(given_wing) != given_wing:
+            intended = canonical_wing(given_wing)
+            if name in _WING_READ_TOOLS:
+                arguments = {**arguments, "wing": intended}
+                wing_note = (
+                    f"[cairntir note] wing {given_wing!r} was read as {intended!r}. "
+                    "Use that spelling from now on."
+                )
+            else:
+                wing_hint = f" Did you mean wing {intended!r}?"
         checkpoint_mode = name == "cairntir_remember" and arguments.get("checkpoint") is not None
         resume_mode = name == "cairntir_handoff" and (
             arguments.get("resume", False) or arguments.get("task_id") is not None
         )
         task_mode = (
             isinstance(backend._store, ScopedStore)
+            or name == "cairntir_correct"
+            or (name == "cairntir_recall" and "budget_chars" in arguments)
             or checkpoint_mode
             or resume_mode
             or (name == "cairntir_handoff" and arguments.get("task") is not None)
@@ -1126,7 +1232,7 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
         except CairntirError as exc:
             if not task_mode:
                 _trace(f"_call CairntirError name={name!r} msg={exc}")
-            text = f"[cairntir error] {exc}"
+            text = f"[cairntir error] {exc}{wing_hint}"
             return types.CallToolResult(
                 content=[types.TextContent(type="text", text=text)], isError=True
             )
@@ -1138,12 +1244,14 @@ def build_server(backend: CairntirBackend) -> Server[Any, Any]:
             # tool call as a raw framework error. Surface it as a clean
             # message — the caller (an LLM) can read the field path and
             # retry with a corrected argument.
-            text = f"[cairntir error] invalid argument: {_format_validation_error(exc)}"
+            text = f"[cairntir error] invalid argument: {_format_validation_error(exc)}{wing_hint}"
             return types.CallToolResult(
                 content=[types.TextContent(type="text", text=text)], isError=True
             )
 
         content = [types.TextContent(type="text", text=text)]
+        if wing_note is not None and not task_mode:
+            content.append(types.TextContent(type="text", text=wing_note))
         if not task_mode and not update_banner_shown:
             banner = pending_update_banner()
             if banner is not None:

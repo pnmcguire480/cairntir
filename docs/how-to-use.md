@@ -1,6 +1,6 @@
 # How to Use Cairntir
 
-**Current release: 1.12.3.** [Publication and verification](release/v1.12.3.md).
+**Current stable release: 1.13.0.** [Publication and verification](release/v1.13.0.md). Upgrading from 1.12 or earlier needs one reindex; see the [upgrade guide](embedding-artifacts.md).
 
 ## Install
 
@@ -35,14 +35,12 @@ Cursor's **global** User Rule still has to be pasted into
 
 ## Check it worked
 
-The diagnostic changes described here are **unreleased**. Published 1.12.3 may
-still run registration/update callbacks for doctor/status/version, and status
-may open its store for writing. The read-only guarantees and new wording below
-apply to the candidate in the [change record](CHANGE-STATUS.md), not to an
-installation identified only by the unchanged version string.
+The read-only diagnostics below shipped in 1.12.4. Older releases may still run
+registration/update callbacks for doctor/status/version, and status may open its
+store for writing.
 
 ```bash
-cairntir version    # this CLI's version; current published release is 1.12.3
+cairntir version    # this CLI's version; current stable release is 1.13.0
 cairntir status     # where the store lives, drawer counts
 cairntir doctor     # store and host wiring; see the installed-version note above
 ```
