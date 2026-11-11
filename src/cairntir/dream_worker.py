@@ -200,20 +200,42 @@ def _admit_locked(path: Path, request: dict[str, Any]) -> bool:
         return True
 
 
+_INSTRUCTION = (
+    "Suggest one consequential review item, or no proposals. "
+    'Reply only with JSON: {"proposals": [{"title": "...", "proposal": "..."}]}, '
+    'or {"proposals": []} when nothing is worth proposing.'
+)
+
+# Real local models answer in prose unless asked for a shape. Ollama's structured
+# output constrains the reply to the only shape infer_http accepts.
+_REPLY_FORMAT: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "proposals": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {"title": {"type": "string"}, "proposal": {"type": "string"}},
+                "required": ["title", "proposal"],
+            },
+        }
+    },
+    "required": ["proposals"],
+}
+
+
 def infer_http(
     endpoint: str, model: str, wing: str, evidence: list[dict[str, Any]], timeout: float
 ) -> tuple[str, str] | None:
     """Read one bounded local response without following redirects."""
     host, port = validate_endpoint(endpoint)
     prompt = json.dumps(
-        {
-            "wing": wing,
-            "evidence": evidence,
-            "instruction": "Suggest one consequential review item, or no proposals.",
-        },
+        {"wing": wing, "evidence": evidence, "instruction": _INSTRUCTION},
         ensure_ascii=False,
     )
-    body = json.dumps({"model": model, "stream": False, "prompt": prompt}).encode()
+    body = json.dumps(
+        {"model": model, "stream": False, "prompt": prompt, "format": _REPLY_FORMAT}
+    ).encode()
     with closing(http.client.HTTPConnection(host, port, timeout=timeout)) as connection:
         connection.request(
             "POST", "/api/generate", body=body, headers={"Content-Type": "application/json"}

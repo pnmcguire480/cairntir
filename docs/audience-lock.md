@@ -9,6 +9,17 @@ An audience revision has five dimensions: audience, channels, pain, sophisticati
 and desired outcome. Each one links to its sources. Publishing a new revision never
 changes an earlier one, and it returns the project to provisional.
 
+## Capture the five fields
+
+```sh
+cairntir audience capture --wing my-project --vault /path/to/vault \
+  --audience "Solo makers who sell online" --channels "Newsletter and short video" \
+  --pain "Hours lost on repeat admin" --sophistication "Knows the tools, not the method" \
+  --desired-outcome "One calm hour a day"
+```
+
+All five are required. Each is stored as a statement you typed, with that as its source. The result is always `provisional`. Running the same command again changes nothing; changed values make a new revision and drop any earlier confirmation. Blank text, line breaks and control characters are refused and nothing is stored.
+
 ## Check and confirm
 
 ```sh

@@ -35,7 +35,7 @@ English text saying a decision was reversed does not automatically create a supe
 
 ## Experimental and unfinished work
 
-Dream is an explicit opt-in preview with bounded background scheduling, candidates and stop/cancellation handling. Integrated usefulness/resource qualification remains incomplete; proposals do not automatically authorize code edits, rule promotion or memory deletion.
+Dream is an explicit opt-in preview with bounded background scheduling, candidates and stop/cancellation handling. Integrated usefulness/resource qualification remains incomplete; proposals do not automatically authorize code edits, rule promotion or memory deletion. A first real-model run (Mistral 7B through Ollama, 10 November 2026) found that Dream discarded every real answer because it never asked for its reply format; that is fixed in Unreleased. After the fix the run met the input, call-budget, stop and offline limits, but the original one-second tick limit of under 4 seconds failed in two of four timed runs (4.045 and 4.114 seconds). Those runs had no usefulness threshold or hardware limit to measure against. The maintainer set both afterwards. Dream is useful enough if the maintainer marks at least 3 of 10 proposals as worth acting on and none cites the wrong memories. The hardware limit is a model that fits in 5 GB of graphics memory and 8 GB of RAM, with Dream's own processes under 0.2 GB. The recorded resource use is within that limit: about 4.1 GB of graphics memory, 1.4 GB of RAM and 0.11 GB for Dream itself. The maintainer marked 3 of 10 real suggestions as worth acting on, with no wrong citations, which meets the bar exactly. The suggestions were drawn from made-up test notes, so this is weak evidence that Dream is useful on real memory. The tick limit stays at 4 seconds, and its failures stay recorded.
 
 Audience/angle/channel/outline pipelines, HumanFlow teaching, UI/visual verification, claim-to-test generation, field pilots and feedback efficacy remain unfinished. Candidate lessons stay candidates/HOLD. The local study exporter is usable, but actual NotebookLM delivery/update remains open. The calendar does not publish content to external platforms.
 
@@ -68,16 +68,15 @@ historical; they do not describe the current head.
 - The subsequent `460e4223` run exposes 53 resource setup errors from shared runtime/cache drift and five Ubuntu bootstrap failures from its generated `lib64` alias. Its completed samples measure 80.54–80.57% coverage. The bounded bootstrap repair preserves the strict integrity guard, passes a frozen cold-runtime witness and the nine local bootstrap regressions; fresh POSIX/full-matrix qualification remains pending. Local symlink capability skips do not count as POSIX verification.
 - The local admission harness currently loses its Guard profiler during an expected Git refusal: 21 selected checks produced 18 complete passes and 5 stage errors across 3 checks. The observer repair remains deferred; its failure has not been relabelled.
 - Native Windows version reporting is independently verified in five framework cases, including real values, restoration and retained shell refusal. This is a test-harness improvement, not an extra product feature.
-- Independent protected evaluator custody, second supported-machine readiness and complete installed upgrade/restore/rollback qualification remain open.
+- Independent protected evaluator custody and complete installed upgrade/restore/rollback qualification remain open. Second supported-machine readiness is verified for embedding identity only (E22, below).
 - Local packaging smoke checks establish a build/install/basic-memory/MCP server construction and tool metadata only. They do not establish model efficacy, graphical host adoption or stable release readiness.
 
 ## Follow-up roadmap
 
-The original 35 commitments remain assigned: 23 component criteria complete, 12 open. This count is not a count of new features. The stable 2.0 planning target remains 6 November 2026, with 7 November reserve and 5 November GO/NO-GO; unresolved gates still determine readiness.
+The original 35 commitments remain assigned: 25 component criteria complete, 10 open. This count is not a count of new features. The stable 2.0 planning target remains 6 November 2026, with 7 November reserve and 5 November GO/NO-GO; unresolved gates still determine readiness.
 
 | Follow-up | Target |
 | --- | --- |
-| I01 audience workflow | 11 November 2026 |
 | R12 HumanFlow teaching | 12 November 2026 |
 | R13 NotebookLM delivery/update | 13 November 2026 |
 | I02 audience-bound angles | 17 November 2026 |
@@ -89,6 +88,6 @@ The original 35 commitments remain assigned: 23 component criteria complete, 12 
 | C50 LongMemEval/calibration and independent reproduction | 3 December 2026 |
 | R16 ten-user pilot and structured feedback | 4 December 2026 |
 
-E22 embedding artifact identity on a second supported machine remains open. Protected evaluator custody is a separate open release gate. [The portable 35-item register](docs/alpha-roadmap.json) retains every item; local proof archives and machine-specific paths are excluded from this branch.
+E22 is complete against its original criterion. A second physical machine (the work PC, not Patrick's own) acquired the model into an empty cache and produced the same five file hashes and the same identity as the home machine, and refused a one-byte model change (receipts dated 3 and 4 November 2026 on commit 5015aa9d, and again on 10 November 2026 on the 1.13.0 release commit 3b02538f, all 18 checks passing). This does not cover upgrade/restore/rollback or any other feature on that machine. Protected evaluator custody is a separate open release gate. [The portable 35-item register](docs/alpha-roadmap.json) retains every item; local proof archives and machine-specific paths are excluded from this branch.
 
 Report the alpha version, host/OS, minimal reproduction and observed versus expected behavior when opening an issue. Do not upload private memory stores, vaults or authentication files.

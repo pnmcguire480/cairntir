@@ -14,7 +14,8 @@ import os
 import secrets
 import sqlite3
 import tempfile
-from collections.abc import Callable
+import uuid
+from collections.abc import Callable, Mapping
 from contextlib import closing
 from datetime import UTC, datetime
 from pathlib import Path
@@ -130,6 +131,58 @@ def confirm_audience(
     except sqlite3.Error as exc:
         raise ProjectionError(f"cannot record audience confirmation: {exc}") from exc
     return audience_lock(store_path, vault_path, wing)
+
+
+_CAPTURE_SOURCE = "cli-capture"
+
+
+def capture_audience(
+    store_path: str | os.PathLike[str],
+    vault_path: str | os.PathLike[str],
+    wing: str,
+    values: Mapping[str, str],
+) -> dict[str, Any]:
+    """Store the five audience fields a person typed as a provisional revision.
+
+    The source is a statement by the caller, so the revision is never confirmed
+    here; only `confirm_audience` can do that. The same values as the current
+    revision make no new revision.
+    """
+    fields = audience._FIELDS
+    if not isinstance(values, Mapping):
+        raise ProjectionError("audience values must be a mapping")
+    missing = [f for f in fields if f not in values]
+    unknown = sorted(str(k) for k in values if k not in fields)
+    if missing:
+        raise ProjectionError(f"audience capture is missing: {', '.join(missing)}")
+    if unknown:
+        raise ProjectionError(f"audience capture has unknown fields: {', '.join(unknown)}")
+    profile = {f: {"value": values[f], "source_ids": [_CAPTURE_SOURCE]} for f in fields}
+    evidence = {
+        _CAPTURE_SOURCE: {
+            "kind": "user_statement",
+            "content": "Typed by the person running cairntir audience capture.",
+            "supports": list(fields),
+            "values": {f: values[f] for f in fields},
+        }
+    }
+    if Path(store_path).expanduser().is_file():
+        try:
+            current = audience.get_audience_revision(store_path, vault_path, wing)
+        except ProjectionError as exc:
+            if "no audience revision" not in str(exc):
+                raise
+        else:
+            if current["profile"] == profile and current["evidence"] == evidence:
+                return current
+    return audience.publish_audience_revision(
+        store_path,
+        vault_path,
+        wing,
+        profile,
+        evidence,
+        idempotency_key=f"capture-{uuid.uuid4().hex}",
+    )
 
 
 def _block(state: dict[str, Any], newline: bytes) -> bytes:
