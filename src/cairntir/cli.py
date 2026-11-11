@@ -1457,6 +1457,37 @@ def audience_status_cmd(
     _audience_output(action, store)
 
 
+@audience_app.command("capture")
+def audience_capture_cmd(
+    wing: str = typer.Option(..., "--wing", "-w"),
+    vault: Path = typer.Option(..., "--vault"),  # noqa: B008
+    audience: str = typer.Option(..., "--audience", help="Who the audience is."),
+    channels: str = typer.Option(..., "--channels", help="Where they are reached."),
+    pain: str = typer.Option(..., "--pain", help="The problem they feel."),
+    sophistication: str = typer.Option(..., "--sophistication", help="What they already know."),
+    desired_outcome: str = typer.Option(..., "--desired-outcome", help="What they want."),
+    store: Path | None = typer.Option(  # noqa: B008
+        None, "--store", help="Defaults to the Cairntir store."
+    ),
+) -> None:
+    """Save the five audience fields as a provisional revision (not confirmed)."""
+    from cairntir.audience_lock import audience_lock, capture_audience
+
+    values = {
+        "audience": audience,
+        "channels": channels,
+        "pain": pain,
+        "sophistication": sophistication,
+        "desired_outcome": desired_outcome,
+    }
+
+    def action(path: Path) -> dict[str, Any]:
+        capture_audience(path, vault, wing, values)
+        return audience_lock(path, vault, wing)
+
+    _audience_output(action, store)
+
+
 @audience_app.command("confirm")
 def audience_confirm_cmd(
     wing: str = typer.Option(..., "--wing", "-w"),

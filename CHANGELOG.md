@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## [Unreleased]
+
+### Added
+
+- `cairntir audience capture` saves the five audience fields (audience, channels, pain, sophistication, desired outcome) as a provisional revision with a source for each. It never confirms: only `cairntir audience confirm` at a terminal does that. The same values as the current revision make no new revision; changed values make a new provisional one. This closes the gap that left the audience lock reachable only from Python.
 
 ### Fixed
 

@@ -73,11 +73,10 @@ historical; they do not describe the current head.
 
 ## Follow-up roadmap
 
-The original 35 commitments remain assigned: 24 component criteria complete, 11 open. This count is not a count of new features. The stable 2.0 planning target remains 6 November 2026, with 7 November reserve and 5 November GO/NO-GO; unresolved gates still determine readiness.
+The original 35 commitments remain assigned: 25 component criteria complete, 10 open. This count is not a count of new features. The stable 2.0 planning target remains 6 November 2026, with 7 November reserve and 5 November GO/NO-GO; unresolved gates still determine readiness.
 
 | Follow-up | Target |
 | --- | --- |
-| I01 audience workflow | 11 November 2026 |
 | R12 HumanFlow teaching | 12 November 2026 |
 | R13 NotebookLM delivery/update | 13 November 2026 |
 | I02 audience-bound angles | 17 November 2026 |
