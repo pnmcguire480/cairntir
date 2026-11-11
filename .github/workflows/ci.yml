@@ -116,7 +116,12 @@ jobs:
           # Same bounded bridge as the lint gate above; an integration test
           # invokes that gate as a subprocess. Remove after 1.13.0 reaches PyPI.
           CAIRNTIR_RELEASE_RECOVERY: "1.13.0"
-        run: uv run --no-sync python -X pycache_prefix="${{ runner.temp }}/q05-test-bytecache" -m pytest -m "not slow" --cov-fail-under=87 -o verbosity_assertions=2 --junitxml="${{ runner.temp }}/source-tests.xml" --cov-report=json:"${{ runner.temp }}/source-coverage.json"
+        # Pull requests run the core set here on all nine platforms and the
+        # acceptance folder as parallel parts below; the 87% floor is then
+        # enforced on the combined data by the "Coverage floor" job. Every
+        # other trigger (main, manual dispatch) runs the complete suite and
+        # the floor in this one step, as before. No test is dropped.
+        run: uv run --no-sync python -X pycache_prefix="${{ runner.temp }}/q05-test-bytecache" -m pytest -m "not slow" ${{ github.event_name == 'pull_request' && '--ignore=tests/acceptance --cov-fail-under=0' || '--cov-fail-under=87' }} -o verbosity_assertions=2 --junitxml="${{ runner.temp }}/source-tests.xml" --cov-report=json:"${{ runner.temp }}/source-coverage.json"
       - name: Retain source test results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -126,10 +131,140 @@ jobs:
             ${{ runner.temp }}/source-tests.xml
             ${{ runner.temp }}/source-coverage.json
           retention-days: 7
+      - name: Retain core coverage data for the combined floor
+        if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest' && matrix.python == '3.12'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage-data-core
+          path: .coverage
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  # Pull requests only. The acceptance folder is most of the suite's run time,
+  # so it runs as parallel parts instead of inside each of the nine test jobs.
+  # The parts are a strict partition: "remaining" is the folder minus the
+  # folders the other parts name, and "Coverage floor" proves the count.
+  acceptance:
+    name: Acceptance (${{ matrix.part.name }})
+    if: github.event_name == 'pull_request'
+    needs: lint
+    runs-on: ubuntu-latest
+    env:
+      UV_PYTHON: "3.12"
+    strategy:
+      fail-fast: false
+      matrix:
+        part:
+          - name: reference-integrity
+            select: tests/acceptance/reference_integrity_unit
+          - name: paladin
+            select: >-
+              tests/acceptance/paladin_python_unit
+              tests/acceptance/paladin_python_real_unit
+              tests/acceptance/paladin_resources_unit
+              tests/acceptance/paladin_ui_unit
+          - name: remaining
+            select: >-
+              tests/acceptance
+              --ignore=tests/acceptance/reference_integrity_unit
+              --ignore=tests/acceptance/paladin_python_unit
+              --ignore=tests/acceptance/paladin_python_real_unit
+              --ignore=tests/acceptance/paladin_resources_unit
+              --ignore=tests/acceptance/paladin_ui_unit
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Install uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install 3.12
+      - name: Install dependencies
+        run: uv sync --locked --all-extras
+      - name: Fetch exact Q07 inputs before offline tests
+        run: uv run --no-sync python -B scripts/fetch_ci_wheels.py --output "${{ runner.temp }}/q07-wheels"
+      - name: Prepare actual Q05 tools and offline build
+        run: uv run --no-sync python -B -X pycache_prefix="${{ runner.temp }}/q05-prep-bytecache" scripts/provision_q05.py --output "${{ runner.temp }}/q05-tools"
+      - name: Prepare actual Python verification tools
+        run: uv run --no-sync python -I -B tests/acceptance/paladin_python_real_unit/prepare.py --output "${{ runner.temp }}/python-tools" --q05-platform "${{ runner.temp }}/q05-tools/platform.json" --repo "${{ github.workspace }}"
+      - name: Run acceptance part
+        env:
+          CAIRNTIR_Q05_PLATFORM: ${{ runner.temp }}/q05-tools/platform.json
+          CAIRNTIR_PALADIN_PLATFORM: ${{ runner.temp }}/python-tools/platform.json
+          CAIRNTIR_Q07_WHEELHOUSE: ${{ runner.temp }}/q07-wheels
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/q05-test-bytecache
+          CAIRNTIR_RELEASE_RECOVERY: "1.13.0"
+        run: uv run --no-sync python -X pycache_prefix="${{ runner.temp }}/q05-test-bytecache" -m pytest -m "not slow" ${{ matrix.part.select }} --cov-fail-under=0 -o verbosity_assertions=2 --junitxml="${{ runner.temp }}/acceptance-tests.xml"
+      - name: Retain acceptance test results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: acceptance-tests-${{ matrix.part.name }}
+          path: ${{ runner.temp }}/acceptance-tests.xml
+          retention-days: 7
+      - name: Retain acceptance coverage data for the combined floor
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage-data-${{ matrix.part.name }}
+          path: .coverage
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  # Pull requests only. Enforces the same 87% floor the single test step
+  # enforces elsewhere, on the combined data of the core set and every
+  # acceptance part (ubuntu-latest / Python 3.12), and proves the parts ran
+  # the complete selected suite exactly once.
+  coverage-floor:
+    name: Coverage floor (combined pull request parts)
+    if: github.event_name == 'pull_request'
+    needs: [test, acceptance]
+    runs-on: ubuntu-latest
+    env:
+      UV_PYTHON: "3.12"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Install uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install 3.12
+      - name: Install dependencies
+        run: uv sync --locked --all-extras
+      - name: Fetch coverage data from every part
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: coverage-data-*
+          path: ${{ runner.temp }}/coverage-parts
+      - name: Fetch core test results
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: source-tests-ubuntu-latest-3.12
+          path: ${{ runner.temp }}/junit-parts/core
+      - name: Fetch acceptance test results
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: acceptance-tests-*
+          path: ${{ runner.temp }}/junit-parts
+      - name: No test dropped or repeated
+        run: uv run --no-sync python scripts/check_ci_partition.py "${{ runner.temp }}"/junit-parts/*/*.xml
+      - name: Combined coverage floor
+        run: |
+          uv run --no-sync coverage combine --keep "${{ runner.temp }}"/coverage-parts/*/.coverage
+          uv run --no-sync coverage report --fail-under=87
 
   eval:
     name: LongMemEval R@5 Gate
-    needs: test
+    needs: [test, coverage-floor]
+    # coverage-floor is skipped outside pull requests, where the test job
+    # enforces the floor itself.
+    if: ${{ always() && needs.test.result == 'success' && (needs.coverage-floor.result == 'success' || needs.coverage-floor.result == 'skipped') }}
     runs-on: ubuntu-latest
     env:
       CAIRNTIR_HOME: ${{ github.workspace }}/.cairntir/ci-eval
@@ -160,7 +295,10 @@ jobs:
 
   build:
     name: Build and verify installed package (${{ matrix.os }})
-    needs: test
+    needs: [test, coverage-floor]
+    # coverage-floor is skipped outside pull requests, where the test job
+    # enforces the floor itself.
+    if: ${{ always() && needs.test.result == 'success' && (needs.coverage-floor.result == 'success' || needs.coverage-floor.result == 'skipped') }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
