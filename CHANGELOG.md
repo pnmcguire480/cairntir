@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Dream now asks the local model for the reply shape it reads. It used to send only "Suggest one consequential review item, or no proposals." A real model (Mistral 7B through Ollama) answered in plain prose, so Dream recorded every real answer as `model_unavailable` and could never produce a candidate. Dream now states the JSON shape in its instruction and sends it as Ollama's `format` schema. The test servers had always answered in that exact shape, which hid the problem. Found by a real-model qualification run on 10 November 2026.
+
 ## [1.13.0] - 2026-11-09
 
 Publishes the work toward 2.0 on PyPI under a 1.x number, by the maintainer's decision, so it can be used and tested while the remaining roadmap is finished. 2.0.0 stays reserved for the finished roadmap. This version contains everything in the GitHub-only previews 2.0.0a1 to 2.0.0a4 below, plus the entries here. Some features remain experimental; [ALPHA.md](ALPHA.md) says which.
