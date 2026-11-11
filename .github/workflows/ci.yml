@@ -41,6 +41,11 @@ jobs:
       - name: No silent except check
         run: uv run python scripts/check_no_silent_except.py
       - name: Release tag check
+        env:
+          # Temporary bridge for the immutable v1.13.0 tag, whose first publish
+          # run failed before publication because the release workflow did not
+          # prepare the acceptance tools. Remove after PyPI verification succeeds.
+          CAIRNTIR_RELEASE_RECOVERY: "1.13.0"
         run: uv run python scripts/check_release_tags.py
       - name: Landed commitment check
         run: uv run python scripts/check_landed_commitments.py
@@ -108,7 +113,10 @@ jobs:
           CAIRNTIR_PALADIN_PLATFORM: ${{ runner.temp }}/python-tools/platform.json
           CAIRNTIR_Q07_WHEELHOUSE: ${{ runner.temp }}/q07-wheels
           PYTHONPYCACHEPREFIX: ${{ runner.temp }}/q05-test-bytecache
-        run: uv run --no-sync python -X pycache_prefix="${{ runner.temp }}/q05-test-bytecache" -m pytest -m "not slow" --cov-fail-under=85 -o verbosity_assertions=2 --junitxml="${{ runner.temp }}/source-tests.xml" --cov-report=json:"${{ runner.temp }}/source-coverage.json"
+          # Same bounded bridge as the lint gate above; an integration test
+          # invokes that gate as a subprocess. Remove after 1.13.0 reaches PyPI.
+          CAIRNTIR_RELEASE_RECOVERY: "1.13.0"
+        run: uv run --no-sync python -X pycache_prefix="${{ runner.temp }}/q05-test-bytecache" -m pytest -m "not slow" --cov-fail-under=87 -o verbosity_assertions=2 --junitxml="${{ runner.temp }}/source-tests.xml" --cov-report=json:"${{ runner.temp }}/source-coverage.json"
       - name: Retain source test results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
