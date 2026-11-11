@@ -142,8 +142,8 @@
   {
     "id": "I01",
     "title": "Audience lock and transfer into the product specification",
-    "status": "OPEN",
-    "allocation": "FOLLOW_UP",
+    "status": "COMPLETE",
+    "allocation": "CARRY_FORWARD_COMPLETED",
     "target": "2026-11-11"
   },
   {
