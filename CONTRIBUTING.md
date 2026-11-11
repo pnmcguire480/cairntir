@@ -48,6 +48,14 @@ thin transport entrypoints retain their existing exclusions. The
 [verification plan](plans/verification-structure.md) records the behavioral
 evidence behind this gate. Do not add exclusions to improve the number.
 Six-place threshold precision prevents a result such as 91.96% from passing as 92%.
+
+On pull requests CI runs the same `not slow` suite as parallel parts so the
+wait is shorter: the core set on all nine platforms, and `tests/acceptance` as
+three parts on Linux / Python 3.12. `scripts/check_ci_partition.py` fails the
+run if the parts miss or repeat any test, and the coverage floor is enforced on
+their combined data. Pushes to `main` and manual CI runs still run the complete
+suite in one step on every platform, and the release workflow runs it before
+publishing.
 Subprocess coverage includes SQLite helpers; installed CLI/MCP verification also
 checks the excluded transport entrypoints directly.
 
