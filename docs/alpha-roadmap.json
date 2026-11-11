@@ -44,7 +44,7 @@
   {
     "id": "E22",
     "title": "Pin exact embedding model bytes across machines",
-    "status": "OPEN",
+    "status": "COMPLETE",
     "allocation": "NOVEMBER_RELEASE",
     "target": "2026-10-30"
   },
