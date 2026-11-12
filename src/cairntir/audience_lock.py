@@ -170,7 +170,7 @@ def capture_audience(
         try:
             current = audience.get_audience_revision(store_path, vault_path, wing)
         except ProjectionError as exc:
-            if "no audience revision" not in str(exc):
+            if "no audience revision" not in str(exc) and "no such table" not in str(exc):
                 raise
         else:
             if current["profile"] == profile and current["evidence"] == evidence:
