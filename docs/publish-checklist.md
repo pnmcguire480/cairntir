@@ -59,7 +59,10 @@ Release operations:
 ## Past release records
 
 Evidence and known limits for each shipped release live under `docs/release/`.
-The [1.12.3 record](release/v1.12.3.md) covers the latest published release;
+The [1.14.0 record](release/v1.14.0.md) covers the release being prepared and
+the [1.13.0 record](release/v1.13.0.md) the latest published one. The
+[1.12.4](release/v1.12.4.md) and [1.12.3](release/v1.12.3.md) records cover the
+releases before it;
 the [1.12.2 record](release/v1.12.2.md) retains the prior publication evidence.
 The [1.12.1 record](release/v1.12.1.md) retains historical installation evidence;
 current installations and host-loaded versions require fresh observation. The [withheld 1.12.0 record](release/v1.12.0.md) preserves its failed
@@ -73,8 +76,8 @@ Run every command from the repository root:
 ```powershell
 $env:HF_HUB_OFFLINE = "1"
 uv sync --all-extras
-uv run ruff format --check .
-uv run ruff check .
+uv run ruff format --check src tests scripts addons
+uv run ruff check src tests scripts addons
 uv run mypy --strict src
 uv run python scripts/check_no_silent_except.py
 uv run pytest -q

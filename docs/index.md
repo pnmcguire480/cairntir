@@ -33,7 +33,9 @@ from installed and actual-host-verified behavior.
 
 ## Release evidence
 
-Latest: [1.12.3](release/v1.12.3.md). Also see [1.12.2](release/v1.12.2.md),
+Latest published: [1.13.0](release/v1.13.0.md). In preparation:
+[1.14.0](release/v1.14.0.md). Also see [1.12.4](release/v1.12.4.md),
+[1.12.3](release/v1.12.3.md), [1.12.2](release/v1.12.2.md),
 [1.12.1](release/v1.12.1.md) and [1.11.0](release/v1.11.0.md).
 
 [1.10.0](release/v1.10.0.md) · [1.9.0](release/v1.9.0.md) · [1.8.0](release/v1.8.0.md) ·

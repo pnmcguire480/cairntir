@@ -5,8 +5,9 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **1.13.0**, published on 2026-11-12, which carries the work
-toward 2.0 under a 1.x number. The previous stable release is **1.12.4**. Read [ALPHA.md](ALPHA.md) before installing or claiming feature
+Source version: **1.14.0**, prepared on 2026-11-12 and **not published**; it
+waits for the maintainer's approval. The latest published release is
+**1.13.0** (2026-11-12), which carries the work toward 2.0 under a 1.x number. Read [ALPHA.md](ALPHA.md) before installing or claiming feature
 readiness; it defines the supported preview and every remaining release gate.
 Use a separate virtual environment, disposable store and pilot vault.
 
@@ -88,7 +89,15 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-11-12 (1.13.0 published)
+## Last Session - 2026-11-12 (1.14.0 prepared, not published)
+
+The independent evaluator tested published 1.13.0 on the work PC and reported FAIL on one Tier 2 finding, no Tier 1 and no data loss: an exact `cairntir replay` retry printed a chain link that was never saved. Reproduced with a failing test and fixed in PR166. Of the evaluator's 40 promises, 10 passed, 1 failed and 29 were not tested at full scope; it has not rerun against the fix. PR165 landed Q08 (`cairntir claim-test`) and the local half of R13 (`cairntir study-deliver`). Roadmap: 26 of 35 complete, 9 open (Q04, R12, R13, R14, I02, I03, I05, C50, R16).
+
+The maintainer asked for "1.13.1" to be prepared. It is numbered 1.14.0 because the release policy gives new commands a minor number; the maintainer confirmed it the same day: "1.14.0 is fine". The [release record](docs/release/v1.14.0.md) holds the checklist and limits. No tag exists and nothing is on PyPI. Publication still needs the maintainer's explicit yes.
+
+Packets 7 (R12), 8 (I02), 12 (Q04) and 13 (C50) were started in separate sessions the same day; their results are in the finish-plan folder, not here. R13 still needs a real NotebookLM notebook, and R16 needs the maintainer's pilot recruits.
+
+## Previous Session - 2026-11-12 (1.13.0 published)
 
 [1.13.0](https://github.com/pnmcguire480/cairntir/releases/tag/v1.13.0) is on PyPI and GitHub from tag `v1.13.0` at `3b02538f`, never moved. Release run 43137612421 passed all five jobs: 2,846 tests passed, coverage 87.42% against the 87% floor. A fresh install from PyPI reports 1.13.0. [Release record](docs/release/v1.13.0.md) has the hashes and the two earlier failed attempts, repaired in PR154 and PR161.
 
