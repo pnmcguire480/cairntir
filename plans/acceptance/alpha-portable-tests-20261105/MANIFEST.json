@@ -1,0 +1,1428 @@
+{
+ "schema": "cairntir.alpha-test-port-manifest.v1",
+ "alpha_commit": "583d6714fa8aa37fdab8f290a6faad0997da8a19",
+ "source_commit": "f47df33e2a60ad822dceccc8ccc5d0b863f2a15b",
+ "source_branch": "codex/v2-integration-20261010",
+ "tests": [
+  {
+   "pr": 125,
+   "test": "test_01_canonical_manifest_exact_hashes_and_no_side_effects",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_01_valid_local_model_uses_pinned_constructor",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/review/adversarial_controls.py",
+   "source_sha256": "51881aa4879c3162faefb2aa4d0a1d13b75f632ec532d63580e39132cf287510",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_02_each_required_asset_same_size_change_changes_identity",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_02_nonfile_model_is_not_missing",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/review/adversarial_controls.py",
+   "source_sha256": "51881aa4879c3162faefb2aa4d0a1d13b75f632ec532d63580e39132cf287510",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_03_missing_model_and_missing_runtime_never_acquire",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/review/adversarial_controls.py",
+   "source_sha256": "51881aa4879c3162faefb2aa4d0a1d13b75f632ec532d63580e39132cf287510",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_03_relocation_and_unrelated_files_do_not_change_identity",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_04_manifest_is_detached_from_internal_identity",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_04_missing_config_and_nonfile_tokenizer_never_acquire",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/review/adversarial_controls.py",
+   "source_sha256": "51881aa4879c3162faefb2aa4d0a1d13b75f632ec532d63580e39132cf287510",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_05_genuine_missing_model_bootstraps_then_pins",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/review/adversarial_controls.py",
+   "source_sha256": "51881aa4879c3162faefb2aa4d0a1d13b75f632ec532d63580e39132cf287510",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_05_registry_additional_asset_is_required_and_hashed",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_06_missing_each_required_file_fails_without_model_or_write",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_06_permission_error_is_typed_and_never_acquires",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/review/adversarial_controls.py",
+   "source_sha256": "51881aa4879c3162faefb2aa4d0a1d13b75f632ec532d63580e39132cf287510",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_07_invalid_registry_paths_fail_closed",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_07_path_loop_is_typed_and_never_acquires",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/review/adversarial_controls.py",
+   "source_sha256": "51881aa4879c3162faefb2aa4d0a1d13b75f632ec532d63580e39132cf287510",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_08_pinned_mutation_refused_before_constructor",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/review/adversarial_controls.py",
+   "source_sha256": "51881aa4879c3162faefb2aa4d0a1d13b75f632ec532d63580e39132cf287510",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_08_symlink_asset_cannot_escape_model_root",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "not verified: needs symlink rights",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_09_mutating_main_cannot_redirect_pinned_normal_load",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_10_mutating_main_cannot_redirect_pinned_readonly_load",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_11_changed_pinned_bytes_rejected_before_model_construction",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_12_missing_cache_offline_identity_does_not_create_or_download",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_13_configured_default_cache_is_beneath_explicit_home",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_14_explicit_bootstrap_acquires_then_uses_pinned_vectors",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_15_legacy_index_is_unverified_without_retroactive_stamp",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_16_legacy_semantic_operations_fail_without_mutation",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_17_raw_legacy_retrieval_needs_no_cached_assets",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_18_new_index_stamps_artifact_identity_and_detects_change",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass after the exact label change",
+   "required_change": "expect the alpha chunk-policy label on stored identity"
+  },
+  {
+   "pr": 125,
+   "test": "test_19_explicit_cli_rebuild_preserves_backup_and_recovers_legacy",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass after the exact label change",
+   "required_change": "expect the alpha chunk-policy label on stored identity"
+  },
+  {
+   "pr": 125,
+   "test": "test_20_failed_explicit_rebuild_preserves_original_logical_database",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_21_no_new_project_dependencies",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "reason": "pins the old dependency list; the alpha deliberately pinned new runtimes, covered by tests/unit/test_runtime_pins.py",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_22_empty_v1_index_can_adopt_verified_artifact_identity",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass after the exact label change",
+   "required_change": "expect the alpha chunk-policy label on stored identity"
+  },
+  {
+   "pr": 125,
+   "test": "test_23_failed_batch_rebuild_keeps_legacy_source_and_backup",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_24_explicit_setup_warmup_can_bootstrap_missing_cache",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_25_hub_snapshot_blob_symlink_has_same_identity",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py",
+   "source_sha256": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501",
+   "observed": "not verified: needs symlink rights",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_26_actual_cli_legacy_doctor_raw_reindex_recall_workflow",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_supplement_v3.py",
+   "source_sha256": "ab7e7873d973015b63485c640db8d1aac680976dfaa52772f4b7445ab52b8ad4",
+   "observed": "pass after the exact label change",
+   "required_change": "use the separate-process harness; expect the alpha chunk-policy label on stored identity"
+  },
+  {
+   "pr": 125,
+   "test": "test_27_actual_cli_raw_legacy_with_absent_cache",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_supplement_v3.py",
+   "source_sha256": "ab7e7873d973015b63485c640db8d1aac680976dfaa52772f4b7445ab52b8ad4",
+   "observed": "pass with real processes",
+   "required_change": "use the separate-process harness"
+  },
+  {
+   "pr": 125,
+   "test": "test_28_cli_partial_batch_failure_preserves_all_source_and_backup",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_supplement_v3.py",
+   "source_sha256": "ab7e7873d973015b63485c640db8d1aac680976dfaa52772f4b7445ab52b8ad4",
+   "observed": "pass with real processes",
+   "required_change": "use the separate-process harness"
+  },
+  {
+   "pr": 125,
+   "test": "test_29_each_runtime_version_is_required_and_nonempty",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_supplement_v3.py",
+   "source_sha256": "ab7e7873d973015b63485c640db8d1aac680976dfaa52772f4b7445ab52b8ad4",
+   "observed": "pass",
+   "required_change": "use the separate-process harness"
+  },
+  {
+   "pr": 125,
+   "test": "test_30_runtime_version_changes_identity_without_mutating_pinned_identity",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_supplement_v3.py",
+   "source_sha256": "ab7e7873d973015b63485c640db8d1aac680976dfaa52772f4b7445ab52b8ad4",
+   "observed": "pass",
+   "required_change": "use the separate-process harness"
+  },
+  {
+   "pr": 125,
+   "test": "test_31_pinned_missing_asset_never_reacquires",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_supplement_v3.py",
+   "source_sha256": "ab7e7873d973015b63485c640db8d1aac680976dfaa52772f4b7445ab52b8ad4",
+   "observed": "pass with real processes",
+   "required_change": "use the separate-process harness"
+  },
+  {
+   "pr": 125,
+   "test": "test_33_invalid_dimension_and_unknown_asset_scheme_fail_typed",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_supplement_v3.py",
+   "source_sha256": "ab7e7873d973015b63485c640db8d1aac680976dfaa52772f4b7445ab52b8ad4",
+   "observed": "pass",
+   "required_change": "use the separate-process harness"
+  },
+  {
+   "pr": 125,
+   "test": "test_35_hub_symlink_to_other_repository_blob_is_rejected",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_supplement_v3.py",
+   "source_sha256": "ab7e7873d973015b63485c640db8d1aac680976dfaa52772f4b7445ab52b8ad4",
+   "observed": "not verified: needs symlink rights",
+   "required_change": "use the separate-process harness"
+  },
+  {
+   "pr": 125,
+   "test": "test_changed_environment_does_not_create_unrelated_cache_after_pin",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_relative_cache_supplement_v2.py",
+   "source_sha256": "b21fe31b51e07f32de992cbc08792bcee82380711575264a02b689751775c7b1",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_embedding_artifact_acceptance",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifact_acceptance.py",
+   "source_sha256": "903c16a73ac1cde13b8bfc43042eda398e7d01aaca5e16e837c8b7f7e13efd1f",
+   "reason": "wrapper that only loads frozen cases; the cases are ported directly",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_frozen_e22_review",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/embedding-artifacts-1.14/review/test_e22_review.py",
+   "source_sha256": "a9c72d0d17a5e7e0cf348ab9caa352dacca093d4e463582bf95e96ea3bb210ee",
+   "reason": "wrapper that only loads frozen cases; the cases are ported directly",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_hub_genuine_missing_model_acquires_then_pins",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/review/hub_layout_control_v2.py",
+   "source_sha256": "89a9c5c2eb1805583e9fb98d738ccd8ceec8cf03ab8b7a0dca1aef3a4690741e",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_hub_malformed_selected_refs_refuse_without_acquisition",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/review/hub_layout_control_v2.py",
+   "source_sha256": "89a9c5c2eb1805583e9fb98d738ccd8ceec8cf03ab8b7a0dca1aef3a4690741e",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_hub_selected_missing_model_with_invalid_tokenizer",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/review/hub_layout_control.py",
+   "source_sha256": "deb49b2066d452b3af8524f1c6daaad81721568696bc075b3b7bba87e1a27c78",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_offline_cache_stat_permission_error_is_typed",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/review/cache_permission_control.py",
+   "source_sha256": "a710e33823e9fc9241fdd7f9568f95332ffaf208e09d84e0817ad857d9df3556",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 125,
+   "test": "test_relative_cache_remains_absolute_and_pinned_across_cwd_change",
+   "decision": "port",
+   "package": "tests/acceptance/embedding_artifacts_unit",
+   "source": "plans/acceptance/embedding-artifacts-1.14/test_relative_cache_supplement_v2.py",
+   "source_sha256": "b21fe31b51e07f32de992cbc08792bcee82380711575264a02b689751775c7b1",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_actual_cli_projection_privacy",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/test_integration.py",
+   "source_sha256": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_actual_plugin_python_subprocess",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/test_obsidian_frozen_acceptance.py",
+   "source_sha256": "6abfc6aba17201478c6938db9b52441d586738dfc4bddb21ef1b3b2199d819cc",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_closed_store_transaction_state_is_typed_without_writes",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-ci-1.15/test_obsidian_correction_ci_contracts.py",
+   "source_sha256": "256c225922d03bbac84a55502c8ed1f00f649f783225b7cdf2a7f2d0a397ee3d",
+   "observed": "pass after removing the frozen-file hash check",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_exact_request_schema_uuid_utf8_and_identity_boundaries",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-ci-1.15/test_obsidian_correction_ci_contracts.py",
+   "source_sha256": "256c225922d03bbac84a55502c8ed1f00f649f783225b7cdf2a7f2d0a397ee3d",
+   "observed": "pass after removing the frozen-file hash check",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_fresh_cli_exact_commit_restart_and_rejection",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/test_integration.py",
+   "source_sha256": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_fresh_cli_partial_commit_retry_without_duplicates",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/test_integration.py",
+   "source_sha256": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_legacy_identity_refuses_append_without_mutating_source",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/test_integration.py",
+   "source_sha256": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_outer_transaction_cannot_return_a_false_durable_commit",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/test_integration.py",
+   "source_sha256": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_outer_transaction_sync_refuses_before_writing_acknowledgement",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/test_integration.py",
+   "source_sha256": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_previous_cli_contracts_still_available",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/test_integration.py",
+   "source_sha256": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_refresh_preserves_mixed_newline_bytes_outside_generated_block",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/originals/v2-obsidian/test_projection_newlines.py",
+   "source_sha256": "64b931e36ad15afca63a5796b9777aad2ce1b1c339acd57a24e9d38ea9b50837",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_required_node_v3_plugin_acceptance",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/test_obsidian_frozen_acceptance.py",
+   "source_sha256": "6abfc6aba17201478c6938db9b52441d586738dfc4bddb21ef1b3b2199d819cc",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_scoped_bridge_cannot_escape_authority",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/test_integration.py",
+   "source_sha256": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_scoped_cli_denied_before_vault_or_store_change",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/test_integration.py",
+   "source_sha256": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_scoped_hidden_successor_does_not_enable_stale_edit_or_leak",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/test_integration.py",
+   "source_sha256": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_scoped_outer_transaction_has_same_durable_boundary",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-1.15/test_integration.py",
+   "source_sha256": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 126,
+   "test": "test_scoped_transaction_state_requires_a_live_read_grant",
+   "decision": "port",
+   "package": "tests/acceptance/obsidian_integration_unit",
+   "source": "plans/acceptance/obsidian-correction-ci-1.15/test_obsidian_correction_ci_contracts.py",
+   "source_sha256": "256c225922d03bbac84a55502c8ed1f00f649f783225b7cdf2a7f2d0a397ee3d",
+   "observed": "pass after removing the frozen-file hash check",
+   "required_change": ""
+  },
+  {
+   "pr": 129,
+   "test": "test_actual_question_plugin_python_processes",
+   "decision": "port",
+   "package": "tests/acceptance/questions_durable_unit",
+   "source": "plans/acceptance/questions-port-1.16/process/maintained_process_router.py",
+   "source_sha256": "2f920869f8d2b3f475ec75f78d60bbe1779175a46bc36cea336220e83f364e9a",
+   "observed": "pass after removing the frozen-file hash check",
+   "required_change": ""
+  },
+  {
+   "pr": 129,
+   "test": "test_caller_transaction_cannot_acknowledge_a_durable_question",
+   "decision": "port",
+   "package": "tests/acceptance/questions_durable_unit",
+   "source": "plans/acceptance/questions-port-1.16/test_questions_durable_ack.py",
+   "source_sha256": "37e9123e740fb5c481e3d7e075d9b2ddcee2ecceaa22995bd330c6596632ff04",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 129,
+   "test": "test_entire_v1_function_and_all_assertions_unchanged",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/questions-installed-ci-1.16-v2/test_diagnostics.py",
+   "source_sha256": "44cf3e759a53aa9e89b34e883d4b69b01ca4b1da7ea0df72767f431ba1a6f526",
+   "reason": "checks the historical installed-question verifier, which is not in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 129,
+   "test": "test_failure_is_same_exception_no_retry_no_false_pass_and_records_code",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/questions-installed-ci-1.16-v2/test_diagnostics.py",
+   "source_sha256": "44cf3e759a53aa9e89b34e883d4b69b01ca4b1da7ea0df72767f431ba1a6f526",
+   "reason": "checks the historical installed-question verifier, which is not in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 129,
+   "test": "test_original_question_plugin_matrix",
+   "decision": "port",
+   "package": "tests/acceptance/questions_durable_unit",
+   "source": "plans/acceptance/questions-port-1.16/maintained_port_router.py",
+   "source_sha256": "2164123fb495f01a487be60ff7c77d3d0201cbc85bca4fea5a9e16ad893e11e4",
+   "observed": "pass; both Node harnesses run directly",
+   "required_change": ""
+  },
+  {
+   "pr": 129,
+   "test": "test_question_commit_is_visible_independently_and_replays_after_restart",
+   "decision": "port",
+   "package": "tests/acceptance/questions_durable_unit",
+   "source": "plans/acceptance/questions-port-1.16/test_questions_durable_ack.py",
+   "source_sha256": "37e9123e740fb5c481e3d7e075d9b2ddcee2ecceaa22995bd330c6596632ff04",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 129,
+   "test": "test_success_preserves_return_and_shutdown_and_observes_files",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/questions-installed-ci-1.16-v2/test_diagnostics.py",
+   "source_sha256": "44cf3e759a53aa9e89b34e883d4b69b01ca4b1da7ea0df72767f431ba1a6f526",
+   "reason": "checks the historical installed-question verifier, which is not in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_active_control_amendments_keep_every_frozen_behavior_oracle",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-hosted-repair/test_managed_archive_acceptance.py",
+   "source_sha256": "efda5248eae8605f2b642971221ef9266c3432ad062401472463a4bbfa6b7ccb",
+   "reason": "checks that frozen evidence files stayed unchanged; the evidence stays on the kept branch",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_actual_child_observes_commit_before_effect_and_completed_retry_does_not_launch",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_process.py",
+   "source_sha256": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_actual_snapshot_retains_every_original_manifest_and_seal_entry",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-hosted-repair/test_managed_archive_acceptance.py",
+   "source_sha256": "efda5248eae8605f2b642971221ef9266c3432ad062401472463a4bbfa6b7ccb",
+   "reason": "checks that frozen evidence files stayed unchanged; the evidence stays on the kept branch",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_actual_verifier_copies_fixed_capsule_before_inert_installed_probe",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-installed-followup/test_installed_followup.py",
+   "source_sha256": "391c2b8d91fd588d3a39af6a0d5dcc6227aafc4e4deafb208bc8c5a2102ce4a1",
+   "reason": "checks the historical installed-package proof harness, which is not in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_aliased_temp_parent_old_refuses_canonical_caller_passes",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-installed-boundary/test_portability_v2.py",
+   "source_sha256": "c64d06431371a57893260ec2730873af254c7222c745388c07785e412b209753",
+   "reason": "checks the historical installed-package proof harness, which is not in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_allowed_envelope_routes_exactly_one_public_operation",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/managed-protocol/test_managed_protocol.py",
+   "source_sha256": "674ec5d36d6b57346a1e0cb5632413f42a8a608a1ed235bf23316e794e0e389a",
+   "observed": "pass after renaming the pytest-reserved parameter",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_ambiguous_tasks_need_explicit_selection",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_core.py",
+   "source_sha256": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_archive_conflicting_source_resource_cannot_be_silently_replaced",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-hosted-repair/test_managed_archive_acceptance.py",
+   "source_sha256": "efda5248eae8605f2b642971221ef9266c3432ad062401472463a4bbfa6b7ccb",
+   "reason": "checks the evidence-restore tool, which stays with the evidence on the kept branch",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_archive_exact_eight_resource_identity_and_sizes",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-hosted-repair/test_managed_archive_acceptance.py",
+   "source_sha256": "efda5248eae8605f2b642971221ef9266c3432ad062401472463a4bbfa6b7ccb",
+   "reason": "checks the evidence-restore tool, which stays with the evidence on the kept branch",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_archive_existing_destination_is_not_overwritten",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-hosted-repair/test_managed_archive_acceptance.py",
+   "source_sha256": "efda5248eae8605f2b642971221ef9266c3432ad062401472463a4bbfa6b7ccb",
+   "reason": "checks the evidence-restore tool, which stays with the evidence on the kept branch",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_archive_missing_transport_refuses_new_destination",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-hosted-repair/test_managed_archive_acceptance.py",
+   "source_sha256": "efda5248eae8605f2b642971221ef9266c3432ad062401472463a4bbfa6b7ccb",
+   "reason": "checks the evidence-restore tool, which stays with the evidence on the kept branch",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_archive_roundtrip_all_original_bytes_source_unchanged",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-hosted-repair/test_managed_archive_acceptance.py",
+   "source_sha256": "efda5248eae8605f2b642971221ef9266c3432ad062401472463a4bbfa6b7ccb",
+   "reason": "checks the evidence-restore tool, which stays with the evidence on the kept branch",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_archive_structural_defects_reject_after_independent_transport_binding",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-hosted-repair/test_managed_archive_acceptance.py",
+   "source_sha256": "efda5248eae8605f2b642971221ef9266c3432ad062401472463a4bbfa6b7ccb",
+   "reason": "checks the evidence-restore tool, which stays with the evidence on the kept branch",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_archive_tampered_transport_cannot_restore",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-hosted-repair/test_managed_archive_acceptance.py",
+   "source_sha256": "efda5248eae8605f2b642971221ef9266c3432ad062401472463a4bbfa6b7ccb",
+   "reason": "checks the evidence-restore tool, which stays with the evidence on the kept branch",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_caller_transaction_cannot_issue_managed_durable_receipts",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/managed-hosted-repair/active/test_managed_durable_boundaries_v4.py",
+   "source_sha256": "eb8012464251ac9a9e5a4b99348a1e64b1914788eebeb68e822ceb564ee84618",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_capture_exact_original_receipt_and_restart_replay",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_core.py",
+   "source_sha256": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_changed_captured_content_is_not_recertified_with_new_hash",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-projection/test_projection_corruption.py",
+   "source_sha256": "8cd7a2c9afadc2b8011d4d52316d4ace6e9afb84e4c9ea4943386326ef9140ff",
+   "observed": "pass with the alpha projection module importable",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_changed_executable_cannot_use_previous_acknowledgement",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_process.py",
+   "source_sha256": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_checkpoint_metadata_disagreement_does_not_certify_completion",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-projection/test_projection_corruption.py",
+   "source_sha256": "8cd7a2c9afadc2b8011d4d52316d4ace6e9afb84e4c9ea4943386326ef9140ff",
+   "observed": "pass with the alpha projection module importable",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_cli_changed_config_cannot_launch_using_previous_ack",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_config.py",
+   "source_sha256": "ce482af7f4e30f0a47ebeb69b7533265f947af60c01e35bc1accc0d2a41f6639",
+   "observed": "not verified: needs the shim",
+   "required_change": "replace the cached model with the hash-provider process shim"
+  },
+  {
+   "pr": 131,
+   "test": "test_close_result_disagreement_cannot_certify_unknown_tail",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-projection/test_projection_corruption.py",
+   "source_sha256": "8cd7a2c9afadc2b8011d4d52316d4ace6e9afb84e4c9ea4943386326ef9140ff",
+   "observed": "pass with the alpha projection module importable",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_different_successful_claim_does_not_erase_failed_claim",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_close.py",
+   "source_sha256": "9e59ec79df2d7cc9cb7d19e09e2945e8990531e0c1ccb213ff4aef383de1c2ba",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_event_uuid_sequence_and_stale_revision_conflicts",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_core.py",
+   "source_sha256": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_exact_failed_claim_retry_can_restore_complete_close",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_close.py",
+   "source_sha256": "9e59ec79df2d7cc9cb7d19e09e2945e8990531e0c1ccb213ff4aef383de1c2ba",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_exact_invocation_and_input_preserved_but_canonical_target_is_bound",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/managed-environment/test_managed_environment.py",
+   "source_sha256": "da903fb6ef2c8d06a09fbf796d7a380266ebc6b3909c306ea18f8249906cf7c0",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_failed_append_is_witnessed_atomic_and_exact_retry_works",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_core.py",
+   "source_sha256": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_forged_hash_and_stale_ack_block_before_launch",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_core.py",
+   "source_sha256": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_frozen_managed_outcome",
+   "decision": "leave",
+   "package": null,
+   "source": "tests/unit/test_managed_outcomes.py",
+   "source_sha256": "cb4d112729457911a86d1fc3bacf1ff98f6522d2f905d492ff3082338910aa1a",
+   "reason": "wrapper that only loads frozen cases; the cases are ported directly or already in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_frozen_managed_runtime",
+   "decision": "leave",
+   "package": null,
+   "source": "tests/unit/test_managed_runtime.py",
+   "source_sha256": "682d57f74847be35c2cb86422669e1340ad8883d6677d84dc268dbeadc72d0aa",
+   "reason": "wrapper that only loads frozen cases; the cases are ported directly or already in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_hidden_required_event_cannot_become_complete_capture_or_projection",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/managed-hosted-repair/active/test_hidden_event_v3.py",
+   "source_sha256": "bdb290bbda03e4f719878f2c773e3167347068a2de540e5fb760c41422ba6c02",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_incomplete_brief_cannot_be_acknowledged",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_core.py",
+   "source_sha256": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_input_validation_and_metadata_cannot_forge_authority",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_core.py",
+   "source_sha256": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_installed_caller_canonicalizes_modeled_platform_temp_alias",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-installed-boundary/test_installed_boundary.py",
+   "source_sha256": "d2b4bb97def5206ab6e7817bab1917a70d15555a1df2e57a1dc32505e361ec15",
+   "reason": "checks the historical installed-package proof harness, which is not in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_installed_identity_rejects_wrong_binding_before_case_import",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-installed-followup/test_installed_followup.py",
+   "source_sha256": "391c2b8d91fd588d3a39af6a0d5dcc6227aafc4e4deafb208bc8c5a2102ce4a1",
+   "reason": "checks the historical installed-package proof harness, which is not in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_installed_proof_cannot_report_pass_after_unchanged_case_failure",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-installed-qualification/test_managed_installed_qualification.py",
+   "source_sha256": "3c8b66d40d275f938e5bb8cdc3b87654bfc4e9305f3b045e252323bd102f1cd9",
+   "reason": "checks the historical installed-package proof harness, which is not in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_installed_proof_cannot_substitute_skips_for_model_cases",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-installed-qualification/test_managed_installed_qualification.py",
+   "source_sha256": "3c8b66d40d275f938e5bb8cdc3b87654bfc4e9305f3b045e252323bd102f1cd9",
+   "reason": "checks the historical installed-package proof harness, which is not in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_installed_proof_retains_exact_historical_case_identity",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-installed-qualification/test_managed_installed_qualification.py",
+   "source_sha256": "3c8b66d40d275f938e5bb8cdc3b87654bfc4e9305f3b045e252323bd102f1cd9",
+   "reason": "checks the historical installed-package proof harness, which is not in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_kill_after_committed_intent_before_spawn_stays_uncertain_without_replay",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_process.py",
+   "source_sha256": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_kill_after_external_effect_preserves_prediction_and_never_relaunches",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_process.py",
+   "source_sha256": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_malformed_claim_cannot_be_hidden_by_matching_committed_watermark",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_close.py",
+   "source_sha256": "9e59ec79df2d7cc9cb7d19e09e2945e8990531e0c1ccb213ff4aef383de1c2ba",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_missing_required_source_does_not_replace_existing_view",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-projection/test_projection_corruption.py",
+   "source_sha256": "8cd7a2c9afadc2b8011d4d52316d4ace6e9afb84e4c9ea4943386326ef9140ff",
+   "observed": "pass with the alpha projection module importable",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_only_four_caller_expressions_change_all_integrity_bodies_retained",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-installed-boundary/test_portability_v2.py",
+   "source_sha256": "c64d06431371a57893260ec2730873af254c7222c745388c07785e412b209753",
+   "reason": "checks that frozen evidence files stayed unchanged; the evidence stays on the kept branch",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_only_owned_temp_location_and_canonicalization_change_all_44_assertions_remain",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-installed-boundary/test_installed_boundary.py",
+   "source_sha256": "d2b4bb97def5206ab6e7817bab1917a70d15555a1df2e57a1dc32505e361ec15",
+   "reason": "checks that frozen evidence files stayed unchanged; the evidence stays on the kept branch",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_original_consumer_integrity_and_loader_bodies_are_retained",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-hosted-repair/test_managed_archive_acceptance.py",
+   "source_sha256": "efda5248eae8605f2b642971221ef9266c3432ad062401472463a4bbfa6b7ccb",
+   "reason": "checks that frozen evidence files stayed unchanged; the evidence stays on the kept branch",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_original_suite_requires_execution_without_failure_error_or_skip",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-installed-followup/test_installed_followup.py",
+   "source_sha256": "391c2b8d91fd588d3a39af6a0d5dcc6227aafc4e4deafb208bc8c5a2102ce4a1",
+   "reason": "checks the historical installed-package proof harness, which is not in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_outcome_persistence_fault_is_witnessed_and_never_repeats_effect",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_process.py",
+   "source_sha256": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_outcome_public_action_id_cannot_hide_different_uncertain_intent",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-projection/test_projection_outcome_binding.py",
+   "source_sha256": "ea8c14fd0b1b04341375bc29d1ea59a1d903f518c2f3de6a13f50b3e0eb73e7f",
+   "observed": "pass with the alpha projection module importable",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_output_inside_checkout_keeps_owned_execution_temp_outside_before_tool",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-installed-boundary/test_installed_boundary.py",
+   "source_sha256": "d2b4bb97def5206ab6e7817bab1917a70d15555a1df2e57a1dc32505e361ec15",
+   "reason": "checks the historical installed-package proof harness, which is not in the alpha",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_owner_outer_transaction_cannot_fake_preaction_commit",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_process.py",
+   "source_sha256": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_posix_managed_child_retains_venv_prefix_and_private_module",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/managed-environment/test_managed_environment.py",
+   "source_sha256": "da903fb6ef2c8d06a09fbf796d7a380266ebc6b3909c306ea18f8249906cf7c0",
+   "observed": "not verified: POSIX only",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_projection_cannot_publish_caller_uncommitted_checkpoint",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/managed-hosted-repair/active/test_managed_durable_boundaries_v4.py",
+   "source_sha256": "eb8012464251ac9a9e5a4b99348a1e64b1914788eebeb68e822ceb564ee84618",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_ready_brief_is_exact_hashed_and_does_not_touch_original",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_core.py",
+   "source_sha256": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_real_cli_jsonl_start_capture_brief_ack_dispatch_close",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_process.py",
+   "source_sha256": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452",
+   "observed": "not verified: needs the shim",
+   "required_change": "replace the cached model with the hash-provider process shim"
+  },
+  {
+   "pr": 131,
+   "test": "test_rejected_envelope_cannot_call_runtime_or_dispatch",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/managed-protocol/test_managed_protocol.py",
+   "source_sha256": "674ec5d36d6b57346a1e0cb5632413f42a8a608a1ed235bf23316e794e0e389a",
+   "observed": "pass after renaming the pytest-reserved parameter",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_restart_has_new_epoch_and_old_ack_cannot_be_reused",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_core.py",
+   "source_sha256": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_restart_reports_prior_unclean_epoch_and_excludes_closed_epoch",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_close.py",
+   "source_sha256": "9e59ec79df2d7cc9cb7d19e09e2945e8990531e0c1ccb213ff4aef383de1c2ba",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_revoked_grant_cannot_replay_or_dispatch",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_core.py",
+   "source_sha256": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_same_byte_target_retarget_after_ack_refuses_dispatch_without_writes",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/managed-environment/test_managed_environment.py",
+   "source_sha256": "da903fb6ef2c8d06a09fbf796d7a380266ebc6b3909c306ea18f8249906cf7c0",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_scoped_outer_transaction_cannot_fake_preaction_commit",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_process.py",
+   "source_sha256": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_second_event_preserves_original_outstanding_and_first_replay",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_core.py",
+   "source_sha256": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_second_runtime_start_does_not_invalidate_first_complete_brief",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_state.py",
+   "source_sha256": "43e9b17d2367a54b6f8b160257b40028f142eed6c271fb5b3b915c63590f8595",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_security_guard_still_rejects_unsafe_source_or_archive",
+   "decision": "leave",
+   "package": null,
+   "source": "plans/acceptance/managed-installed-boundary/test_portability_v2.py",
+   "source_sha256": "c64d06431371a57893260ec2730873af254c7222c745388c07785e412b209753",
+   "reason": "checks the evidence-restore tool, which stays with the evidence on the kept branch",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_sequence_gap_is_visible_and_cannot_claim_complete_close",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_core.py",
+   "source_sha256": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_two_authorized_processes_racing_same_action_id_launch_once",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_process.py",
+   "source_sha256": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 131,
+   "test": "test_unsafe_profile_configuration_is_rejected_before_launch",
+   "decision": "port",
+   "package": "tests/acceptance/managed_runtime_unit",
+   "source": "plans/acceptance/v2-managed-runtime/test_managed_process.py",
+   "source_sha256": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452",
+   "observed": "pass",
+   "required_change": ""
+  },
+  {
+   "pr": 128,
+   "test": "test_generic_correction_refuses_structured_governed_workflows",
+   "decision": "port",
+   "package": "tests/acceptance/combined_foundation_unit",
+   "source": "plans/acceptance/combined-foundation-1.15/test_combined_foundation_acceptance.py",
+   "source_sha256": "0e854b83994e367e587795249d65f73a1c3d6c01289e62c441d013098d95111f",
+   "observed": "pass after removing the frozen-file hash check",
+   "required_change": ""
+  },
+  {
+   "pr": 128,
+   "test": "test_governed_lifecycle_and_reopened_correction_preserve_shared_history",
+   "decision": "port",
+   "package": "tests/acceptance/combined_foundation_unit",
+   "source": "plans/acceptance/combined-foundation-1.15/test_combined_foundation_acceptance.py",
+   "source_sha256": "0e854b83994e367e587795249d65f73a1c3d6c01289e62c441d013098d95111f",
+   "observed": "pass after removing the frozen-file hash check",
+   "required_change": ""
+  },
+  {
+   "pr": 128,
+   "test": "test_owner_attribution_does_not_replace_approval_or_scoped_authority",
+   "decision": "port",
+   "package": "tests/acceptance/combined_foundation_unit",
+   "source": "plans/acceptance/combined-foundation-1.15/test_combined_foundation_acceptance.py",
+   "source_sha256": "0e854b83994e367e587795249d65f73a1c3d6c01289e62c441d013098d95111f",
+   "observed": "pass after removing the frozen-file hash check",
+   "required_change": ""
+  },
+  {
+   "pr": 128,
+   "test": "test_scoped_workspace_keeps_governed_records_readonly_and_plain_correction_usable",
+   "decision": "port",
+   "package": "tests/acceptance/combined_foundation_unit",
+   "source": "plans/acceptance/combined-foundation-1.15/test_combined_foundation_acceptance.py",
+   "source_sha256": "0e854b83994e367e587795249d65f73a1c3d6c01289e62c441d013098d95111f",
+   "observed": "pass after removing the frozen-file hash check",
+   "required_change": ""
+  }
+ ]
+}

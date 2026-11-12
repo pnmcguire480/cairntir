@@ -1,0 +1,310 @@
+{
+  "schema": "cairntir.portable-test-source.v1",
+  "purpose": "Ordinary alpha CI test source carried from draft PRs 125, 126, 128, 129 and 131; not a protected evaluator or historical qualification result.",
+  "source_branch": "codex/v2-integration-20261010",
+  "source_commit": "f47df33e2a60ad822dceccc8ccc5d0b863f2a15b",
+  "manifest": "plans/acceptance/alpha-portable-tests-20261105/MANIFEST.json",
+  "scope": "Synthetic stores and disposable folders. The frozen evidence and its restore tool stay on the kept source branch.",
+  "excluded": [
+    "The 30 tests the manifest marks as left behind, with their reasons.",
+    "Logs, XML results, receipts and zip files from the original packets."
+  ],
+  "adaptations": [
+    "All packages: package-relative imports replace packet loaders, frozen-file hash checks and script entry points; normal lint and formatting apply; dependency-list and other left-behind tests are omitted per the manifest.",
+    "embedding_artifacts_unit: packet run folders become normal temp folders with a canonical root; the synthetic CLI's root check now requires the parent test's temp root and a CAIRNTIR_HOME beneath it; the review controls' machine path is removed.",
+    "embedding_artifacts_unit: tests 18, 19, 22 and 26 expect CHUNK_PREFIX + provider identity on stored identity, because the alpha labels its chunk policy there. Exact comparison retained.",
+    "embedding_artifacts_unit: the CLI subprocess timeout rises from 15 to 120 seconds for slower CI hosts; CLI trace files are no longer written; __init__.py preloads the CLI and MCP server so patch.dict(sys.modules) cannot unload their imports between tests; a loop callback binds its loop variables; nested with statements are merged.",
+    "obsidian_integration_unit: the plugin harness keeps its originals/ subfolder so test_real_plugin.cjs stays byte-for-byte; the actual-process timeout rises from 60 to 120 seconds; test_missing_node_fails_instead_of_skipping is added; dict() fixtures become literals.",
+    "questions_durable_unit: both routers share node_executable with an environment-based Windows fallback; the actual-process timeout rises from 60 to 120 seconds; test_missing_node_fails_instead_of_skipping is added; the rollback helper exception gains an Error suffix.",
+    "managed_runtime_unit: only tests named in the manifest are copied; the alpha's own managed tests cover the rest. The parametrized request argument is renamed envelope_request because pytest 9 reserves request; the JSON key is unchanged.",
+    "managed_runtime_unit: test_cli_changed_config_cannot_launch_using_previous_ack and test_real_cli_jsonl_start_capture_brief_ack_dispatch_close replace a downloaded model with a sitecustomize shim selecting HashEmbeddingProvider; they remain real separate processes.",
+    "managed_runtime_unit: the two projection source files merge into one module that imports the alpha's existing projection fixture; remaining lint exceptions are per-line noqa annotations on the carried code.",
+    "embedding_artifacts_unit: cli_synthetic_process.py drops --source-root and its sys.path insertion, so the child imports the cairntir its environment provides rather than pinning a checkout.",
+    "embedding_artifacts_unit: test_artifact_refusals.py removes Controls.record and OBSERVATIONS, moves shared setup onto a test-free ControlsFixture base so inherited tests are not collected twice, moves prepare_hub onto HubControl, and replaces the per-test script loaders with ordinary classes."
+  ],
+  "supplemental_ports": [],
+  "broken_controls": [
+    {
+      "break": "src/cairntir/memory/artifacts.py PinnedArtifacts.verify returns without rehashing",
+      "test": "test_11_changed_pinned_bytes_rejected_before_model_construction",
+      "result": "failed as intended"
+    },
+    {
+      "break": "src/cairntir/obsidian_bridge.py sync_workspace caller-transaction refusal removed",
+      "test": "test_outer_transaction_sync_refuses_before_writing_acknowledgement",
+      "result": "failed as intended"
+    },
+    {
+      "break": "src/cairntir/obsidian_bridge.py apply_correction caller-transaction refusal removed",
+      "test": "test_outer_transaction_cannot_return_a_false_durable_commit",
+      "result": "failed as intended"
+    },
+    {
+      "break": "src/cairntir/obsidian_bridge.py apply_correction no longer refuses non-editable governed sources",
+      "test": "test_generic_correction_refuses_structured_governed_workflows",
+      "result": "failed as intended"
+    },
+    {
+      "break": "src/cairntir/questions.py open_question caller-transaction refusal removed",
+      "test": "test_caller_transaction_cannot_acknowledge_a_durable_question",
+      "result": "failed as intended"
+    },
+    {
+      "break": "src/cairntir/managed.py dispatch caller-transaction refusal removed",
+      "test": "test_owner_outer_transaction_cannot_fake_preaction_commit",
+      "result": "failed as intended"
+    },
+    {
+      "break": "src/cairntir/managed.py _ack_state accepts incomplete or not-ready briefs",
+      "test": "test_incomplete_brief_cannot_be_acknowledged",
+      "result": "failed as intended"
+    }
+  ],
+  "files": [
+    {
+      "path": "tests/acceptance/embedding_artifacts_unit/fixture.py",
+      "sources": {
+        "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501"
+      },
+      "sha256": "9b019c66eacd3c8194a724b5e234324be50eb898eb82c786e3f01258adb5fe71",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/embedding_artifacts_unit/test_artifact_identity.py",
+      "sources": {
+        "plans/acceptance/embedding-artifacts-1.14/test_embedding_artifacts.py": "559fb289f6c7645da194f77d3e402283dff67ab497fd8427acdef1cf8a582501"
+      },
+      "sha256": "b1eb99196fd8a20cb72c79a310345d19bdb86443b2b10a93d3484f4a7111fb60",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/embedding_artifacts_unit/test_artifact_cli.py",
+      "sources": {
+        "plans/acceptance/embedding-artifacts-1.14/test_embedding_supplement_v3.py": "ab7e7873d973015b63485c640db8d1aac680976dfaa52772f4b7445ab52b8ad4"
+      },
+      "sha256": "286ae61d6c1e7c4b44dca212c69dd0a45e614a0d7505d7379c92222a829daccb",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/embedding_artifacts_unit/cli_synthetic_process.py",
+      "sources": {
+        "plans/acceptance/embedding-artifacts-1.14/cli_synthetic_process.py": "98015901896b00a5c1b8f6314952fc1103336c47ece172431c2d9757080cf516"
+      },
+      "sha256": "88a9099efd219ab296fa0651307d266dc0fb5da9643d7b275d2b5170cde684cd",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/embedding_artifacts_unit/test_relative_cache.py",
+      "sources": {
+        "plans/acceptance/embedding-artifacts-1.14/test_relative_cache_supplement_v2.py": "b21fe31b51e07f32de992cbc08792bcee82380711575264a02b689751775c7b1"
+      },
+      "sha256": "6b192baed66ae5a9e783cb02b9ba6181ae0be5c2d6ba8f0aca3d735c7b366f3d",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/embedding_artifacts_unit/test_artifact_refusals.py",
+      "sources": {
+        "plans/acceptance/embedding-artifacts-1.14/review/adversarial_controls.py": "51881aa4879c3162faefb2aa4d0a1d13b75f632ec532d63580e39132cf287510",
+        "plans/acceptance/embedding-artifacts-1.14/review/cache_permission_control.py": "a710e33823e9fc9241fdd7f9568f95332ffaf208e09d84e0817ad857d9df3556",
+        "plans/acceptance/embedding-artifacts-1.14/review/hub_layout_control.py": "deb49b2066d452b3af8524f1c6daaad81721568696bc075b3b7bba87e1a27c78",
+        "plans/acceptance/embedding-artifacts-1.14/review/hub_layout_control_v2.py": "89a9c5c2eb1805583e9fb98d738ccd8ceec8cf03ab8b7a0dca1aef3a4690741e"
+      },
+      "sha256": "3fdb7196a45b1c6115d073b4f43a0a84c40490632a7aa08fc305482472e6dc44",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/obsidian_integration_unit/test_correction_integration.py",
+      "sources": {
+        "plans/acceptance/obsidian-correction-1.15/test_integration.py": "61086cfa91ae203c46912770bcfc6a64fedc8d1d089064e64a703f56762d0340"
+      },
+      "sha256": "fdf96b6368e6b4d37a162ef3c64aa7cced3d70ed480dac67837dbb35885a0cec",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/obsidian_integration_unit/test_correction_ci_contracts.py",
+      "sources": {
+        "plans/acceptance/obsidian-correction-ci-1.15/test_obsidian_correction_ci_contracts.py": "256c225922d03bbac84a55502c8ed1f00f649f783225b7cdf2a7f2d0a397ee3d"
+      },
+      "sha256": "d01d67e54eff36ea57e94f796100f161bbffa8a43b4a3891cec0f3bb04fdbe65",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/obsidian_integration_unit/test_projection_newlines.py",
+      "sources": {
+        "plans/acceptance/obsidian-correction-1.15/originals/v2-obsidian/test_projection_newlines.py": "64b931e36ad15afca63a5796b9777aad2ce1b1c339acd57a24e9d38ea9b50837"
+      },
+      "sha256": "ec53d55dd05032c7f12d416c7bc358177dac395b93bd79f1e428b04e2535e436",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/obsidian_integration_unit/test_plugin_acceptance.py",
+      "sources": {
+        "plans/acceptance/obsidian-correction-1.15/test_obsidian_frozen_acceptance.py": "6abfc6aba17201478c6938db9b52441d586738dfc4bddb21ef1b3b2199d819cc"
+      },
+      "sha256": "bd4ed0e3d87a9ccb83c59c84d880dfef5816e6769701a3a31e481bb9e9ec4b1d",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/obsidian_integration_unit/plugin/test_real_plugin.cjs",
+      "sources": {
+        "plans/acceptance/obsidian-correction-1.15/test_real_plugin.cjs": "690b9fac1f4a3abafe0fedb47d8136e87458b4d81b48330a5c46703559ff4cca"
+      },
+      "sha256": "690b9fac1f4a3abafe0fedb47d8136e87458b4d81b48330a5c46703559ff4cca",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/obsidian_integration_unit/plugin/originals/v2-obsidian-plugin/test-obsidian-plugin-v3.cjs",
+      "sources": {
+        "plans/acceptance/obsidian-correction-1.15/originals/v2-obsidian-plugin/test-obsidian-plugin-v3.cjs": "d29e26bd424c445b1bc3021edae496ab3a2b6d166902cb294e7750bcf080aed4"
+      },
+      "sha256": "d29e26bd424c445b1bc3021edae496ab3a2b6d166902cb294e7750bcf080aed4",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/combined_foundation_unit/test_combined_foundation.py",
+      "sources": {
+        "plans/acceptance/combined-foundation-1.15/test_combined_foundation_acceptance.py": "0e854b83994e367e587795249d65f73a1c3d6c01289e62c441d013098d95111f"
+      },
+      "sha256": "1475638f72346721e9876ddb2f9509a239a0f428bc1f1d6a4960d63b72275e92",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/questions_durable_unit/test_durable_ack.py",
+      "sources": {
+        "plans/acceptance/questions-port-1.16/test_questions_durable_ack.py": "37e9123e740fb5c481e3d7e075d9b2ddcee2ecceaa22995bd330c6596632ff04"
+      },
+      "sha256": "2c1858e90ba0dc865c5d9f7dd5715c01121d0d6bf4c23d8443b265ae2fdc5b6b",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/questions_durable_unit/test_question_plugin.py",
+      "sources": {
+        "plans/acceptance/questions-port-1.16/maintained_port_router.py": "2164123fb495f01a487be60ff7c77d3d0201cbc85bca4fea5a9e16ad893e11e4",
+        "plans/acceptance/questions-port-1.16/process/maintained_process_router.py": "2f920869f8d2b3f475ec75f78d60bbe1779175a46bc36cea336220e83f364e9a"
+      },
+      "sha256": "83bff96eb5f451c93c859644588717b581f8dfe763d85162dd5a0de11378ee9c",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/questions_durable_unit/plugin/test_question_plugin.js",
+      "sources": {
+        "plans/acceptance/v2-questions/test_question_plugin.js": "f5c2d51a9f517031528eed3a9a7bee976a76135a9cca8032068ddcbaa424dc42"
+      },
+      "sha256": "f5c2d51a9f517031528eed3a9a7bee976a76135a9cca8032068ddcbaa424dc42",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/questions_durable_unit/plugin/test_question_plugin_submission.cjs",
+      "sources": {
+        "plans/acceptance/v2-questions/test_question_plugin_submission.cjs": "1157de20f381158503cf1c4aa8f50dab1ce6f45ec32007f69c0d201accc09846"
+      },
+      "sha256": "1157de20f381158503cf1c4aa8f50dab1ce6f45ec32007f69c0d201accc09846",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/questions_durable_unit/plugin/test_real_question_plugin.cjs",
+      "sources": {
+        "plans/acceptance/questions-port-1.16/process/test_real_question_plugin.cjs": "7a907bc0ce27dde2c65f1a05f1343c2d9c31b4ba3025fa0737c87b629efcf4e0"
+      },
+      "sha256": "7a907bc0ce27dde2c65f1a05f1343c2d9c31b4ba3025fa0737c87b629efcf4e0",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_core.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/test_managed_core.py": "4cfe69bb960777920e11b4761bd62250703293ee2ec4341cd2b1c5d50370f48b"
+      },
+      "sha256": "47389b9eebe84c4a71619997305cd31d7bad6217eba92d1b4ae3791c0cfc62eb",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_close.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/test_managed_close.py": "9e59ec79df2d7cc9cb7d19e09e2945e8990531e0c1ccb213ff4aef383de1c2ba"
+      },
+      "sha256": "f4ade594f28611818ea2376bb3a8191b042fa0d3eb612479e840b556ba79196b",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_state.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/test_managed_state.py": "43e9b17d2367a54b6f8b160257b40028f142eed6c271fb5b3b915c63590f8595"
+      },
+      "sha256": "f87d45210cdcc44f15d49c1bddb4770668960832d2fcb9ac34b5cb45c7f56788",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_process.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/test_managed_process.py": "752c7352caedacad32b9e2907268d5bbecc9846b4b09e01447a87cbda805f452"
+      },
+      "sha256": "0d9329737539b1876847ff595298726ca537961c0dbd9d38992d9a8b3618ac7d",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_config.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/test_managed_config.py": "ce482af7f4e30f0a47ebeb69b7533265f947af60c01e35bc1accc0d2a41f6639"
+      },
+      "sha256": "d1e7895126869a6f646db6968a5fd0acab08e14ec88ac315a052e67c48222792",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/process_child.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/process_child.py": "9abe47c5a82eae0c99a454cf4a7f59d4e36b3702a6aab3d2788880c2d02817f1"
+      },
+      "sha256": "511d7f3f164c77f6363368dcefa966608f151631a461524388e220a80e6183d6",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/process_driver.py",
+      "sources": {
+        "plans/acceptance/v2-managed-runtime/process_driver.py": "715d9aa48e794663f9e92a740b784efd76769404823058774e5e5dad97e446c3"
+      },
+      "sha256": "715d9aa48e794663f9e92a740b784efd76769404823058774e5e5dad97e446c3",
+      "unchanged_bytes": true
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_environment.py",
+      "sources": {
+        "plans/acceptance/managed-environment/test_managed_environment.py": "da903fb6ef2c8d06a09fbf796d7a380266ebc6b3909c306ea18f8249906cf7c0"
+      },
+      "sha256": "e87ebb8c8bdb9f1b3df02703189ba4edcddd7be2a825b11743f2be680cb7663f",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_managed_protocol.py",
+      "sources": {
+        "plans/acceptance/managed-protocol/test_managed_protocol.py": "674ec5d36d6b57346a1e0cb5632413f42a8a608a1ed235bf23316e794e0e389a"
+      },
+      "sha256": "05a8349c21b1511a546392b8f45d0ccc020cd2fde43d93b37f46f1bb7ae3d0b0",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_projection_integrity.py",
+      "sources": {
+        "plans/acceptance/v2-managed-projection/test_projection_corruption.py": "8cd7a2c9afadc2b8011d4d52316d4ace6e9afb84e4c9ea4943386326ef9140ff",
+        "plans/acceptance/v2-managed-projection/test_projection_outcome_binding.py": "ea8c14fd0b1b04341375bc29d1ea59a1d903f518c2f3de6a13f50b3e0eb73e7f"
+      },
+      "sha256": "e25865b0fbd4fa3014a906cf2e7578de213e779e671c5105812d77e2d53c9154",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_durable_boundaries.py",
+      "sources": {
+        "plans/acceptance/managed-hosted-repair/active/test_managed_durable_boundaries_v4.py": "eb8012464251ac9a9e5a4b99348a1e64b1914788eebeb68e822ceb564ee84618"
+      },
+      "sha256": "322c06fec9becb9ae8f2d1acaacde66f45ee0266406afa1254390d0482e6afe0",
+      "unchanged_bytes": false
+    },
+    {
+      "path": "tests/acceptance/managed_runtime_unit/test_hidden_event.py",
+      "sources": {
+        "plans/acceptance/managed-hosted-repair/active/test_hidden_event_v3.py": "bdb290bbda03e4f719878f2c773e3167347068a2de540e5fb760c41422ba6c02"
+      },
+      "sha256": "61cbf8edf668e72d02bc3fa622020ee5b4a3992c6ddff8d3526b1ad70fbe1f39",
+      "unchanged_bytes": false
+    }
+  ]
+}
