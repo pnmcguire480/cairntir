@@ -11,6 +11,7 @@
 ### Fixed
 
 - Dream now asks the local model for the reply shape it reads. It used to send only "Suggest one consequential review item, or no proposals." A real model (Mistral 7B through Ollama) answered in plain prose, so Dream recorded every real answer as `model_unavailable` and could never produce a candidate. Dream now states the JSON shape in its instruction and sends it as Ollama's `format` schema. The test servers had always answered in that exact shape, which hid the problem. Found by a real-model qualification run on 10 November 2026.
+- An exact `cairntir replay` retry now reports the link that is saved. It used to print `chain extended: #<current leaf> <- #<prediction> (new prediction)` although the retry saved nothing and the reused prediction still followed its original predecessor. The retry now says it reused the earlier result and prints the saved link. No stored data was wrong. Found by the independent evaluation of 1.13.0 on 12 November 2026.
 
 ## [1.13.0] - 2026-11-09
 

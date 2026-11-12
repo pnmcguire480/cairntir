@@ -360,3 +360,33 @@ def test_recipe_without_reason_ignores_adapters_it_never_uses(tmp_path: Path) ->
         retry = recipe("two").run(contract, {}, idempotency_key="marker-key")
 
         assert retry == first
+
+
+def _prediction_id(output: str) -> int:
+    line = next(line for line in output.splitlines() if line.strip().startswith("reason:"))
+    return int(line.split("#")[1].split(",")[0])
+
+
+def test_replay_exact_retry_reports_the_saved_predecessor(home: Path) -> None:
+    """A retry must describe the link that was saved, not the current leaf."""
+    decision = _decision(home)
+    first = _replay(decision)
+    assert first.exit_code == 0, first.output
+    assert f"chain extended: #{decision} <- " in first.output
+    prediction = _prediction_id(first.output)
+
+    retry = _replay(decision)
+
+    assert retry.exit_code == 0, retry.output
+    assert _prediction_id(retry.output) == prediction
+    store = DrawerStore(home / "cairntir.db", HashEmbeddingProvider(dimension=384))
+    try:
+        saved_predecessor = store.get(prediction).supersedes_id
+    finally:
+        store.close()
+    assert saved_predecessor == decision
+    assert "chain extended" not in retry.output
+    assert "(new prediction)" not in retry.output
+    assert "replay committed" not in retry.output
+    assert f"#{decision} <- #{prediction}" in retry.output
+    assert "nothing new was saved" in retry.output
