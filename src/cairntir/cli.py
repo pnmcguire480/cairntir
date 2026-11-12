@@ -2221,19 +2221,40 @@ def replay_cmd(
         except (RecipeError, ValueError) as exc:
             typer.echo(f"cairntir: replay failed: {exc}", err=True)
             raise typer.Exit(code=1) from exc
+        # Report the link that is saved, not the one this run asked for: an
+        # exact retry returns the earlier prediction, whose predecessor is the
+        # leaf of that earlier run rather than today's leaf.
+        reason_drawers = result.skill_drawer_ids.get("reason", [])
+        saved_predecessor: int | None = None
+        if reason_drawers:
+            saved_prediction = store.get(reason_drawers[0])
+            if saved_prediction is None:
+                raise MemoryStoreError(
+                    f"replay prediction #{reason_drawers[0]} is not in the store"
+                )
+            saved_predecessor = saved_prediction.supersedes_id
     finally:
         store.close()
 
+    reused = bool(reason_drawers) and saved_predecessor != leaf.id
     typer.echo()
-    typer.echo(f"replay committed (recipe {result.recipe_name}):")
+    if reused:
+        typer.echo(
+            f"replay already committed (recipe {result.recipe_name}); "
+            "this retry reused it and nothing new was saved:"
+        )
+    else:
+        typer.echo(f"replay committed (recipe {result.recipe_name}):")
     typer.echo(f"  seed drawer:   #{result.seed_drawer_id} in wing {result.output_wing!r}")
     for skill, drawer_ids in result.skill_drawer_ids.items():
         ids = ", ".join(f"#{i}" for i in drawer_ids)
         typer.echo(f"  {skill}: {ids}")
-    reason_drawers = result.skill_drawer_ids.get("reason", [])
-    if reason_drawers:
-        new_prediction_id = reason_drawers[0]
-        typer.echo(f"  chain extended: #{leaf.id} <- #{new_prediction_id} (new prediction)")
+    if reused:
+        typer.echo(
+            f"  saved link: #{saved_predecessor} <- #{reason_drawers[0]} (earlier prediction)"
+        )
+    elif reason_drawers:
+        typer.echo(f"  chain extended: #{leaf.id} <- #{reason_drawers[0]} (new prediction)")
 
 
 @app.command("study-export")
