@@ -40,4 +40,14 @@ snapshot = read_study_sources(Path("study-sources"))
 
 Keep this output tree dedicated to the exporter. Its atomic `CURRENT.json` points to one complete immutable generation; older generations remain historical. A failed refresh leaves the previous pointer unchanged and issues no success receipt. That previous snapshot has not been freshly validated, and copies imported elsewhere are not revoked. Concurrent operations and redirected/linked paths are refused.
 
+## Putting the sources into a NotebookLM notebook
+
+NotebookLM does not refresh an uploaded file on its own, and the four exported files are always called `patterns.md`, `rules.md` and so on. Uploading a changed export would leave two sources with the same name. Stage the files for upload instead:
+
+```text
+cairntir study-deliver --output ./study-sources --destination ./notebook-upload
+```
+
+The destination receives the four sources under revision-stamped names such as `rules-1a2b3c4d5e6f.md`, and the command prints what to do in the notebook: `upload` a new source, `remove` an old source and `upload` its replacement, or `keep` a source that did not change. Add `--json` for the same plan as data. The destination also holds `DELIVERED.json`, which records what the last plan said the notebook contains; apply each plan in the notebook before running the next one. A replaced source's old text can still appear in the new file as clearly marked cited history. The command never contacts NotebookLM and the result stays `UNVERIFIED` until a person has applied the plan in a real notebook. `scripts/r13_notebook_demo.py` builds a made-up store and export for trying this by hand without touching real memories.
+
 An automation can reuse the same selection and command. No scheduler is installed. Every receipt reports NotebookLM as `UNVERIFIED`; remote source arrival, replacement and duplicate handling still need separate qualification.
