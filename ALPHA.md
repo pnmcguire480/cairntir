@@ -37,7 +37,7 @@ English text saying a decision was reversed does not automatically create a supe
 
 Dream is an explicit opt-in preview with bounded background scheduling, candidates and stop/cancellation handling. Integrated usefulness/resource qualification remains incomplete; proposals do not automatically authorize code edits, rule promotion or memory deletion. A first real-model run (Mistral 7B through Ollama, 10 November 2026) found that Dream discarded every real answer because it never asked for its reply format; that is fixed in Unreleased. After the fix the run met the input, call-budget, stop and offline limits, but the original one-second tick limit of under 4 seconds failed in two of four timed runs (4.045 and 4.114 seconds). Those runs had no usefulness threshold or hardware limit to measure against. The maintainer set both afterwards. Dream is useful enough if the maintainer marks at least 3 of 10 proposals as worth acting on and none cites the wrong memories. The hardware limit is a model that fits in 5 GB of graphics memory and 8 GB of RAM, with Dream's own processes under 0.2 GB. The recorded resource use is within that limit: about 4.1 GB of graphics memory, 1.4 GB of RAM and 0.11 GB for Dream itself. The maintainer marked 3 of 10 real suggestions as worth acting on, with no wrong citations, which meets the bar exactly. The suggestions were drawn from made-up test notes, so this is weak evidence that Dream is useful on real memory. The tick limit stays at 4 seconds, and its failures stay recorded.
 
-Audience/angle/channel/outline pipelines, HumanFlow teaching, UI/visual verification, claim-to-test generation, field pilots and feedback efficacy remain unfinished. Candidate lessons stay candidates/HOLD. The local study exporter is usable, but actual NotebookLM delivery/update remains open. The calendar does not publish content to external platforms.
+Audience/angle/channel/outline pipelines, HumanFlow teaching, UI/visual verification, field pilots and feedback efficacy remain unfinished. Candidate lessons stay candidates/HOLD. The local study exporter is usable and `cairntir study-deliver` stages uniquely named upload files with an add/replace/keep plan, proven locally against a simulated notebook; actual NotebookLM arrival and update in a real notebook (R13) remains open until the maintainer confirms it. The calendar does not publish content to external platforms.
 
 ## Known verification limits
 
@@ -73,7 +73,7 @@ historical; they do not describe the current head.
 
 ## Follow-up roadmap
 
-The original 35 commitments remain assigned: 25 component criteria complete, 10 open. This count is not a count of new features. The stable 2.0 planning target remains 6 November 2026, with 7 November reserve and 5 November GO/NO-GO; unresolved gates still determine readiness.
+The original 35 commitments remain assigned: 26 component criteria complete, 9 open. This count is not a count of new features. The stable 2.0 planning target remains 6 November 2026, with 7 November reserve and 5 November GO/NO-GO; unresolved gates still determine readiness.
 
 | Follow-up | Target |
 | --- | --- |
@@ -83,10 +83,11 @@ The original 35 commitments remain assigned: 25 component criteria complete, 10 
 | I03 channel adaptation | 19 November 2026 |
 | Q04 UI/visual verification | 20 November 2026 |
 | I05 outlines/action workflow | 24 November 2026 |
-| Q08 claim-to-test generation | 25 November 2026 |
 | R14 code-specific quizzes, audio and cross-project learning | 27 November 2026 |
 | C50 LongMemEval/calibration and independent reproduction | 3 December 2026 |
 | R16 ten-user pilot and structured feedback | 4 December 2026 |
+
+Q08 is complete against its original criterion: "Known-bad behavior falsifies the claim and corrected behavior passes; prompt text alone is never reported as an executed test." `cairntir claim-test` exports a stored claim and its predicted outcome to a packet with no subject source, freezes tests written by a different author by SHA-256, and runs exactly those bytes against a subject. On 11 November 2026 a separate agent that saw only the packet wrote 13 cases. They failed 7 of 13 against a deliberately broken subject (`FALSIFIED`) and passed 13 of 13 against the corrected one (`HELD`). A packet with no executed case is `NOT_EXECUTED`, and a test that passes against the broken subject is `NOT_QUALIFIED`. Cairntir does not write the tests itself; any host or person can be the author.
 
 E22 is complete against its original criterion. A second physical machine (the work PC, not Patrick's own) acquired the model into an empty cache and produced the same five file hashes and the same identity as the home machine, and refused a one-byte model change (receipts dated 3 and 4 November 2026 on commit 5015aa9d, and again on 10 November 2026 on the 1.13.0 release commit 3b02538f, all 18 checks passing). This does not cover upgrade/restore/rollback or any other feature on that machine. Protected evaluator custody is a separate open release gate. [The portable 35-item register](docs/alpha-roadmap.json) retains every item; local proof archives and machine-specific paths are excluded from this branch.
 

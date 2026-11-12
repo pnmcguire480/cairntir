@@ -4,6 +4,10 @@ Scope frozen on 2026-10-30 from ALPHA.md and docs/alpha-roadmap.json.
 The 23 completed component commitments stay complete. E22 was the one
 open November commitment and is now complete (see the table row below); the 11 dated follow-ups remain assigned to their
 existing dates. They are not new prerequisites for November 6.
+Q08, one of those follow-ups, is complete as of 11 November 2026: an
+independently written test, frozen by hash, fails against known-bad behavior
+and passes against the fix, and a packet with no executed case is reported
+`NOT_EXECUTED` (see ALPHA.md).
 
 Decision, 4 November 2026: the maintainer set an 85% floor for alpha releases, in their words "lets make it 85% for release and we can go back on another date and kill tokens getting to 90% another day." 90% stays owed and remains the stable 2.0 target; this table's requirement is unchanged and earlier failures stay failures.
 
