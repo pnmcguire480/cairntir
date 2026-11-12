@@ -127,6 +127,10 @@ angles_app = typer.Typer(
     help="Generate, rank and choose content angles for a captured audience.", no_args_is_help=True
 )
 app.add_typer(angles_app, name="angles")
+channels_app = typer.Typer(
+    help="Turn a stored angle into channel hooks and formats.", no_args_is_help=True
+)
+app.add_typer(channels_app, name="channels")
 
 claim_test_app = typer.Typer(
     help="Send a Crucible claim to a separate test author and execute the tests.",
@@ -1695,6 +1699,104 @@ def angles_choose_cmd(
         return get_angle_set(path, vault, wing, revision=number)
 
     _angles_run(action, store, as_json)
+
+
+def _channels_print(receipt: dict[str, Any], *, as_json: bool) -> None:
+    if as_json:
+        typer.echo(json.dumps(receipt, ensure_ascii=False, indent=2))
+        return
+    idea = receipt["idea"]
+    who = "your pick" if idea["chosen_by"] == "person_pick" else "the model's top-ranked angle"
+    typer.echo(
+        f"Channel draft (provisional model output, not confirmed by a person) - "
+        f"note: {receipt['projection_status']}"
+    )
+    if receipt.get("replayed"):
+        typer.echo("Stored draft returned; the model was not called again.")
+    typer.echo(
+        f"Idea: angle {idea['angle_id']} of angle set {idea['angle_set_revision']} ({who}): "
+        f"{idea['angle']}"
+    )
+    for item in receipt["adaptations"]:
+        typer.echo(f"\n[{item['channel_id']} / {item['format_id']}]")
+        typer.echo(f"  hook: {item['hook']}")
+        for name, text in item["content"].items():
+            typer.echo(f"  {name}: {text}")
+    for assumption in receipt["assumptions"]:
+        typer.echo(f"\nAssumption {assumption['id']}: {assumption['claim']}")
+    typer.echo(f"\nIdea note: {idea['angle_set_note']}")
+    typer.echo(f"Draft note: {(receipt['projection'] or {}).get('version_note')}")
+
+
+def _channels_run(
+    action: Callable[[Any, Path], dict[str, Any]], store: Path | None, as_json: bool
+) -> None:
+    try:
+        path = store if store is not None else db_path(create=False)
+        with _open_store(path, capture_path="cli.channels") as drawers:
+            result = action(drawers, path)
+    except (CairntirError, sqlite3.Error, OSError, ValueError) as exc:
+        typer.echo(f"cairntir: channels failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    _channels_print(result, as_json=as_json)
+
+
+@channels_app.command("generate")
+def channels_generate_cmd(
+    wing: str = typer.Option(..., "--wing", "-w"),
+    vault: Path = typer.Option(..., "--vault"),  # noqa: B008
+    model: str = typer.Option(..., "--model", help="Local Ollama model name."),
+    angle: str | None = typer.Option(
+        None, "--angle", help="Angle id. Defaults to your latest pick, else the top-ranked angle."
+    ),
+    revision: int | None = typer.Option(
+        None, "--revision", help="Angle set revision. Defaults to the latest."
+    ),
+    endpoint: str = typer.Option(
+        "http://127.0.0.1:11434", "--endpoint", help="Numeric loopback Ollama address."
+    ),
+    timeout: float = typer.Option(300.0, "--timeout", min=1.0, max=360.0),
+    key: str | None = typer.Option(
+        None, "--key", help="Reuse a key to replay; a new key makes a new draft."
+    ),
+    store: Path | None = typer.Option(  # noqa: B008
+        None, "--store", help="Defaults to the Cairntir store."
+    ),
+    as_json: bool = typer.Option(False, "--json", help="Print the full record."),
+) -> None:
+    """Ask a local model for a hook and format per channel for one stored angle."""
+    from cairntir.ideation_channel_route import generate
+    from cairntir.ideation_channels import OllamaChannelsAdapter
+
+    def action(drawers: Any, path: Path) -> dict[str, Any]:
+        adapter = OllamaChannelsAdapter(endpoint=endpoint, model=model, timeout_seconds=timeout)
+        return generate(
+            drawers,
+            path,
+            vault,
+            wing,
+            adapter=adapter,
+            angle_id=angle,
+            set_revision=revision,
+            key=key,
+        )
+
+    _channels_run(action, store, as_json)
+
+
+@channels_app.command("show")
+def channels_show_cmd(
+    wing: str = typer.Option(..., "--wing", "-w"),
+    vault: Path = typer.Option(..., "--vault"),  # noqa: B008
+    store: Path | None = typer.Option(  # noqa: B008
+        None, "--store", help="Defaults to the Cairntir store."
+    ),
+    as_json: bool = typer.Option(False, "--json", help="Print the full record."),
+) -> None:
+    """Show the newest stored channel draft and the angle it came from."""
+    from cairntir.ideation_channel_route import show
+
+    _channels_run(lambda drawers, path: show(drawers, path, vault, wing), store, as_json)
 
 
 def _claim_test_output(

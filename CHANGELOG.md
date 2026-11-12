@@ -10,6 +10,8 @@
 
 - `cairntir angles generate | show | choose` (I02) runs the angle engine from the command line. A local Ollama model proposes 20 to 40 angles for the captured audience; the set is stored only if every angle and hook is distinct and each has a score and written reason per goal. `show` reads it back in rank order; `choose` records your pick next to the automatic top choice, which is kept. The same request replays the stored set without calling the model. Scores and reasons are model judgments; sets stay provisional. See [Content angles](docs/ideation-angles.md).
 
+- `cairntir channels generate | show` (I03) turns a stored angle into a hook and format for each of three channels (community discussion, newsletter, short video). The idea is your latest `angles choose` pick, else the top-ranked angle (labelled). A local model's reply is kept only if every field is inside its channel limits, the three hooks differ and no forbidden claim appears; otherwise the raw reply is kept as a failure record and nothing is accepted. Each draft links to the angle it came from. Drafts stay provisional and are never posted. See [Channel hooks and formats](docs/ideation-channels.md).
+
 ### Fixed
 
 - `cairntir audience capture` failed on any store that already existed but had no audience table yet (every store opened by another command first) with "no such table". It now creates the table as it would for a new store.
