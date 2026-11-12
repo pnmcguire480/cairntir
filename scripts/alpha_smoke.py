@@ -40,7 +40,7 @@ def main():
     from cairntir.mcp.server import _tool_specs, build_server
     from cairntir.memory.taxonomy import Drawer
 
-    version = "1.13.0"
+    version = "1.14.0"
     _check(
         Path(cairntir.__file__).resolve().is_relative_to(target),
         "Alpha smoke check failed at original line 31",

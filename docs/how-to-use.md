@@ -1,6 +1,6 @@
 # How to Use Cairntir
 
-**Current stable release: 1.13.0.** [Publication and verification](release/v1.13.0.md). Upgrading from 1.12 or earlier needs one reindex; see the [upgrade guide](embedding-artifacts.md).
+**Current stable release: 1.14.0.** [Publication and verification](release/v1.14.0.md). Upgrading from 1.12 or earlier needs one reindex; see the [upgrade guide](embedding-artifacts.md).
 
 ## Install
 
@@ -40,7 +40,7 @@ registration/update callbacks for doctor/status/version, and status may open its
 store for writing.
 
 ```bash
-cairntir version    # this CLI's version; current stable release is 1.13.0
+cairntir version    # this CLI's version; current stable release is 1.14.0
 cairntir status     # where the store lives, drawer counts
 cairntir doctor     # store and host wiring; see the installed-version note above
 ```

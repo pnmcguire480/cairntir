@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-11-12
+
+Three new commands and two fixes on top of 1.13.0. No database schema change: a store that works with 1.13.0 works with 1.14.0 without a reindex. It is a minor version, not a patch, because the [release policy](docs/release-cadence.md) gives any new capability a minor number. One of the fixes answers the single finding of the independent evaluation of 1.13.0; the evaluator has not yet rerun its tests against it. Roadmap after this release: 26 of 35 items complete, 9 open; [ALPHA.md](ALPHA.md) says which.
+
 ### Added
 
 - `cairntir audience capture` saves the five audience fields (audience, channels, pain, sophistication, desired outcome) as a provisional revision with a source for each. It never confirms: only `cairntir audience confirm` at a terminal does that. The same values as the current revision make no new revision; changed values make a new provisional one. This closes the gap that left the audience lock reachable only from Python.
