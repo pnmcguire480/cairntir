@@ -389,6 +389,7 @@ def _root(ctx: typer.Context) -> None:
             "calibration",
             "export",
             "study-export",
+            "study-deliver",
             "import",
         }:
             raise AccessDenied("access denied: restricted session: administrative command denied")
@@ -407,6 +408,7 @@ def _root(ctx: typer.Context) -> None:
         "dream",
         "practice-review",
         "study-export",
+        "study-deliver",
     }:
         return
     # Best-effort self-heal for commands not excluded above. Once
@@ -2257,6 +2259,37 @@ def study_export(
         typer.echo(f"cairntir: {error}", err=True)
         raise typer.Exit(code=1) from exc
     typer.echo(json.dumps(receipt, ensure_ascii=False))
+
+
+@app.command("study-deliver")
+def study_deliver(
+    output: Annotated[Path, typer.Option("--output", help="The study-export output folder.")],
+    destination: Annotated[
+        Path, typer.Option("--destination", help="Folder of files to upload to the notebook.")
+    ],
+    as_json: Annotated[bool, typer.Option("--json", help="Print the plan as JSON.")] = False,
+) -> None:
+    """Stage uniquely named upload files and print what to add, replace or keep."""
+    from cairntir.study import StudyExportError, stage_notebook_delivery
+
+    try:
+        result = stage_notebook_delivery(output, destination)
+    except (CairntirError, OSError, ValueError) as exc:
+        error = exc if isinstance(exc, CairntirError) else StudyExportError(str(exc))
+        typer.echo(f"cairntir: {error}", err=True)
+        raise typer.Exit(code=1) from exc
+    if as_json:
+        typer.echo(json.dumps(result, ensure_ascii=False))
+        return
+    typer.echo(f"Upload files are in {result['destination']}")
+    for row in result["plan"]:
+        if row["action"] == "keep":
+            typer.echo(f"keep     {row['name']}")
+            continue
+        if row["remove"]:
+            typer.echo(f"remove   {row['remove']}   (delete this source from the notebook)")
+        typer.echo(f"upload   {row['upload']}")
+    typer.echo("NotebookLM delivery is UNVERIFIED until you apply this plan in the notebook.")
 
 
 @app.command("export")

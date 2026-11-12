@@ -424,3 +424,120 @@ def export_study_sources(
             os.close(descriptor)
         if lock is not None:
             lock.unlink()
+
+
+_DELIVERED = "DELIVERED.json"
+_DELIVERED_SCHEMA = "cairntir.study-delivered.v1"
+
+
+def _delivery_name(category: str, revision: str) -> str:
+    return f"{category}-{revision[:12]}.md"
+
+
+def _delivered(root: Path, notebook_key: str, wing: str) -> dict[str, str]:
+    """Return category -> file name the last delivery plan said the notebook holds."""
+    path = root / _DELIVERED
+    if not path.exists():
+        return {}
+    value = _json(path)
+    names = value.get("sources")
+    if (
+        set(value) != {"schema", "notebook_key", "wing", "sources"}
+        or value["schema"] != _DELIVERED_SCHEMA
+        or not isinstance(names, dict)
+        or set(names) - set(_CATEGORIES)
+        or any(
+            not isinstance(name, str)
+            or re.fullmatch(rf"{category}-[0-9a-f]{{12}}\.md", name) is None
+            for category, name in names.items()
+        )
+    ):
+        raise StudyExportError("study delivery record is invalid")
+    if value["notebook_key"] != notebook_key or value["wing"] != wing:
+        raise StudyExportError("study delivery folder belongs to another notebook or wing")
+    return dict(names)
+
+
+def stage_notebook_delivery(output: Path, destination: Path) -> dict[str, Any]:
+    """Stage the current export as uniquely named files and plan the notebook change.
+
+    The plan compares the current export with what the previous plan in this
+    destination said the notebook holds. It never contacts NotebookLM. A person
+    applies each plan to the notebook before staging the next one.
+    """
+    try:
+        snapshot = _read(Path(output).absolute())
+        manifest = snapshot["manifest"]
+        wing, notebook_key = manifest["wing"], manifest["notebook_key"]
+        root = Path(destination).absolute()
+        _safe(root, missing=True)
+        if root.exists() and not root.is_dir():
+            _refuse("study delivery destination is not a directory")
+        known = _delivered(root, notebook_key, wing) if root.exists() else {}
+        if root.exists():
+            allowed = {_DELIVERED, *known.values()}
+            if any(p.name not in allowed for p in root.iterdir()):
+                _refuse("study delivery folder contains files this exporter does not own")
+        root.mkdir(parents=True, exist_ok=True)
+        _safe(root)
+        current: dict[str, str] = {}
+        plan: list[dict[str, Any]] = []
+        for row in manifest["sources"]:
+            category = row["category"]
+            name = _delivery_name(category, row["revision"])
+            data = _bytes(Path(snapshot["paths"][category]), _MARKDOWN_LIMIT)
+            if _digest(data) != row["revision"]:
+                _refuse("study source revision changed after validation")
+            target = root / name
+            if not target.exists() or target.read_bytes() != data:
+                _safe(target, missing=True)
+                temporary = root / f".stage-{uuid4()}.tmp"
+                try:
+                    temporary.write_bytes(data)
+                    os.replace(temporary, target)
+                finally:
+                    if temporary.exists():
+                        temporary.unlink()
+            current[category] = name
+            previous = known.get(category)
+            action = "add" if previous is None else "keep" if previous == name else "replace"
+            plan.append(
+                {
+                    "category": category,
+                    "action": action,
+                    "upload": name if action != "keep" else None,
+                    "remove": previous if action == "replace" else None,
+                    "name": name,
+                    "path": str(target),
+                    "revision": row["revision"],
+                }
+            )
+        record = _canonical(
+            {
+                "schema": _DELIVERED_SCHEMA,
+                "notebook_key": notebook_key,
+                "wing": wing,
+                "sources": current,
+            }
+        )
+        if not (root / _DELIVERED).exists() or (root / _DELIVERED).read_bytes() != record:
+            temporary = root / f".delivered-{uuid4()}.tmp"
+            try:
+                temporary.write_bytes(record)
+                os.replace(temporary, root / _DELIVERED)
+            finally:
+                if temporary.exists():
+                    temporary.unlink()
+        for stale in set(known.values()) - set(current.values()):
+            (root / stale).unlink(missing_ok=True)
+        return {
+            "schema": "cairntir.study-delivery-plan.v1",
+            "generation": hashlib.sha256(_canonical(manifest)).hexdigest(),
+            "destination": str(root),
+            "plan": plan,
+            "notebooklm": {"status": "UNVERIFIED"},
+        }
+    except StudyExportError:
+        raise
+    except (CairntirError, OSError, ValueError, TypeError, KeyError) as exc:
+        raise StudyExportError(f"study delivery refused: {exc}") from exc
