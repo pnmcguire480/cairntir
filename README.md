@@ -33,7 +33,7 @@ cairntir version
 cairntir doctor
 ```
 
-`pip install` selects stable 1.12.4, which includes the read-only diagnostics
+`pip install` selects 1.13.0, which includes the read-only diagnostics
 below. Older releases' doctor/status/version may still run registration and
 update callbacks, and status may open the store for writing.
 
