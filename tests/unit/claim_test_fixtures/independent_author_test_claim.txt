@@ -1,0 +1,58 @@
+import unittest
+
+import readtime
+
+
+def words(n, sep=" "):
+    return sep.join("w%d" % i for i in range(n))
+
+
+class ReadingMinutesClaim(unittest.TestCase):
+    def test_empty_is_zero(self):
+        self.assertEqual(readtime.reading_minutes(""), 0)
+
+    def test_whitespace_only_is_zero(self):
+        self.assertEqual(readtime.reading_minutes("  \n\t  "), 0)
+
+    def test_one_word_is_one_minute(self):
+        self.assertEqual(readtime.reading_minutes("hello"), 1)
+
+    def test_exactly_200_words_is_one_minute(self):
+        self.assertEqual(readtime.reading_minutes(words(200)), 1)
+
+    def test_201_words_is_two_minutes(self):
+        self.assertEqual(readtime.reading_minutes(words(201)), 2)
+
+    def test_400_words_is_two_minutes(self):
+        self.assertEqual(readtime.reading_minutes(words(400)), 2)
+
+    def test_401_words_is_three_minutes(self):
+        self.assertEqual(readtime.reading_minutes(words(401)), 3)
+
+    def test_199_words_is_one_minute(self):
+        self.assertEqual(readtime.reading_minutes(words(199)), 1)
+
+    def test_600_and_601_words(self):
+        self.assertEqual(readtime.reading_minutes(words(600)), 3)
+        self.assertEqual(readtime.reading_minutes(words(601)), 4)
+
+    def test_newline_separated_words(self):
+        self.assertEqual(readtime.reading_minutes(words(200, "\n")), 1)
+        self.assertEqual(readtime.reading_minutes(words(201, "\n")), 2)
+
+    def test_tab_separated_words(self):
+        self.assertEqual(readtime.reading_minutes(words(200, "\t")), 1)
+        self.assertEqual(readtime.reading_minutes(words(201, "\t")), 2)
+
+    def test_mixed_and_repeated_whitespace(self):
+        text = "a \t\n b   \n\n c"
+        self.assertEqual(readtime.reading_minutes(text), 1)
+        many = " \t\n ".join("w%d" % i for i in range(201))
+        self.assertEqual(readtime.reading_minutes(many), 2)
+
+    def test_leading_trailing_whitespace_not_counted(self):
+        self.assertEqual(readtime.reading_minutes("   " + words(200) + "  \n"), 1)
+
+
+if __name__ == "__main__":
+    unittest.main()

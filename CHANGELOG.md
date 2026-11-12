@@ -5,6 +5,7 @@
 ### Added
 
 - `cairntir audience capture` saves the five audience fields (audience, channels, pain, sophistication, desired outcome) as a provisional revision with a source for each. It never confirms: only `cairntir audience confirm` at a terminal does that. The same values as the current revision make no new revision; changed values make a new provisional one. This closes the gap that left the audience lock reachable only from Python.
+- `cairntir claim-test` turns a Crucible claim into an executed test (Q08). `export` writes a packet from a drawer that has a claim and a predicted outcome; it holds no subject source, and a drawer without a prediction is refused. A different author writes standard-library `unittest` files in the packet, and `freeze` binds them by SHA-256 (the claimant cannot freeze its own tests). `run` executes exactly the frozen bytes against a subject folder in an isolated interpreter and reports `FALSIFIED`, `HELD`, `NOT_EXECUTED` or `INCONCLUSIVE`; changed tests or a changed claim are refused. `qualify` reports `QUALIFIED` only when a known-bad subject is falsified and the corrected subject holds. Prompt text alone is never reported as a test.
 
 ### Fixed
 

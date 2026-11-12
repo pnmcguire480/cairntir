@@ -123,6 +123,12 @@ audience_app = typer.Typer(
 )
 app.add_typer(audience_app, name="audience")
 
+claim_test_app = typer.Typer(
+    help="Send a Crucible claim to a separate test author and execute the tests.",
+    no_args_is_help=True,
+)
+app.add_typer(claim_test_app, name="claim-test")
+
 
 def _dream_output(action: Callable[[], dict[str, Any]]) -> None:
     from cairntir.dream import DreamError
@@ -1525,6 +1531,85 @@ def audience_transfer_cmd(
     from cairntir.audience_lock import transfer_audience_to_spec
 
     _audience_output(lambda path: transfer_audience_to_spec(path, vault, wing, spec), store)
+
+
+def _claim_test_output(
+    action: Callable[[], dict[str, Any]], *, passed: Callable[[Any], bool]
+) -> None:
+    """Print a claim-test receipt; exit 0 only when it passed, 2 on a refusal."""
+    try:
+        result = action()
+    except (CairntirError, sqlite3.Error, OSError) as exc:
+        typer.echo(f"cairntir: claim-test refused: {exc}", err=True)
+        raise typer.Exit(code=2) from exc
+    typer.echo(json.dumps(result, ensure_ascii=False, indent=2))
+    if not passed(result):
+        raise typer.Exit(code=1)
+
+
+@claim_test_app.command("export")
+def claim_test_export_cmd(
+    packet: Path = typer.Argument(..., help="New or empty directory for the packet."),  # noqa: B008
+    drawer: int = typer.Option(..., "--drawer", help="Drawer holding the Crucible claim."),
+    interface: str = typer.Option(..., "--interface", help="Module the subject provides."),
+    claimant: str = typer.Option(..., "--claimant", help="Who made the claim."),
+    store: Path | None = typer.Option(  # noqa: B008
+        None, "--store", help="Defaults to the Cairntir store."
+    ),
+) -> None:
+    """Send a stored falsifiable claim to a separate test author as a packet."""
+    from cairntir.claim_tests import export_drawer_packet
+
+    def action() -> dict[str, Any]:
+        with _open_store(store, read_only=True) as opened:
+            found = opened.reference_drawer(drawer)
+        return export_drawer_packet(packet, found, interface=interface, claimant_id=claimant)
+
+    _claim_test_output(action, passed=lambda _: True)
+
+
+@claim_test_app.command("freeze")
+def claim_test_freeze_cmd(
+    packet: Path = typer.Argument(..., help="Packet directory."),  # noqa: B008
+    author: str = typer.Option(..., "--author", help="Who wrote the tests (not the claimant)."),
+) -> None:
+    """Freeze the author's test files by SHA-256 before any subject is run."""
+    from cairntir.claim_tests import freeze_tests
+
+    _claim_test_output(lambda: freeze_tests(packet, author_id=author), passed=lambda _: True)
+
+
+@claim_test_app.command("run")
+def claim_test_run_cmd(
+    packet: Path = typer.Argument(..., help="Packet directory."),  # noqa: B008
+    subject: Path = typer.Option(..., "--subject", help="Directory holding the subject."),  # noqa: B008
+    timeout: float = typer.Option(120.0, "--timeout", min=1.0),
+) -> None:
+    """Execute the frozen tests against one subject. Exit 0 only when the claim HELD."""
+    from cairntir.claim_tests import Verdict, run_claim_tests
+
+    _claim_test_output(
+        lambda: run_claim_tests(packet, subject, timeout=timeout).as_dict(),
+        passed=lambda result: result["verdict"] == Verdict.HELD.value,
+    )
+
+
+@claim_test_app.command("qualify")
+def claim_test_qualify_cmd(
+    packet: Path = typer.Argument(..., help="Packet directory."),  # noqa: B008
+    known_bad: Path = typer.Option(..., "--known-bad", help="Subject with the bad behavior."),  # noqa: B008
+    corrected: Path = typer.Option(..., "--corrected", help="Subject with the fix."),  # noqa: B008
+    timeout: float = typer.Option(120.0, "--timeout", min=1.0),
+) -> None:
+    """QUALIFIED only when known-bad is FALSIFIED and corrected HELD."""
+    from cairntir.claim_tests import qualify_claim_tests
+
+    _claim_test_output(
+        lambda: qualify_claim_tests(
+            packet, known_bad=known_bad, corrected=corrected, timeout=timeout
+        ),
+        passed=lambda result: result["status"] == "QUALIFIED",
+    )
 
 
 @question_app.command("open")
