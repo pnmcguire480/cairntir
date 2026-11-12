@@ -3280,5 +3280,10 @@ def claude_session_start(binding: Annotated[Path, typer.Option("--binding")]) ->
         _startup_grant = previous
 
 
+from cairntir.outlines_cli import outlines_app  # noqa: E402  (I05 route, own module)
+
+app.add_typer(outlines_app, name="outlines")
+
+
 if __name__ == "__main__":
     main()
