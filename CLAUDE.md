@@ -5,8 +5,8 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **1.13.0**, which publishes the work toward 2.0 under a 1.x
-number. The previous stable release is **1.12.4**. Read [ALPHA.md](ALPHA.md) before installing or claiming feature
+Source version: **1.13.0**, published on 2026-11-12, which carries the work
+toward 2.0 under a 1.x number. The previous stable release is **1.12.4**. Read [ALPHA.md](ALPHA.md) before installing or claiming feature
 readiness; it defines the supported preview and every remaining release gate.
 Use a separate virtual environment, disposable store and pilot vault.
 
@@ -88,7 +88,15 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-10-30 (bounded release completion)
+## Last Session - 2026-11-12 (1.13.0 published)
+
+[1.13.0](https://github.com/pnmcguire480/cairntir/releases/tag/v1.13.0) is on PyPI and GitHub from tag `v1.13.0` at `3b02538f`, never moved. Release run 43137612421 passed all five jobs: 2,846 tests passed, coverage 87.42% against the 87% floor. A fresh install from PyPI reports 1.13.0. [Release record](docs/release/v1.13.0.md) has the hashes and the two earlier failed attempts, repaired in PR154 and PR161.
+
+On `main` after the tag, under Unreleased: E22 and I01 closed, `cairntir audience capture`, and the Dream reply-shape fix (PR158); pull request CI split into parallel parts, about 23 minutes instead of 55, with a gate proving no test is dropped (PR159); the draft-only tests carried onto main (PR160). Drafts 125, 126, 129, 131 and 147 are closed with branches kept. Roadmap: 25 of 35 component criteria complete, 10 open (Q04, Q08, R12, R13, R14, I02, I03, I05, C50, R16).
+
+Still open: the independent evaluator has not rerun since 2.0.0a4; 90% coverage is owed after launch, with 2.0.0 launching at 85% on the maintainer's 10 November decision while CI enforces 87%; six Dependabot pull requests (148-153) are untouched. The maintainer's live launchers were not switched in this session. 2.0.0 stays reserved for the finished roadmap.
+
+## Previous Session - 2026-10-30 (bounded release completion)
 
 Current checkpoint: published head5015aa9d contains41 curated commits/393 paths.
 Previous complete CI41155243753 at5fe8945a passes all nine assertion suites:
