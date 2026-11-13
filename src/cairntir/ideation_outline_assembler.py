@@ -52,6 +52,12 @@ _PREFIX = (
 )
 _V2 = "i05.staged.v2"
 _V3 = "i05.staged.v3"
+_V3T = "i05.staged.v3t"
+# Seconds allowed per section exchange. v2 keeps its original 180 s bound. The v3 versions
+# (thinking off, and v3t with the model's thinking left on) default to 180 s but may be set
+# up to one hour: the maintainer decided on 13 November 2026 that a slow local machine must
+# not be what fails I05. Every exchange stays bounded.
+_LIMITS = {_V2: 180.0, _V3: channels.MAX_EXCHANGE_SECONDS, _V3T: channels.MAX_EXCHANGE_SECONDS}
 # v3 (repair round 2, 13 November 2026): real qwen3:8b and gemma4:e4b spent 70-80% of each
 # section's tokens on hidden thinking and ran out of time or tokens, and qwen3:8b put
 # undeclared figures ("40%", "two hours weekly") into examples. v3 turns Ollama thinking off
@@ -70,7 +76,7 @@ _NUMBER = re.compile(
 
 
 def _prefix(identity: Mapping[str, Any]) -> str:
-    return _PREFIX_V3 if identity["prompt_version"] == _V3 else _PREFIX
+    return _PREFIX if identity["prompt_version"] == _V2 else _PREFIX_V3
 
 
 def _undeclared_numbers(texts: list[str], allowed: str, claims: list[str]) -> list[str]:
@@ -97,19 +103,25 @@ class OllamaStagedOutlinesAdapter:
     ) -> None:
         """Bind a local endpoint without starting or changing a provider.
 
-        ``prompt_version="i05.staged.v3"`` sends ``"think": false`` and the v3 prompt.
+        ``prompt_version="i05.staged.v3"`` sends ``"think": false`` and the v3 prompt;
+        ``"i05.staged.v3t"`` uses the v3 prompt with the model's thinking left on. Both
+        allow up to one hour per section; v2 keeps its 180 s bound.
         """
-        if prompt_version not in {_V2, _V3}:
+        if prompt_version not in _LIMITS:
             _fail("INVALID_INPUT", "unknown staged prompt version")
+        limit = _LIMITS[prompt_version]
         if (
             type(timeout_seconds) not in {int, float}
             or not math.isfinite(timeout_seconds)
-            or not 0 < timeout_seconds <= 180
+            or not 0 < timeout_seconds <= limit
         ):
-            _fail("INVALID_INPUT", "staged exchange timeout must be at most 180 seconds")
+            _fail("INVALID_INPUT", f"staged exchange timeout must be at most {limit:g} seconds")
         try:
             self._delegate: channels.OllamaChannelsAdapter = channels.OllamaChannelsAdapter(
-                endpoint=endpoint, model=model, timeout_seconds=float(timeout_seconds)
+                endpoint=endpoint,
+                model=model,
+                timeout_seconds=float(timeout_seconds),
+                max_timeout_seconds=limit,
             )
         except channels.ChannelError as exc:
             raise OutlineError(exc.code, str(exc)) from exc
@@ -154,7 +166,7 @@ def _identity(value: Any, *, builtin: bool | None = None) -> dict[str, Any]:
     )
     _text(row["model_id"], 1, 128)
     if (
-        row["prompt_version"] not in {_V2, _V3}
+        row["prompt_version"] not in _LIMITS
         or row["schema_version"] != "cairntir.outline-node-output.v2"
         or row["kind"] not in {"fixture", "ollama"}
         or (builtin is not None and row["kind"] != ("ollama" if builtin else "fixture"))
@@ -177,7 +189,7 @@ def _identity(value: Any, *, builtin: bool | None = None) -> dict[str, Any]:
             origin != row["endpoint"]
             or type(timeout) is not float
             or not math.isfinite(timeout)
-            or not 0 < timeout <= 180
+            or not 0 < timeout <= _LIMITS[row["prompt_version"]]
             or row["transport"] != "cairntir.ideation_channels.OllamaChannelsAdapter.generate"
         ):
             _fail("INVALID_INPUT", "invalid staged local transport identity")
@@ -702,7 +714,7 @@ def _compile(master: dict[str, Any], completed: list[dict[str, Any]]) -> dict[st
                     "depends_on": [f"{rid}.{key}" for key in spec["depends_on"]],
                 }
             )
-        if master["adapter"]["prompt_version"] == _V3:
+        if master["adapter"]["prompt_version"] in {_V3, _V3T}:
             _, hook = calendar._hooks(master["context"])[request["hook_id"]]
             written = [
                 outline["title"],

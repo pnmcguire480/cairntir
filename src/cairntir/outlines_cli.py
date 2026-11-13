@@ -13,7 +13,8 @@ import typer
 
 from cairntir.errors import CairntirError
 
-STAGED = "i05.staged.v3"  # thinking off and numbers declared (repair round 2)
+# Repair round 2: numbers must be declared; thinking is off unless --thinking is given.
+STAGED, STAGED_THINKING = "i05.staged.v3", "i05.staged.v3t"
 
 outlines_app = typer.Typer(
     help="Expand your selected angle into production outlines with planned next actions.",
@@ -97,9 +98,14 @@ def outlines_generate_cmd(
         None,
         "--timeout",
         min=1.0,
-        max=360.0,
-        help="Seconds per model call: up to 180 per section (default), "
-        "up to 360 per whole outline with --single-call.",
+        max=3600.0,
+        help="Seconds per model call. Default 180. Up to 3600 per section; "
+        "up to 360 per whole outline with --single-call (a fixed limit).",
+    ),
+    thinking: bool = typer.Option(
+        False,
+        "--thinking/--no-thinking",
+        help="Leave the model's hidden thinking on for each section (slower).",
     ),
     single_call: bool = typer.Option(
         False,
@@ -128,12 +134,13 @@ def outlines_generate_cmd(
     def action(path: Path) -> dict[str, Any]:
         formats = [parse_format(value) for value in output_format or DEFAULT_FORMATS]
         seconds = timeout if timeout is not None else (360.0 if single_call else 180.0)
+        version = STAGED_THINKING if thinking else STAGED
         adapter: OllamaOutlinesAdapter | OllamaStagedOutlinesAdapter
         if single_call:
             adapter = OllamaOutlinesAdapter(endpoint=endpoint, model=model, timeout_seconds=seconds)
         else:
             adapter = OllamaStagedOutlinesAdapter(
-                endpoint=endpoint, model=model, timeout_seconds=seconds, prompt_version=STAGED
+                endpoint=endpoint, model=model, timeout_seconds=seconds, prompt_version=version
             )
         bound = angle_context(path, vault, wing, revision=revision, angle_id=angle)
         idempotency_key = key or _key(
@@ -145,7 +152,7 @@ def outlines_generate_cmd(
             endpoint,
             seconds,
             single_call,
-            STAGED,
+            version,
         )
         with cli._open_store(path, capture_path="outlines") as drawers:
             return generate_angle_outlines(

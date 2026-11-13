@@ -21,20 +21,24 @@ stored angle set, whose angles and reasons are themselves model judgments.
 By default the model writes each outline one section at a time: the opening, each
 key point with its example, the close and call to action, all the bridges, then the
 production notes, length estimate and next actions. That is 8 calls for a written
-post (4 key points) and 7 for a short video (3), each limited to 180 seconds
-(`--timeout`, at most 180). Cairntir assigns every id, which sections each bridge
+post (4 key points) and 7 for a short video (3). Each call is limited to 180
+seconds by default; on a slow computer raise it with `--timeout`, up to 3600 seconds
+(one hour) per section. There is no separate limit for the whole run: it is at most the
+number of sections times that limit. Cairntir assigns every id, which sections each bridge
 joins and which parts each action covers, so the model only writes the prose. Each
 outline gets three planned actions: check the facts (covering every part), draft,
 and finish (edit and lay out the post, or rehearse, record and edit the video).
 
 Each section request turns the model's hidden "thinking" off (Ollama's `think: false`),
-so its token budget and time go to the writing. Any figure, percentage, price or time
+so its token budget and time go to the writing. `--thinking` leaves it on (slower; the
+per-section token budgets stay the same, so a model that thinks at length can still run
+out of room). Any figure, percentage, price or time
 saving in the written prose that is not in your request or the angle note must also be
 listed as an assumption (each assumption is linked to the check-the-facts action);
 otherwise the set is refused.
 
-`--single-call` asks for each whole outline in one call instead (limit up to 360
-seconds). Small local models tend to get its structure wrong.
+`--single-call` asks for each whole outline in one call instead. Its limit is fixed at
+360 seconds at most, by the original outline engine's frozen contract. Small local models tend to get its structure wrong.
 
 ## Generate
 

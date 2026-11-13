@@ -445,13 +445,44 @@ def test_staged_section_over_its_time_limit_stores_nothing(
     assert _show(env).exit_code == 1
 
 
-def test_staged_limit_above_180_seconds_is_refused_before_any_call(
+def test_section_limit_is_configurable_up_to_one_hour_and_recorded(
     env: dict[str, Any], ollama: _Ollama
 ) -> None:
     _choose(env, "a10")
-    result = _generate(env, ollama, "--timeout", "200")
-    assert result.exit_code == 1 and "180 seconds" in result.output
+    result = _generate(env, ollama, "--timeout", "600")
+    assert result.exit_code == 0, result.output
+    receipt = json.loads(result.output)
+    limits = {row["adapter_identity"]["timeout_seconds"] for row in receipt["node_evidence"]}
+    assert limits == {600.0}
+
+
+def test_section_limit_above_one_hour_is_refused_before_any_call(
+    env: dict[str, Any], ollama: _Ollama
+) -> None:
+    _choose(env, "a10")
+    result = _generate(env, ollama, "--timeout", "3601")
+    assert result.exit_code != 0
     assert ollama.outline_calls == 0
+
+
+def test_single_call_keeps_its_fixed_360_second_limit(env: dict[str, Any], ollama: _Ollama) -> None:
+    _choose(env, "a10")
+    result = _generate(env, ollama, "--single-call", "--timeout", "400")
+    assert result.exit_code == 1 and "360 seconds" in result.output
+    assert ollama.outline_calls == 0
+
+
+def test_thinking_option_leaves_model_thinking_on(env: dict[str, Any], ollama: _Ollama) -> None:
+    _choose(env, "a11")
+    result = _generate(env, ollama, "--thinking")
+    assert result.exit_code == 0, result.output
+    assert len(ollama.bodies) == 15
+    for body in ollama.bodies:
+        assert "think" not in body
+        assert body["prompt"].startswith("I05 (i05.staged.v3)")
+        assert "Do not invent figures" in body["prompt"]
+    identity = json.loads(result.output)["node_evidence"][0]["adapter_identity"]
+    assert identity["prompt_version"] == "i05.staged.v3t"
 
 
 def test_staged_requests_turn_thinking_off_and_ask_for_declared_numbers(

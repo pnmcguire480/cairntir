@@ -500,19 +500,38 @@ def _cancel(cancel: Event | None) -> None:
             _fail("CANCELLED", "channel generation was cancelled")
 
 
+MAX_EXCHANGE_SECONDS = 3600.0
+
+
 class OllamaChannelsAdapter:
     """One explicit local Ollama request with an absolute HTTP deadline."""
 
-    def __init__(self, *, endpoint: str, model: str, timeout_seconds: float = 120.0) -> None:
-        """Bind an existing model and numeric-loopback HTTP origin."""
+    def __init__(
+        self,
+        *,
+        endpoint: str,
+        model: str,
+        timeout_seconds: float = 120.0,
+        max_timeout_seconds: float = 360.0,
+    ) -> None:
+        """Bind an existing model and numeric-loopback HTTP origin.
+
+        ``max_timeout_seconds`` lets a caller with its own recorded bound (the staged
+        outline writer) allow up to one hour per exchange; it is never unbounded.
+        """
         host, port, origin = _origin(endpoint)
+        if not 0 < max_timeout_seconds <= MAX_EXCHANGE_SECONDS:
+            _fail("INVALID_INPUT", "exchange time limit ceiling is out of range")
         if (
             isinstance(timeout_seconds, bool)
             or not isinstance(timeout_seconds, (int, float))
             or not math.isfinite(timeout_seconds)
-            or not 0 < timeout_seconds <= 360
+            or not 0 < timeout_seconds <= max_timeout_seconds
         ):
-            _fail("INVALID_INPUT", "timeout must be finite and at most 360 seconds")
+            _fail(
+                "INVALID_INPUT",
+                f"timeout must be finite and at most {max_timeout_seconds:g} seconds",
+            )
         self._host, self._port = host, port
         self._timeout = float(timeout_seconds)
         self._identity = MappingProxyType(
