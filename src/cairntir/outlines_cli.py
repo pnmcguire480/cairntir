@@ -13,6 +13,8 @@ import typer
 
 from cairntir.errors import CairntirError
 
+STAGED = "i05.staged.v3"  # thinking off and numbers declared (repair round 2)
+
 outlines_app = typer.Typer(
     help="Expand your selected angle into production outlines with planned next actions.",
     no_args_is_help=True,
@@ -131,11 +133,19 @@ def outlines_generate_cmd(
             adapter = OllamaOutlinesAdapter(endpoint=endpoint, model=model, timeout_seconds=seconds)
         else:
             adapter = OllamaStagedOutlinesAdapter(
-                endpoint=endpoint, model=model, timeout_seconds=seconds
+                endpoint=endpoint, model=model, timeout_seconds=seconds, prompt_version=STAGED
             )
         bound = angle_context(path, vault, wing, revision=revision, angle_id=angle)
         idempotency_key = key or _key(
-            wing, bound["context"], formats, constraint, model, endpoint, seconds, single_call
+            wing,
+            bound["context"],
+            formats,
+            constraint,
+            model,
+            endpoint,
+            seconds,
+            single_call,
+            STAGED,
         )
         with cli._open_store(path, capture_path="outlines") as drawers:
             return generate_angle_outlines(

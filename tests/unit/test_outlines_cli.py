@@ -63,7 +63,8 @@ def _fill(schema: dict[str, Any], label: str) -> Any:
         return [_fill(schema["items"], f"{label} item {i}") for i in range(schema["minItems"])]
     if kind == "integer":
         return (schema["minimum"] + schema["maximum"]) // 2
-    text = f"Written wording for {label}: a calm routine that keeps shop admin short."
+    words = label.translate(str.maketrans("0123456789", "abcdefghij"))
+    text = f"Written wording for {words}: a calm routine that keeps shop admin short."
     while len(text) < schema["minLength"]:
         text += " It stays practical for a solo maker."
     return text[: schema["maxLength"]]
@@ -75,6 +76,7 @@ class _Ollama:
     def __init__(self) -> None:
         self.calls: list[str] = []
         self.jobs: list[str] = []
+        self.bodies: list[dict[str, Any]] = []
         self.mutate: Callable[[dict[str, Any]], None] | None = None
         self.staged_mutate: Callable[[str, dict[str, Any]], None] | None = None
         self.delay: dict[str, float] = {}
@@ -84,10 +86,11 @@ class _Ollama:
             def do_POST(self) -> None:
                 body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
                 prompt = body.get("prompt", "")
-                if prompt.startswith("I05 (i05.staged.v2)"):
+                if prompt.startswith("I05 (i05.staged."):
                     owner.calls.append("outline")
                     job = json.loads(prompt.split("\n", 1)[1])
                     owner.jobs.append(job["node_id"])
+                    owner.bodies.append(body)
                     time.sleep(owner.delay.get(job["job"], 0))
                     output = _fill(body["format"], job["node_id"])
                     if owner.staged_mutate is not None:
@@ -449,3 +452,48 @@ def test_staged_limit_above_180_seconds_is_refused_before_any_call(
     result = _generate(env, ollama, "--timeout", "200")
     assert result.exit_code == 1 and "180 seconds" in result.output
     assert ollama.outline_calls == 0
+
+
+def test_staged_requests_turn_thinking_off_and_ask_for_declared_numbers(
+    env: dict[str, Any], ollama: _Ollama
+) -> None:
+    _choose(env, "a12")
+    assert _generate(env, ollama).exit_code == 0
+    assert len(ollama.bodies) == 15
+    for body in ollama.bodies:
+        assert body["think"] is False
+        assert body["prompt"].startswith("I05 (i05.staged.v3)")
+        assert "Do not invent figures" in body["prompt"]
+
+
+def _figure(declared: bool) -> Callable[[str, dict[str, Any]], None]:
+    def mutate(job: str, output: dict[str, Any]) -> None:
+        if job == "point" and not getattr(mutate, "done", False):
+            output["example"] += " It saves 40% of admin time."
+            if declared:
+                output["assumptions"] = ["A routine like this saves 40% of admin time."]
+            mutate.done = True  # type: ignore[attr-defined]
+
+    return mutate
+
+
+def test_undeclared_generated_number_is_refused(env: dict[str, Any], ollama: _Ollama) -> None:
+    _choose(env, "a13")
+    ollama.staged_mutate = _figure(declared=False)
+    result = _generate(env, ollama)
+    assert result.exit_code == 1 and "number is not declared" in result.output
+    assert _show(env).exit_code == 1
+
+
+def test_declared_generated_number_is_kept_with_its_verification_action(
+    env: dict[str, Any], ollama: _Ollama
+) -> None:
+    _choose(env, "a14")
+    ollama.staged_mutate = _figure(declared=True)
+    result = _generate(env, ollama)
+    assert result.exit_code == 0, result.output
+    outline = json.loads(result.output)["outlines"][0]
+    claims = outline["outline"]["assumptions"]
+    assert [a["claim"] for a in claims] == ["A routine like this saves 40% of admin time."]
+    verify = next(a for a in outline["actions"] if a["kind"] == "verification")
+    assert claims[0]["verification_action_id"] == verify["action_id"]

@@ -27,6 +27,12 @@ joins and which parts each action covers, so the model only writes the prose. Ea
 outline gets three planned actions: check the facts (covering every part), draft,
 and finish (edit and lay out the post, or rehearse, record and edit the video).
 
+Each section request turns the model's hidden "thinking" off (Ollama's `think: false`),
+so its token budget and time go to the writing. Any figure, percentage, price or time
+saving in the written prose that is not in your request or the angle note must also be
+listed as an assumption (each assumption is linked to the check-the-facts action);
+otherwise the set is refused.
+
 `--single-call` asks for each whole outline in one call instead (limit up to 360
 seconds). Small local models tend to get its structure wrong.
 

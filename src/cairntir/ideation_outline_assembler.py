@@ -50,13 +50,57 @@ _PREFIX = (
     "enough for its future duration; production notes and estimate basis are not script. "
     "Return the exact closed job JSON only, including assumptions (empty when none).\n"
 )
+_V2 = "i05.staged.v2"
+_V3 = "i05.staged.v3"
+# v3 (repair round 2, 13 November 2026): real qwen3:8b and gemma4:e4b spent 70-80% of each
+# section's tokens on hidden thinking and ran out of time or tokens, and qwen3:8b put
+# undeclared figures ("40%", "two hours weekly") into examples. v3 turns Ollama thinking off
+# and asks for every number to be declared; v2 requests and stored sets stay byte-identical.
+_PREFIX_V3 = _PREFIX.replace("I05 (i05.staged.v2):", "I05 (i05.staged.v3):").replace(
+    "Return the exact closed job JSON only",
+    "Do not invent figures, percentages, prices or time savings; any number not in the "
+    "request or evidence must also be stated as an assumption. "
+    "Return the exact closed job JSON only",
+)
+_NUMBER = re.compile(
+    r"\d+(?:[.,]\d+)*\s*%?|\b(?:two|three|four|five|six|seven|eight|nine|ten|eleven|twelve"
+    r"|twenty|thirty|forty|fifty|hundred|thousand|half|double|triple)\b",
+    re.IGNORECASE,
+)
+
+
+def _prefix(identity: Mapping[str, Any]) -> str:
+    return _PREFIX_V3 if identity["prompt_version"] == _V3 else _PREFIX
+
+
+def _undeclared_numbers(texts: list[str], allowed: str, claims: list[str]) -> list[str]:
+    """Return numbers in generated prose found neither in the inputs nor in an assumption."""
+    known = re.sub(r"\s+", "", (allowed + " " + " ".join(claims)).lower())
+    found = []
+    for text in texts:
+        for match in _NUMBER.finditer(text):
+            if re.sub(r"\s+", "", match.group(0).lower()) not in known:
+                found.append(match.group(0))
+    return found
 
 
 class OllamaStagedOutlinesAdapter:
     """Use the existing bounded local transport with truthful staged attribution."""
 
-    def __init__(self, *, endpoint: str, model: str, timeout_seconds: float = 180) -> None:
-        """Bind a local endpoint without starting or changing a provider."""
+    def __init__(
+        self,
+        *,
+        endpoint: str,
+        model: str,
+        timeout_seconds: float = 180,
+        prompt_version: str = _V2,
+    ) -> None:
+        """Bind a local endpoint without starting or changing a provider.
+
+        ``prompt_version="i05.staged.v3"`` sends ``"think": false`` and the v3 prompt.
+        """
+        if prompt_version not in {_V2, _V3}:
+            _fail("INVALID_INPUT", "unknown staged prompt version")
         if (
             type(timeout_seconds) not in {int, float}
             or not math.isfinite(timeout_seconds)
@@ -74,7 +118,7 @@ class OllamaStagedOutlinesAdapter:
             {
                 "kind": "ollama",
                 "model_id": transport["model_id"],
-                "prompt_version": "i05.staged.v2",
+                "prompt_version": prompt_version,
                 "schema_version": "cairntir.outline-node-output.v2",
                 "transport": "cairntir.ideation_channels.OllamaChannelsAdapter.generate",
                 "endpoint": transport["endpoint"],
@@ -110,7 +154,7 @@ def _identity(value: Any, *, builtin: bool | None = None) -> dict[str, Any]:
     )
     _text(row["model_id"], 1, 128)
     if (
-        row["prompt_version"] != "i05.staged.v2"
+        row["prompt_version"] not in {_V2, _V3}
         or row["schema_version"] != "cairntir.outline-node-output.v2"
         or row["kind"] not in {"fixture", "ollama"}
         or (builtin is not None and row["kind"] != ("ollama" if builtin else "fixture"))
@@ -449,15 +493,16 @@ def _wire(
     input_bytes = _canonical(inp)
     if len(input_bytes) > 32_768:
         _fail("CONSTRAINT_VIOLATION", "selected node input exceeds its byte budget")
-    raw = _canonical(
-        {
-            "model": master["adapter"]["model_id"],
-            "stream": False,
-            "prompt": master["prompt_prefix"] + input_bytes.decode("utf-8"),
-            "format": node["schema"],
-            "options": node["options"],
-        }
-    )
+    body: dict[str, Any] = {
+        "model": master["adapter"]["model_id"],
+        "stream": False,
+        "prompt": master["prompt_prefix"] + input_bytes.decode("utf-8"),
+        "format": node["schema"],
+        "options": node["options"],
+    }
+    if master["adapter"]["prompt_version"] == _V3:
+        body["think"] = False
+    raw = _canonical(body)
     if len(raw) > 65_536:
         _fail("CONSTRAINT_VIOLATION", "node request exceeds its byte budget")
     return {
@@ -657,6 +702,25 @@ def _compile(master: dict[str, Any], completed: list[dict[str, Any]]) -> dict[st
                     "depends_on": [f"{rid}.{key}" for key in spec["depends_on"]],
                 }
             )
+        if master["adapter"]["prompt_version"] == _V3:
+            _, hook = calendar._hooks(master["context"])[request["hook_id"]]
+            written = [
+                outline["title"],
+                *(
+                    part["text"]
+                    for part in v1._components(outline)
+                    if not part["id"].endswith("length-basis") and ".note" not in part["id"]
+                ),
+            ]
+            allowed = " ".join(
+                [
+                    _canonical(request).decode("utf-8"),
+                    _canonical(hook).decode("utf-8"),
+                    *(quote["text"] for quote in quotes),
+                ]
+            )
+            if _undeclared_numbers(written, allowed, [a["claim"] for a in assumptions]):
+                _fail("INVALID_RESPONSE", "generated number is not declared as an assumption")
         for assumption in assumptions:
             verifier = next(a for a in actions if a["id"] == assumption["verification_action_id"])
             if not set(assumption["component_ids"]) <= set(verifier["component_ids"]):
@@ -724,7 +788,7 @@ def _read_master(reader: v1._Reader, ref: Any, root: PathLike | None) -> dict[st
         "adapter": identity,
         "quotes": quotes,
         "nodes": _schedule(requests, plan),
-        "prompt_prefix": _PREFIX,
+        "prompt_prefix": _prefix(identity),
     }
     if master != expected:
         _fail("CORRUPT_ARTIFACT", "staged master preparation changed")
@@ -1031,7 +1095,7 @@ def generate_outline_set(
         "adapter": identity,
         "quotes": quotes,
         "nodes": nodes,
-        "prompt_prefix": _PREFIX,
+        "prompt_prefix": _prefix(identity),
     }
     failed = _receipt(store, base, "failure", binding)
     if failed is not None:
@@ -1065,7 +1129,7 @@ def generate_outline_set(
             "adapter": identity,
             "quotes": quotes,
             "nodes": nodes,
-            "prompt_prefix": _PREFIX,
+            "prompt_prefix": _prefix(identity),
         }
         return {"ref": v1._add(store, wing, core, [cref["drawer_id"]])}
 
