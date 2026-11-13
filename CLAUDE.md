@@ -5,9 +5,8 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **1.14.0**, prepared on 2026-11-12 and **not published**; it
-waits for the maintainer's approval. The latest published release is
-**1.13.0** (2026-11-12), which carries the work toward 2.0 under a 1.x number. Read [ALPHA.md](ALPHA.md) before installing or claiming feature
+Source version: **1.14.0**, published on 2026-11-13 from tag `v1.14.0` at
+`636b7c73`; see the [release record](docs/release/v1.14.0.md). It carries the work toward 2.0 under a 1.x number. Read [ALPHA.md](ALPHA.md) before installing or claiming feature
 readiness; it defines the supported preview and every remaining release gate.
 Use a separate virtual environment, disposable store and pilot vault.
 
@@ -89,7 +88,11 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-11-12 (1.14.0 prepared, not published)
+## Last Session - 2026-11-13 (1.14.0 published)
+
+[1.14.0](https://github.com/pnmcguire480/cairntir/releases/tag/v1.14.0) is on PyPI and GitHub from tag `v1.14.0` at `636b7c73`, never moved, on the maintainer's word "publish 1.14.0". Release run 43365649687 passed on its second attempt (the first stopped on a network timeout in the advisory check, before any build): 3,085 tests passed, coverage 87.88%. A fresh install from PyPI reports 1.14.0. CI on `main` at that commit is red from two different macOS failures; the [release record](docs/release/v1.14.0.md) has both. Independent checkers ran on 12 November: E22, I01, Q08, R13's local half, R12 (PR167) and Q04 (PR170) READY; Dream, I02 (PR168) and C50 (PR171) NOT READY. I02's distinctness gate was repaired in PR168 and awaits recheck. I03 (PR173) and I05 (PR172) are built and stay open; I05's real-model run failed. The home PC's C: drive is off limits for working files; use D:, E: and F:.
+
+## Previous Session - 2026-11-12 (1.14.0 prepared, not published)
 
 The independent evaluator tested published 1.13.0 on the work PC and reported FAIL on one Tier 2 finding, no Tier 1 and no data loss: an exact `cairntir replay` retry printed a chain link that was never saved. Reproduced with a failing test and fixed in PR166. Of the evaluator's 40 promises, 10 passed, 1 failed and 29 were not tested at full scope; it has not rerun against the fix. PR165 landed Q08 (`cairntir claim-test`) and the local half of R13 (`cairntir study-deliver`). Roadmap: 26 of 35 complete, 9 open (Q04, R12, R13, R14, I02, I03, I05, C50, R16).
 
