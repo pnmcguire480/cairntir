@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- HumanFlow narration can be written by the host model (R12). `HumanFlowRun.prepare` exports the read-only evidence bundle for a PALADIN Python run. `HostNarrationAdapter` returns the host's narration only for the bundle it was written against, checked by SHA-256, and the existing validator and `publish` path do the rest. The check ledger, failures, MISSING checks and PENDING stages stay in the published CodeGlass walkthrough, and no teach-back is implied. A real narrated walkthrough of a two-attempt run is kept with its tests in `tests/acceptance/humanflow_teaching_unit`. The local Ollama route is unchanged.
+
 ## [1.14.0] - 2026-11-12
 
 Three new commands and two fixes on top of 1.13.0. No database schema change: a store that works with 1.13.0 works with 1.14.0 without a reindex. It is a minor version, not a patch, because the [release policy](docs/release-cadence.md) gives any new capability a minor number. One of the fixes answers the single finding of the independent evaluation of 1.13.0; the evaluator has not yet rerun its tests against it. Roadmap after this release: 26 of 35 items complete, 9 open; [ALPHA.md](ALPHA.md) says which.

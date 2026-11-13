@@ -73,11 +73,10 @@ historical; they do not describe the current head.
 
 ## Follow-up roadmap
 
-The original 35 commitments remain assigned: 26 component criteria complete, 9 open. This count is not a count of new features. The stable 2.0 planning target remains 6 November 2026, with 7 November reserve and 5 November GO/NO-GO; unresolved gates still determine readiness.
+The original 35 commitments remain assigned: 27 component criteria complete, 8 open. This count is not a count of new features. The stable 2.0 planning target remains 6 November 2026, with 7 November reserve and 5 November GO/NO-GO; unresolved gates still determine readiness.
 
 | Follow-up | Target |
 | --- | --- |
-| R12 HumanFlow teaching | 12 November 2026 |
 | R13 NotebookLM delivery/update | 13 November 2026 |
 | I02 audience-bound angles | 17 November 2026 |
 | I03 channel adaptation | 19 November 2026 |
@@ -86,6 +85,10 @@ The original 35 commitments remain assigned: 26 component criteria complete, 9 o
 | R14 code-specific quizzes, audio and cross-project learning | 27 November 2026 |
 | C50 LongMemEval/calibration and independent reproduction | 3 December 2026 |
 | R16 ten-user pilot and structured feedback | 4 December 2026 |
+
+R12 is complete against its original criterion: "The explanation links actual evidence and preserves uncertainty; style cannot conceal failures or substitute for comprehension checks." The earlier October attempt stays on record as failed: two answers from a local 7B model (Ollama) were rejected, and an independent review found the second one wrong about the code. For this packet the narrator is the host model in the session. It reads an evidence bundle from `HumanFlowRun.prepare`, and `HostNarrationAdapter` hands its narration back bound to that bundle by SHA-256, so narration written for other evidence is refused. On 12 November 2026 claude-opus-5-5 narrated a real two-attempt managed Python run of a small `flow.py` (a bug, then a repair). The unchanged validator accepted the narration, and it was published to CodeGlass and Obsidian through the existing path. The published page puts the full check ledger first: the earlier `test_negative` failure, the `test_label` NameError error, `test_missing` MISSING in both attempts, and the lint, types, build and unit stages PENDING. The prose follows input -2 through both versions, labels the purpose as inferred, and says passing checks are not evidence of learning. No teach-back score is recorded. A variant that relabels the earlier failure as passed is refused. The artifact and its tests are in `tests/acceptance/humanflow_teaching_unit`. This covers one host and one small program, not narration quality in general, and the local-model route stays as it was.
+
+Q08 is complete against its original criterion: "Known-bad behavior falsifies the claim and corrected behavior passes; prompt text alone is never reported as an executed test." `cairntir claim-test` exports a stored claim and its predicted outcome to a packet with no subject source, freezes tests written by a different author by SHA-256, and runs exactly those bytes against a subject. On 11 November 2026 a separate agent that saw only the packet wrote 13 cases. They failed 7 of 13 against a deliberately broken subject (`FALSIFIED`) and passed 13 of 13 against the corrected one (`HELD`). A packet with no executed case is `NOT_EXECUTED`, and a test that passes against the broken subject is `NOT_QUALIFIED`. Cairntir does not write the tests itself; any host or person can be the author.
 
 Q08 is complete against its original criterion: "Known-bad behavior falsifies the claim and corrected behavior passes; prompt text alone is never reported as an executed test." `cairntir claim-test` exports a stored claim and its predicted outcome to a packet with no subject source, freezes tests written by a different author by SHA-256, and runs exactly those bytes against a subject. On 11 November 2026 a separate agent that saw only the packet wrote 13 cases. They failed 7 of 13 against a deliberately broken subject (`FALSIFIED`) and passed 13 of 13 against the corrected one (`HELD`). A packet with no executed case is `NOT_EXECUTED`, and a test that passes against the broken subject is `NOT_QUALIFIED`. Cairntir does not write the tests itself; any host or person can be the author. The [claim tests guide](docs/claim-tests.md) has the commands.
 
