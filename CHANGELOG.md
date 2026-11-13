@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-11-12
+
+Three new commands and two fixes on top of 1.13.0. No database schema change: a store that works with 1.13.0 works with 1.14.0 without a reindex. It is a minor version, not a patch, because the [release policy](docs/release-cadence.md) gives any new capability a minor number. One of the fixes answers the single finding of the independent evaluation of 1.13.0; the evaluator has not yet rerun its tests against it. Roadmap after this release: 26 of 35 items complete, 9 open; [ALPHA.md](ALPHA.md) says which.
+
 ### Added
 
 - `cairntir audience capture` saves the five audience fields (audience, channels, pain, sophistication, desired outcome) as a provisional revision with a source for each. It never confirms: only `cairntir audience confirm` at a terminal does that. The same values as the current revision make no new revision; changed values make a new provisional one. This closes the gap that left the audience lock reachable only from Python.
@@ -14,6 +18,7 @@
 
 - `cairntir audience capture` failed on any store that already existed but had no audience table yet (every store opened by another command first) with "no such table". It now creates the table as it would for a new store.
 - Dream now asks the local model for the reply shape it reads. It used to send only "Suggest one consequential review item, or no proposals." A real model (Mistral 7B through Ollama) answered in plain prose, so Dream recorded every real answer as `model_unavailable` and could never produce a candidate. Dream now states the JSON shape in its instruction and sends it as Ollama's `format` schema. The test servers had always answered in that exact shape, which hid the problem. Found by a real-model qualification run on 10 November 2026.
+- An exact `cairntir replay` retry now reports the link that is saved. It used to print `chain extended: #<current leaf> <- #<prediction> (new prediction)` although the retry saved nothing and the reused prediction still followed its original predecessor. The retry now says it reused the earlier result and prints the saved link. No stored data was wrong. Found by the independent evaluation of 1.13.0 on 12 November 2026.
 
 ## [1.13.0] - 2026-11-09
 

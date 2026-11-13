@@ -38,16 +38,17 @@ uv run python scripts/verify_history.py --output .cairntir/verification/history
 uv run python scripts/verify_mutations.py --output .cairntir/verification/mutations
 uv run mkdocs build --strict
 uv build
-uv run python scripts/verify_package.py --wheel dist/cairntir-1.12.4-py3-none-any.whl --output .cairntir/verification/package
+uv run python scripts/verify_package.py --wheel dist/cairntir-<version>-py3-none-any.whl --output .cairntir/verification/package
 ```
 
 The release-tag and dependency-advisory gates need network access to PyPI. Model-backed evaluation
 may download weights. CI covers Linux, macOS, and Windows on Python 3.11–3.13.
-The coverage floor is 92% of the configured statement-and-branch surface;
+The coverage floor is 87% of the configured statement-and-branch surface,
+set by the maintainer on 9 November 2026 with 90% still owed;
 thin transport entrypoints retain their existing exclusions. The
 [verification plan](plans/verification-structure.md) records the behavioral
 evidence behind this gate. Do not add exclusions to improve the number.
-Six-place threshold precision prevents a result such as 91.96% from passing as 92%.
+Six-place threshold precision prevents a result such as 86.96% from passing as 87%.
 
 On pull requests CI runs the same `not slow` suite as parallel parts so the
 wait is shorter: the core set on all nine platforms, and `tests/acceptance` as
