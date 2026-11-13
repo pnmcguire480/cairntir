@@ -14,8 +14,21 @@ stored angle set, whose angles and reasons are themselves model judgments.
   `cairntir angles choose`. The outline uses your latest pick; pass `--angle ID` to
   use another angle from the set.
 - Run a local [Ollama](https://ollama.com) with a model pulled. The address must be
-  numeric loopback (`http://127.0.0.1:11434` is the default). Each format is one
-  request with a limit of 360 seconds.
+  numeric loopback (`http://127.0.0.1:11434` is the default).
+
+## How it asks the model
+
+By default the model writes each outline one section at a time: the opening, each
+key point with its example, the close and call to action, all the bridges, then the
+production notes, length estimate and next actions. That is 8 calls for a written
+post (4 key points) and 7 for a short video (3), each limited to 180 seconds
+(`--timeout`, at most 180). Cairntir assigns every id, which sections each bridge
+joins and which parts each action covers, so the model only writes the prose. Each
+outline gets three planned actions: check the facts (covering every part), draft,
+and finish (edit and lay out the post, or rehearse, record and edit the video).
+
+`--single-call` asks for each whole outline in one call instead (limit up to 360
+seconds). Small local models tend to get its structure wrong.
 
 ## Generate
 
@@ -46,7 +59,8 @@ raw reply is kept as failed-attempt evidence.
 
 Running the identical command again returns the stored set (or the stored failure)
 without calling the model. Pass `--key something-new` for a fresh attempt. The
-default key changes when the angle, angle note, formats, constraints or model change.
+default key changes when the angle, angle note, formats, constraints, model, time
+limit or `--single-call` change. A failed section is not retried.
 
 ## Read it back
 

@@ -28,7 +28,7 @@ from cairntir.errors import ProjectionError
 
 PathLike = str | os.PathLike[str]
 
-_SET_KIND = "cairntir.outline-set.v1"
+_SET_KINDS = frozenset({"cairntir.outline-set.v1", "cairntir.outline-set.v2"})
 _ROOM = "ideation-outlines"
 _HEADER = "# Ideation — provisional"
 _OBJECTIVES = "## Objectives"
@@ -234,6 +234,108 @@ def outline_requests(
     return requests
 
 
+_POINTS = {"words": 4, "seconds": 3}
+_NOTES = {"words": 2, "seconds": 3}
+_FINISH = {
+    "words": "Edit the drafted sections into the finished written post and lay it out",
+    "seconds": "Rehearse, record and edit the spoken short video to the planned timing",
+}
+
+
+def _span(excerpt: bytes, label: bytes, key: str, source: dict[str, Any]) -> dict[str, Any]:
+    """Bind one labelled line of the selected-angle excerpt by byte range and hash."""
+    for line_start, line in _lines(excerpt):
+        if line.startswith(label) and line[len(label) :].strip():
+            start = line_start + len(label)
+            end = line_start + len(line)
+            return {
+                "key": key,
+                "source_id": source["source_id"],
+                "anchor_id": "selected-angle",
+                "source_sha256": source["sha256"],
+                "excerpt_sha256": hashlib.sha256(excerpt).hexdigest(),
+                "excerpt_byte_start": start,
+                "excerpt_byte_end": end,
+                "span_sha256": hashlib.sha256(excerpt[start:end]).hexdigest(),
+            }
+    raise ProjectionError(f"selected angle has no {label.decode().strip()!r} line")
+
+
+def _lines(data: bytes) -> list[tuple[int, bytes]]:
+    result, offset = [], 0
+    for line in data.split(b"\n"):
+        result.append((offset, line.rstrip(b"\r")))
+        offset += len(line) + 1
+    return result
+
+
+def assembly_plan(bound: dict[str, Any], requests: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    """Plan the staged writing jobs: Cairntir owns every id, edge and action link.
+
+    The model then writes only prose for one section at a time; it cannot leave a
+    bridge out, wire it to the wrong section, or link an action to a missing part.
+    """
+    source = bound["context"]["sources"][0]
+    anchor = next(a for a in source["anchors"] if a["id"] == "selected-angle")
+    excerpt = anchor["excerpt"].encode("utf-8")
+    heading = excerpt.split(b"\n", 1)[0]
+    prefix = heading[: heading.index(b": ") + 2] if b": " in heading else b"## "
+    spans = [
+        _span(excerpt, prefix, "angle", source),
+        _span(excerpt, b"Hook: ", "hook", source),
+        _span(excerpt, b"Relevance: ", "relevance", source),
+    ]
+    keys = [span["key"] for span in spans]
+    entries = []
+    for request in requests:
+        unit = request["finished_length"]["unit"]
+        points, notes = _POINTS[unit], _NOTES[unit]
+        writing = [
+            "opening",
+            *(slot for i in range(1, points + 1) for slot in (f"point{i}", f"example{i}")),
+            *(f"bridge{i}" for i in range(1, points + 2)),
+            "close",
+            "cta",
+        ]
+        production = ["length-basis", *(f"note{i}" for i in range(1, notes + 1))]
+        slots = [*writing, *production]
+        entries.append(
+            {
+                "request_id": request["request_id"],
+                "point_count": points,
+                "production_note_count": notes,
+                "verification_action_key": "verify",
+                "spans": spans,
+                "component_bindings": [{"slot": slot, "span_keys": keys} for slot in slots],
+                "actions": [
+                    {
+                        "key": "verify",
+                        "kind": "verification",
+                        "purpose": "Check every factual claim, tool and number against a "
+                        "current source before it is used",
+                        "component_slots": slots,
+                        "depends_on": [],
+                    },
+                    {
+                        "key": "draft",
+                        "kind": "production",
+                        "purpose": "Turn the outline sections into a complete first draft",
+                        "component_slots": writing,
+                        "depends_on": ["verify"],
+                    },
+                    {
+                        "key": "finish",
+                        "kind": "production",
+                        "purpose": _FINISH[unit],
+                        "component_slots": production,
+                        "depends_on": ["draft"],
+                    },
+                ],
+            }
+        )
+    return {"schema": "cairntir.outline-assembly-plan.v2", "requests": entries}
+
+
 def generate_angle_outlines(
     store: outlines.Store,
     store_path: PathLike,
@@ -247,21 +349,28 @@ def generate_angle_outlines(
     revision: int | None = None,
     angle_id: str | None = None,
     bound: dict[str, Any] | None = None,
+    staged: bool = True,
 ) -> dict[str, Any]:
     """Generate, accept atomically and project outlines for the selected angle.
 
-    ``bound`` reuses a context already returned by :func:`angle_context`.
+    ``bound`` reuses a context already returned by :func:`angle_context`. ``staged``
+    (the default) writes each section in its own small model call with Cairntir
+    assigning ids, bridge pairs and action links; ``False`` asks for each whole
+    outline in one call.
     """
     if bound is None:
         bound = angle_context(store_path, vault_path, wing, revision=revision, angle_id=angle_id)
+    requests = outline_requests(bound, formats, constraints)
     receipt = outlines.generate_outline_set(
         store,
         wing=wing,
         context=bound["context"],
-        requests=outline_requests(bound, formats, constraints),
+        requests=requests,
         source_root=bound["source_root"],
         adapter=adapter,
         idempotency_key=idempotency_key,
+        strategy="staged_v2" if staged else "monolithic_v1",
+        assembly_plan=assembly_plan(bound, requests) if staged else None,
     )
     replayed = receipt["replayed"]
     projected = outlines.project_outline_set(
@@ -284,7 +393,7 @@ def latest_outline_ref(
         for drawer in store.list_by(wing=wing, room=_ROOM, limit=None, include_expired=True)
         if drawer.id is not None
         and isinstance(drawer.metadata, dict)
-        and drawer.metadata.get("kind") == _SET_KIND
+        and drawer.metadata.get("kind") in _SET_KINDS
         and (set_id is None or drawer.id == set_id)
     ]
     if not rows:

@@ -5,6 +5,7 @@ from __future__ import annotations
 import itertools
 import json
 import threading
+import time
 from collections.abc import Callable, Iterator
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -53,19 +54,53 @@ def _angles() -> list[dict[str, Any]]:
     ]
 
 
+def _fill(schema: dict[str, Any], label: str) -> Any:
+    """Answer one staged writing job from its own reply schema with distinct prose."""
+    kind = schema["type"]
+    if kind == "object":
+        return {key: _fill(child, f"{label} {key}") for key, child in schema["properties"].items()}
+    if kind == "array":
+        return [_fill(schema["items"], f"{label} item {i}") for i in range(schema["minItems"])]
+    if kind == "integer":
+        return (schema["minimum"] + schema["maximum"]) // 2
+    text = f"Written wording for {label}: a calm routine that keeps shop admin short."
+    while len(text) < schema["minLength"]:
+        text += " It stays practical for a solo maker."
+    return text[: schema["maxLength"]]
+
+
 class _Ollama:
     """Loopback stand-in for Ollama: angle replies, then outline replies built per request."""
 
     def __init__(self) -> None:
         self.calls: list[str] = []
+        self.jobs: list[str] = []
         self.mutate: Callable[[dict[str, Any]], None] | None = None
+        self.staged_mutate: Callable[[str, dict[str, Any]], None] | None = None
+        self.delay: dict[str, float] = {}
         owner = self
 
         class Handler(BaseHTTPRequestHandler):
             def do_POST(self) -> None:
                 body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
                 prompt = body.get("prompt", "")
-                if prompt.startswith("I05"):
+                if prompt.startswith("I05 (i05.staged.v2)"):
+                    owner.calls.append("outline")
+                    job = json.loads(prompt.split("\n", 1)[1])
+                    owner.jobs.append(job["node_id"])
+                    time.sleep(owner.delay.get(job["job"], 0))
+                    output = _fill(body["format"], job["node_id"])
+                    if owner.staged_mutate is not None:
+                        owner.staged_mutate(job["job"], output)
+                    raw = json.dumps(
+                        {
+                            "model": MODEL,
+                            "done": True,
+                            "done_reason": "stop",
+                            "response": json.dumps(output),
+                        }
+                    ).encode()
+                elif prompt.startswith("I05"):
                     owner.calls.append("outline")
                     request = json.loads(prompt.split("\n", 1)[1])["request"]
                     source = request_source(body)
@@ -222,7 +257,13 @@ def test_selected_angle_becomes_complete_outlines_with_linked_actions(
             assert action["status"] == "planned" and action["completion_checks"]
             assert set(action["component_ids"]) <= ids
             assert action["ref"]["drawer_id"] != item["ref"]["drawer_id"]
-    assert ollama.outline_calls == 2
+        verify = [action for action in item["actions"] if action["kind"] == "verification"]
+        assert verify and set(verify[0]["component_ids"]) == ids  # every part can be checked
+    points = {
+        item["request_id"]: len(item["outline"]["key_points"]) for item in receipt["outlines"]
+    }
+    assert points == {"written-post": 4, "short-video": 3}
+    assert ollama.outline_calls == 15  # one call per section job: 8 + 7
     note = Path(receipt["set_note_path"]).read_text(encoding="utf-8")
     for link in [line[2:-2] for line in note.splitlines() if line.startswith("[[")]:
         assert (env["vault"] / f"{link}.md").is_file()
@@ -252,7 +293,7 @@ def test_identical_request_replays_without_calling_the_model(
     assert second.exit_code == 0, second.output
     replay = json.loads(second.output)
     assert replay["replayed"] is True and replay["ref"] == first["ref"]
-    assert ollama.outline_calls == 2
+    assert ollama.outline_calls == 15
 
 
 def test_named_angle_and_custom_format(env: dict[str, Any], ollama: _Ollama) -> None:
@@ -261,7 +302,7 @@ def test_named_angle_and_custom_format(env: dict[str, Any], ollama: _Ollama) -> 
     receipt = json.loads(result.output)
     assert receipt["selection"] == "named" and receipt["angle_id"] == "a11"
     assert [item["request_id"] for item in receipt["outlines"]] == ["newsletter"]
-    assert ollama.outline_calls == 1
+    assert ollama.outline_calls == 8
 
 
 def _drop_bridge(outline: dict[str, Any]) -> None:
@@ -276,13 +317,25 @@ def _bad_length(outline: dict[str, Any]) -> None:
     outline["finished_length"]["estimate"] = 5
 
 
+def test_single_call_route_still_makes_complete_outlines(
+    env: dict[str, Any], ollama: _Ollama
+) -> None:
+    _choose(env, "a08")
+    result = _generate(env, ollama, "--single-call")
+    assert result.exit_code == 0, result.output
+    receipt = json.loads(result.output)
+    assert receipt["schema"] == "cairntir.outline-set-receipt.v1"
+    assert ollama.outline_calls == 2
+    assert json.loads(_show(env).output)["ref"] == receipt["ref"]
+
+
 @pytest.mark.parametrize("mutate", [_drop_bridge, _repeat_point, _bad_length])
-def test_incomplete_model_outline_stores_no_outline_set(
+def test_incomplete_single_call_outline_stores_no_outline_set(
     env: dict[str, Any], ollama: _Ollama, mutate: Callable[[dict[str, Any]], None]
 ) -> None:
     _choose(env, "a04")
     ollama.mutate = mutate
-    result = _generate(env, ollama)
+    result = _generate(env, ollama, "--single-call")
     assert result.exit_code == 1
     assert "outlines failed" in result.output
     missing = _show(env)
@@ -333,4 +386,66 @@ def test_bad_format_spec_is_refused(env: dict[str, Any], ollama: _Ollama) -> Non
     for spec in ("post:pages:1:2", "post:words:9:3", "post:words"):
         result = _generate(env, ollama, "--format", spec)
         assert result.exit_code == 1, spec
+    assert ollama.outline_calls == 0
+
+
+def _short_bridges(job: str, output: dict[str, Any]) -> None:
+    if job == "bridges":
+        output["bridges"].pop()
+
+
+def _no_actions(job: str, output: dict[str, Any]) -> None:
+    if job == "production":
+        output["actions"] = []
+
+
+def _length_outside(job: str, output: dict[str, Any]) -> None:
+    if job == "production":
+        output["finished_length_estimate"] = 5
+
+
+def _same_point() -> Callable[[str, dict[str, Any]], None]:
+    first: dict[str, str] = {}
+
+    def mutate(job: str, output: dict[str, Any]) -> None:
+        if job == "point":
+            output["point"] = first.setdefault("point", output["point"])
+
+    return mutate
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [_short_bridges, _no_actions, _length_outside, _same_point()],
+    ids=["missing-bridge", "no-actions", "length", "repeated-point"],
+)
+def test_incomplete_staged_section_stores_no_outline_set(
+    env: dict[str, Any], ollama: _Ollama, mutate: Callable[[str, dict[str, Any]], None]
+) -> None:
+    _choose(env, "a09")
+    ollama.staged_mutate = mutate
+    result = _generate(env, ollama)
+    assert result.exit_code == 1
+    assert "outlines failed" in result.output
+    missing = _show(env)
+    assert missing.exit_code == 1 and "no accepted outline set" in missing.output
+
+
+def test_staged_section_over_its_time_limit_stores_nothing(
+    env: dict[str, Any], ollama: _Ollama
+) -> None:
+    _choose(env, "a10")
+    ollama.delay = {"production": 3.0}
+    result = _generate(env, ollama, "--timeout", "1")
+    assert result.exit_code == 1 and "outlines failed" in result.output
+    assert ollama.jobs[-1] == "written-post.production"
+    assert _show(env).exit_code == 1
+
+
+def test_staged_limit_above_180_seconds_is_refused_before_any_call(
+    env: dict[str, Any], ollama: _Ollama
+) -> None:
+    _choose(env, "a10")
+    result = _generate(env, ollama, "--timeout", "200")
+    assert result.exit_code == 1 and "180 seconds" in result.output
     assert ollama.outline_calls == 0

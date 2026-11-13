@@ -91,8 +91,18 @@ def outlines_generate_cmd(
     endpoint: str = typer.Option(
         "http://127.0.0.1:11434", "--endpoint", help="Numeric loopback Ollama address."
     ),
-    timeout: float = typer.Option(
-        360.0, "--timeout", min=1.0, max=360.0, help="Seconds per format request."
+    timeout: float | None = typer.Option(
+        None,
+        "--timeout",
+        min=1.0,
+        max=360.0,
+        help="Seconds per model call: up to 180 per section (default), "
+        "up to 360 per whole outline with --single-call.",
+    ),
+    single_call: bool = typer.Option(
+        False,
+        "--single-call",
+        help="Ask for each whole outline in one model call instead of one call per section.",
     ),
     key: str | None = typer.Option(
         None, "--key", help="Reuse a key to replay; a new key makes a new set."
@@ -102,7 +112,7 @@ def outlines_generate_cmd(
     ),
     as_json: bool = typer.Option(False, "--json", help="Print the full record."),
 ) -> None:
-    """Ask a local model for one complete outline per format and store it with its actions."""
+    """Ask a local model to write each outline section and store complete outlines with actions."""
     from cairntir import cli
     from cairntir.ideation_angle_outlines import (
         DEFAULT_FORMATS,
@@ -110,14 +120,22 @@ def outlines_generate_cmd(
         generate_angle_outlines,
         parse_format,
     )
+    from cairntir.ideation_outline_assembler import OllamaStagedOutlinesAdapter
     from cairntir.ideation_outlines import OllamaOutlinesAdapter
 
     def action(path: Path) -> dict[str, Any]:
         formats = [parse_format(value) for value in output_format or DEFAULT_FORMATS]
-        adapter = OllamaOutlinesAdapter(endpoint=endpoint, model=model, timeout_seconds=timeout)
+        seconds = timeout if timeout is not None else (360.0 if single_call else 180.0)
+        adapter: OllamaOutlinesAdapter | OllamaStagedOutlinesAdapter
+        if single_call:
+            adapter = OllamaOutlinesAdapter(endpoint=endpoint, model=model, timeout_seconds=seconds)
+        else:
+            adapter = OllamaStagedOutlinesAdapter(
+                endpoint=endpoint, model=model, timeout_seconds=seconds
+            )
         bound = angle_context(path, vault, wing, revision=revision, angle_id=angle)
         idempotency_key = key or _key(
-            wing, bound["context"], formats, constraint, model, endpoint, timeout
+            wing, bound["context"], formats, constraint, model, endpoint, seconds, single_call
         )
         with cli._open_store(path, capture_path="outlines") as drawers:
             return generate_angle_outlines(
@@ -130,6 +148,7 @@ def outlines_generate_cmd(
                 adapter=adapter,
                 idempotency_key=idempotency_key,
                 bound=bound,
+                staged=not single_call,
             )
 
     _run(action, store, as_json)
