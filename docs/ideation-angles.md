@@ -1,12 +1,17 @@
 # Content angles
 
-Available in the **2.0.0 preview line**. A local model proposes 20 or more distinct
+Available in the **2.0.0 preview line**, experimental. A local model is asked for 20 or more distinct
 angles for your captured audience, scores each against goals you set, and Cairntir
 stores the ranked set with a written reason for every score. You then record your
 own pick beside the automatic top choice.
 
 Every score and reason is a model judgment, not a measurement. The set is always
 `provisional`. Nothing here publishes anything.
+
+**Honest status.** With a local 7B model this often ends in a refusal ("only N distinct
+angle(s) found"). On 13 November 2026, three real Mistral 7B briefs gave: 5 distinct (refused),
+12 distinct (refused), and a stored set of 21 that a person reading it counted as about 18
+truly different. Nothing is stored in a refused run. Larger models are untested.
 
 ## Before you start
 

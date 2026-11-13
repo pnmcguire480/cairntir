@@ -406,6 +406,20 @@ def test_a_repeat_that_is_not_next_to_its_original_is_still_found(
     assert rows[20]["angle"] not in _angles(receipt)
 
 
+def test_a_wording_repeat_or_reused_id_in_the_first_reply_is_dropped_not_fatal(
+    env: dict[str, Any], model: _Model
+) -> None:
+    _capture(env)
+    rows = _candidates(22)
+    rows[20]["angle"] = rows[2]["angle"].upper() + "!"  # same wording as #2
+    rows[21]["id"] = rows[5]["id"]  # a reused id with a new angle
+    model.candidates = rows
+    receipt = _ready(env, model)
+    assert len(receipt["candidates"]) == 21
+    assert [d["reason"] for d in receipt["discarded_candidates"]] == ["same wording"]
+    assert len({c["id"] for c in receipt["candidates"]}) == 21
+
+
 def test_a_thinking_model_reply_is_accepted(env: dict[str, Any], model: _Model) -> None:
     _capture(env)
     model.thinking = "Let me think about the angles first."

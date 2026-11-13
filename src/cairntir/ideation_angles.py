@@ -904,11 +904,13 @@ def _distinct_candidates(
 
     A detected repeat is never stored. The requests are bounded by ``TOP_UP_ROUNDS``.
     """
-    kept_ids, dropped, vectors = meaning_survivors([c["angle"] for c in first], embed)
-    kept = [first[i] for i in kept_ids]
-    discarded = [
-        _discard(first[i], kept[position]["id"], similarity) for i, position, similarity in dropped
-    ]
+    discarded: list[dict[str, Any]] = []
+    unique = _wording_unique(first, [], discarded, objectives, evidence, "d")
+    kept_ids, dropped, vectors = meaning_survivors([c["angle"] for c in unique], embed)
+    kept = [unique[i] for i in kept_ids]
+    discarded.extend(
+        _discard(unique[i], kept[position]["id"], similarity) for i, position, similarity in dropped
+    )
     top_ups: list[dict[str, Any]] = []
     for round_number in range(1, TOP_UP_ROUNDS + 1):
         if len(kept) >= _SET_MINIMUM:
@@ -920,21 +922,8 @@ def _distinct_candidates(
         batch = reply["candidates"]
         if not isinstance(batch, list) or not 1 <= len(batch) <= want:
             raise ProjectionError("a top-up request returned an unexpected number of angles")
-        fresh: list[dict[str, Any]] = []
-        for number, item in enumerate(batch, 1):
-            _rank([item], objectives, evidence, minimum=1)  # shape and score checks
-            fresh.append({**item, "id": f"t{round_number}-{number}"})
-        seen_angles = {_normal(c["angle"]) for c in kept}
-        seen_hooks = {_normal(c["hook"]) for c in kept}
-        wording_ok: list[dict[str, Any]] = []
-        for item in fresh:
-            angle, hook = _normal(item["angle"]), _normal(item["hook"])
-            if not angle or not hook or angle in seen_angles or hook in seen_hooks:
-                discarded.append(_discard(item, None, 1.0))
-                continue
-            seen_angles.add(angle)
-            seen_hooks.add(hook)
-            wording_ok.append(item)
+        fresh = [{**item, "id": f"t{round_number}-{n}"} for n, item in enumerate(batch, 1)]
+        wording_ok = _wording_unique(fresh, kept, discarded, objectives, evidence, "")
         new_ids, new_dropped, vectors = meaning_survivors(
             [c["angle"] for c in wording_ok], embed, kept_vectors=vectors
         )
@@ -961,6 +950,37 @@ def _distinct_candidates(
             "Try a broader brief or a larger model"
         )
     return kept, discarded, top_ups
+
+
+def _wording_unique(
+    items: list[dict[str, Any]],
+    kept: list[dict[str, Any]],
+    discarded: list[dict[str, Any]],
+    objectives: list[dict[str, Any]],
+    evidence: dict[str, Any],
+    rename: str,
+) -> list[dict[str, Any]]:
+    """Validate each reply item and drop (and record) wording repeats instead of failing."""
+    ids = {c["id"] for c in kept}
+    angles = {_normal(c["angle"]) for c in kept}
+    hooks = {_normal(c["hook"]) for c in kept}
+    result: list[dict[str, Any]] = []
+    for number, item in enumerate(items, 1):
+        if not isinstance(item, dict):
+            raise ProjectionError("ideation object has unexpected or missing fields")
+        angle, hook = _normal(str(item.get("angle", ""))), _normal(str(item.get("hook", "")))
+        if angle and hook and (angle in angles or hook in hooks):
+            _rank([{**item, "id": "x"}], objectives, evidence, minimum=1)
+            discarded.append(_discard(item, None, 1.0))
+            continue
+        _rank([item], objectives, evidence, minimum=1)  # shape and score checks
+        if rename and item["id"] in ids:  # a model reused an id: keep the angle, renumber
+            item = {**item, "id": f"{rename}{number}"}
+        ids.add(item["id"])
+        angles.add(angle)
+        hooks.add(hook)
+        result.append(item)
+    return result
 
 
 def _discard(item: dict[str, Any], same_as: str | None, similarity: float) -> dict[str, Any]:
@@ -1036,7 +1056,10 @@ def generate_angle_set(
                 return result
         result = _call(adapter, bundle_bytes, identity, builtin)
         candidates = result["candidates"]
-        _rank(candidates, checked_objectives, source["evidence"])
+        if embed is None:
+            _rank(candidates, checked_objectives, source["evidence"])
+        elif not isinstance(candidates, list) or not 20 <= len(candidates) <= 40:
+            raise ProjectionError("a complete angle set requires 20 to 40 candidates")
         discarded: list[dict[str, Any]] = []
         top_ups: list[dict[str, Any]] = []
         if embed is not None:
