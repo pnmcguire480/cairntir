@@ -18,7 +18,11 @@ from typer.testing import CliRunner
 from cairntir.audience_lock import _CAPTURE_SOURCE
 from cairntir.cli import app
 from cairntir.errors import EmbeddingError
-from cairntir.ideation_angles import MEANING_DUPLICATE_THRESHOLD, count_distinct_meanings
+from cairntir.ideation_angles import (
+    MEANING_DUPLICATE_THRESHOLD,
+    TOP_UP_ROUNDS,
+    count_distinct_meanings,
+)
 
 THEMES = (
     "decision reversal timeline",
@@ -41,6 +45,18 @@ THEMES = (
     "reproducible bug postcard",
     "project question queue",
     "retired rule restoration",
+    "budget meeting recap",
+    "onboarding checklist tour",
+    "customer interview digest",
+    "quarterly goal reset",
+    "vendor contract review",
+    "photo archive cleanup",
+    "weekly planning ritual",
+    "support inbox triage",
+    "invoice follow up script",
+    "inventory count routine",
+    "pricing experiment log",
+    "referral thank you card",
 )
 VALUES = {
     "audience": "Solo makers who sell online",
@@ -51,9 +67,11 @@ VALUES = {
 }
 
 
-def _candidates(count: int = 20, *, repeat_angle: bool = False) -> list[dict[str, Any]]:
+def _candidates(
+    count: int = 20, *, repeat_angle: bool = False, start: int = 0
+) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    for index in range(count):
+    for index in range(start, start + count):
         theme = THEMES[index % len(THEMES)]
         value = 96 - index
         angle = f"How a {theme} helps"
@@ -81,19 +99,27 @@ class _Model:
     def __init__(self) -> None:
         self.calls = 0
         self.candidates = _candidates()
+        self.replies: list[list[dict[str, Any]]] = []
+        self.prompts: list[str] = []
+        self.thinking = ""
         owner = self
 
         class Handler(BaseHTTPRequestHandler):
             def do_POST(self) -> None:
                 owner.calls += 1
-                self.rfile.read(int(self.headers["Content-Length"]))
-                body = json.dumps(
-                    {
-                        "model": "fake-model",
-                        "done": True,
-                        "response": json.dumps({"candidates": owner.candidates}),
-                    }
-                ).encode()
+                sent = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                owner.prompts.append(sent["prompt"])
+                rows = (
+                    owner.replies.pop(0) if owner.calls > 1 and owner.replies else owner.candidates
+                )
+                reply = {
+                    "model": "fake-model",
+                    "done": True,
+                    "response": json.dumps({"candidates": rows}),
+                }
+                if owner.thinking:
+                    reply["thinking"] = owner.thinking
+                body = json.dumps(reply).encode()
                 self.send_response(200)
                 self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
@@ -307,28 +333,101 @@ def _with_rewordings(count: int) -> list[dict[str, Any]]:
     return rows
 
 
-def test_angles_that_only_reword_one_angle_are_refused_and_nothing_is_stored(
+def _angles(receipt: dict[str, Any]) -> list[str]:
+    return [c["angle"] for c in receipt["candidates"]]
+
+
+def _ready(env: dict[str, Any], model: _Model, *extra: str) -> dict[str, Any]:
+    result = _generate(env, model, *extra)
+    assert result.exit_code == 0, result.output
+    return json.loads(result.output)  # type: ignore[no-any-return]
+
+
+def test_a_set_of_rewordings_of_one_angle_is_refused_after_bounded_top_ups(
     env: dict[str, Any], model: _Model
 ) -> None:
     _capture(env)
     model.candidates = _with_rewordings(20)
     assert len({_norm(c["angle"]) for c in model.candidates}) == 20  # wording differs
+    model.replies = [_with_rewordings(20)[:8] for _ in range(TOP_UP_ROUNDS)]
     result = _generate(env, model)
     assert result.exit_code == 1
-    assert "differ in meaning" in result.output
-    assert "nothing was stored" in result.output
+    assert "only 1 distinct angle(s) found" in result.output
+    assert "approximate" in result.output and "nothing was stored" in result.output
+    assert model.calls == 5  # one request plus four top-ups
     assert _rows(env["store"]) == 0
 
 
-def test_a_padded_batch_reports_how_many_distinct_angles_it_really_has(
+def test_repeats_are_removed_and_topped_up_so_exactly_distinct_angles_are_stored(
     env: dict[str, Any], model: _Model
 ) -> None:
     _capture(env)
-    model.candidates = _with_rewordings(8)
-    result = _generate(env, model)
-    assert result.exit_code == 1
-    assert "only 13 of the model's 20 angles differ in meaning" in result.output
-    assert _rows(env["store"]) == 0
+    model.candidates = _with_rewordings(8)  # 12 different ideas + 8 rewordings of one
+    model.replies = [_candidates(7, start=20)]
+    receipt = _ready(env, model)
+    angles = _angles(receipt)
+    assert len(angles) == 20
+    assert sum("gardener" in a for a in angles) == 1  # the reworded angle counts once
+    assert [c["rank"] for c in receipt["candidates"]] == list(range(1, 21))
+    assert len(receipt["discarded_candidates"]) == 7
+    assert all(d["reason"] == "same meaning" for d in receipt["discarded_candidates"])
+    assert [t["round"] for t in receipt["top_up_exchanges"]] == [1]
+    assert model.calls == 2
+    assert "already taken" in model.prompts[1] and angles[0].split()[0] in model.prompts[1]
+    shown = json.loads(_run(["angles", "show", *env["common"], "--json"]).output)
+    assert _angles(shown) == angles  # persisted exactly the survivors
+
+
+def test_a_repeat_among_more_than_twenty_candidates_is_dropped_not_stored(
+    env: dict[str, Any], model: _Model
+) -> None:
+    _capture(env)
+    rows = _candidates(22)
+    rows[20]["angle"] = rows[3]["angle"] + " again"  # a rewording of angle #3
+    model.candidates = rows
+    receipt = _ready(env, model)
+    assert model.calls == 1
+    assert len(receipt["candidates"]) == 21
+    assert rows[20]["angle"] not in _angles(receipt)
+    assert [(d["id"], d["same_as"]) for d in receipt["discarded_candidates"]] == [
+        (rows[20]["id"], rows[3]["id"])
+    ]
+
+
+def test_a_repeat_that_is_not_next_to_its_original_is_still_found(
+    env: dict[str, Any], model: _Model
+) -> None:
+    _capture(env)
+    rows = _candidates(21)
+    rows[20]["angle"] = rows[10]["angle"] + " again"  # repeats #10, not the last kept (#19)
+    model.candidates = rows
+    receipt = _ready(env, model)
+    assert len(receipt["candidates"]) == 20
+    assert rows[20]["angle"] not in _angles(receipt)
+
+
+def test_a_thinking_model_reply_is_accepted(env: dict[str, Any], model: _Model) -> None:
+    _capture(env)
+    model.thinking = "Let me think about the angles first."
+    assert len(_ready(env, model)["candidates"]) == 20
+
+
+def test_top_up_candidates_with_a_repeated_wording_are_dropped_and_recorded(
+    env: dict[str, Any], model: _Model
+) -> None:
+    _capture(env)
+    rows = _candidates(20)
+    rows[19]["angle"] = rows[0]["angle"] + " again"  # 19 survivors in the first reply
+    model.candidates = rows
+    extra = _candidates(2, start=20)
+    extra[0]["angle"] = rows[0]["angle"]  # same wording as a kept angle
+    model.replies = [extra]
+    receipt = _ready(env, model)
+    assert len(receipt["candidates"]) == 20
+    assert [d["reason"] for d in receipt["discarded_candidates"]] == [
+        "same meaning",
+        "same wording",
+    ]
 
 
 def test_a_failed_meaning_check_stores_nothing(
@@ -367,52 +466,10 @@ def test_count_distinct_meanings_applies_the_threshold() -> None:
     assert count_distinct_meanings(["a", "b"], lambda _t: just_under) == 2
 
 
-# Measured with the production embedder: reworded angles from a real Mistral run scored
-# 0.95-0.98 against each other; different angles from other real runs at most 0.92.
-REAL_REWORDED = (
-    "Tomato Blight Prevention: A Gardener's Q&A",
-    "Tomato Blight Prevention: A Gardener's FAQ",
-    "Tomato Blight Prevention: A Gardener's Handbook",
-    "Tomato Blight Prevention: A Gardener's Checklist",
-    "Tomato Blight Prevention: A Gardener's Video Guide",
-    "Tomato Blight Prevention: A Gardener's Podcast",
-    "Tomato Blight Prevention: A Gardener's Webinar",
-    "Tomato Blight Prevention: A Gardener's Forum",
-    "Tomato Blight Prevention: A Gardener's Blog",
-    "Tomato Blight Prevention: A Gardener's Newsletter",
-    "Tomato Blight Prevention: A Gardener's Email Series",
-    "Tomato Blight Prevention: A Comprehensive Guide for Gardeners",
-    "The Gardener's Guide to Tomato Blight Prevention",
-    "Natural Tomato Blight Prevention: A Step-by-Step Guide",
-    "Tomato Blight Prevention: Tips from Fellow Gardeners",
-    "Tomato Blight Prevention: A Visual Guide for Gardeners",
-    "Tomato Blight Prevention: A Gardener's Success Story",
-)
-REAL_DIFFERENT = (
-    "Utilizing Social Media Automation for Marketing Efficiency",
-    "Leveraging Email Marketing for Customer Engagement",
-    "Implementing a Loyalty Program for Customer Retention",
-    "Utilizing SEO for Increased Online Visibility",
-    "Implementing a Quality Control Process for Consistent Products",
-    "Utilizing a Customer Feedback System for Improved Products",
-    "Employing a Time-Tracking App for Better Time Management",
-    "Automating Inventory Management for Time Savings",
-    "Streamlining Packing Processes for Efficiency",
-    "Implementing a Dropshipping Model for Reduced Inventory Management",
-    "Adopting a Digital Payment System for Simplified Transactions",
-    "Adopting a Project Management Tool for Organized Workflow",
-    "Implementing a Returns Management System for Simplified Returns",
-    "Adopting a Shipping Integration for Seamless Shipping",
-    "Batching Orders for Improved Productivity",
-    "Implementing a CRM for Customer Relationship Management",
-    "Adopting a Digital Invoice System for Simplified Bookkeeping",
-    "Leveraging Templates for Consistent Designs",
-    "Optimizing Shipping Rates for Cost Savings",
-    "Utilizing Label Printers for Organized Shipping",
-)
+def test_the_real_embedding_model_meets_the_measured_catch_and_false_rejection_rates() -> None:
+    """The rule was chosen on these labelled pairs; this keeps the measurement honest."""
+    import itertools
 
-
-def test_the_real_embedding_model_separates_rewordings_from_different_angles() -> None:
     from cairntir.memory.embeddings import production_embedding_provider
 
     provider = production_embedding_provider()
@@ -420,8 +477,32 @@ def test_the_real_embedding_model_separates_rewordings_from_different_angles() -
         provider.embed(["probe"])
     except EmbeddingError as exc:
         pytest.skip(f"production embedding model is not available here: {exc}")
-    assert count_distinct_meanings(REAL_REWORDED, provider.embed) <= 8
-    assert count_distinct_meanings(REAL_DIFFERENT, provider.embed) == 20
+    data = json.loads(Path(__file__).with_name("angle_meaning_labels.json").read_text("utf-8"))
+    caught = missed = rejected = kept = 0
+    for entry in data["sets"].values():
+        angles, labels = entry["angles"], entry["labels"]
+        for i, j in itertools.combinations(range(len(angles)), 2):
+            if labels[i] is None or labels[j] is None:
+                continue
+            same = count_distinct_meanings([angles[i], angles[j]], provider.embed) == 1
+            if labels[i] == labels[j]:
+                caught, missed = caught + same, missed + (not same)
+            else:
+                rejected, kept = rejected + same, kept + (not same)
+    assert caught + missed == 36 and rejected + kept == 934
+    assert caught / 36 >= 0.75  # measured 29/36 at the chosen line
+    assert rejected / 934 <= 0.13  # measured 103/934; stricter lines drop too many ideas
+    # A template rotation the checker counted as one idea.
+    assert (
+        count_distinct_meanings(
+            [
+                "The impact of sleep deprivation on mood and emotional well-being",
+                "The impact of sleep deprivation on mental health",
+            ],
+            provider.embed,
+        )
+        == 1
+    )
 
 
 def test_a_non_local_model_address_is_refused_before_any_request(env: dict[str, Any]) -> None:

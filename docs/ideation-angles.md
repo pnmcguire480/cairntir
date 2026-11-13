@@ -30,13 +30,16 @@ adding to 100). Without any, it ranks by `audience_fit` (60) and `practicality` 
 The set is stored only if the model returned 20 to 40 angles whose angles and hooks
 are all different (after ignoring case and punctuation), each with a hook, a reason
 it fits, source IDs from your audience and a score and reason for every goal.
-Cairntir then compares the angles by meaning with its own embedding model: an angle that
-says the same thing as an earlier one in other words or another format ("Q&A" and "FAQ",
-"Handbook" and "Guide") does not count. Fewer than 20 different-meaning angles is refused
-with a message saying how many there really were, and nothing is stored. Cairntir never
-relabels a repeat as a new angle. Anything else that fails is also refused and nothing is
-stored. A local 7B model can take several
-minutes the first time it loads.
+Cairntir then compares the angles by meaning with its own embedding model and keeps
+only the angles that say something different from every angle kept before them. A
+repeat ("Q&A" and "FAQ", "Handbook" and "Guide", "The impact of sleep deprivation on
+mood" and "... on mental health") is dropped, never stored and never renamed. If fewer
+than 20 remain, Cairntir asks the model for replacements, telling it which ideas are
+already taken, up to four more times (so at most five model requests, each limited by
+`--timeout`). If it still has fewer than 20, it stops, says how many distinct angles
+it found and stores nothing. The set that is stored holds the survivors, ranked; the
+dropped ones and the extra requests are recorded beside it (`--json`). Anything else that
+fails is also refused and nothing is stored.
 
 Running the identical command again returns the stored set without calling the model.
 Pass `--key something-new` to ask for a fresh set (revision 2, 3, and so on). The
@@ -44,15 +47,25 @@ default key also changes when the audience, brief, goals or model change.
 
 ### How the meaning check was set
 
-The cut-off is a cosine similarity of 0.93 between angle texts. It was chosen from
-measurements with the production embedding model on three real Mistral 7B runs:
-rewordings of one angle (the same title with Q&A, FAQ, Handbook, Podcast, Webinar and
-similar endings) scored 0.95 to 0.98 against each other, while angles that were really
-different scored 0.92 at most. 0.93 sits in that gap. It is a judgment, not a proof: two
-different ideas that are phrased very alike can be wrongly merged, and a model that
-returns only slightly fewer than 20 different angles will fail the whole run. The model
-must be available locally (`cairntir setup` fetches it); if it is not, the command stops
-without storing anything.
+The line is a cosine similarity of 0.85 between angle texts. One fixed line on short
+titles cannot cleanly separate a reworded angle from a different idea, so it was
+measured: 36 same-idea pairs and 934 different-idea pairs were labelled by hand from
+six sets (the independent checker's controlled set and two real runs of its own, plus real
+Mistral 7B and qwen3:8b runs), in `tests/unit/angle_meaning_labels.json`. The same-idea
+pairs score 0.77 to 0.95, the different-idea pairs up to 0.95, so the ranges overlap.
+At 0.93 (the first choice) only 3 of the 36 repeats were caught. At 0.85 the line catches
+29 of the 36 (every plain paraphrase and every "The impact of X on Y" rotation) and wrongly
+drops 103 of the 934 different pairs (11%). It errs towards false rejection on purpose: a
+dropped good angle costs one more model request, a kept repeat makes the set look bigger
+than it is. The 7 repeats it misses are loose topic overlaps (thank-you notes versus
+recognition awards, mindfulness versus stress management). A test with the real model
+keeps these rates from drifting.
+
+Still open: the check cannot read the reasons. Real models repeat the same score
+reason on most angles ("Addresses the audience's pain and desired outcome") and give many
+angles the same score; the reasons are stored and labelled model judgment, but they do
+not discriminate between angles. The embedding model must be available locally
+(`cairntir setup` fetches it); if it is not, the command stops without storing anything.
 
 ## Read it back
 

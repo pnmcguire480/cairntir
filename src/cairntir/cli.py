@@ -1573,6 +1573,13 @@ def _angles_print(receipt: dict[str, Any], *, as_json: bool) -> None:
     )
     if receipt.get("replayed"):
         typer.echo("Stored set returned; the model was not called again.")
+    dropped = receipt.get("discarded_candidates")
+    if dropped:
+        extra = len(receipt.get("top_up_exchanges", []))
+        typer.echo(
+            f"{len(dropped)} repeat(s) were dropped and {extra} extra model request(s) made "
+            "to replace them (details with --json)."
+        )
     for item in receipt["candidates"]:
         typer.echo(
             f"\n{item['rank']:>2}. [{item['id']}] {item['angle']}  ({item['weighted_score']})"
