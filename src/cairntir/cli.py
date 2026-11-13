@@ -1643,6 +1643,7 @@ def angles_generate_cmd(
             objectives=objectives,
             idempotency_key=key or _angle_key(wing, snapshot, brief, objectives, model),
             adapter=adapter,
+            embed=production_embedding_provider().embed,
         )
 
     _angles_run(action, store, as_json)

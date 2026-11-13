@@ -30,12 +30,29 @@ adding to 100). Without any, it ranks by `audience_fit` (60) and `practicality` 
 The set is stored only if the model returned 20 to 40 angles whose angles and hooks
 are all different (after ignoring case and punctuation), each with a hook, a reason
 it fits, source IDs from your audience and a score and reason for every goal.
-Anything else is refused and nothing is stored. A local 7B model can take several
+Cairntir then compares the angles by meaning with its own embedding model: an angle that
+says the same thing as an earlier one in other words or another format ("Q&A" and "FAQ",
+"Handbook" and "Guide") does not count. Fewer than 20 different-meaning angles is refused
+with a message saying how many there really were, and nothing is stored. Cairntir never
+relabels a repeat as a new angle. Anything else that fails is also refused and nothing is
+stored. A local 7B model can take several
 minutes the first time it loads.
 
 Running the identical command again returns the stored set without calling the model.
 Pass `--key something-new` to ask for a fresh set (revision 2, 3, and so on). The
 default key also changes when the audience, brief, goals or model change.
+
+### How the meaning check was set
+
+The cut-off is a cosine similarity of 0.93 between angle texts. It was chosen from
+measurements with the production embedding model on three real Mistral 7B runs:
+rewordings of one angle (the same title with Q&A, FAQ, Handbook, Podcast, Webinar and
+similar endings) scored 0.95 to 0.98 against each other, while angles that were really
+different scored 0.92 at most. 0.93 sits in that gap. It is a judgment, not a proof: two
+different ideas that are phrased very alike can be wrongly merged, and a model that
+returns only slightly fewer than 20 different angles will fail the whole run. The model
+must be available locally (`cairntir setup` fetches it); if it is not, the command stops
+without storing anything.
 
 ## Read it back
 

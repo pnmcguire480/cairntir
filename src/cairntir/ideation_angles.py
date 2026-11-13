@@ -12,7 +12,7 @@ import re
 import sqlite3
 import tempfile
 import unicodedata
-from collections.abc import Iterator, Mapping
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import closing, contextmanager
 from pathlib import Path
 from types import MappingProxyType
@@ -128,6 +128,53 @@ def _objectives(value: Any) -> list[dict[str, Any]]:
 
 def _normal(value: str) -> str:
     return " ".join(re.findall(r"\w+", unicodedata.normalize("NFKC", value).casefold()))
+
+
+# Chosen from measured data (see docs/ideation-angles.md): rewordings of one angle score
+# 0.95-0.98 with the production embedder, genuinely different angles at most 0.92.
+MEANING_DUPLICATE_THRESHOLD = 0.93
+
+
+def count_distinct_meanings(
+    texts: Sequence[str],
+    embed: Callable[[Sequence[str]], Sequence[Sequence[float]]],
+    threshold: float = MEANING_DUPLICATE_THRESHOLD,
+) -> int:
+    """Count angles that do not say the same thing as an earlier kept angle."""
+    vectors = [list(v) for v in embed(list(texts))]
+    if len(vectors) != len(texts):
+        raise ProjectionError("embedding backend returned the wrong number of vectors")
+    norms = [math.sqrt(sum(x * x for x in v)) or 1.0 for v in vectors]
+    kept: list[int] = []
+    for index, vector in enumerate(vectors):
+        for other in kept:
+            dot = sum(a * b for a, b in zip(vector, vectors[other], strict=True))
+            if dot / (norms[index] * norms[other]) >= threshold:
+                break
+        else:
+            kept.append(index)
+    return len(kept)
+
+
+def _require_distinct_meanings(
+    ranked: list[dict[str, Any]],
+    embed: Callable[[Sequence[str]], Sequence[Sequence[float]]],
+) -> None:
+    try:
+        distinct = count_distinct_meanings([item["angle"] for item in ranked], embed)
+    except ProjectionError:
+        raise
+    except Exception as exc:
+        raise ProjectionError(
+            f"cannot check whether the angles differ in meaning, so nothing was stored: {exc}"
+        ) from exc
+    if distinct < 20:
+        raise ProjectionError(
+            f"only {distinct} of the model's {len(ranked)} angles differ in meaning "
+            "(the rest say the same thing in other words or formats); fewer than 20 "
+            "distinct angles, so nothing was stored. Try a broader brief or run it again "
+            "with --key"
+        )
 
 
 def _rank(
@@ -774,8 +821,13 @@ def generate_angle_set(
     objectives: list[dict[str, Any]],
     idempotency_key: str,
     adapter: AngleAdapter,
+    embed: Callable[[Sequence[str]], Sequence[Sequence[float]]] | None = None,
 ) -> dict[str, Any]:
-    """Commit a complete, audience-bound batch and its provisional ranking."""
+    """Commit a complete, audience-bound batch and its provisional ranking.
+
+    When ``embed`` is given, 20 or more angles must also differ in meaning, not just
+    in wording, or nothing is stored.
+    """
     with _errors():
         store, vault = _paths(store_path, vault_path, wing)
         key, checked_brief, checked_objectives = (
@@ -846,6 +898,8 @@ def generate_angle_set(
         ] != _sha(_canonical({k: result[k] for k in ("actual_model", "done", "candidates")})):
             raise ProjectionError("fixture exchange digest mismatch")
         ranked = _rank(result["candidates"], checked_objectives, source["evidence"])
+        if embed is not None:
+            _require_distinct_meanings(ranked, embed)
         with closing(_connection(store, write=True)) as conn:
             if _ready_audience(conn, vault, wing) != source:
                 raise ProjectionError("audience changed during generation; no angle set committed")
