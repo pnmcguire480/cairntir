@@ -88,7 +88,15 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-11-13 (1.14.0 published)
+## Last Session - 2026-11-13 (audience first-capture fix, PR176)
+
+The independent evaluation of published 1.14.0 (stage 2, 13 November) reported FAIL on one Tier 2 finding, with no Tier 1 finding and no data loss. `cairntir audience capture` on an existing store without audience history exited 1 with `no such table: cairntir_audience_revisions`; it reproduced on a store created by 1.13.0. The evaluator reran with `CAIRNTIR_DISABLE_AUTOREGISTER` and `CAIRNTIR_DISABLE_UPDATE_CHECK` enforced in every shell: 29 PASS, 1 FAIL (this finding) and 4 NOT TESTED. Audience confirmation and its follow-up need a person at a terminal, NotebookLM was not contacted, and Dream was untested because Ollama 0.40.16 is installed but was not running.
+
+[PR176](https://github.com/pnmcguire480/cairntir/pull/176) fixes the finding in `capture_audience` only, because the frozen 1.13.0 acceptance test `test_read_with_wrong_store_schema_is_typed_without_changing_human_note` pins the status error on a store without the table. Three regression tests failed with the evaluator's exact error on `eeceb0b` and pass after the fix. Locally on Windows with Python 3.12, the non-slow unit suite passed 1,285 tests with 3 symlink skips, and the audience acceptance tests passed 60 with 3. The evaluator has not rerun against the fix, and publication still needs the maintainer's explicit yes.
+
+Earlier, an evaluator shell omitted both disable variables, so CLI auto-registration may have run `claude mcp list` (hard stop 3, inferred). This was checked outside the evaluator's boundary. The real `~/.claude.json` was last written at 10:13, before the 12:03 incident, and its only Cairntir entry is the usual `cairntir-mcp --host claude`. No host configuration file was written during the incident window, and none names the eval folder.
+
+## Previous Session - 2026-11-13 (1.14.0 published)
 
 [1.14.0](https://github.com/pnmcguire480/cairntir/releases/tag/v1.14.0) is on PyPI and GitHub from tag `v1.14.0` at `636b7c73`, never moved, on the maintainer's word "publish 1.14.0". Release run 43365649687 passed on its second attempt (the first stopped on a network timeout in the advisory check, before any build): 3,085 tests passed, coverage 87.88%. A fresh install from PyPI reports 1.14.0. CI on `main` at that commit is red from two different macOS failures; the [release record](docs/release/v1.14.0.md) has both. Independent checkers ran on 12 November: E22, I01, Q08, R13's local half, R12 (PR167) and Q04 (PR170) READY; Dream, I02 (PR168) and C50 (PR171) NOT READY. I02's distinctness gate was repaired in PR168 and awaits recheck. I03 (PR173) and I05 (PR172) are built and stay open; I05's real-model run failed. The home PC's C: drive is off limits for working files; use D:, E: and F:.
 
