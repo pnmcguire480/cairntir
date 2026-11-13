@@ -136,6 +136,23 @@ def confirm_audience(
 _CAPTURE_SOURCE = "cli-capture"
 
 
+def _has_audience_history(store: Path) -> bool:
+    """Whether the store holds the revision table, which its first capture creates.
+
+    An ordinary memory store has no audience table until then, so there is no
+    current revision to compare a capture against.
+    """
+    try:
+        with closing(sqlite3.connect(store, timeout=20)) as conn:
+            found = conn.execute(
+                "SELECT 1 FROM sqlite_master "
+                "WHERE type='table' AND name='cairntir_audience_revisions'"
+            ).fetchone()
+    except sqlite3.Error as exc:
+        raise ProjectionError(f"cannot read audience revision: {exc}") from exc
+    return found is not None
+
+
 def capture_audience(
     store_path: str | os.PathLike[str],
     vault_path: str | os.PathLike[str],
@@ -166,7 +183,8 @@ def capture_audience(
             "values": {f: values[f] for f in fields},
         }
     }
-    if Path(store_path).expanduser().is_file():
+    store = audience._paths(store_path, vault_path, wing)[0]
+    if store.is_file() and _has_audience_history(store):
         try:
             current = audience.get_audience_revision(store_path, vault_path, wing)
         except ProjectionError as exc:

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- `cairntir audience capture` now saves the first audience on a store that already holds memories. It used to stop with `cannot read audience revision: no such table: cairntir_audience_revisions`: it looked up the current revision to compare against before the audience table existed, and that table only appears with a store's first audience. Any existing store without audience history was affected, including every store created by 1.13.0. The failed capture saved nothing. `cairntir audience status` on such a store still reports that typed error until the first capture. Found by the independent evaluation of 1.14.0 on 13 November 2026.
+
 ## [1.14.0] - 2026-11-12
 
 Three new commands and two fixes on top of 1.13.0. No database schema change: a store that works with 1.13.0 works with 1.14.0 without a reindex. It is a minor version, not a patch, because the [release policy](docs/release-cadence.md) gives any new capability a minor number. One of the fixes answers the single finding of the independent evaluation of 1.13.0; the evaluator has not yet rerun its tests against it. Roadmap after this release: 26 of 35 items complete, 9 open; [ALPHA.md](ALPHA.md) says which.
