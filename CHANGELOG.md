@@ -5,6 +5,7 @@
 ### Added
 
 - HumanFlow narration can be written by the host model (R12). `HumanFlowRun.prepare` exports the read-only evidence bundle for a PALADIN Python run. `HostNarrationAdapter` returns the host's narration only for the bundle it was written against, checked by SHA-256, and the existing validator and `publish` path do the rest. The check ledger, failures, MISSING checks and PENDING stages stay in the published CodeGlass walkthrough, and no teach-back is implied. A real narrated walkthrough of a two-attempt run is kept with its tests in `tests/acceptance/humanflow_teaching_unit`. The local Ollama route is unchanged.
+- A real-browser workflow for the PALADIN UI stage (Q04). `tests/acceptance/paladin_ui_real` runs the existing UI worker and producer in headless Chromium 151.0.7922.34 against the frozen accessibility, keyboard, layout and visual fault fixtures, and checks each report with the frozen independent oracle. A capture is never its own approval: the baseline changes only through an explicit review, and a rejected change keeps the approved baseline. The browser, Playwright 1.62.1, pngjs and pixelmatch are not Cairntir dependencies; they come from a folder you prepare and name with `CAIRNTIR_Q04_TOOLS`, and the case skips without it.
 
 ## [1.14.0] - 2026-11-12
 
