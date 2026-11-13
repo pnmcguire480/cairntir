@@ -228,7 +228,7 @@ def test_selected_angle_becomes_complete_outlines_with_linked_actions(
     _choose(env, "a07")
     result = _generate(env, ollama)
     assert result.exit_code == 0, result.output
-    receipt = json.loads(result.output)
+    receipt = json.loads(result.stdout)
     assert receipt["angle_id"] == "a07" and receipt["selection"] == "person_pick"
     assert receipt["context"]["human_confirmation"] is False
     assert receipt["set_note_exists"] is True
@@ -276,10 +276,10 @@ def test_outlines_reopen_identically_in_a_later_process(
     env: dict[str, Any], ollama: _Ollama
 ) -> None:
     _choose(env, "a05")
-    made = json.loads(_generate(env, ollama).output)
+    made = json.loads(_generate(env, ollama).stdout)
     shown = _show(env)
     assert shown.exit_code == 0, shown.output
-    again = json.loads(shown.output)
+    again = json.loads(shown.stdout)
     assert again["ref"] == made["ref"]
     assert again["outlines"] == made["outlines"]
     assert again["angle_id"] == "a05" and again["set_note_exists"] is True
@@ -291,10 +291,10 @@ def test_identical_request_replays_without_calling_the_model(
     env: dict[str, Any], ollama: _Ollama
 ) -> None:
     _choose(env, "a02")
-    first = json.loads(_generate(env, ollama).output)
+    first = json.loads(_generate(env, ollama).stdout)
     second = _generate(env, ollama)
     assert second.exit_code == 0, second.output
-    replay = json.loads(second.output)
+    replay = json.loads(second.stdout)
     assert replay["replayed"] is True and replay["ref"] == first["ref"]
     assert ollama.outline_calls == 15
 
@@ -302,7 +302,7 @@ def test_identical_request_replays_without_calling_the_model(
 def test_named_angle_and_custom_format(env: dict[str, Any], ollama: _Ollama) -> None:
     result = _generate(env, ollama, "--angle", "a11", "--format", "newsletter:words:300:500")
     assert result.exit_code == 0, result.output
-    receipt = json.loads(result.output)
+    receipt = json.loads(result.stdout)
     assert receipt["selection"] == "named" and receipt["angle_id"] == "a11"
     assert [item["request_id"] for item in receipt["outlines"]] == ["newsletter"]
     assert ollama.outline_calls == 8
@@ -326,10 +326,10 @@ def test_single_call_route_still_makes_complete_outlines(
     _choose(env, "a08")
     result = _generate(env, ollama, "--single-call")
     assert result.exit_code == 0, result.output
-    receipt = json.loads(result.output)
+    receipt = json.loads(result.stdout)
     assert receipt["schema"] == "cairntir.outline-set-receipt.v1"
     assert ollama.outline_calls == 2
-    assert json.loads(_show(env).output)["ref"] == receipt["ref"]
+    assert json.loads(_show(env).stdout)["ref"] == receipt["ref"]
 
 
 @pytest.mark.parametrize("mutate", [_drop_bridge, _repeat_point, _bad_length])
@@ -375,7 +375,7 @@ def test_non_local_model_address_is_refused(env: dict[str, Any], ollama: _Ollama
 
 def test_changed_snapshot_note_is_refused(env: dict[str, Any], ollama: _Ollama) -> None:
     _choose(env, "a06")
-    shown = json.loads(_run(["angles", "show", *env["common"], "--json"]).output)
+    shown = json.loads(_run(["angles", "show", *env["common"], "--json"]).stdout)
     snapshot = Path(shown["snapshot_path"])
     snapshot.write_bytes(snapshot.read_bytes().replace(b"saves an hour", b"saves a day", 1))
     result = _generate(env, ollama)
@@ -451,7 +451,7 @@ def test_section_limit_is_configurable_up_to_one_hour_and_recorded(
     _choose(env, "a10")
     result = _generate(env, ollama, "--timeout", "600")
     assert result.exit_code == 0, result.output
-    receipt = json.loads(result.output)
+    receipt = json.loads(result.stdout)
     limits = {row["adapter_identity"]["timeout_seconds"] for row in receipt["node_evidence"]}
     assert limits == {600.0}
 
@@ -481,7 +481,7 @@ def test_thinking_option_leaves_model_thinking_on(env: dict[str, Any], ollama: _
         assert "think" not in body
         assert body["prompt"].startswith("I05 (i05.staged.v3)")
         assert "Do not invent figures" in body["prompt"]
-    identity = json.loads(result.output)["node_evidence"][0]["adapter_identity"]
+    identity = json.loads(result.stdout)["node_evidence"][0]["adapter_identity"]
     assert identity["prompt_version"] == "i05.staged.v3t"
 
 
@@ -523,7 +523,7 @@ def test_declared_generated_number_is_kept_with_its_verification_action(
     ollama.staged_mutate = _figure(declared=True)
     result = _generate(env, ollama)
     assert result.exit_code == 0, result.output
-    outline = json.loads(result.output)["outlines"][0]
+    outline = json.loads(result.stdout)["outlines"][0]
     claims = outline["outline"]["assumptions"]
     assert [a["claim"] for a in claims] == ["A routine like this saves 40% of admin time."]
     verify = next(a for a in outline["actions"] if a["kind"] == "verification")
