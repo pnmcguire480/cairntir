@@ -17,7 +17,10 @@ from cairntir.audience_lock import (
     transfer_audience_to_spec,
 )
 from cairntir.cli import app
+from cairntir.config import db_path
 from cairntir.errors import ProjectionError
+from cairntir.memory.embeddings import HashEmbeddingProvider
+from cairntir.memory.store import DrawerStore
 
 VALUES = {
     "audience": "Solo makers who sell online",
@@ -47,6 +50,15 @@ def _revisions(store: Path) -> int:
         if found is None:
             return 0
         return int(conn.execute("SELECT COUNT(*) FROM cairntir_audience_revisions").fetchone()[0])
+
+
+def _working_store(path: Path) -> Path:
+    """Create an ordinary memory store that has never held an audience revision."""
+    with DrawerStore(path, HashEmbeddingProvider(dimension=16)):
+        pass
+    assert path.is_file()
+    assert _revisions(path) == 0
+    return path
 
 
 def _confirm(env: dict[str, Any]) -> dict[str, Any]:
@@ -140,3 +152,40 @@ def test_cli_capture_refuses_a_missing_field(env: dict[str, Any]) -> None:
     result = CliRunner().invoke(app, ["audience", "capture", *common, "--audience", "x"])
     assert result.exit_code != 0
     assert _revisions(env["store"]) == 0
+
+
+def test_first_capture_works_on_an_existing_store_without_audience_history(
+    env: dict[str, Any],
+) -> None:
+    _working_store(env["store"])
+    receipt = _capture(env)
+    state = audience_lock(env["store"], env["vault"], env["wing"])
+    assert receipt["revision"] == 1
+    assert state["lock"] == "provisional"
+    assert {k: v["value"] for k, v in state["profile"].items()} == VALUES
+    assert _revisions(env["store"]) == 1
+    with DrawerStore(env["store"], HashEmbeddingProvider(dimension=16)):
+        pass
+
+
+def test_repeat_first_capture_on_an_existing_store_makes_one_revision(
+    env: dict[str, Any],
+) -> None:
+    _working_store(env["store"])
+    first = _capture(env)
+    second = _capture(env)
+    assert second["revision"] == first["revision"] == 1
+    assert _revisions(env["store"]) == 1
+
+
+def test_cli_first_capture_works_on_the_default_existing_store(
+    env: dict[str, Any], tmp_cairntir_home: Path
+) -> None:
+    store = _working_store(db_path(create=False))
+    args = ["audience", "capture", "--wing", env["wing"], "--vault", str(env["vault"])]
+    for field, value in VALUES.items():
+        args += [f"--{field.replace('_', '-')}", value]
+    result = CliRunner().invoke(app, args)
+    assert result.exit_code == 0, result.output
+    assert '"lock": "provisional"' in result.output
+    assert _revisions(store) == 1
