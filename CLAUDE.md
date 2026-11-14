@@ -5,8 +5,8 @@ Patrick McGuire (@pnmcguire480). License: MIT. Python 3.11–3.13.
 
 ## Current state
 
-Source version: **1.14.0**, published on 2026-11-13 from tag `v1.14.0` at
-`636b7c73`; see the [release record](docs/release/v1.14.0.md). It carries the work toward 2.0 under a 1.x number. Read [ALPHA.md](ALPHA.md) before installing or claiming feature
+Source version: **1.14.1**, prepared on 2026-11-13 and **not published** when this was written; the maintainer has said "Publish 1.14.1." and the tag follows the merge. See its [release record](docs/release/v1.14.1.md). The latest published release is **1.14.0** (2026-11-13, tag `v1.14.0` at
+`636b7c73`; [record](docs/release/v1.14.0.md)). It carries the work toward 2.0 under a 1.x number. Read [ALPHA.md](ALPHA.md) before installing or claiming feature
 readiness; it defines the supported preview and every remaining release gate.
 Use a separate virtual environment, disposable store and pilot vault.
 
@@ -88,7 +88,11 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-11-13 (audience first-capture fix, PR176)
+## Last Session - 2026-11-13 (1.14.1 prepared)
+
+PR176 merged as `102225ef`. The maintainer said "Publish 1.14.1." The release is a patch with that one fix; the R12, Q04 and C50 packets in PR175 add capability and wait for a later minor. The builder read the evaluator's stage 3 and stage 4 reports on 1.14.0 from the maintainer's Google Drive: stage 3 has 22 PASS, 1 FAIL (the carried audience finding) and 6 NOT TESTED of the 29 promises untested on 1.13.0, with three Tier 3 documentation findings; stage 4 caught 36 of 43 deliberate breaks and missed 6. The stage 1 and stage 2 report files are still on the work PC. Independent checks on 13 November marked I02 (PR168) and I03 (PR173) NOT READY; I02 and I05 (PR172) are EXHAUSTED after two repair rounds each because no local model on the 6 GB home PC met their criteria, and all three stay open pending the maintainer's decision on a stronger model. The maintainer accepted Dream's measured speed and said slowness alone on the home PC is not a reason to fail an item. The home PC's C: drive is off limits; work goes on D:, E: and F:.
+
+## Previous Session - 2026-11-13 (audience first-capture fix, PR176)
 
 The independent evaluation of published 1.14.0 (stage 2, 13 November) reported FAIL on one Tier 2 finding, with no Tier 1 finding and no data loss. `cairntir audience capture` on an existing store without audience history exited 1 with `no such table: cairntir_audience_revisions`; it reproduced on a store created by 1.13.0. The evaluator reran with `CAIRNTIR_DISABLE_AUTOREGISTER` and `CAIRNTIR_DISABLE_UPDATE_CHECK` enforced in every shell: 29 PASS, 1 FAIL (this finding) and 4 NOT TESTED. Audience confirmation and its follow-up need a person at a terminal, NotebookLM was not contacted, and Dream was untested because Ollama 0.40.16 is installed but was not running.
 
