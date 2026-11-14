@@ -1,0 +1,18 @@
+{
+  "adapter": {
+    "kind": "host",
+    "model_id": "claude-opus-5-5",
+    "prompt_version": "cairntir-humanflow-host-v1"
+  },
+  "bundle_sha256": "c0cebfc6f2d38077a965440bd9316e3bea78bf953140b4a80049500c2df3ba6f",
+  "humanflow_schema": "cairntir.humanflow-walkthrough.v1",
+  "reader_level": "intermediate",
+  "response_sha256": "eb9f96e9a84757baf5bee1d9b55460c8b8b896573e20d15dad32aa871a8e21ac",
+  "retention": {
+    "delayed_score": null,
+    "immediate_score": null,
+    "retention_delta": null
+  },
+  "status": "PUBLISHED",
+  "walkthrough_id": 19
+}

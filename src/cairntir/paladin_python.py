@@ -1379,6 +1379,47 @@ class OllamaNarrationAdapter:
         return result
 
 
+_HOST_PROMPT = "cairntir-humanflow-host-v1"
+
+
+class HostNarrationAdapter:
+    """Return narration a host model wrote for one exact evidence bundle.
+
+    The host reads the bundle from :meth:`HumanFlowRun.prepare` and writes the
+    response; this adapter only hands it back, and refuses if the bundle it is
+    asked about is not the one the narration was written for.
+    """
+
+    @_boundary
+    def __init__(self, response: dict[str, Any], *, model_id: str, bundle_sha256: str) -> None:
+        """Bind host-written narration to its author and evidence bundle digest."""
+        if (
+            not isinstance(response, dict)
+            or not isinstance(model_id, str)
+            or not model_id.strip()
+            or not isinstance(bundle_sha256, str)
+            or re.fullmatch(r"[0-9a-f]{64}", bundle_sha256) is None
+        ):
+            raise PaladinPythonError("host narration needs a response, model id and bundle digest")
+        self._response = deepcopy(response)
+        self._model = model_id
+        self._bundle_sha256 = bundle_sha256
+
+    @property
+    def identity(self) -> dict[str, str]:
+        """Report the host model that wrote the narration."""
+        return {"kind": "host", "model_id": self._model, "prompt_version": _HOST_PROMPT}
+
+    @_boundary
+    def generate(
+        self, bundle: dict[str, Any], *, reader_level: str, max_output_chars: int
+    ) -> dict[str, Any]:
+        """Return the bound narration only for the bundle it was written against."""
+        if canonical_sha(bundle) != self._bundle_sha256:
+            raise PaladinPythonError("host narration was written for different evidence")
+        return deepcopy(self._response)
+
+
 class HumanFlowRun:
     """Draft grounded narration without writes; publish only this instance's issued draft."""
 
@@ -1611,19 +1652,29 @@ class HumanFlowRun:
                 raise PaladinPythonError("generated prose names an unavailable claim")
 
     @_boundary
-    def draft(
+    def prepare(
         self,
         *,
-        reader_level: str,
         source_spans: tuple[dict[str, Any], ...],
         artifact_paths: tuple[dict[str, Any], ...] = (),
         observation_ids: tuple[int, ...] = (),
         max_input_bytes: int = 32768,
-        max_output_chars: int = 12000,
     ) -> dict[str, Any]:
-        """Generate an anchored draft after read-only evidence preflight."""
-        if reader_level not in {"beginner", "intermediate", "advanced"}:
-            raise PaladinPythonError("unsupported reader level")
+        """Export the read-only evidence bundle a host reads before writing narration."""
+        selectors = self._selectors(
+            source_spans, artifact_paths, observation_ids, max_input_bytes, 1
+        )
+        bundle = self._bundle(selectors)
+        return {"bundle": deepcopy(bundle), "bundle_sha256": canonical_sha(bundle)}
+
+    @staticmethod
+    def _selectors(
+        source_spans: tuple[dict[str, Any], ...],
+        artifact_paths: tuple[dict[str, Any], ...],
+        observation_ids: tuple[int, ...],
+        max_input_bytes: int,
+        max_output_chars: int,
+    ) -> dict[str, Any]:
         if (
             type(max_input_bytes) is not int
             or not 1 <= max_input_bytes <= 1048576
@@ -1637,13 +1688,31 @@ class HumanFlowRun:
             or not isinstance(artifact_paths, tuple)
         ):
             raise PaladinPythonError("source selectors must be a nonempty tuple")
-        selectors = deepcopy(
+        return deepcopy(
             {
                 "source_spans": source_spans,
                 "artifact_paths": artifact_paths,
                 "observation_ids": observation_ids,
                 "max_input_bytes": max_input_bytes,
             }
+        )
+
+    @_boundary
+    def draft(
+        self,
+        *,
+        reader_level: str,
+        source_spans: tuple[dict[str, Any], ...],
+        artifact_paths: tuple[dict[str, Any], ...] = (),
+        observation_ids: tuple[int, ...] = (),
+        max_input_bytes: int = 32768,
+        max_output_chars: int = 12000,
+    ) -> dict[str, Any]:
+        """Generate an anchored draft after read-only evidence preflight."""
+        if reader_level not in {"beginner", "intermediate", "advanced"}:
+            raise PaladinPythonError("unsupported reader level")
+        selectors = self._selectors(
+            source_spans, artifact_paths, observation_ids, max_input_bytes, max_output_chars
         )
         identity = self._identity()
         bundle = self._bundle(selectors)
@@ -1782,4 +1851,10 @@ class HumanFlowRun:
         }
 
 
-__all__ = ["HumanFlowRun", "OllamaNarrationAdapter", "PaladinPythonError", "PaladinPythonRun"]
+__all__ = [
+    "HostNarrationAdapter",
+    "HumanFlowRun",
+    "OllamaNarrationAdapter",
+    "PaladinPythonError",
+    "PaladinPythonRun",
+]
