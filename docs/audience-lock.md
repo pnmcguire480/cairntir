@@ -1,6 +1,6 @@
 # Audience lock
 
-Available since **1.13.0**; `cairntir audience capture` needs 1.14.0 or later. An audience stays provisional until a person
+Available since **1.13.0**; `cairntir audience capture` needs 1.14.0 or later; use 1.14.1 or later on a store that already holds memories, because 1.14.0 fails the first capture there. An audience stays provisional until a person
 confirms it. A model or script can draft one, but it cannot confirm it.
 
 ## What a revision holds

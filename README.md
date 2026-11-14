@@ -1,6 +1,6 @@
 # Cairntir
 
-> **1.14.0 carries the work toward 2.0:** [feature status and limits](ALPHA.md). Upgrading from 1.12 or earlier? Semantic search and saving stop until you run one reindex command; read the [upgrade guide](docs/embedding-artifacts.md) first. 2.0.0 is reserved for the finished roadmap.
+> **1.14.1 carries the work toward 2.0:** [feature status and limits](ALPHA.md). Upgrading from 1.12 or earlier? Semantic search and saving stop until you run one reindex command; read the [upgrade guide](docs/embedding-artifacts.md) first. 2.0.0 is reserved for the finished roadmap.
 
 Persistent, local-first memory for AI coding agents. Claude Code, Codex,
 Cursor, Qwen Code, and other MCP clients share one searchable project history.
@@ -13,7 +13,7 @@ Cairntir stores decisions, facts, unfinished work, and outcomes as verbatim
 *drawers* in a SQLite database you own. A budgeted handoff restores complete
 drawers across sessions; semantic and file-anchored recall find deeper evidence.
 
-Current release: **1.14.0**. See [feature status](ALPHA.md) and [changelog](CHANGELOG.md).
+Current release: **1.14.1**. See [feature status](ALPHA.md) and [changelog](CHANGELOG.md).
 Published downloads are on
 [PyPI](https://pypi.org/project/cairntir/) and
 [GitHub Releases](https://github.com/pnmcguire480/cairntir/releases).
