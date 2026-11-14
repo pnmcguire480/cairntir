@@ -59,8 +59,8 @@ Release operations:
 ## Past release records
 
 Evidence and known limits for each shipped release live under `docs/release/`.
-The [1.14.1 record](release/v1.14.1.md) covers the release being prepared and
-the [1.14.0 record](release/v1.14.0.md) the latest published one. The
+The [1.14.1 record](release/v1.14.1.md) covers the latest published release and
+the [1.14.0 record](release/v1.14.0.md) the one before it. The
 [1.13.0](release/v1.13.0.md),
 [1.12.4](release/v1.12.4.md) and [1.12.3](release/v1.12.3.md) records cover the
 releases before it;
