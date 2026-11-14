@@ -123,6 +123,11 @@ audience_app = typer.Typer(
 )
 app.add_typer(audience_app, name="audience")
 
+angles_app = typer.Typer(
+    help="Generate, rank and choose content angles for a captured audience.", no_args_is_help=True
+)
+app.add_typer(angles_app, name="angles")
+
 claim_test_app = typer.Typer(
     help="Send a Crucible claim to a separate test author and execute the tests.",
     no_args_is_help=True,
@@ -1533,6 +1538,171 @@ def audience_transfer_cmd(
     from cairntir.audience_lock import transfer_audience_to_spec
 
     _audience_output(lambda path: transfer_audience_to_spec(path, vault, wing, spec), store)
+
+
+_DEFAULT_ANGLE_OBJECTIVES = (
+    "audience_fit:60:Speaks to this audience's pain and desired outcome",
+    "practicality:40:Can be shown or explained with a small, concrete example",
+)
+
+
+def _parse_objectives(values: list[str]) -> list[dict[str, Any]]:
+    result: list[dict[str, Any]] = []
+    for value in values or list(_DEFAULT_ANGLE_OBJECTIVES):
+        ident, sep1, rest = value.partition(":")
+        weight, sep2, criterion = rest.partition(":")
+        if not (sep1 and sep2 and weight.strip().isdigit()):
+            raise ValueError(f"objective must look like id:weight:criterion, got {value!r}")
+        result.append({"id": ident, "criterion": criterion, "weight": int(weight)})
+    return result
+
+
+def _angle_key(*parts: object) -> str:
+    import hashlib
+
+    return "cli-" + hashlib.sha256(json.dumps(parts, sort_keys=True).encode()).hexdigest()[:32]
+
+
+def _angles_print(receipt: dict[str, Any], *, as_json: bool) -> None:
+    if as_json:
+        typer.echo(json.dumps(receipt, ensure_ascii=False, indent=2))
+        return
+    typer.echo(
+        f"Angle set {receipt['revision']} ({receipt['status']}, model judgments) - "
+        f"{len(receipt['candidates'])} angles, note: {receipt['projection_status']}"
+    )
+    if receipt.get("replayed"):
+        typer.echo("Stored set returned; the model was not called again.")
+    dropped = receipt.get("discarded_candidates")
+    if dropped:
+        extra = len(receipt.get("top_up_exchanges", []))
+        typer.echo(
+            f"{len(dropped)} repeat(s) were dropped and {extra} extra model request(s) made "
+            "to replace them (details with --json)."
+        )
+    for item in receipt["candidates"]:
+        typer.echo(
+            f"\n{item['rank']:>2}. [{item['id']}] {item['angle']}  ({item['weighted_score']})"
+        )
+        typer.echo(f"    hook: {item['hook']}")
+        typer.echo(f"    why it fits: {item['relevance']}")
+        for objective, score in item["scores"].items():
+            typer.echo(f"    {objective} {score['value']}: {score['reason']}")
+    typer.echo(f"\nAutomatic top choice: {receipt['automatic_choice']}")
+    for choice in receipt.get("selection_history", []):
+        typer.echo(
+            f"Your choice #{choice['selection_id']}: {choice['candidate_id']} - {choice['reason']}"
+        )
+    typer.echo(f"Note: {receipt['snapshot_path']}")
+
+
+def _angles_run(
+    action: Callable[[Path], dict[str, Any]], store: Path | None, as_json: bool
+) -> None:
+    from cairntir.config import db_path
+
+    try:
+        result = action(store if store is not None else db_path(create=False))
+    except (CairntirError, sqlite3.Error, OSError, ValueError) as exc:
+        typer.echo(f"cairntir: angles failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    _angles_print(result, as_json=as_json)
+
+
+@angles_app.command("generate")
+def angles_generate_cmd(
+    wing: str = typer.Option(..., "--wing", "-w"),
+    vault: Path = typer.Option(..., "--vault"),  # noqa: B008
+    brief: str = typer.Option(..., "--brief", help="What the angles are about."),
+    model: str = typer.Option(..., "--model", help="Local Ollama model name."),
+    objective: list[str] = typer.Option(  # noqa: B008
+        [],
+        "--objective",
+        help="Ranking goal as id:weight:criterion; 2 to 4, weights sum to 100. "
+        "Defaults to audience_fit 60 and practicality 40.",
+    ),
+    endpoint: str = typer.Option(
+        "http://127.0.0.1:11434", "--endpoint", help="Numeric loopback Ollama address."
+    ),
+    timeout: float = typer.Option(600.0, "--timeout", min=1.0, max=900.0),
+    key: str | None = typer.Option(
+        None, "--key", help="Reuse a key to replay; a new key makes a new set."
+    ),
+    store: Path | None = typer.Option(  # noqa: B008
+        None, "--store", help="Defaults to the Cairntir store."
+    ),
+    as_json: bool = typer.Option(False, "--json", help="Print the full record."),
+) -> None:
+    """Ask a local model for 20 or more angles, rank them with reasons, and store them."""
+    from cairntir.ideation_angles import OllamaAnglesAdapter, generate_angle_set
+
+    def action(path: Path) -> dict[str, Any]:
+        from cairntir.audience_lock import audience_lock
+
+        objectives = _parse_objectives(objective)
+        adapter = OllamaAnglesAdapter(endpoint=endpoint, model=model, timeout_seconds=timeout)
+        snapshot = audience_lock(path, vault, wing)["snapshot_sha256"]
+        return generate_angle_set(
+            path,
+            vault,
+            wing,
+            brief=brief,
+            objectives=objectives,
+            idempotency_key=key or _angle_key(wing, snapshot, brief, objectives, model),
+            adapter=adapter,
+            embed=production_embedding_provider().embed,
+        )
+
+    _angles_run(action, store, as_json)
+
+
+@angles_app.command("show")
+def angles_show_cmd(
+    wing: str = typer.Option(..., "--wing", "-w"),
+    vault: Path = typer.Option(..., "--vault"),  # noqa: B008
+    revision: int | None = typer.Option(None, "--revision", help="Defaults to the latest."),
+    store: Path | None = typer.Option(  # noqa: B008
+        None, "--store", help="Defaults to the Cairntir store."
+    ),
+    as_json: bool = typer.Option(False, "--json", help="Print the full record."),
+) -> None:
+    """Show a stored angle set, its ranking reasons and your choices."""
+    from cairntir.ideation_angles import get_angle_set
+
+    _angles_run(lambda path: get_angle_set(path, vault, wing, revision=revision), store, as_json)
+
+
+@angles_app.command("choose")
+def angles_choose_cmd(
+    wing: str = typer.Option(..., "--wing", "-w"),
+    vault: Path = typer.Option(..., "--vault"),  # noqa: B008
+    candidate: str = typer.Option(..., "--candidate", help="Angle id, such as a07."),
+    reason: str = typer.Option(..., "--reason", help="Why you picked it."),
+    revision: int | None = typer.Option(None, "--revision", help="Defaults to the latest."),
+    key: str | None = typer.Option(None, "--key"),
+    store: Path | None = typer.Option(  # noqa: B008
+        None, "--store", help="Defaults to the Cairntir store."
+    ),
+    as_json: bool = typer.Option(False, "--json", help="Print the full record."),
+) -> None:
+    """Record your own pick beside the automatic top choice, which is kept."""
+    from cairntir.ideation_angles import get_angle_set, project_angle_set, steer_angle_set
+
+    def action(path: Path) -> dict[str, Any]:
+        number = revision or get_angle_set(path, vault, wing)["revision"]
+        steer_angle_set(
+            path,
+            vault,
+            wing,
+            set_revision=number,
+            candidate_id=candidate,
+            reason=reason,
+            idempotency_key=key or _angle_key(wing, number, candidate, reason),
+        )
+        project_angle_set(path, vault, wing)
+        return get_angle_set(path, vault, wing, revision=number)
+
+    _angles_run(action, store, as_json)
 
 
 def _claim_test_output(

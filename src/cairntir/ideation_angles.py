@@ -12,7 +12,7 @@ import re
 import sqlite3
 import tempfile
 import unicodedata
-from collections.abc import Iterator, Mapping
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import closing, contextmanager
 from pathlib import Path
 from types import MappingProxyType
@@ -130,10 +130,83 @@ def _normal(value: str) -> str:
     return " ".join(re.findall(r"\w+", unicodedata.normalize("NFKC", value).casefold()))
 
 
+# Chosen from labelled data (docs/ideation-angles.md, "How the meaning check was set"):
+# whole-title cosine cannot cleanly separate a paraphrase from a different idea, so the
+# line is set strict. It catches every paraphrase and template rotation in the labelled
+# set and wrongly drops roughly one in ten different pairs; the top-up loop pays for that.
+MEANING_DUPLICATE_THRESHOLD = 0.85
+TOP_UP_ROUNDS = 4
+_SET_MINIMUM = 20
+_SET_MAXIMUM = 40
+
+
+def meaning_survivors(
+    texts: Sequence[str],
+    embed: Callable[[Sequence[str]], Sequence[Sequence[float]]],
+    threshold: float = MEANING_DUPLICATE_THRESHOLD,
+    *,
+    kept_vectors: Sequence[Sequence[float]] = (),
+) -> tuple[list[int], list[tuple[int, int, float]], list[list[float]]]:
+    """Keep each text unless it says the same as ANY text kept before it.
+
+    Returns kept indexes, ``(dropped index, kept position, similarity)`` for every drop
+    (position counts ``kept_vectors`` first) and the vectors of all kept texts.
+    """
+    vectors = [list(v) for v in embed(list(texts))] if texts else []
+    if len(vectors) != len(texts):
+        raise ProjectionError("embedding backend returned the wrong number of vectors")
+
+    def norm(vector: Sequence[float]) -> float:
+        return math.sqrt(sum(x * x for x in vector)) or 1.0
+
+    pool = [list(v) for v in kept_vectors]
+    kept: list[int] = []
+    dropped: list[tuple[int, int, float]] = []
+    for index, vector in enumerate(vectors):
+        for position, other in enumerate(pool):
+            dot = sum(a * b for a, b in zip(vector, other, strict=True))
+            similarity = dot / (norm(vector) * norm(other))
+            if similarity >= threshold:
+                dropped.append((index, position, similarity))
+                break
+        else:
+            kept.append(index)
+            pool.append(vector)
+    return kept, dropped, pool
+
+
+def count_distinct_meanings(
+    texts: Sequence[str],
+    embed: Callable[[Sequence[str]], Sequence[Sequence[float]]],
+    threshold: float = MEANING_DUPLICATE_THRESHOLD,
+) -> int:
+    """Count the texts that survive the meaning check."""
+    return len(meaning_survivors(texts, embed, threshold)[0])
+
+
+def _embed_checked(
+    embed: Callable[[Sequence[str]], Sequence[Sequence[float]]],
+) -> Callable[[Sequence[str]], Sequence[Sequence[float]]]:
+    def call(texts: Sequence[str]) -> Sequence[Sequence[float]]:
+        try:
+            return embed(texts)
+        except ProjectionError:
+            raise
+        except Exception as exc:
+            raise ProjectionError(
+                f"cannot check whether the angles differ in meaning, so nothing was stored: {exc}"
+            ) from exc
+
+    return call
+
+
 def _rank(
-    value: Any, objectives: list[dict[str, Any]], evidence: dict[str, Any]
+    value: Any,
+    objectives: list[dict[str, Any]],
+    evidence: dict[str, Any],
+    minimum: int = 20,
 ) -> list[dict[str, Any]]:
-    if not isinstance(value, list) or not 20 <= len(value) <= 40:
+    if not isinstance(value, list) or not minimum <= len(value) <= 40:
         raise ProjectionError("a complete angle set requires 20 to 40 candidates")
     ids: set[str] = set()
     angles: set[str] = set()
@@ -201,7 +274,7 @@ def _json(data: bytes) -> Any:
     return json.loads(data, object_pairs_hook=unique, parse_constant=invalid)
 
 
-def _schema(objectives: list[dict[str, Any]]) -> dict[str, Any]:
+def _schema(objectives: list[dict[str, Any]], want: int | None = None) -> dict[str, Any]:
     text = {"type": "string"}
     score = {
         "type": "object",
@@ -227,8 +300,8 @@ def _schema(objectives: list[dict[str, Any]]) -> dict[str, Any]:
         "properties": {
             "candidates": {
                 "type": "array",
-                "minItems": 20,
-                "maxItems": 40,
+                "minItems": 20 if want is None else 1,
+                "maxItems": 40 if want is None else want,
                 "items": {
                     "type": "object",
                     "properties": props,
@@ -295,11 +368,28 @@ class OllamaAnglesAdapter:
         self._exchange = None
         with _errors():
             input_bytes = _bounded(bundle, _INPUT_LIMIT)
-            schema = _schema(bundle.get("objectives", []))
+            taken = bundle.get("already_taken")
+            want = bundle.get("want")
+            if taken is None:
+                schema = _schema(bundle.get("objectives", []))
+                opening = (
+                    "Generate exactly 20 meaningfully distinct educational content angles "
+                    "for the supplied provisional audience and caller brief. "
+                )
+            else:
+                if not isinstance(taken, list) or type(want) is not int or not 1 <= want <= 20:
+                    raise ProjectionError("invalid top-up request")
+                schema = _schema(bundle.get("objectives", []), want)
+                opening = (
+                    f"Generate up to {want} NEW educational content angles for the supplied "
+                    "provisional audience and caller brief. These ideas are already taken: "
+                    + json.dumps(taken)
+                    + ". Do not repeat, rephrase or reformat any taken idea; each new angle "
+                    "must be about a clearly different subject, not another format, "
+                    "audience slice or wording of a taken one. "
+                )
             prompt = (
-                "Generate exactly 20 meaningfully distinct educational content angles "
-                "for the supplied provisional audience and caller brief. "
-                "Each central mechanism, use case, question or perspective must differ. "
+                opening + "Each central mechanism, use case, question or perspective must differ. "
                 "No synonym or numbered rotations. "
                 "Use concise natural hooks and concrete audience relevance "
                 "with real evidence source_ids. "
@@ -350,6 +440,7 @@ class OllamaAnglesAdapter:
                 "model",
                 "created_at",
                 "response",
+                "thinking",
                 "done",
                 "done_reason",
                 "context",
@@ -368,6 +459,7 @@ class OllamaAnglesAdapter:
                 or envelope.get("done") is not True
                 or envelope.get("done_reason", "stop") != "stop"
                 or not isinstance(envelope.get("response"), str)
+                or not isinstance(envelope.get("thinking", ""), str)
             ):
                 raise ProjectionError(
                     "ideation provider returned an incomplete or mismatched model envelope"
@@ -676,6 +768,7 @@ def _receipt(
         "generation_provenance": core["generation_provenance"],
         "snapshot_path": str(target),
         "current_note_path": str(current),
+        **{key: core[key] for key in ("discarded_candidates", "top_up_exchanges") if key in core},
     }
 
 
@@ -765,6 +858,141 @@ def _project(store: Path, vault: Path, wing: str) -> dict[str, Any]:
         return _receipt(conn, store, vault, wing, row)
 
 
+def _call(
+    adapter: AngleAdapter, bundle_bytes: bytes, identity: dict[str, Any], builtin: bool
+) -> dict[str, Any]:
+    """Run one adapter request and verify that its recorded exchange is the one used."""
+    result = _exact(
+        adapter.generate(_json(bundle_bytes)),
+        {"actual_model", "done", "candidates", "raw_request_sha256", "raw_response_sha256"},
+    )
+    _bounded(result, _OUTPUT_LIMIT)
+    if result["actual_model"] != identity["model_id"] or result["done"] is not True:
+        raise ProjectionError("angle output model or completion mismatch")
+    for name in ("raw_request_sha256", "raw_response_sha256"):
+        if not isinstance(result[name], str) or not _SHA.fullmatch(result[name]):
+            raise ProjectionError("angle output has an invalid exchange digest")
+    if builtin:
+        if not isinstance(adapter, OllamaAnglesAdapter):
+            raise ProjectionError("invalid local adapter")
+        exchange = adapter.raw_exchange
+        if (
+            exchange["input_bundle_sha256"] != _sha(bundle_bytes)
+            or exchange["result_sha256"] != _sha(_canonical(result))
+            or _sha(exchange["request"]) != result["raw_request_sha256"]
+            or _sha(exchange["response"]) != result["raw_response_sha256"]
+        ):
+            raise ProjectionError("local adapter exchange binding mismatch")
+    elif result["raw_request_sha256"] != _sha(bundle_bytes) or result[
+        "raw_response_sha256"
+    ] != _sha(_canonical({k: result[k] for k in ("actual_model", "done", "candidates")})):
+        raise ProjectionError("fixture exchange digest mismatch")
+    return result
+
+
+def _distinct_candidates(
+    adapter: AngleAdapter,
+    builtin: bool,
+    identity: dict[str, Any],
+    bundle: dict[str, Any],
+    first: list[dict[str, Any]],
+    embed: Callable[[Sequence[str]], Sequence[Sequence[float]]],
+    objectives: list[dict[str, Any]],
+    evidence: dict[str, Any],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+    """Keep only angles that differ in meaning; ask for replacements until 20 survive.
+
+    A detected repeat is never stored. The requests are bounded by ``TOP_UP_ROUNDS``.
+    """
+    discarded: list[dict[str, Any]] = []
+    unique = _wording_unique(first, [], discarded, objectives, evidence, "d")
+    kept_ids, dropped, vectors = meaning_survivors([c["angle"] for c in unique], embed)
+    kept = [unique[i] for i in kept_ids]
+    discarded.extend(
+        _discard(unique[i], kept[position]["id"], similarity) for i, position, similarity in dropped
+    )
+    top_ups: list[dict[str, Any]] = []
+    for round_number in range(1, TOP_UP_ROUNDS + 1):
+        if len(kept) >= _SET_MINIMUM:
+            break
+        want = min(20, max(8, _SET_MINIMUM - len(kept) + 4), _SET_MAXIMUM - len(kept))
+        request = {**bundle, "already_taken": [c["angle"] for c in kept], "want": want}
+        request_bytes = _bounded(request, _INPUT_LIMIT)
+        reply = _call(adapter, request_bytes, identity, builtin)
+        batch = reply["candidates"]
+        if not isinstance(batch, list) or not 1 <= len(batch) <= want:
+            raise ProjectionError("a top-up request returned an unexpected number of angles")
+        fresh = [{**item, "id": f"t{round_number}-{n}"} for n, item in enumerate(batch, 1)]
+        wording_ok = _wording_unique(fresh, kept, discarded, objectives, evidence, "")
+        new_ids, new_dropped, vectors = meaning_survivors(
+            [c["angle"] for c in wording_ok], embed, kept_vectors=vectors
+        )
+        owners = [c["id"] for c in kept] + [wording_ok[i]["id"] for i in new_ids]
+        for i, position, similarity in new_dropped:
+            discarded.append(_discard(wording_ok[i], owners[position], similarity))
+        kept.extend(wording_ok[i] for i in new_ids)
+        top_ups.append(
+            {
+                "round": round_number,
+                "requested": want,
+                "returned": len(batch),
+                "kept": len(new_ids),
+                "input_bundle_sha256": _sha(request_bytes),
+                "raw_request_sha256": reply["raw_request_sha256"],
+                "raw_response_sha256": reply["raw_response_sha256"],
+            }
+        )
+    if len(kept) < _SET_MINIMUM:
+        raise ProjectionError(
+            f"only {len(kept)} distinct angle(s) found after {len(top_ups)} extra "
+            f"request(s), fewer than {_SET_MINIMUM}, so nothing was stored. The check is "
+            "strict and approximate: some angles it dropped may be genuinely different. "
+            "Try a broader brief or a larger model"
+        )
+    return kept, discarded, top_ups
+
+
+def _wording_unique(
+    items: list[dict[str, Any]],
+    kept: list[dict[str, Any]],
+    discarded: list[dict[str, Any]],
+    objectives: list[dict[str, Any]],
+    evidence: dict[str, Any],
+    rename: str,
+) -> list[dict[str, Any]]:
+    """Validate each reply item and drop (and record) wording repeats instead of failing."""
+    ids = {c["id"] for c in kept}
+    angles = {_normal(c["angle"]) for c in kept}
+    hooks = {_normal(c["hook"]) for c in kept}
+    result: list[dict[str, Any]] = []
+    for number, item in enumerate(items, 1):
+        if not isinstance(item, dict):
+            raise ProjectionError("ideation object has unexpected or missing fields")
+        angle, hook = _normal(str(item.get("angle", ""))), _normal(str(item.get("hook", "")))
+        if angle and hook and (angle in angles or hook in hooks):
+            _rank([{**item, "id": "x"}], objectives, evidence, minimum=1)
+            discarded.append(_discard(item, None, 1.0))
+            continue
+        _rank([item], objectives, evidence, minimum=1)  # shape and score checks
+        if rename and item["id"] in ids:  # a model reused an id: keep the angle, renumber
+            item = {**item, "id": f"{rename}{number}"}
+        ids.add(item["id"])
+        angles.add(angle)
+        hooks.add(hook)
+        result.append(item)
+    return result
+
+
+def _discard(item: dict[str, Any], same_as: str | None, similarity: float) -> dict[str, Any]:
+    return {
+        "id": item["id"],
+        "angle": item["angle"],
+        "same_as": same_as,
+        "reason": "same wording" if same_as is None else "same meaning",
+        "similarity": round(similarity, 3),
+    }
+
+
 def generate_angle_set(
     store_path: str | os.PathLike[str],
     vault_path: str | os.PathLike[str],
@@ -774,8 +1002,14 @@ def generate_angle_set(
     objectives: list[dict[str, Any]],
     idempotency_key: str,
     adapter: AngleAdapter,
+    embed: Callable[[Sequence[str]], Sequence[Sequence[float]]] | None = None,
 ) -> dict[str, Any]:
-    """Commit a complete, audience-bound batch and its provisional ranking."""
+    """Commit a complete, audience-bound batch and its provisional ranking.
+
+    When ``embed`` is given, only angles that differ in meaning from every kept angle
+    are stored: repeats are removed (and recorded), replacements are requested for a
+    bounded number of rounds, and fewer than 20 survivors stores nothing.
+    """
     with _errors():
         store, vault = _paths(store_path, vault_path, wing)
         key, checked_brief, checked_objectives = (
@@ -820,32 +1054,26 @@ def generate_angle_set(
                 result = _receipt(conn, store, vault, wing, previous)
                 result["replayed"] = True
                 return result
-        result = _exact(
-            adapter.generate(_json(bundle_bytes)),
-            {"actual_model", "done", "candidates", "raw_request_sha256", "raw_response_sha256"},
-        )
-        _bounded(result, _OUTPUT_LIMIT)
-        if result["actual_model"] != identity["model_id"] or result["done"] is not True:
-            raise ProjectionError("angle output model or completion mismatch")
-        for name in ("raw_request_sha256", "raw_response_sha256"):
-            if not isinstance(result[name], str) or not _SHA.fullmatch(result[name]):
-                raise ProjectionError("angle output has an invalid exchange digest")
-        if builtin:
-            if not isinstance(adapter, OllamaAnglesAdapter):
-                raise ProjectionError("invalid local adapter")
-            exchange = adapter.raw_exchange
-            if (
-                exchange["input_bundle_sha256"] != _sha(bundle_bytes)
-                or exchange["result_sha256"] != _sha(_canonical(result))
-                or _sha(exchange["request"]) != result["raw_request_sha256"]
-                or _sha(exchange["response"]) != result["raw_response_sha256"]
-            ):
-                raise ProjectionError("local adapter exchange binding mismatch")
-        elif result["raw_request_sha256"] != _sha(bundle_bytes) or result[
-            "raw_response_sha256"
-        ] != _sha(_canonical({k: result[k] for k in ("actual_model", "done", "candidates")})):
-            raise ProjectionError("fixture exchange digest mismatch")
-        ranked = _rank(result["candidates"], checked_objectives, source["evidence"])
+        result = _call(adapter, bundle_bytes, identity, builtin)
+        candidates = result["candidates"]
+        if embed is None:
+            _rank(candidates, checked_objectives, source["evidence"])
+        elif not isinstance(candidates, list) or not 20 <= len(candidates) <= 40:
+            raise ProjectionError("a complete angle set requires 20 to 40 candidates")
+        discarded: list[dict[str, Any]] = []
+        top_ups: list[dict[str, Any]] = []
+        if embed is not None:
+            candidates, discarded, top_ups = _distinct_candidates(
+                adapter,
+                builtin,
+                identity,
+                bundle,
+                candidates,
+                _embed_checked(embed),
+                checked_objectives,
+                source["evidence"],
+            )
+        ranked = _rank(candidates, checked_objectives, source["evidence"])
         with closing(_connection(store, write=True)) as conn:
             if _ready_audience(conn, vault, wing) != source:
                 raise ProjectionError("audience changed during generation; no angle set committed")
@@ -871,7 +1099,7 @@ def generate_angle_set(
                 "vault_path": str(vault),
                 "input_bundle": bundle,
                 "audience_snapshot_path": source["snapshot_path"],
-                "original_candidates": result["candidates"],
+                "original_candidates": candidates,
                 "candidates": ranked,
                 "automatic_choice": ranked[0]["id"],
                 "adapter": identity,
@@ -884,6 +1112,9 @@ def generate_angle_set(
                 }
                 | {"input_bundle_sha256": _sha(bundle_bytes)},
             }
+            if embed is not None:
+                core["discarded_candidates"] = discarded
+                core["top_up_exchanges"] = top_ups
             data = _bounded(core, _OUTPUT_LIMIT)
             conn.execute(
                 "INSERT INTO cairntir_angle_sets VALUES(?,?,?,?,?,?)",
