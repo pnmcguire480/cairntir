@@ -1,6 +1,6 @@
-# Cairntir 1.14.0: the work toward 2.0
+# Cairntir 1.14.1: the work toward 2.0
 
-Version 1.14.0 continues publishing the work toward 2.0 on PyPI, begun with 1.13.0, so it can be used and tested while the rest of the roadmap is finished. It is not the completed 2.0 release: 2.0.0 is reserved for the finished roadmap. Earlier builds of this work were GitHub-only previews numbered 2.0.0a1 to 2.0.0a4, and the 1.13 and 1.14 releases replace them. Some features below are still experimental and say so.
+Version 1.14.1 continues publishing the work toward 2.0 on PyPI, begun with 1.13.0, so it can be used and tested while the rest of the roadmap is finished. It is not the completed 2.0 release: 2.0.0 is reserved for the finished roadmap. Earlier builds of this work were GitHub-only previews numbered 2.0.0a1 to 2.0.0a4, and the 1.13 and 1.14 releases replace them. Some features below are still experimental and say so.
 
 ## Install or upgrade
 
@@ -14,7 +14,7 @@ cairntir --help
 
 **Upgrading an existing store from 1.12 or earlier needs one manual step.** This version uses database schema 8 and binds the semantic index to the exact model files and runtime versions. Until you rebuild the index, semantic search and saving new memories are refused; reading a drawer by id with `cairntir get` and counting with `cairntir status` keep working. Stop every client that uses the store, then run `cairntir reindex --yes --backup /absolute/path/to/new-backup.db`. The command writes that backup before it changes anything. Read the [upgrade guide](docs/embedding-artifacts.md) first. This upgrade, its restore and its rollback have been exercised on two Windows machines; other platforms have automated coverage only.
 
-If you installed a 2.0.0a preview, `pip` treats it as newer than 1.14.0. Install this version explicitly with `python -m pip install "cairntir==1.14.0"`.
+If you installed a 2.0.0a preview, `pip` treats it as newer than 1.14.1. Install this version explicitly with `python -m pip install "cairntir==1.14.1"`.
 
 Connect your client's MCP configuration to the `cairntir-mcp` executable, or run `cairntir setup`. The existing MCP tool names remain available. Ordinary memory does not require enabling experimental background workers or native agent adapters.
 

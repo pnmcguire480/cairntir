@@ -8,6 +8,10 @@
 - A real-browser workflow for the PALADIN UI stage (Q04). `tests/acceptance/paladin_ui_real` runs the existing UI worker and producer in headless Chromium 151.0.7922.34 against the frozen accessibility, keyboard, layout and visual fault fixtures, and checks each report with the frozen independent oracle. A capture is never its own approval: the baseline changes only through an explicit review, and a rejected change keeps the approved baseline. The browser, Playwright 1.62.1, pngjs and pixelmatch are not Cairntir dependencies; they come from a folder you prepare and name with `CAIRNTIR_Q04_TOOLS`, and the case skips without it.
 - `scripts/longmemeval_bench.py` runs the full LongMemEval retrieval benchmark through the public store API. Each question gets a fresh isolated store, and the script records the dataset hash, version, model identity and run time. On 12 November 2026, published 1.13.0 scored R@5 96.38% (453/470) on LongMemEval_S cleaned in 3 h 40 min; see [the benchmark record](docs/benchmarks/longmemeval.md). This is retrieval only: question-answer scoring and an independent reproduction are still owed, so roadmap item C50 stays open.
 
+## [1.14.1] - 2026-11-13
+
+One fix on top of 1.14.0, and no new capability, so it is a patch under the [release policy](docs/release-cadence.md). No database schema change and no reindex. Roadmap unchanged: 26 of 35 items complete, 9 open.
+
 ### Fixed
 
 - `cairntir audience capture` now saves the first audience on a store that already holds memories. It used to stop with `cannot read audience revision: no such table: cairntir_audience_revisions`: it looked up the current revision to compare against before the audience table existed, and that table only appears with a store's first audience. Any existing store without audience history was affected, including every store created by 1.13.0. The failed capture saved nothing. `cairntir audience status` on such a store still reports that typed error until the first capture. Found by the independent evaluation of 1.14.0 on 13 November 2026.
