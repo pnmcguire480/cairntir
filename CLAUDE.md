@@ -88,7 +88,18 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-11-14 (1.14.1 published)
+## Last Session - 2026-11-17 (Obsidian setup guide)
+
+Added an agent-first [Obsidian setup guide](docs/obsidian-setup.md), linked from
+the README and documentation navigation. It uses the Workspace plugin shipped
+with 1.14.1 and distinguishes the showcase's custom dashboard adapter. An
+isolated rehearsal using installed 1.14.1 passed initial refresh, question save
+and acknowledgement, matching projected content, annotation preservation,
+idempotent retry, and wrong-wing refusal. Native plugin UI was not exercised
+in that rehearsal. Strict MkDocs and maintained-link checks passed. No runtime
+code or dependency declarations changed.
+
+## Previous Session - 2026-11-14 (1.14.1 published)
 
 [1.14.1](https://github.com/pnmcguire480/cairntir/releases/tag/v1.14.1) is on PyPI and GitHub from tag `v1.14.1` at `f93ff728`, never moved, on the maintainer's word "Publish 1.14.1." Release run 43557426753 passed on its first attempt: 3,088 tests passed, coverage 87.87%. A fresh install from PyPI reports 1.14.1 and a first `cairntir audience capture` on an existing store saves revision 1. PR175 (R12, Q04, C50 record) is green and unmerged; it adds capability and belongs to the next minor. The evaluator has not rerun against 1.14.1.
 

@@ -6,6 +6,9 @@ Start with [installation and usage](how-to-use.md), then read
 [concepts and data handling](concept.md) for retrieval budgets, provenance,
 transcript recovery, backup, and portability.
 
+[Set up Obsidian with Cairntir](obsidian-setup.md) with an agent-first prompt,
+manual installation steps, and ideas for your own project dashboards.
+
 [Task-aware continuity](context-demo.md), [portable evidence](portable-evidence.md),
 [evaluated procedures](evaluated-procedures.md), and [scoped sharing](scoped-sharing.md)
 have separate usage guides and acceptance evidence.

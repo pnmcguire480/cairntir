@@ -34,6 +34,7 @@ theme:
 nav:
   - Home: index.md
   - Getting Started: how-to-use.md
+  - Obsidian Setup: obsidian-setup.md
   - Continuity Demo: context-demo.md
   - Portable Evidence: portable-evidence.md
   - Evaluated Procedures: evaluated-procedures.md

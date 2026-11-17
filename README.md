@@ -85,6 +85,9 @@ See [Obsidian + Cairntir: my coding and 3D-printing setup](https://github.com/pn
 for a real workflow with screenshots. Share your own setup, screenshots, or
 ideas in the discussion—everyone is welcome, whatever your experience level.
 
+Want to build your own? [Set up Obsidian with Cairntir](docs/obsidian-setup.md),
+starting with a prompt you can give your LLM, or follow the manual steps.
+
 ## Host support
 
 | Surface | Support |
