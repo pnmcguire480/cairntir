@@ -79,6 +79,12 @@ relationships across stores. [Evaluated procedures](docs/evaluated-procedures.md
 require holdout evidence and local approval; [scoped sharing](docs/scoped-sharing.md)
 limits access with owner-issued grants.
 
+## Community showcase
+
+See [Obsidian + Cairntir: my coding and 3D-printing setup](https://github.com/pnmcguire480/cairntir/discussions/182)
+for a real workflow with screenshots. Share your own setup, screenshots, or
+ideas in the discussion—everyone is welcome, whatever your experience level.
+
 ## Host support
 
 | Surface | Support |
