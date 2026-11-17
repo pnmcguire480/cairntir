@@ -1,6 +1,6 @@
 # Keep an explicit question open until you resolve it
 
-The unpublished question lifecycle records exact text, an owner or an explicit
+The question lifecycle records exact text, an owner or an explicit
 unassigned state, and optional supporting memories. A resolution appends a new
 memory linked to evidence. It preserves the original question and its portable
 identity. A saved resolution records your declaration; it does not prove that
