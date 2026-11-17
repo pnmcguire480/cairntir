@@ -7,15 +7,19 @@ preserved; a committed correction creates a new version.
 
 ## Install in a disposable pilot vault
 
+Start with the [Obsidian setup guide](../../docs/obsidian-setup.md) for a prompt
+you can give your coding agent, manual steps, and a first-run check.
+
 Use Obsidian desktop 1.13.7 or later and a Python environment containing the
-development Cairntir backend with `obsidian-sync`. No JavaScript build or npm
+Cairntir 1.14.1 backend with `obsidian-sync`. Use the plugin files from the
+matching release. No JavaScript build or npm
 dependencies are required. Copy `main.js` and `manifest.json` into
 `plugins/cairntir-workspace/` under the pilot vault's configuration directory
 (usually `.obsidian`), then enable **Cairntir Workspace** in Community plugins.
 
 Configure all three settings explicitly:
 
-- **Python executable:** full path to the development environment's interpreter.
+- **Python executable:** full path to the environment's interpreter.
 - **Cairntir home:** full path to a disposable, isolated Cairntir store.
 - **Wing:** the project wing in that store.
 

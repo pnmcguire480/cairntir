@@ -1,7 +1,8 @@
 # Correct a Cairntir memory from Obsidian
 
-This optional workflow is retained in the **unpublished 1.16.0 candidate**,
-with the [explicit question lifecycle](question-lifecycle.md). SQLite
+This optional workflow is available in **Cairntir 1.14.1**,
+with the [explicit question lifecycle](question-lifecycle.md). Start with the
+[Obsidian setup guide](obsidian-setup.md) to connect a pilot vault. SQLite
 remains authoritative. A correction adds a new memory that supersedes an earlier
 one; it does not rewrite or delete the original. A committed receipt means stored
 evidence, not authenticated authorship or proof that a claim is true.
