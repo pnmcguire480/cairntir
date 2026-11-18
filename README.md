@@ -88,6 +88,10 @@ ideas in the discussion—everyone is welcome, whatever your experience level.
 Want to build your own? [Set up Obsidian with Cairntir](docs/obsidian-setup.md),
 starting with a prompt you can give your LLM, or follow the manual steps.
 
+Read the [Obsidian plugin test results and reproduction checklist](https://github.com/pnmcguire480/cairntir/discussions/182#discussioncomment-19711541)
+for tested versions, expected results, and commands you can run against your own
+setup. Share your results in the discussion or open an issue if a check fails.
+
 ## Host support
 
 | Surface | Support |
