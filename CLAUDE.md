@@ -88,7 +88,17 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-11-17 (Obsidian setup guide)
+## Last Session - 2026-11-18 (Obsidian test results link)
+
+Linked the public [Obsidian plugin test report](https://github.com/pnmcguire480/cairntir/discussions/182#discussioncomment-19711541)
+from the README beside the showcase and setup guide. The report includes tested
+versions, native workflow results, reproduction steps, automated test commands,
+and a feedback template. It distinguishes native checks from mocked acceptance
+tests and records screenshot capture limits; cross-PC testing is outside scope.
+Maintained documentation links and the strict MkDocs build passed. No runtime
+behavior or dependencies changed.
+
+## Previous Session - 2026-11-17 (Obsidian setup guide)
 
 Added an agent-first [Obsidian setup guide](docs/obsidian-setup.md), linked from
 the README and documentation navigation. It uses the Workspace plugin shipped
