@@ -15,6 +15,8 @@ from mcp.client.streamable_http import streamable_http_client
 
 from cairntir.bridge import MAX_BYTES, BridgeError, app
 
+__all__ = ["app"]
+
 
 async def _call(name: str, args: dict[str, str]) -> dict[str, object]:
     url = os.environ.get("CAIRNTIR_BRIDGE_URL", "")
