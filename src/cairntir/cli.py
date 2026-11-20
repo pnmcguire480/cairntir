@@ -16,6 +16,7 @@ import typer
 
 from cairntir import __version__
 from cairntir import backups as store_backups
+from cairntir.bridge_client import app as bridge_app
 from cairntir.config import cairntir_home, db_path, model_cache_dir
 from cairntir.cost import measure as measure_cost
 from cairntir.cost import render as render_cost
@@ -103,6 +104,7 @@ app = typer.Typer(
 question_app = typer.Typer(
     help="Record and resolve evidence-linked questions.", no_args_is_help=True
 )
+app.add_typer(bridge_app, name="bridge")
 app.add_typer(question_app, name="question")
 
 backup_app = typer.Typer(
@@ -2403,6 +2405,7 @@ def export_cmd(
     path: Path,
     wing: str | None = typer.Option(None, "--wing", "-w", help="Scope to a wing."),
     room: str | None = typer.Option(None, "--room", "-r", help="Scope to a room."),
+    drawer_id: Annotated[list[int] | None, typer.Option("--drawer-id", min=1)] = None,
     format_version: int = typer.Option(
         1, "--format", min=1, max=2, help="Portable format version."
     ),
@@ -2412,6 +2415,8 @@ def export_cmd(
     V1 rejects external URLs. V2 preserves exact source evidence and reference
     closure, including expired history, and never follows quoted URLs.
     """
+    if drawer_id and (format_version != 2 or wing is not None or room is not None):
+        raise typer.BadParameter("--drawer-id requires --format 2 and excludes --wing and --room.")
     if not db_path().exists():
         typer.echo("cairntir: no store yet — nothing to export.", err=True)
         raise typer.Exit(code=1)
@@ -2420,7 +2425,7 @@ def export_cmd(
         if format_version == 2:
             from cairntir.portable import export_bundle
 
-            count = export_bundle(store, path, wing=wing, room=room)["count"]
+            count = export_bundle(store, path, drawer_ids=drawer_id, wing=wing, room=room)["count"]
         else:
             from cairntir.access import ScopedStore
 
