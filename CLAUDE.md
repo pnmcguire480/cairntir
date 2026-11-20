@@ -88,7 +88,11 @@ the production installation as an incidental build step.
 - [BrainStormer lineage](docs/lineage/brainstormer.md) and
   [MemPalace lineage](docs/lineage/mempalace.md)
 
-## Last Session - 2026-11-18 (Obsidian test results link)
+## Last Session — cross-device bridge candidate
+
+A dedicated relay accepts explicitly shared handoffs. Each connection has its own inbox, permissions and lifetime. See the [bridge recipe](docs/recipes/cross-device-bridge/README.md). Hosted-client field qualification and release remain open.
+
+## Prior Session - 2026-11-18 (Obsidian test results link)
 
 Linked the public [Obsidian plugin test report](https://github.com/pnmcguire480/cairntir/discussions/182#discussioncomment-19711541)
 from the README beside the showcase and setup guide. The report includes tested
